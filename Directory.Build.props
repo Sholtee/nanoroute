@@ -1,0 +1,31 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>14</LangVersion>
+    <Authors>Denes Solti</Authors>
+    <Nullable>enable</Nullable>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <BinBase>..\BIN\$(Configuration)\</BinBase>
+    <OutputPath>$(BinBase)$(MSBuildProjectName)\</OutputPath>
+    <ObjBase>..\OBJ\$(MSBuildProjectName)\</ObjBase>
+    <BaseIntermediateOutputPath>$(ObjBase)</BaseIntermediateOutputPath>
+    <ProjectAssetsFile>$(ObjBase)project.assets.json</ProjectAssetsFile>
+    <RestoreOutputPath>$(ObjBase)</RestoreOutputPath>
+    <Product>NanoRoute</Product>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditLevel>moderate</NuGetAuditLevel>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <packageSources>
+      <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+    </packageSources>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.*">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
