@@ -1,0 +1,7 @@
+*.binlog
+*.user
+.vs
+[Aa]rtifacts/
+[Bb]in/
+[Oo]bj/
+launchSettings.json
