@@ -10,50 +10,77 @@ using System.Linq;
 namespace NanoRoute
 {
     /// <summary>
-    /// Matching strategy to be sued. 
+    /// Controls how the router orders multiple matching handlers before executing the pipeline.
     /// </summary>
+    /// <remarks>
+    /// This affects only requests for which more than one registered handler is compatible.
+    /// </remarks>
     public enum MatchingStrategy
     {
         /// <summary>
-        /// Match the easiest, most generic route first. On collision the pattern containing exact segment will have the priority. This is the default.
+        /// Executes matching handlers from the shortest compatible prefix toward more specific matches.
         /// </summary>
         /// <remarks>
-        /// Consider the following url: "/path/to/something"
-        /// And the following pattern registrations:
-        /// "/path/to/{id:id_parser}"  <-- will match 4th
-        /// "/path/to/something" <--- will match 3rd (exact match always has the priority)
-        /// "/path/to"  <-- doesn't match (it's an exact URL)
-        /// "/path/to/" <-- will match 2nd
-        /// "/"  <-- will match 1st
+        /// Exact segment matches still take precedence over parameter matches at the same path depth. For a request to
+        /// <c>/path/to/something</c>, the handlers would run in this order: <c>/</c>, <c>/path/to/</c>,
+        /// <c>/path/to/something</c>, then <c>/path/to/{id:parser}</c>.
         /// </remarks>
         ShortestPrefixMatching,
 
         /// <summary>
-        /// Match routes in the order they were registered
+        /// Executes matching handlers in the order they were registered.
         /// </summary>
-        /// Consider the following url: "/path/to/something"
-        /// And the following pattern registrations:
-        /// "/path/to/{id:id_parser}"  <-- will match 1st
-        /// "/path/to/something" <--- will match 2nd
-        /// "/path/to"  <-- doesn't match (it's an exact URL)
-        /// "/path/to/" <-- will match 3rd
-        /// "/"  <-- will match 4th
+        /// <remarks>
+        /// For a request to <c>/path/to/something</c>, registration order wins even when a later route is more
+        /// specific. If the handlers were registered as <c>/path/to/{id:parser}</c>, <c>/path/to/something</c>,
+        /// <c>/path/to/</c>, then <c>/</c>, they execute in that same sequence.
         /// </remarks>
         RegistrationOrderMatching
     }
 
     /// <summary>
-    /// HTTP verbs.
+    /// Represents the supported HTTP verbs that can be associated with route handlers.
     /// </summary>
     public enum HttpVerb
     {
+        /// <summary>
+        /// The HTTP GET method.
+        /// </summary>
         Get,
+
+        /// <summary>
+        /// The HTTP POST method.
+        /// </summary>
         Post,
+
+        /// <summary>
+        /// The HTTP PUT method.
+        /// </summary>
         Put,
+
+        /// <summary>
+        /// The HTTP DELETE method.
+        /// </summary>
         Delete,
+
+        /// <summary>
+        /// The HTTP PATCH method.
+        /// </summary>
         Patch,
+
+        /// <summary>
+        /// The HTTP HEAD method.
+        /// </summary>
         Head,
+
+        /// <summary>
+        /// The HTTP OPTIONS method.
+        /// </summary>
         Options,
+
+        /// <summary>
+        /// The HTTP TRACE method.
+        /// </summary>
         Trace
     }
 

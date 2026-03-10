@@ -7,18 +7,48 @@ using System;
 
 namespace NanoRoute
 {
-
     /// <summary>
-    /// 
+    /// Tries to parse a single route segment into a value that can be stored in <see cref="RequestContext{TRequest}.Parameters"/>.
     /// </summary>
+    /// <param name="segment">The raw path segment extracted from the request URI.</param>
+    /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
+    /// <example>
+    /// <code>
+    /// router.AddParameterParser("int", (string segment, out object? parsed) =&gt;
+    /// {
+    ///     if (int.TryParse(segment, out int value))
+    ///     {
+    ///         parsed = value;
+    ///         return true;
+    ///     }
+    ///
+    ///     parsed = null;
+    ///     return false;
+    /// });
+    /// </code>
+    /// </example>
     public delegate bool ParameterParserDelegate(string segment, out object? parsed);
 
     /// <summary>
-    /// Defines the layout of request handlers.
+    /// Represents a request handler in the router pipeline.
     /// </summary>
-    /// <param name="requestContext">Request context</param>
-    /// <param name="next">Invokes the next handler that matches the current route.</param
-    /// <returns></returns>
+    /// <typeparam name="TRequest">The application-specific request type.</typeparam>
+    /// <typeparam name="TResponse">The application-specific response type.</typeparam>
+    /// <param name="requestContext">The current request context, including parsed route parameters and services.</param>
+    /// <param name="callNext">Invokes the next compatible handler in the pipeline.</param>
+    /// <returns>
+    /// The response produced by the current handler, or by a later handler when <paramref name="callNext"/> is invoked.
+    /// </returns>
+    /// <example>
+    /// <code>
+    /// router.AddHandler(HttpVerb.Get, "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
+    /// {
+    ///     requestContext.Parameters["User"] = LoadUser((int) requestContext.Parameters["user_id"]!);
+    ///     return callNext();
+    /// });
+    /// </code>
+    /// </example>
     public delegate TResponse RequestHandler<TRequest, TResponse>(RequestContext<TRequest> requestContext, Func<TResponse> callNext);
 
 }

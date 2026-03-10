@@ -17,8 +17,57 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
-    /// Minimalistic router implementation
+    /// Routes requests to one or more handlers based on HTTP verb and URI path segments.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Routes are registered as path patterns. Literal segments are matched case-insensitively, while parameter
+    /// segments use parsers registered through <see cref="AddParameterParser(string, ParameterParserDelegate)"/>.
+    /// A pattern ending with <c>/</c> acts as a prefix route, so it also matches longer paths that start with the
+    /// same segments. A pattern without a trailing slash is treated as an exact match.
+    /// </para>
+    /// <para>
+    /// When multiple handlers match the same request, they are invoked as a pipeline. Each handler receives a
+    /// <see cref="RequestContext{TRequest}"/> and a <c>next</c> delegate. Calling <c>next()</c> transfers control
+    /// to the next compatible handler; returning directly short-circuits the pipeline.
+    /// </para>
+    /// <para>
+    /// The selected handler order depends on the configured <see cref="MatchingStrategy"/>. With
+    /// <see cref="MatchingStrategy.ShortestPrefixMatching"/>, broader prefix handlers can run before more specific
+    /// matches. With <see cref="MatchingStrategy.RegistrationOrderMatching"/>, handlers are executed in the order
+    /// they were registered.
+    /// </para>
+    /// <example>
+    /// <code>
+    /// Router&lt;HttpRequest, IResult&gt; router = new MyRouter(MatchingStrategy.ShortestPrefixMatching)
+    ///     .AddParameterParser("int", (string segment, out object? parsed) =&gt;
+    ///     {
+    ///         if (int.TryParse(segment, out int id))
+    ///         {
+    ///             parsed = id;
+    ///             return true;
+    ///         }
+    ///
+    ///         parsed = null;
+    ///         return false;
+    ///     })
+    ///     .AddHandler(HttpVerb.Get, "/api/users/{user_id:int}/", (context, next) =&gt;
+    ///     {
+    ///         object user = LoadUser((int) context.Parameters["user_id"]!);
+    ///         context.Parameters["User"] = user;
+    ///         return next();
+    ///     })
+    ///     .AddHandler(HttpVerb.Get, "/api/users/{user_id:int}/details", (context, next) =&gt;
+    ///     {
+    ///         return Results.Ok(context.Parameters["User"]);
+    ///     });
+    ///
+    /// IResult response = router.Handle(request, services);
+    /// </code>
+    /// In this example, a request for <c>/api/users/42/details</c> first matches the prefix handler, which parses
+    /// and stores <c>user_id</c>, then continues to the more specific handler that returns the response.
+    /// </example>
+    /// </remarks>
     public abstract class Router<TRequest, TResponse>(MatchingStrategy matchingStrategy)
     {
         #region Private
@@ -118,21 +167,47 @@ namespace NanoRoute
 
         #region Protected
         /// <summary>
-        /// Gets the <see cref="Uri"/> associated with <paramref name="request"/>.
+        /// Extracts the request URI used during route matching.
         /// </summary>
+        /// <param name="request">The incoming request instance.</param>
+        /// <returns>
+        /// The URI whose <see cref="Uri.AbsolutePath"/> is split into path segments and matched against the
+        /// registered route patterns.
+        /// </returns>
+        /// <remarks>
+        /// Query string and fragment values are ignored by the router. Only the absolute path participates in
+        /// matching.
+        /// </remarks>
         protected abstract Uri GetUri(TRequest request);
 
         /// <summary>
-        /// Gets the unique request id associated with <paramref name="request"/>.
+        /// Extracts a request identifier for logging scopes.
         /// </summary>
+        /// <param name="request">The incoming request instance.</param>
+        /// <returns>A value that uniquely identifies the request in logs.</returns>
+        /// <remarks>
+        /// This value is not used for matching. It is attached only to the logger scope created while
+        /// <see cref="Handle(TRequest, IServiceProvider)"/> processes the request.
+        /// </remarks>
         protected abstract string GetRequestId(TRequest request);
 
         /// <summary>
-        /// Gets the <see cref="HttpVerb"/> associated with <paramref name="request"/>.
+        /// Extracts the HTTP verb that selects the root route table.
         /// </summary>
+        /// <param name="request">The incoming request instance.</param>
+        /// <returns>The verb whose registered handlers should be considered for the request.</returns>
+        /// <remarks>
+        /// A path match is ignored when it was registered for a different verb.
+        /// </remarks>
         protected abstract HttpVerb GetVerb(TRequest request);
         #endregion
 
+        /// <summary>
+        /// Registers a parser that can convert a route segment into a typed parameter value.
+        /// </summary>
+        /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
+        /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
+        /// <returns>The current router instance.</returns>
         public Router<TRequest, TResponse> AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
         {
             _parameterParsers[parserName ?? throw new ArgumentNullException(nameof(parserName))] = new ParameterParser
@@ -144,6 +219,21 @@ namespace NanoRoute
             return this;
         }
 
+        /// <summary>
+        /// Registers a handler for all HTTP verbs.
+        /// </summary>
+        /// <param name="pattern">
+        /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
+        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// </param>
+        /// <param name="handler">The handler to execute when the pattern matches.</param>
+        /// <returns>The current router instance.</returns>
+        /// <example>
+        /// <code>
+        /// router.AddHandler("/health", (context, next) =&gt; Results.Ok());
+        /// </code>
+        /// </example>
         public Router<TRequest, TResponse> AddHandler(string pattern, RequestHandler<TRequest, TResponse> handler) =>
             AddHandler
             (
@@ -152,6 +242,25 @@ namespace NanoRoute
                 handler
             );
 
+        /// <summary>
+        /// Registers the same handler for multiple HTTP verbs.
+        /// </summary>
+        /// <param name="verbs">The verbs that should use the handler.</param>
+        /// <param name="pattern">
+        /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
+        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// </param>
+        /// <param name="handler">The handler to execute when the route matches.</param>
+        /// <returns>The current router instance.</returns>
+        /// <example>
+        /// <code>
+        /// router.AddHandler(
+        ///     [HttpVerb.Get, HttpVerb.Post],
+        ///     "/api/items/{id:int}",
+        ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
+        /// </code>
+        /// </example>
         public Router<TRequest, TResponse> AddHandler(IEnumerable<HttpVerb> verbs, string pattern, RequestHandler<TRequest, TResponse> handler)
         {
             foreach (HttpVerb verb in verbs)
@@ -160,6 +269,32 @@ namespace NanoRoute
             return this;
         }
 
+        /// <summary>
+        /// Registers a handler for a single HTTP verb.
+        /// </summary>
+        /// <param name="verb">The HTTP verb that activates the handler.</param>
+        /// <param name="pattern">
+        /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
+        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// </param>
+        /// <param name="handler">
+        /// The handler to execute. If several handlers match, calling the supplied <c>next</c> delegate continues
+        /// the pipeline with the next compatible handler.
+        /// </param>
+        /// <returns>The current router instance.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the pattern references a parameter parser that has not been registered yet.
+        /// </exception>
+        /// <example>
+        /// <code>
+        /// router.AddHandler(HttpVerb.Get, "/files/{path:any}/", (context, next) =&gt;
+        /// {
+        ///     string path = (string) context.Parameters["path"]!;
+        ///     return ServeFile(path);
+        /// });
+        /// </code>
+        /// </example>
         public Router<TRequest, TResponse> AddHandler(HttpVerb verb, string pattern, RequestHandler<TRequest, TResponse> handler)
         {
             RouteSegmentProcessing target = _root[verb];
@@ -214,6 +349,18 @@ namespace NanoRoute
             return this;
         }
 
+        /// <summary>
+        /// Resolves the registered handlers for the request and executes the matching pipeline.
+        /// </summary>
+        /// <param name="request">The request to route.</param>
+        /// <param name="services">The service provider exposed through the created <see cref="RequestContext{TRequest}"/>.</param>
+        /// <returns>The response returned by the first handler that completes the pipeline.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when no handler matches the request.</exception>
+        /// <example>
+        /// <code>
+        /// IResult result = router.Handle(request, services);
+        /// </code>
+        /// </example>
         public TResponse Handle(TRequest request, IServiceProvider services)
         {
             ILogger<Router<TRequest, TResponse>>? requestLogger = services.GetService<ILogger<Router<TRequest, TResponse>>>();
