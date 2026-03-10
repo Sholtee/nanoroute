@@ -3,6 +3,9 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NanoRoute
 {
@@ -52,5 +55,27 @@ namespace NanoRoute
         Head,
         Options,
         Trace
+    }
+
+    internal static class EnumHelpers
+    {
+        private static class GetValuesHelper<TEnum> where TEnum : Enum
+        {
+            public static readonly IReadOnlyList<TEnum> Values =
+            [
+                ..typeof(TEnum).GetEnumNames().Select
+                (
+                    static (_, i) => (TEnum) (object) i
+                )
+            ];
+        }
+
+        extension<TEnum>(TEnum) where TEnum : Enum
+        {
+            /// <summary>
+            /// Returns the values of the constants in a SEQUENTIAL enumeration. In contrast of <see cref="Enum.GetValues(Type)"/> this method is AOT friendly.
+            /// </summary>
+            public static IReadOnlyList<TEnum> GetValues() => GetValuesHelper<TEnum>.Values;
+        }
     }
 }

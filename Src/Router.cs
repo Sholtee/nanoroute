@@ -56,14 +56,11 @@ namespace NanoRoute
 
         private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}", RegexOptions.Compiled);
 
-        private readonly Dictionary<HttpVerb, RouteSegmentProcessing> _root = Enum
-            .GetValues(typeof(HttpVerb))
-            .Cast<HttpVerb>()
-            .ToDictionary
-            (
-                static v => v,
-                static _ => new RouteSegmentProcessing()
-            );
+        private readonly Dictionary<HttpVerb, RouteSegmentProcessing> _root = HttpVerb.GetValues().ToDictionary
+        (
+            static v => v,
+            static _ => new RouteSegmentProcessing()
+        );
 
         private readonly Dictionary<string, ParameterParser> _parameterParsers = [];
 
@@ -150,7 +147,7 @@ namespace NanoRoute
         public Router<TRequest, TResponse> AddHandler(string pattern, RequestHandler<TRequest, TResponse> handler) =>
             AddHandler
             (
-                Enum.GetValues(typeof(HttpVerb)).Cast<HttpVerb>(),
+                HttpVerb.GetValues(),
                 pattern,
                 handler
             );
