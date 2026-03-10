@@ -103,7 +103,8 @@ namespace NanoRoute
             public List<RouteSegmentProcessing> ConditionalContinuation { get; } = [];
         }
 
-        private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}", RegexOptions.Compiled);
+        // avoid using the constructor that accepts RegexOptions, since it is not compatible with AOT
+        private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}");
 
         private readonly Dictionary<HttpVerb, RouteSegmentProcessing> _root = HttpVerb.GetValues().ToDictionary
         (
@@ -115,7 +116,7 @@ namespace NanoRoute
 
         private int _handlerCount;
 
-        private static IEnumerable<HandlerRegistration> FindMatches(RouteSegmentProcessing node, string[] segments, int segmentIndex, Dictionary<string, object?> paramz, ILogger<Router<TRequest, TResponse>>? logger)
+        private static IEnumerable<HandlerRegistration> FindMatches(RouteSegmentProcessing node, string[] segments, int segmentIndex, Dictionary<string, object?> paramz, ILogger? logger)
         {
             if (node.HandlerRegistrations.Count > 0)
                 foreach (HandlerRegistration handlerRegistration in node.HandlerRegistrations)
@@ -363,7 +364,10 @@ namespace NanoRoute
         /// </example>
         public TResponse Handle(TRequest request, IServiceProvider services)
         {
-            ILogger<Router<TRequest, TResponse>>? requestLogger = services.GetService<ILogger<Router<TRequest, TResponse>>>();
+            ILogger? requestLogger = services.GetService<ILoggerFactory>()?.CreateLogger
+            (
+                GetType().Name
+            );
 
             string requestPath = GetUri(request)
                 .AbsolutePath;  // escaped characters are normalized
