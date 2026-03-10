@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 
 using Moq;
 using Moq.Language.Flow;
@@ -216,7 +217,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void DataCanBeSharedBetweenHandlers()
+        public void Handlers_MayShareData()
         {
             Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
 
@@ -373,6 +374,98 @@ namespace NanoRoute.Tests
 
                 Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
             }
+        }
+
+        [Test]
+        public void Handle_ShouldBeCaseInsensitive()
+        {
+            object request = new();
+
+            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
+
+            Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
+            mockHandler
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Returns(true);
+
+            mockRouter.Object.AddHandler(HttpVerb.Get, "path/to/SOMEWHERE", mockHandler.Object);
+
+            mockRouter
+                .Protected()
+                .Setup<Uri>("GetUri", request)
+                .Returns(new Uri("https://www.exmaple.com/PATH/to/somewhere"));
+
+            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+        }
+
+        [Test]
+        public void AddHandler_ShouldThrowOnMissingParameterParser([Values("path/to/{missing}", "path/to/{parameter_name:missing}")] string pattern)
+        {
+            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
+
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => mockRouter.Object.AddHandler(pattern, new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, "missing")));
+        }
+
+        [Test]
+        public void Parameters_ShouldNotLeak()
+        {
+            object request = new();
+
+            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
+
+            Mock<RequestHandler<object, object>>
+                mockHandler_1 = new(MockBehavior.Strict),
+                mockHandler_2 = new(MockBehavior.Strict);
+
+            Dictionary<string, object?>
+                paramz_1 = null!,
+                paramz_2 = null!;
+
+            mockHandler_1
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
+                {
+                    paramz_1 = cntx.Parameters;
+                    return next();
+                });
+
+            mockHandler_2
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
+                {
+                    paramz_2 = cntx.Parameters;
+                    return true;
+                });
+
+            mockRouter.Object
+                .AddParameterParser("int", (string segment, out object? parsed) =>
+                {
+                    if (int.TryParse(segment, out int userId))
+                    {
+                        parsed = userId;
+                        return true;
+                    }
+                    parsed = null;
+                    return false;
+                })
+                .AddParameterParser("str", (string segment, out object? parsed) =>
+                {
+                    parsed = segment;
+                    return true;
+                })
+                .AddHandler(HttpVerb.Get, "api/users/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
+                .AddHandler(HttpVerb.Get, "api/users/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object);
+
+            mockRouter
+                .Protected()
+                .Setup<Uri>("GetUri", request)
+                .Returns(new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething"));
+
+            mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+
+            Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
+            Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id_str"] = "1986" }));
         }
     }
 }

@@ -97,6 +97,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No such parameter parser: {0}.
+        /// </summary>
+        internal static string ERR_NO_SUCH_PARAMETER_PARSER {
+            get {
+                return ResourceManager.GetString("ERR_NO_SUCH_PARAMETER_PARSER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not found.
         /// </summary>
         internal static string ERR_NOT_FOUND {

@@ -166,17 +166,25 @@ namespace NanoRoute
 
             foreach (string segment in pattern.Split(['/'], StringSplitOptions.RemoveEmptyEntries))
             {
-                if (s_matcherDefinition.Match(segment) is { Success: true } matcherDefinition)
+                if (s_matcherDefinition.Match(segment) is { Success: true } parserDefinition)
                 {
-                    ParameterParser matcher = _parameterParsers[matcherDefinition.Groups["name"].Value];
-                    if (matcherDefinition.Groups["parametername"] is { Success: true } parameterName)
-                        matcher = matcher with { ParameterName = parameterName.Value };
+                    string parserName = parserDefinition.Groups["name"].Value;
+                    Debug.Assert(!string.IsNullOrEmpty(parserName), "Parser name could not be extracted");
 
-                    if (target.ConditionalContinuation.SingleOrDefault(cc => cc.ParameterParser!.Name.Equals(matcher.Name, StringComparison.OrdinalIgnoreCase)) is not { } conditionalContinuation)
+                    if (!_parameterParsers.TryGetValue(parserName, out ParameterParser parser))
+                        throw new InvalidOperationException
+                        (
+                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, parserName)
+                        );
+
+                    if (parserDefinition.Groups["parametername"] is { Success: true } parameterName)
+                        parser = parser with { ParameterName = parameterName.Value };
+
+                    if (target.ConditionalContinuation.SingleOrDefault(cc => cc.ParameterParser!.Name.Equals(parser.Name, StringComparison.OrdinalIgnoreCase)) is not { } conditionalContinuation)
                     {
                         conditionalContinuation = new RouteSegmentProcessing
                         {
-                            ParameterParser = matcher
+                            ParameterParser = parser
                         };
                         target.ConditionalContinuation.Add(conditionalContinuation);
                     }
