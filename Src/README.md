@@ -73,12 +73,12 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 - When multiple handlers match, NanoRoute evaluates the shortest compatible prefix first.
 - At the same path depth, literal segments are preferred over parameter matches.
 
-## Main Types
+## Core Types
 
-- [Router<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router-2.html): base class for extracting URI, request id, and HTTP method from your request type.
-- [RequestContext<TRequest>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext-1.html): exposes the request, services, and shared route parameters.
-- [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html): validates and parses a single path segment.
-- [RequestHandler<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler-2.html): handler delegate for pipeline-based request processing.
+- [Router<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router-2.html)
+- [RequestContext<TRequest>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext-1.html)
+- [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html)
+- [RequestHandler<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler-2.html)
 
 ## Documentation
 

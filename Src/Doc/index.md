@@ -10,15 +10,7 @@ The API documentation for this package is generated from the XML comments in the
 
 ## Core Types
 
-- [Router&lt;TRequest, TResponse&gt;](https://sholtee.github.io/nanoroute/docs/NanoRoute/Router-2.html)
-- [RequestContext&lt;TRequest&gt;](https://sholtee.github.io/nanoroute/docs/NanoRoute/RequestContext-1.html)
-- [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/ParameterParserDelegate.html)
-- [RequestHandler&lt;TRequest, TResponse&gt;](https://sholtee.github.io/nanoroute/docs/NanoRoute/RequestHandler-2.html)
-
-## Topics
-
-- Route registration with string HTTP methods
-- Exact and prefix matching
-- Case-insensitive literal matching
-- Parameter parsers and bound route values
-- Handler pipelines and shared request context
+- [Router<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router-2.html)
+- [RequestContext<TRequest>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext-1.html)
+- [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html)
+- [RequestHandler<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler-2.html)
