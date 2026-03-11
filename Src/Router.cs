@@ -71,52 +71,73 @@ namespace NanoRoute
     public abstract class Router<TRequest, TResponse>
     {
         #region Private
+        /// <summary>
+        /// Stores a named route-segment parser and its optional bound parameter name.
+        /// </summary>
         private sealed record ParameterParser(string Name, ParameterParserDelegate TryParse)
         {
             /// <summary>
-            /// The parameter to which the matched output is bound.
+            /// Gets the request-context parameter name that receives the parsed value.
             /// </summary>
             public string? ParameterName { get; init; }
         }
 
+        /// <summary>
+        /// Represents a handler attached to a matched route node.
+        /// </summary>
         private sealed record HandlerRegistration(RequestHandler<TRequest, TResponse> Handler, int RegistrationOrder, bool Prefix)
         {
+            /// <summary>
+            /// Gets the parameter snapshot associated with the current match.
+            /// </summary>
             public Dictionary<string, object?>? AttachedParameters { get; init; }
         }
 
-        private sealed class RouteSegmentProcessing
+        /// <summary>
+        /// Represents a node in the per-verb route tree.
+        /// </summary>
+        private sealed class RouteNode
         {
+            /// <summary>
+            /// Gets the handlers registered for the current route node.
+            /// </summary>
             public List<HandlerRegistration> HandlerRegistrations { get; } = [];
 
             /// <summary>
-            /// Not null in case of conditional continuation.
+            /// Gets or sets the parser used by this node when it represents a parameter segment.
             /// </summary>
             public ParameterParser? ParameterParser { get; set; }
 
             /// <summary>
-            /// Set when <see cref="HandlerRegistrations"/> is not empty.
+            /// Gets or sets the original route pattern registered for this node.
             /// </summary>
             public string? Pattern { get; set; }
 
-            public Dictionary<string, RouteSegmentProcessing> ExactContinuation { get; } = new(StringComparer.OrdinalIgnoreCase);
+            /// <summary>
+            /// Gets literal child nodes keyed by case-insensitive segment value.
+            /// </summary>
+            public Dictionary<string, RouteNode> ExactChildren { get; } = new(StringComparer.OrdinalIgnoreCase);
 
-            public List<RouteSegmentProcessing> ConditionalContinuation { get; } = [];
+            /// <summary>
+            /// Gets parameter-based child nodes evaluated after literal matches.
+            /// </summary>
+            public List<RouteNode> ParameterizedChildren { get; } = [];
         }
 
         // avoid using the constructor that accepts RegexOptions, since it is not compatible with AOT
         private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}");
 
-        private readonly Dictionary<HttpVerb, RouteSegmentProcessing> _root = HttpVerb.GetValues().ToDictionary
+        private readonly Dictionary<HttpVerb, RouteNode> _root = HttpVerb.GetValues().ToDictionary
         (
             static v => v,
-            static _ => new RouteSegmentProcessing()
+            static _ => new RouteNode()
         );
 
         private readonly Dictionary<string, ParameterParser> _parameterParsers = [];
 
         private int _handlerCount;
 
-        private static IEnumerable<HandlerRegistration> FindMatches(RouteSegmentProcessing node, string[] segments, int segmentIndex, Dictionary<string, object?> paramz, ILogger? logger)
+        private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, string[] segments, int segmentIndex, Dictionary<string, object?> paramz, ILogger? logger)
         {
             if (node.HandlerRegistrations.Count > 0)
                 foreach (HandlerRegistration handlerRegistration in node.HandlerRegistrations)
@@ -131,11 +152,11 @@ namespace NanoRoute
 
             string segment = segments[segmentIndex];
 
-            if (node.ExactContinuation.TryGetValue(segment, out RouteSegmentProcessing exactContinuation))
+            if (node.ExactChildren.TryGetValue(segment, out RouteNode exactChild))
             {
                 IEnumerable<HandlerRegistration> matches = FindMatches
                 (
-                    exactContinuation,
+                    exactChild,
                     segments,
                     segmentIndex + 1,
                     paramz,
@@ -145,17 +166,17 @@ namespace NanoRoute
                     yield return match;
             }
 
-            foreach (RouteSegmentProcessing conditionalContinuation in node.ConditionalContinuation)
+            foreach (RouteNode parameterizedChild in node.ParameterizedChildren)
             {
-                if (!conditionalContinuation.ParameterParser!.TryParse(segment, out object? parsed))
+                if (!parameterizedChild.ParameterParser!.TryParse(segment, out object? parsed))
                     continue;
 
                 IEnumerable<HandlerRegistration> matches = FindMatches
                 (
-                    conditionalContinuation,
+                    parameterizedChild,
                     segments,
                     segmentIndex + 1,
-                    conditionalContinuation.ParameterParser?.ParameterName is { Length: > 0 } parameterName
+                    parameterizedChild.ParameterParser?.ParameterName is { Length: > 0 } parameterName
                         ? new Dictionary<string, object?>(paramz, StringComparer.OrdinalIgnoreCase) { [parameterName] = parsed }
                         : paramz,
                     logger
@@ -298,7 +319,7 @@ namespace NanoRoute
         /// </example>
         public Router<TRequest, TResponse> AddHandler(HttpVerb verb, string pattern, RequestHandler<TRequest, TResponse> handler)
         {
-            RouteSegmentProcessing target = _root[verb];
+            RouteNode target = _root[verb];
 
             foreach (string segment in pattern.Split(['/'], StringSplitOptions.RemoveEmptyEntries))
             {
@@ -316,26 +337,26 @@ namespace NanoRoute
                     if (parserDefinition.Groups["parametername"] is { Success: true } parameterName)
                         parser = parser with { ParameterName = parameterName.Value };
 
-                    if (target.ConditionalContinuation.SingleOrDefault(cc => cc.ParameterParser!.Name.Equals(parser.Name, StringComparison.OrdinalIgnoreCase)) is not { } conditionalContinuation)
+                    if (target.ParameterizedChildren.SingleOrDefault(cc => cc.ParameterParser!.Name.Equals(parser.Name, StringComparison.OrdinalIgnoreCase)) is not { } parameterizedChild)
                     {
-                        conditionalContinuation = new RouteSegmentProcessing
+                        parameterizedChild = new RouteNode
                         {
                             ParameterParser = parser
                         };
-                        target.ConditionalContinuation.Add(conditionalContinuation);
+                        target.ParameterizedChildren.Add(parameterizedChild);
                     }
 
-                    target = conditionalContinuation;
+                    target = parameterizedChild;
                 }
                 else
                 {
-                    if (!target.ExactContinuation.TryGetValue(segment, out RouteSegmentProcessing exactContinuation))
+                    if (!target.ExactChildren.TryGetValue(segment, out RouteNode exactChild))
                     {
-                        exactContinuation = new();
-                        target.ExactContinuation.Add(segment, exactContinuation);
+                        exactChild = new();
+                        target.ExactChildren.Add(segment, exactChild);
                     }
 
-                    target = exactContinuation;
+                    target = exactChild;
                 }
             }
 
