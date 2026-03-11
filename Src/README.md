@@ -1,18 +1,6 @@
 # NanoRoute ![Tests](https://sholtee.github.io/nanoroute/badges/tests-badge.svg) [![Coverage](https://sholtee.github.io/nanoroute/badges/coverage-badge.svg)](https://sholtee.github.io/nanoroute/CoverageReport/)
 
-
 NanoRoute is a small, dependency-light router for request/response pipelines.
-
-It matches requests by HTTP method and URI path, supports literal and parameterized segments, treats path matching as case-insensitive, and lets multiple compatible handlers form a pipeline through `next()`.
-
-## Features
-
-- Exact and prefix route matching
-- Literal and parser-based parameter segments
-- Case-insensitive path matching
-- String-based HTTP method handlers or handlers registered for all methods
-- Handler pipelines that can share data through `RequestContext<TRequest>.Parameters`
-- Minimal abstraction surface for custom request types
 
 ## Quick Start
 
@@ -25,7 +13,7 @@ using NanoRoute;
 
 sealed class HttpRouter : Router<HttpRequestMessage, string>
 {
-    protected override Uri GetUri(HttpRequestMessage request) => request.RequestUri!;
+    protected override Uri GetUri(HttpRequestMessage request) => request.RequestUri;
 
     protected override string GetRequestId(HttpRequestMessage request) =>
         request.Headers.TryGetValues("X-Request-Id", out var values)
