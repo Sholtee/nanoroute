@@ -42,7 +42,7 @@ namespace NanoRoute
     /// </returns>
     /// <example>
     /// <code>
-    /// router.AddHandler(HttpVerb.Get, "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
+    /// router.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
     /// {
     ///     requestContext.Parameters["User"] = LoadUser((int) requestContext.Parameters["user_id"]!);
     ///     return callNext();

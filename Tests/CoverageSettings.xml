@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Format>xml</Format>
+  <CodeCoverage>
+    <ModulePaths>
+      <Include/>
+      <Exclude>
+        <!-- Keep only NanoRoute.* modules -->
+        <ModulePath>^((?!NanoRoute\.).)*$</ModulePath>
+      </Exclude>
+    </ModulePaths>
+    <Attributes>
+      <Exclude>
+        <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+        <Attribute>^System\.Runtime\.CompilerServices\.CompilerGeneratedAttribute$</Attribute>
+      </Exclude>
+    </Attributes>
+    <Sources>
+      <Exclude>
+        <!-- Exclude eveything from the Tests folder -->
+        <Source>.*\\Tests\\.*</Source>
+        <!-- Exclude generated intermediates -->
+        <Source>.*\\OBJ\\.*</Source>
+      </Exclude>
+    </Sources>
+    <EnableStaticManagedInstrumentation>True</EnableStaticManagedInstrumentation>
+    <EnableDynamicManagedInstrumentation>True</EnableDynamicManagedInstrumentation>
+  </CodeCoverage>
+</Configuration>

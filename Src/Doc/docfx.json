@@ -1,0 +1,33 @@
+{
+  "metadata": [{
+    "src": [{
+      "src": "%PUBLISH_DIR%",
+      "files": ["Nanoroute.dll"]
+    }],
+    "dest": "../../BIN/DOC",
+    "filter": "docfxFilters.yml"
+  }],
+  "build": {
+    "content": [
+      {
+        "files": ["*.yml"],
+        "src": "../../BIN/DOC"
+      },
+      {
+        "files": ["index.md"]
+      }
+    ],
+    "dest": "../../Artifacts/docs/NanoRoute",
+    "resource": [{
+      "files": ["Icon.png"],
+      "src": "../"
+    }],
+    "globalMetadata": {
+      "_appTitle": "NanoRoute",
+      "_appFaviconPath": "Icon.png",
+      "_disableNavbar": true,
+      "_disableContribution": true
+    },
+    "xrefService": ["https://xref.docs.microsoft.com/query?uid={uid}"]
+  }
+}

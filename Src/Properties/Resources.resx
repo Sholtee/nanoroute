@@ -135,4 +135,7 @@
   <data name="DBG_UNPROCESSED_REQUEST" xml:space="preserve">
     <value>No handler found for the request.</value>
   </data>
+  <data name="ERR_INVALID_VERB" xml:space="preserve">
+    <value>Invalid verb: {0}</value>
+  </data>
 </root>
