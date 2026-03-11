@@ -75,14 +75,13 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 
 ## Main Types
 
-- `Router<TRequest, TResponse>`: base class for extracting URI, request id, and HTTP method from your request type.
-- `RequestContext<TRequest>`: exposes the request, services, and shared route parameters.
-- `ParameterParserDelegate`: validates and parses a single path segment.
-- `RequestHandler<TRequest, TResponse>`: handler delegate for pipeline-based request processing.
-- `string` HTTP methods: verb registration uses method names such as `GET`, `POST`, and `DELETE`.
+- [Router<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router-2.html): base class for extracting URI, request id, and HTTP method from your request type.
+- [RequestContext<TRequest>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext-1.html): exposes the request, services, and shared route parameters.
+- [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html): validates and parses a single path segment.
+- [RequestHandler<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler-2.html): handler delegate for pipeline-based request processing.
 
 ## Documentation
 
 API documentation is generated from the XML comments in the source and published at:
 
-- <https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.html>
+- <https://sholtee.github.io/nanoroute/docs/NanoRoute/>
