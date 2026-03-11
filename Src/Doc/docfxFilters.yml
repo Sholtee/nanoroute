@@ -2,3 +2,9 @@ apiRules:
   - exclude:
       hasAttribute:
         uid: System.Runtime.CompilerServices.CompilerGeneratedAttribute
+  - exclude:
+      uidRegex: ^.*\.#ctor\(System\.Object,System\.IntPtr\)$
+      type: Method
+  - exclude:
+      uidRegex: ^.*\.(BeginInvoke|EndInvoke|Invoke)\(.*\)$
+      type: Method
