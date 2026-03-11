@@ -135,11 +135,12 @@ namespace NanoRoute
             public List<RouteNode> ParameterizedChildren { get; } = [];
         }
 
-        // avoid using the constructor that accepts RegexOptions, since it is not compatible with AOT
+        // avoid using the constructor that accepts RegexOptions, since it is not AOT compatible
         private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}");
 
         // dict is faster against value types -> use HttpVerb instead of string
         private readonly Dictionary<HttpVerb, RouteNode> _root = typeof(HttpVerb)
+            // Enum.GetValues() is not AOT compatible
             .GetEnumNames()
             .Select
             (
