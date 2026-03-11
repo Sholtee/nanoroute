@@ -124,7 +124,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sholtee/injector.next.git gh-pages
+          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sholtee/nanoroute.git gh-pages
 
           New-Item -Path ./gh-pages/badges -ItemType Directory -Force | Out-Null
           Get-ChildItem -Path ./Artifacts -Recurse -Filter *-badge.svg -File | ForEach-Object {
