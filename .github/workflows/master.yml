@@ -1,0 +1,139 @@
+#############################################################################
+#                                                                           #
+# master.yml                                                                #
+#                                                                           #
+# Author: Denes Solti                                                       #
+#                                                                           #
+#############################################################################
+name: Run tests and publish artifacts
+
+on:
+  push:
+    branches: 
+      - master
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  POWERSHELL_TELEMETRY_OPTOUT: true
+
+jobs:
+  tests-windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # .NET Framework is part of the windows images
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+             3.1.x
+             10.0.x
+
+      - name: Run tests
+        shell: pwsh
+        run: ./Scripts/Run-Tests.ps1
+
+      - name: Parse test results
+        id: tests
+        shell: pwsh
+        run: |
+          $results = ([xml](Get-Content ./Artifacts/${{ matrix.test.xml }})).testsuites.ChildNodes[0]
+          "passed=$($results.tests)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "skipped=$($results.skipped)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          if ($results.skipped -gt 0) { "color=yellow"| Out-File -FilePath $env:GITHUB_OUTPUT -Append }
+          else { "color=green" | Out-File -FilePath $env:GITHUB_OUTPUT -Append }
+
+      - name: Create tests badge
+        uses: emibcn/badge-action@v2
+        with:
+          label: tests
+          status: "Passed: ${{ steps.tests.outputs.passed }}, Skipped: ${{ steps.tests.outputs.skipped }}"
+          color: ${{ steps.tests.outputs.color }}
+          path: ./Artifacts/tests-badge.svg
+
+      - name: Parse coverage
+        id: coverage
+        shell: pwsh
+        run: |
+          $matches = [regex]::Match((Get-Content -Raw ./Artifacts/CoverageReport/Index.html), '<div\s+class="[^"]*\bcardpercentagebar\b[^"]*">\s*([^<]+)\s*</div>')
+          $coveragePercent = [int]($matches.Groups[1].Value  -replace '%','')
+          "value=$coveragePercent" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          if ($coveragePercent -lt 60) { "color=red"| Out-File -FilePath $env:GITHUB_OUTPUT -Append }
+          elseif ($coveragePercent -lt 80) { "color=yellow"| Out-File -FilePath $env:GITHUB_OUTPUT -Append }
+          else { "color=green"| Out-File -FilePath $env:GITHUB_OUTPUT -Append }
+          
+      - name: Create coverage badge
+        uses: emibcn/badge-action@v2
+        with:
+          label: coverage
+          status: ${{ steps.coverage.outputs.value }}%
+          color: ${{ steps.coverage.outputs.color }}
+          path: ./Artifacts/coverage-badge.svg
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ./Artifacts
+
+  create-api-docs:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Generate API docs
+        shell: pwsh
+        run: ./Scripts/Build-Docs.ps1
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: ./Artifacts
+
+  upload-artifacts:
+    needs:
+      - tests-windows
+      - create-api-docs
+    runs-on: windows-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download results
+        run: gh run download ${{ github.run_id }} --repo ${{ github.repository }} --dir Artifacts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload artifacts to gh-pages
+        shell: pwsh
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sholtee/injector.next.git gh-pages
+
+          New-Item -Path ./gh-pages/badges -ItemType Directory -Force | Out-Null
+          Get-ChildItem -Path ./Artifacts -Recurse -Filter *-badge.svg -File | ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination ./gh-pages/badges/ -Force
+          }
+
+          Remove-Item -Path ./gh-pages/CoverageReport -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item ./Artifacts/test-results/CoverageReport ./gh-pages -Force -Recurse
+
+          Remove-Item -Path ./gh-pages/docs -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item ./Artifacts/docs/docs ./gh-pages -Force -Recurse
+
+          Set-Location gh-pages
+          git add .
+          git commit -m "[bot] update artifacts" || Write-Host "Nothing to commit"
+          git push origin gh-pages
