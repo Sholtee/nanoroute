@@ -40,7 +40,7 @@ jobs:
         id: tests
         shell: pwsh
         run: |
-          $results = ([xml](Get-Content ./Artifacts/${{ matrix.test.xml }})).testsuites.ChildNodes[0]
+          $results = ([xml](Get-Content ./Artifacts/Router.Tests.Results.xml)).testsuites.ChildNodes[0]
           "passed=$($results.tests)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           "skipped=$($results.skipped)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           if ($results.skipped -gt 0) { "color=yellow"| Out-File -FilePath $env:GITHUB_OUTPUT -Append }
