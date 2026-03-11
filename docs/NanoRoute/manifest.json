@@ -1,0 +1,114 @@
+{
+  "source_base_path": "D:/a/nanoroute/nanoroute/Src/Doc",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../BIN/DOC/NanoRoute.ParameterParserDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.ParameterParserDelegate.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.ParameterParserDelegate",
+      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.ParameterParserDelegate.yml\" sourcestartlinenumber=\"1\">Tries to parse a single route segment into a value that can be stored in <xref href=\"NanoRoute.RequestContext%601.Parameters\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../BIN/DOC/NanoRoute.RequestContext-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.RequestContext-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.RequestContext<TRequest>",
+      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RequestContext-1.yml\" sourcestartlinenumber=\"1\">Request context</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../BIN/DOC/NanoRoute.RequestHandler-2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.RequestHandler-2.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.RequestHandler<TRequest, TResponse>",
+      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RequestHandler-2.yml\" sourcestartlinenumber=\"1\">Represents a request handler in the router pipeline.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../BIN/DOC/NanoRoute.Router-2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.Router-2.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.Router<TRequest, TResponse>",
+      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.Router-2.yml\" sourcestartlinenumber=\"1\">Routes requests to one or more handlers based on HTTP method and URI path segments.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../BIN/DOC/NanoRoute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "../../BIN/DOC/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "../Icon.png",
+      "output": {
+        "resource": {
+          "relative_path": "Icon.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
