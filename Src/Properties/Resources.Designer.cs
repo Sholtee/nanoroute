@@ -61,7 +61,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Compatible handler found. Pattern:{0}.
+        ///   Looks up a localized string similar to Compatible handler found. Pattern: {0}.
         /// </summary>
         internal static string DBG_COMPATIBLE_HANDLER_FOUND {
             get {
@@ -70,16 +70,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Request handler returned in {0} (this doesn&apos;t necessarily mean that the request has been processed)..
-        /// </summary>
-        internal static string DBG_REQUEST_HANDLER_RETURNED {
-            get {
-                return ResourceManager.GetString("DBG_REQUEST_HANDLER_RETURNED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Request processing started.
+        ///   Looks up a localized string similar to Request processing started..
         /// </summary>
         internal static string DBG_REQUEST_PROCESSING_STARTED {
             get {
@@ -88,11 +79,11 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No handler found to process the request..
+        ///   Looks up a localized string similar to No handler found for the request..
         /// </summary>
-        internal static string DBG_UNRPOCESSED_REQUEST {
+        internal static string DBG_UNPROCESSED_REQUEST {
             get {
-                return ResourceManager.GetString("DBG_UNRPOCESSED_REQUEST", resourceCulture);
+                return ResourceManager.GetString("DBG_UNPROCESSED_REQUEST", resourceCulture);
             }
         }
         
@@ -106,7 +97,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not found.
+        ///   Looks up a localized string similar to Not found..
         /// </summary>
         internal static string ERR_NOT_FOUND {
             get {
@@ -115,7 +106,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter override is not allowed..
+        ///   Looks up a localized string similar to Conflicting parameter names are not allowed for the same route segment..
         /// </summary>
         internal static string ERR_PARAMETER_OVERRIDE {
             get {

@@ -118,24 +118,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DBG_COMPATIBLE_HANDLER_FOUND" xml:space="preserve">
-    <value>Compatible handler found. Pattern:{0}</value>
-  </data>
-  <data name="DBG_REQUEST_HANDLER_RETURNED" xml:space="preserve">
-    <value>Request handler returned in {0} (this doesn't necessarily mean that the request has been processed).</value>
+    <value>Compatible handler found. Pattern: {0}</value>
   </data>
   <data name="DBG_REQUEST_PROCESSING_STARTED" xml:space="preserve">
-    <value>Request processing started</value>
-  </data>
-  <data name="DBG_UNRPOCESSED_REQUEST" xml:space="preserve">
-    <value>No handler found to process the request.</value>
+    <value>Request processing started.</value>
   </data>
   <data name="ERR_NOT_FOUND" xml:space="preserve">
-    <value>Not found</value>
+    <value>Not found.</value>
   </data>
   <data name="ERR_NO_SUCH_PARAMETER_PARSER" xml:space="preserve">
     <value>No such parameter parser: {0}</value>
   </data>
   <data name="ERR_PARAMETER_OVERRIDE" xml:space="preserve">
-    <value>Parameter override is not allowed.</value>
+    <value>Conflicting parameter names are not allowed for the same route segment.</value>
+  </data>
+  <data name="DBG_UNPROCESSED_REQUEST" xml:space="preserve">
+    <value>No handler found for the request.</value>
   </data>
 </root>

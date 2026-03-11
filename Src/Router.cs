@@ -439,7 +439,7 @@ namespace NanoRoute
             {
                 if (!matches.MoveNext())
                 {
-                    requestLogger?.LogDebug(Resources.DBG_UNRPOCESSED_REQUEST);
+                    requestLogger?.LogDebug(Resources.DBG_UNPROCESSED_REQUEST);
                     throw new InvalidOperationException(Resources.ERR_NOT_FOUND);
                 }
 
