@@ -437,7 +437,10 @@ namespace NanoRoute
         /// IResult result = router.Handle(request, services);
         /// </code>
         /// </example>
-        public TResponse Handle(TRequest request, IServiceProvider services)
+        #if DEBUG
+        internal
+        #endif
+        protected TResponse Handle(TRequest request, IServiceProvider services)
         {
             Ensure.NotNull(request);
             Ensure.NotNull(services);
