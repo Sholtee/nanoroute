@@ -1,4 +1,5 @@
-# NanoRoute
+# NanoRoute ![Tests](https://sholtee.github.io/nanoroute/badges/tests-badge.svg) [![Coverage](https://sholtee.github.io/nanoroute/badges/coverage-badge.svg)](https://sholtee.github.io/nanoroute/CoverageReport/)
+
 
 NanoRoute is a small, dependency-light router for request/response pipelines.
 

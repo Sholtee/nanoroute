@@ -52,7 +52,7 @@ jobs:
           label: tests
           status: "Passed: ${{ steps.tests.outputs.passed }}, Skipped: ${{ steps.tests.outputs.skipped }}"
           color: ${{ steps.tests.outputs.color }}
-          path: ./Artifacts/tests-badge.svg
+          path: ./Artifacts/badges/tests-badge.svg
 
       - name: Parse coverage
         id: coverage
@@ -71,7 +71,7 @@ jobs:
           label: coverage
           status: ${{ steps.coverage.outputs.value }}%
           color: ${{ steps.coverage.outputs.color }}
-          path: ./Artifacts/coverage-badge.svg
+          path: ./Artifacts/badges/coverage-badge.svg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
