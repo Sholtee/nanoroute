@@ -34,7 +34,7 @@ namespace NanoRoute.Tests
             _mockRouter
                 .Protected()
                 .Setup<string>("GetVerb", ItExpr.IsAny<object>())
-                .Returns(HttpVerb.Get.ToString());
+                .Returns("GET");
         }
 
         [Test]
@@ -64,10 +64,10 @@ namespace NanoRoute.Tests
 
             _mockRouter.Object
                 .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
-                .AddHandler(HttpVerb.Get.ToString(), "/path/to/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
-                .AddHandler(HttpVerb.Get.ToString(), "/path/to/explicit/something/", mockHandler_2.Object)  // should match 2nd
-                .AddHandler(HttpVerb.Get.ToString(), "/", mockHandler_1.Object)  // should match 1st
-                .AddHandler(HttpVerb.Get.ToString(), "/path/should/not/match/", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
+                .AddHandler("GET", "/path/to/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
+                .AddHandler("GET", "/path/to/explicit/something/", mockHandler_2.Object)  // should match 2nd
+                .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
+                .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
 
             _mockRouter
                 .Protected()
@@ -85,7 +85,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            _mockRouter.Object.AddHandler(HttpVerb.Get.ToString(), "/path/to/explicit/something", mockHandler.Object);
+            _mockRouter.Object.AddHandler("GET", "/path/to/explicit/something", mockHandler.Object);
 
             ISetup<Router<object, object>, Uri> getUriSetup = _mockRouter
                 .Protected()
@@ -110,7 +110,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            _mockRouter.Object.AddHandler(HttpVerb.Get.ToString(), "/path/to/explicit/something/", mockHandler.Object);
+            _mockRouter.Object.AddHandler("GET", "/path/to/explicit/something/", mockHandler.Object);
 
             ISetup<Router<object, object>, Uri> getUriSetup = _mockRouter
                 .Protected()
@@ -147,8 +147,8 @@ namespace NanoRoute.Tests
 
             _mockRouter.Object
                 .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
-                .AddHandler(HttpVerb.Get.ToString(), pattern, mockHandler_1.Object)
-                .AddHandler(HttpVerb.Get.ToString(), pattern, mockHandler_2.Object);
+                .AddHandler("GET", pattern, mockHandler_1.Object)
+                .AddHandler("GET", pattern, mockHandler_2.Object);
 
             _mockRouter
                 .Protected()
@@ -183,12 +183,12 @@ namespace NanoRoute.Tests
 
             if (explicitFirst)
                 _mockRouter.Object
-                    .AddHandler(HttpVerb.Get.ToString(), "/path/to/explicit/something", mockHandler_1.Object)
-                    .AddHandler(HttpVerb.Get.ToString(), "/path/to/{some_str:any}/something", mockHandler_2.Object);
+                    .AddHandler("GET", "/path/to/explicit/something", mockHandler_1.Object)
+                    .AddHandler("GET", "/path/to/{some_str:any}/something", mockHandler_2.Object);
             else
                 _mockRouter.Object
-                    .AddHandler(HttpVerb.Get.ToString(), "/path/to/{some_str:any}/something", mockHandler_2.Object)
-                    .AddHandler(HttpVerb.Get.ToString(), "/path/to/explicit/something", mockHandler_1.Object);
+                    .AddHandler("GET", "/path/to/{some_str:any}/something", mockHandler_2.Object)
+                    .AddHandler("GET", "/path/to/explicit/something", mockHandler_1.Object);
 
             _mockRouter
                 .Protected()
@@ -243,8 +243,8 @@ namespace NanoRoute.Tests
                     parsed = null;
                     return false;
                 })
-                .AddHandler(HttpVerb.Get.ToString(), "api/users/{user_id:int}/", mockGetUser.Object)
-                .AddHandler(HttpVerb.Get.ToString(), "api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object);
+                .AddHandler("GET", "api/users/{user_id:int}/", mockGetUser.Object)
+                .AddHandler("GET", "api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object);
 
             _mockRouter
                 .Protected()
@@ -264,7 +264,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            _mockRouter.Object.AddHandler(HttpVerb.Post.ToString(), "path/to/somewhere", mockHandler.Object);
+            _mockRouter.Object.AddHandler("POST", "path/to/somewhere", mockHandler.Object);
 
             _mockRouter
                 .Protected()
@@ -275,13 +275,13 @@ namespace NanoRoute.Tests
                 .Protected()
                 .Setup<string>("GetVerb", s_request);
 
-            getVerbSetup.Returns(HttpVerb.Get.ToString());
+            getVerbSetup.Returns("GET");
 
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext<object>>(), It.IsAny<Func<object>>()), Times.Never);
 
-            getVerbSetup.Returns(HttpVerb.Post.ToString());
+            getVerbSetup.Returns("POST");
 
             Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
@@ -295,7 +295,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            _mockRouter.Object.AddHandler([HttpVerb.Get.ToString(), HttpVerb.Post.ToString()], "path/to/somewhere", mockHandler.Object);
+            _mockRouter.Object.AddHandler(["GET", "POST"], "path/to/somewhere", mockHandler.Object);
 
             _mockRouter
                 .Protected()
@@ -306,12 +306,12 @@ namespace NanoRoute.Tests
                 .Protected()
                 .Setup<string>("GetVerb", s_request);
 
-            getVerbSetup.Returns(HttpVerb.Get.ToString());
+            getVerbSetup.Returns("GET");
 
             Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
 
-            getVerbSetup.Returns(HttpVerb.Post.ToString());
+            getVerbSetup.Returns("POST");
 
             Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Exactly(2));
@@ -336,7 +336,7 @@ namespace NanoRoute.Tests
                 .Protected()
                 .Setup<string>("GetVerb", s_request);
 
-            foreach (string verb in HttpVerb.GetValues().Select(static v => v.ToString()))
+            foreach (string verb in new[] { "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE" })
             {
                 getVerbSetup.Returns(verb);
 
@@ -352,7 +352,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            _mockRouter.Object.AddHandler(HttpVerb.Get.ToString(), "path/to/SOMEWHERE", mockHandler.Object);
+            _mockRouter.Object.AddHandler("GET", "path/to/SOMEWHERE", mockHandler.Object);
 
             _mockRouter
                 .Protected()
@@ -383,9 +383,9 @@ namespace NanoRoute.Tests
         {
             _mockRouter.Object
                 .AddParameterParser("int", new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object)
-                .AddHandler(HttpVerb.Get.ToString(), "/path/to/{id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
+                .AddHandler("GET", "/path/to/{id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler(HttpVerb.Get.ToString(), "/path/to/{other_id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler("GET", "/path/to/{other_id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
         }
 
@@ -414,16 +414,16 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler((string) null!, "path", (_, _) => new object()))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler([HttpVerb.Get.ToString()], null!, (_, _) => new object()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(["GET"], null!, (_, _) => new object()))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler([HttpVerb.Get.ToString()], "path", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(["GET"], "path", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(HttpVerb.Get.ToString(), null!, (_, _) => new object()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("GET", null!, (_, _) => new object()))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(HttpVerb.Get.ToString(), "path", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("GET", "path", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
         });
 
@@ -483,8 +483,8 @@ namespace NanoRoute.Tests
                     parsed = segment;
                     return true;
                 })
-                .AddHandler(HttpVerb.Get.ToString(), "api/users/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
-                .AddHandler(HttpVerb.Get.ToString(), "api/users/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object);
+                .AddHandler("GET", "api/users/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
+                .AddHandler("GET", "api/users/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object);
 
             _mockRouter
                 .Protected()

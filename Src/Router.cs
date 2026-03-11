@@ -71,6 +71,17 @@ namespace NanoRoute
     public abstract class Router<TRequest, TResponse> where TRequest : class
     {
         #region Private
+        private enum HttpVerb
+        {
+            Get,
+            Post,
+            Put,
+            Delete,
+            Patch,
+            Head,
+            Options,
+            Trace
+        }
         /// <summary>
         /// Stores a named route-segment parser and its optional bound parameter name.
         /// </summary>
@@ -128,11 +139,21 @@ namespace NanoRoute
         private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}");
 
         // dict is faster against value types -> use HttpVerb instead of string
-        private readonly Dictionary<HttpVerb, RouteNode> _root = HttpVerb.GetValues().ToDictionary
-        (
-            static v => v,
-            static _ => new RouteNode()
-        );
+        private readonly Dictionary<HttpVerb, RouteNode> _root = typeof(HttpVerb)
+            .GetEnumNames()
+            .Select
+            (
+                static s =>
+                {
+                    Enum.TryParse(s, out HttpVerb result);
+                    return result;
+                }
+            )
+            .ToDictionary
+            (
+                static v => v,
+                static _ => new RouteNode()
+            );
 
         private readonly Dictionary<string, ParameterParser> _parameterParsers = [];
 
@@ -266,7 +287,10 @@ namespace NanoRoute
 
             return AddHandler
             (
-                HttpVerb.GetValues().Select(static v => v.ToString()),
+                Enum.GetNames
+                (
+                    typeof(HttpVerb)
+                ),
                 pattern,
                 handler
             );
