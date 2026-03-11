@@ -17,7 +17,7 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
-    /// Routes requests to one or more handlers based on HTTP verb and URI path segments.
+    /// Routes requests to one or more handlers based on HTTP method and URI path segments.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -51,13 +51,13 @@ namespace NanoRoute
     ///         parsed = null;
     ///         return false;
     ///     })
-    ///     .AddHandler(HttpVerb.Get, "/api/users/{user_id:int}/", (context, next) =&gt;
+    ///     .AddHandler("GET", "/api/users/{user_id:int}/", (context, next) =&gt;
     ///     {
     ///         object user = LoadUser((int) context.Parameters["user_id"]!);
     ///         context.Parameters["User"] = user;
     ///         return next();
     ///     })
-    ///     .AddHandler(HttpVerb.Get, "/api/users/{user_id:int}/details", (context, next) =&gt;
+    ///     .AddHandler("GET", "/api/users/{user_id:int}/details", (context, next) =&gt;
     ///     {
     ///         return Results.Ok(context.Parameters["User"]);
     ///     });
@@ -127,6 +127,7 @@ namespace NanoRoute
         // avoid using the constructor that accepts RegexOptions, since it is not compatible with AOT
         private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}");
 
+        // dict is faster against value types -> use HttpVerb instead of string
         private readonly Dictionary<HttpVerb, RouteNode> _root = HttpVerb.GetValues().ToDictionary
         (
             static v => v,
@@ -214,14 +215,17 @@ namespace NanoRoute
         protected abstract string GetRequestId(TRequest request);
 
         /// <summary>
-        /// Extracts the HTTP verb that selects the root route table.
+        /// Extracts the HTTP method that selects the root route table.
         /// </summary>
         /// <param name="request">The incoming request instance.</param>
-        /// <returns>The verb whose registered handlers should be considered for the request.</returns>
+        /// <returns>
+        /// The HTTP method string whose registered handlers should be considered for the request, for example
+        /// <c>GET</c>, <c>POST</c>, or <c>DELETE</c>.
+        /// </returns>
         /// <remarks>
-        /// A path match is ignored when it was registered for a different verb.
+        /// Method matching is case-insensitive. A path match is ignored when it was registered for a different method.
         /// </remarks>
-        protected abstract HttpVerb GetVerb(TRequest request);
+        protected abstract string GetVerb(TRequest request);
         #endregion
 
         /// <summary>
@@ -241,7 +245,7 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Registers a handler for all HTTP verbs.
+        /// Registers a handler for all supported HTTP methods.
         /// </summary>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
@@ -262,16 +266,16 @@ namespace NanoRoute
 
             return AddHandler
             (
-                HttpVerb.GetValues(),
+                HttpVerb.GetValues().Select(static v => v.ToString()),
                 pattern,
                 handler
             );
         }
 
         /// <summary>
-        /// Registers the same handler for multiple HTTP verbs.
+        /// Registers the same handler for multiple HTTP methods.
         /// </summary>
-        /// <param name="verbs">The verbs that should use the handler.</param>
+        /// <param name="verbs">The HTTP methods that should use the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
         /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
@@ -282,27 +286,27 @@ namespace NanoRoute
         /// <example>
         /// <code>
         /// router.AddHandler(
-        ///     [HttpVerb.Get, HttpVerb.Post],
+        ///     ["GET", "POST"],
         ///     "/api/items/{id:int}",
         ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
         /// </code>
         /// </example>
-        public Router<TRequest, TResponse> AddHandler(IEnumerable<HttpVerb> verbs, string pattern, RequestHandler<TRequest, TResponse> handler)
+        public Router<TRequest, TResponse> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler<TRequest, TResponse> handler)
         {
             Ensure.NotNull(verbs);
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
 
-            foreach (HttpVerb verb in verbs)
+            foreach (string verb in verbs)
                 AddHandler(verb, pattern, handler);
 
             return this;
         }
 
         /// <summary>
-        /// Registers a handler for a single HTTP verb.
+        /// Registers a handler for a single HTTP method.
         /// </summary>
-        /// <param name="verb">The HTTP verb that activates the handler.</param>
+        /// <param name="verb">The HTTP method that activates the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
         /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
@@ -313,24 +317,32 @@ namespace NanoRoute
         /// the pipeline with the next compatible handler.
         /// </param>
         /// <returns>The current router instance.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>
         /// <exception cref="InvalidOperationException">
         /// Thrown when the pattern references a parameter parser that has not been registered yet.
         /// </exception>
         /// <example>
         /// <code>
-        /// router.AddHandler(HttpVerb.Get, "/files/{path:any}/", (context, next) =&gt;
+        /// router.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
         /// {
         ///     string path = (string) context.Parameters["path"]!;
         ///     return ServeFile(path);
         /// });
         /// </code>
         /// </example>
-        public Router<TRequest, TResponse> AddHandler(HttpVerb verb, string pattern, RequestHandler<TRequest, TResponse> handler)
+        public Router<TRequest, TResponse> AddHandler(string verb, string pattern, RequestHandler<TRequest, TResponse> handler)
         {
+            Ensure.NotNull(verb);
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
 
-            RouteNode target = _root[verb];
+            if (!Enum.TryParse(verb, ignoreCase: true, out HttpVerb v))
+                throw new ArgumentException
+                (
+                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, verb), nameof(verb)
+                );
+
+            RouteNode target = _root[v];
 
             foreach (string segment in pattern.Split(['/'], StringSplitOptions.RemoveEmptyEntries))
             {
@@ -393,6 +405,7 @@ namespace NanoRoute
         /// <param name="request">The request to route.</param>
         /// <param name="services">The service provider exposed through the created <see cref="RequestContext{TRequest}"/>.</param>
         /// <returns>The response returned by the first handler that completes the pipeline.</returns>
+        /// <exception cref="ArgumentException">Thrown when the request exposes an unsupported HTTP method.</exception>
         /// <exception cref="InvalidOperationException">Thrown when no handler matches the request.</exception>
         /// <example>
         /// <code>
@@ -408,6 +421,13 @@ namespace NanoRoute
             (
                 GetType().Name
             );
+
+            string requestVerb = GetVerb(request);
+            if (!Enum.TryParse<HttpVerb>(requestVerb, ignoreCase: true, out HttpVerb verb))
+                throw new ArgumentException
+                (
+                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, requestVerb), nameof(request)
+                );
 
             string requestPath = GetUri(request)
                 .AbsolutePath;  // escaped characters are normalized
@@ -425,7 +445,7 @@ namespace NanoRoute
 
             using IEnumerator<HandlerRegistration> matches = FindMatches
             (
-                _root[GetVerb(request)],
+                _root[verb],
                 requestPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries),
                 0,
                 new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),

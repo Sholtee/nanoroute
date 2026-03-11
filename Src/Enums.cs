@@ -12,7 +12,7 @@ namespace NanoRoute
     /// <summary>
     /// Represents the supported HTTP verbs that can be associated with route handlers.
     /// </summary>
-    public enum HttpVerb
+    internal enum HttpVerb
     {
         /// <summary>
         /// The HTTP GET method.
@@ -57,18 +57,22 @@ namespace NanoRoute
 
     internal static class EnumHelpers
     {
-        private static class GetValuesHelper<TEnum> where TEnum : Enum
+        private static class GetValuesHelper<TEnum> where TEnum : struct
         {
             public static readonly IReadOnlyList<TEnum> Values =
             [
                 ..typeof(TEnum).GetEnumNames().Select
                 (
-                    static (_, i) => (TEnum) (object) i
+                    static s =>
+                    {
+                        Enum.TryParse(s, ignoreCase: true, out TEnum result);
+                        return result;
+                    }
                 )
             ];
         }
 
-        extension<TEnum>(TEnum) where TEnum : Enum
+        extension<TEnum>(TEnum) where TEnum : struct
         {
             /// <summary>
             /// Returns the values of the constants in a SEQUENTIAL enumeration. In contrast of <see cref="Enum.GetValues(Type)"/> this method is AOT friendly.

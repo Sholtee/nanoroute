@@ -88,6 +88,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid verb: {0}.
+        /// </summary>
+        internal static string ERR_INVALID_VERB {
+            get {
+                return ResourceManager.GetString("ERR_INVALID_VERB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No such parameter parser: {0}.
         /// </summary>
         internal static string ERR_NO_SUCH_PARAMETER_PARSER {
