@@ -1,6 +1,6 @@
-abstract NanoRoute.Router<TRequest, TResponse>.GetRequestId(TRequest request) -> string!
-abstract NanoRoute.Router<TRequest, TResponse>.GetUri(TRequest request) -> System.Uri!
-abstract NanoRoute.Router<TRequest, TResponse>.GetVerb(TRequest request) -> NanoRoute.HttpVerb
+abstract NanoRoute.Router<TRequest, TResponse>.GetRequestId(TRequest! request) -> string!
+abstract NanoRoute.Router<TRequest, TResponse>.GetUri(TRequest! request) -> System.Uri!
+abstract NanoRoute.Router<TRequest, TResponse>.GetVerb(TRequest! request) -> NanoRoute.HttpVerb
 NanoRoute.HttpVerb
 NanoRoute.HttpVerb.Delete = 3 -> NanoRoute.HttpVerb
 NanoRoute.HttpVerb.Get = 0 -> NanoRoute.HttpVerb
@@ -21,9 +21,9 @@ NanoRoute.RequestContext<TRequest>.Services.get -> System.IServiceProvider!
 NanoRoute.RequestContext<TRequest>.Services.init -> void
 NanoRoute.RequestHandler<TRequest, TResponse>
 NanoRoute.Router<TRequest, TResponse>
-NanoRoute.Router<TRequest, TResponse>.AddHandler(NanoRoute.HttpVerb verb, string! pattern, NanoRoute.RequestHandler<TRequest, TResponse>! handler) -> NanoRoute.Router<TRequest, TResponse>!
-NanoRoute.Router<TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.RequestHandler<TRequest, TResponse>! handler) -> NanoRoute.Router<TRequest, TResponse>!
-NanoRoute.Router<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<NanoRoute.HttpVerb>! verbs, string! pattern, NanoRoute.RequestHandler<TRequest, TResponse>! handler) -> NanoRoute.Router<TRequest, TResponse>!
-NanoRoute.Router<TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.Router<TRequest, TResponse>!
-NanoRoute.Router<TRequest, TResponse>.Handle(TRequest request, System.IServiceProvider! services) -> TResponse
+NanoRoute.Router<TRequest, TResponse>.AddHandler(NanoRoute.HttpVerb verb, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
+NanoRoute.Router<TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
+NanoRoute.Router<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<NanoRoute.HttpVerb>! verbs, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
+NanoRoute.Router<TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.Router<TRequest!, TResponse>!
+NanoRoute.Router<TRequest, TResponse>.Handle(TRequest! request, System.IServiceProvider! services) -> TResponse
 NanoRoute.Router<TRequest, TResponse>.Router() -> void

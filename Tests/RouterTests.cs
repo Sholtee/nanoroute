@@ -369,6 +369,54 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void AddParameterParser_ShouldBeNullChecked() => Assert.Multiple(() =>
+        {
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddParameterParser(null!, new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("parserName"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddParameterParser("any", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
+        });
+
+        [Test]
+        public void AddHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
+        {
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(null!, (_, _) => new object()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("path", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("handler"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(null!, "path", (_, _) => new object()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler([HttpVerb.Get], null!, (_, _) => new object()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler([HttpVerb.Get], "path", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("handler"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(HttpVerb.Get, null!, (_, _) => new object()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(HttpVerb.Get, "path", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("handler"));
+        });
+
+        [Test]
+        public void Handle_ShouldBeNullChecked()
+        {
+            Assert.Multiple(() =>
+            {
+                ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.Handle(null!, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
+                Assert.That(ex.ParamName, Is.EqualTo("request"));
+
+                ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.Handle(s_request, null!))!;
+                Assert.That(ex.ParamName, Is.EqualTo("services"));
+            });
+        }
+
+        [Test]
         public void Parameters_ShouldNotLeak()
         {
             Mock<RequestHandler<object, object>>

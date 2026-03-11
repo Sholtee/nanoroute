@@ -68,7 +68,7 @@ namespace NanoRoute
     /// and stores <c>user_id</c>, then continues to the more specific handler that returns the response.
     /// </example>
     /// </remarks>
-    public abstract class Router<TRequest, TResponse>
+    public abstract class Router<TRequest, TResponse> where TRequest : class
     {
         #region Private
         /// <summary>
@@ -232,11 +232,10 @@ namespace NanoRoute
         /// <returns>The current router instance.</returns>
         public Router<TRequest, TResponse> AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
         {
-            _parameterParsers[parserName ?? throw new ArgumentNullException(nameof(parserName))] = new ParameterParser
-            (
-                parserName,
-                tryParseDelegate ?? throw new ArgumentNullException(nameof(parserName))
-            );
+            Ensure.NotNull(parserName);
+            Ensure.NotNull(tryParseDelegate);
+
+            _parameterParsers[parserName] = new ParameterParser(parserName, tryParseDelegate);
 
             return this;
         }
@@ -256,13 +255,18 @@ namespace NanoRoute
         /// router.AddHandler("/health", (context, next) =&gt; Results.Ok());
         /// </code>
         /// </example>
-        public Router<TRequest, TResponse> AddHandler(string pattern, RequestHandler<TRequest, TResponse> handler) =>
-            AddHandler
+        public Router<TRequest, TResponse> AddHandler(string pattern, RequestHandler<TRequest, TResponse> handler)
+        {
+            Ensure.NotNull(pattern);
+            Ensure.NotNull(handler);
+
+            return AddHandler
             (
                 HttpVerb.GetValues(),
                 pattern,
                 handler
             );
+        }
 
         /// <summary>
         /// Registers the same handler for multiple HTTP verbs.
@@ -285,6 +289,10 @@ namespace NanoRoute
         /// </example>
         public Router<TRequest, TResponse> AddHandler(IEnumerable<HttpVerb> verbs, string pattern, RequestHandler<TRequest, TResponse> handler)
         {
+            Ensure.NotNull(verbs);
+            Ensure.NotNull(pattern);
+            Ensure.NotNull(handler);
+
             foreach (HttpVerb verb in verbs)
                 AddHandler(verb, pattern, handler);
 
@@ -319,6 +327,9 @@ namespace NanoRoute
         /// </example>
         public Router<TRequest, TResponse> AddHandler(HttpVerb verb, string pattern, RequestHandler<TRequest, TResponse> handler)
         {
+            Ensure.NotNull(pattern);
+            Ensure.NotNull(handler);
+
             RouteNode target = _root[verb];
 
             foreach (string segment in pattern.Split(['/'], StringSplitOptions.RemoveEmptyEntries))
@@ -385,6 +396,9 @@ namespace NanoRoute
         /// </example>
         public TResponse Handle(TRequest request, IServiceProvider services)
         {
+            Ensure.NotNull(request);
+            Ensure.NotNull(services);
+
             ILogger? requestLogger = services.GetService<ILoggerFactory>()?.CreateLogger
             (
                 GetType().Name
