@@ -10,9 +10,6 @@ NanoRoute.HttpVerb.Patch = 4 -> NanoRoute.HttpVerb
 NanoRoute.HttpVerb.Post = 1 -> NanoRoute.HttpVerb
 NanoRoute.HttpVerb.Put = 2 -> NanoRoute.HttpVerb
 NanoRoute.HttpVerb.Trace = 7 -> NanoRoute.HttpVerb
-NanoRoute.MatchingStrategy
-NanoRoute.MatchingStrategy.RegistrationOrderMatching = 1 -> NanoRoute.MatchingStrategy
-NanoRoute.MatchingStrategy.ShortestPrefixMatching = 0 -> NanoRoute.MatchingStrategy
 NanoRoute.ParameterParserDelegate
 NanoRoute.RequestContext<TRequest>
 NanoRoute.RequestContext<TRequest>.Parameters.get -> System.Collections.Generic.Dictionary<string!, object?>!
@@ -29,4 +26,4 @@ NanoRoute.Router<TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.Requ
 NanoRoute.Router<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<NanoRoute.HttpVerb>! verbs, string! pattern, NanoRoute.RequestHandler<TRequest, TResponse>! handler) -> NanoRoute.Router<TRequest, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.Router<TRequest, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.Handle(TRequest request, System.IServiceProvider! services) -> TResponse
-NanoRoute.Router<TRequest, TResponse>.Router(NanoRoute.MatchingStrategy matchingStrategy) -> void
+NanoRoute.Router<TRequest, TResponse>.Router() -> void

@@ -32,14 +32,14 @@ namespace NanoRoute
     /// to the next compatible handler; returning directly short-circuits the pipeline.
     /// </para>
     /// <para>
-    /// The selected handler order depends on the configured <see cref="MatchingStrategy"/>. With
-    /// <see cref="MatchingStrategy.ShortestPrefixMatching"/>, broader prefix handlers can run before more specific
-    /// matches. With <see cref="MatchingStrategy.RegistrationOrderMatching"/>, handlers are executed in the order
-    /// they were registered.
+    /// When multiple handlers match the same request, the router evaluates the shortest compatible prefix first, then
+    /// continues toward more specific matches. At the same path depth, literal segment matches are preferred over
+    /// parameter matches. This allows broader prefix handlers to populate
+    /// <see cref="RequestContext{TRequest}.Parameters"/> before more specific handlers continue the pipeline.
     /// </para>
     /// <example>
     /// <code>
-    /// Router&lt;HttpRequest, IResult&gt; router = new MyRouter(MatchingStrategy.ShortestPrefixMatching)
+    /// Router&lt;HttpRequest, IResult&gt; router = new MyRouter()
     ///     .AddParameterParser("int", (string segment, out object? parsed) =&gt;
     ///     {
     ///         if (int.TryParse(segment, out int id))
@@ -68,7 +68,7 @@ namespace NanoRoute
     /// and stores <c>user_id</c>, then continues to the more specific handler that returns the response.
     /// </example>
     /// </remarks>
-    public abstract class Router<TRequest, TResponse>(MatchingStrategy matchingStrategy)
+    public abstract class Router<TRequest, TResponse>
     {
         #region Private
         private sealed record ParameterParser(string Name, ParameterParserDelegate TryParse)
@@ -381,48 +381,38 @@ namespace NanoRoute
                 }
             );
 
-            Stopwatch sp = Stopwatch.StartNew();
-
             requestLogger?.LogDebug(Resources.DBG_REQUEST_PROCESSING_STARTED);
 
-            IEnumerable<HandlerRegistration> matches = FindMatches
+            using IEnumerator<HandlerRegistration> matches = FindMatches
             (
                 _root[GetVerb(request)],
                 requestPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries),
                 0,
                 new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
                 requestLogger
-            );
+            )
+            .GetEnumerator();
 
-            if (matchingStrategy is MatchingStrategy.RegistrationOrderMatching)
-                matches = matches.OrderBy(static match => match.RegistrationOrder);
-
-            using IEnumerator<HandlerRegistration> enumerator = matches.GetEnumerator();
-
-            TResponse response = CallNextHandler();
-
-            requestLogger?.LogDebug(Resources.DBG_REQUEST_HANDLER_RETURNED, sp.Elapsed);
-
-            return response;
+            return CallNextHandler();
 
             TResponse CallNextHandler()
             {
-                if (!enumerator.MoveNext())
+                if (!matches.MoveNext())
                 {
                     requestLogger?.LogDebug(Resources.DBG_UNRPOCESSED_REQUEST);
                     throw new InvalidOperationException(Resources.ERR_NOT_FOUND);
                 }
 
-                Debug.Assert(enumerator.Current.AttachedParameters is not null, "Parameters must be attached here");
+                Debug.Assert(matches.Current.AttachedParameters is not null, "Parameters must be attached here");
 
                 RequestContext<TRequest> requestContext = new()
                 {
-                    Parameters = enumerator.Current.AttachedParameters!,
+                    Parameters = matches.Current.AttachedParameters!,
                     Request = request,
                     Services = services
                 };
 
-                return enumerator.Current.Handler(requestContext, CallNextHandler);
+                return matches.Current.Handler(requestContext, CallNextHandler);
             }
         }
     }

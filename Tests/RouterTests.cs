@@ -18,19 +18,22 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class RouterTests
     {
-        private static Mock<Router<object, object>> CreateRouter(MatchingStrategy matchingStrategy)
+        private static readonly object s_request = new();
+
+        private Mock<Router<object, object>> _mockRouter = null!;
+
+        [SetUp]
+        public void Setup()
         {
-            Mock<Router<object, object>> mockRouter = new (MockBehavior.Strict, matchingStrategy);
-            mockRouter
+            _mockRouter = new Mock<Router<object, object>>(MockBehavior.Strict);
+            _mockRouter
                 .Protected()
                 .Setup<string>("GetRequestId", ItExpr.IsAny<object>())
                 .Returns("requestId");
-            mockRouter
+            _mockRouter
                 .Protected()
                 .Setup<HttpVerb>("GetVerb", ItExpr.IsAny<object>())
                 .Returns(HttpVerb.Get);
-
-            return mockRouter;
         }
 
         [Test]
@@ -41,150 +44,90 @@ namespace NanoRoute.Tests
                 mockHandler_2 = new(MockBehavior.Strict),
                 mockHandler_3 = new(MockBehavior.Strict);
 
-            object request = new();
-
             MockSequence seq = new();
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns<RequestContext<object>, Func<object>>((_, next) => next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns<RequestContext<object>, Func<object>>((_, next) => next());
 
             mockHandler_3
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
-
-            mockRouter.Object
+            _mockRouter.Object
                 .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler(HttpVerb.Get, "/path/to/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
                 .AddHandler(HttpVerb.Get, "/path/to/explicit/something/", mockHandler_2.Object)  // should match 2nd
                 .AddHandler(HttpVerb.Get, "/", mockHandler_1.Object)  // should match 1st
                 .AddHandler(HttpVerb.Get, "/path/should/not/match/", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
 
-            mockRouter
+            _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request)
+                .Setup<Uri>("GetUri", s_request)
                 .Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/"));
 
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
         }
 
         [Test]
-        public void Handle_ShouldMatchInTheRegistrationOrder()
+        public void Handle_ShouldSupportExactMatches()
         {
-            Mock<RequestHandler<object, object>>
-                mockHandler_1 = new(MockBehavior.Strict),
-                mockHandler_2 = new(MockBehavior.Strict),
-                mockHandler_3 = new(MockBehavior.Strict);
-
-            object request = new();
-
-            MockSequence seq = new();
-
-            mockHandler_1
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
-                .Returns<RequestContext<object>, Func<object>>((_, next) => next());
-
-            mockHandler_2
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
-                .Returns<RequestContext<object>, Func<object>>((_, next) => next());
-
-            mockHandler_3
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
-                .Returns(true);
-
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.RegistrationOrderMatching);
-
-            mockRouter.Object
-                .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
-                .AddHandler(HttpVerb.Get, "/path/to/{some_str:any}/something/", mockHandler_1.Object)
-                .AddHandler(HttpVerb.Get, "/path/to/explicit/something/", mockHandler_2.Object)
-                .AddHandler(HttpVerb.Get, "/", mockHandler_3.Object)
-                .AddHandler(HttpVerb.Get, "/path/should/not/match/", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
-
-            mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", request)
-                .Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/"));
-
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-        }
-
-        [Test]
-        public void Handle_ShouldSupportExactMatches([Values] MatchingStrategy matchingStrategy)
-        {
-            object request = new();
-
             Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            Mock<Router<object, object>> mockRouter = CreateRouter(matchingStrategy);
+            _mockRouter.Object.AddHandler(HttpVerb.Get, "/path/to/explicit/something", mockHandler.Object);
 
-            mockRouter.Object.AddHandler(HttpVerb.Get, "/path/to/explicit/something", mockHandler.Object);
-
-            ISetup<Router<object, object>, Uri> getUriSetup = mockRouter
+            ISetup<Router<object, object>, Uri> getUriSetup = _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request);
+                .Setup<Uri>("GetUri", s_request);
 
             getUriSetup.Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/cica"));
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext<object>>(), It.IsAny<Func<object>>()), Times.Never);
 
             getUriSetup.Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/"));
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Once);
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
         }
 
         [Test]
-        public void Handle_ShouldSupportPrefixes([Values] MatchingStrategy matchingStrategy)
+        public void Handle_ShouldSupportPrefixes()
         {
-            object request = new();
-
             Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            Mock<Router<object, object>> mockRouter = CreateRouter(matchingStrategy);
+            _mockRouter.Object.AddHandler(HttpVerb.Get, "/path/to/explicit/something/", mockHandler.Object);
 
-            mockRouter.Object.AddHandler(HttpVerb.Get, "/path/to/explicit/something/", mockHandler.Object);
-
-            ISetup<Router<object, object>, Uri> getUriSetup = mockRouter
+            ISetup<Router<object, object>, Uri> getUriSetup = _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request);
+                .Setup<Uri>("GetUri", s_request);
 
             getUriSetup.Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/cica"));
 
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext<object>>(), It.IsAny<Func<object>>()), Times.Once);
 
             getUriSetup.Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/"));
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Exactly(2));
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Exactly(2));
         }
 
         [Test]
-        public void Handle_ShouldSupportMultipleHandlersAgainstTheSamePattern([Values] MatchingStrategy matchingStrategy, [Values("/path/to/explicit/something", "/path/to/{some_str:any}/something")] string pattern)
+        public void Handle_ShouldSupportMultipleHandlersAgainstTheSamePattern([Values("/path/to/explicit/something", "/path/to/{some_str:any}/something")] string pattern)
         {
-            Mock<Router<object, object>> mockRouter = CreateRouter(matchingStrategy);
-
-            object request = new();
-
             MockSequence seq = new();
 
             Mock<RequestHandler<object, object>>
@@ -193,36 +136,72 @@ namespace NanoRoute.Tests
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns<RequestContext<object>, Func<object>>((_, next) => next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            mockRouter.Object
+            _mockRouter.Object
                 .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler(HttpVerb.Get, pattern, mockHandler_1.Object)
                 .AddHandler(HttpVerb.Get, pattern, mockHandler_2.Object);
 
-            mockRouter
+            _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request)
+                .Setup<Uri>("GetUri", s_request)
                 .Returns(new Uri("https://www.exmaple.com/path/to/explicit/something"));
 
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Once);
-            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Once);
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
+            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
+        }
+
+        [Test]
+        public void ExactMatch_ShouldHaveThePriority([Values] bool explicitFirst)
+        {
+            MockSequence seq = new();
+
+            Mock<RequestHandler<object, object>>
+                mockHandler_1 = new(MockBehavior.Strict),
+                mockHandler_2 = new(MockBehavior.Strict);
+
+            mockHandler_1
+                .InSequence(seq)
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
+                .Returns<RequestContext<object>, Func<object>>((_, next) => next());
+
+            mockHandler_2
+                .InSequence(seq)
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
+                .Returns(true);
+
+            _mockRouter.Object.AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; });
+
+            if (explicitFirst)
+                _mockRouter.Object
+                    .AddHandler(HttpVerb.Get, "/path/to/explicit/something", mockHandler_1.Object)
+                    .AddHandler(HttpVerb.Get, "/path/to/{some_str:any}/something", mockHandler_2.Object);
+            else
+                _mockRouter.Object
+                    .AddHandler(HttpVerb.Get, "/path/to/{some_str:any}/something", mockHandler_2.Object)
+                    .AddHandler(HttpVerb.Get, "/path/to/explicit/something", mockHandler_1.Object);
+
+            _mockRouter
+                .Protected()
+                .Setup<Uri>("GetUri", s_request)
+                .Returns(new Uri("https://www.exmaple.com/path/to/explicit/something"));
+
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
+            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
         }
 
         [Test]
         public void Handlers_MayShareData()
         {
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
-
-            object request = new();
-
             MockSequence seq = new();
 
             Mock<RequestHandler<object, object>>
@@ -231,7 +210,7 @@ namespace NanoRoute.Tests
 
             mockGetUser
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
                 {
                     Assert.That(cntx.Parameters, Does.ContainKey("user_id"));
@@ -243,7 +222,7 @@ namespace NanoRoute.Tests
 
             mockDoSomethingWithUser
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
                 {
                     Assert.That(cntx.Parameters, Does.ContainKey("User"));
@@ -252,7 +231,7 @@ namespace NanoRoute.Tests
                     return true;
                 });
 
-            mockRouter.Object
+            _mockRouter.Object
                 .AddParameterParser("int", (string segment, out object? parsed) =>
                 {
                     if (int.TryParse(segment, out int userId))
@@ -266,154 +245,132 @@ namespace NanoRoute.Tests
                 .AddHandler(HttpVerb.Get, "api/users/{user_id:int}/", mockGetUser.Object)
                 .AddHandler(HttpVerb.Get, "api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object);
 
-            mockRouter
+            _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request)
+                .Setup<Uri>("GetUri", s_request)
                 .Returns(new Uri("https://www.exmaple.com/api/users/1986/dosomething"));
 
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Once);
-            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Once);
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
+            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
         }
 
         [Test]
         public void Handler_ShouldBeBoundToVerb()
         {
-            object request = new();
-
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
-
             Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            mockRouter.Object.AddHandler(HttpVerb.Post, "path/to/somewhere", mockHandler.Object);
+            _mockRouter.Object.AddHandler(HttpVerb.Post, "path/to/somewhere", mockHandler.Object);
 
-            mockRouter
+            _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request)
+                .Setup<Uri>("GetUri", s_request)
                 .Returns(new Uri("https://www.exmaple.com/path/to/somewhere"));
 
-            ISetup<Router<object, object>, HttpVerb> getVerbSetup = mockRouter
+            ISetup<Router<object, object>, HttpVerb> getVerbSetup = _mockRouter
                 .Protected()
-                .Setup<HttpVerb>("GetVerb", request);
+                .Setup<HttpVerb>("GetVerb", s_request);
 
             getVerbSetup.Returns(HttpVerb.Get);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext<object>>(), It.IsAny<Func<object>>()), Times.Never);
 
             getVerbSetup.Returns(HttpVerb.Post);
 
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Once);
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
         }
 
         [Test]
         public void Handler_ShouldHandleMultipleVerbs()
         {
-            object request = new();
-
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
-
             Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            mockRouter.Object.AddHandler([HttpVerb.Get, HttpVerb.Post], "path/to/somewhere", mockHandler.Object);
+            _mockRouter.Object.AddHandler([HttpVerb.Get, HttpVerb.Post], "path/to/somewhere", mockHandler.Object);
 
-            mockRouter
+            _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request)
+                .Setup<Uri>("GetUri", s_request)
                 .Returns(new Uri("https://www.exmaple.com/path/to/somewhere"));
 
-            ISetup<Router<object, object>, HttpVerb> getVerbSetup = mockRouter
+            ISetup<Router<object, object>, HttpVerb> getVerbSetup = _mockRouter
                 .Protected()
-                .Setup<HttpVerb>("GetVerb", request);
+                .Setup<HttpVerb>("GetVerb", s_request);
 
             getVerbSetup.Returns(HttpVerb.Get);
 
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Once);
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Once);
 
             getVerbSetup.Returns(HttpVerb.Post);
 
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()), Times.Exactly(2));
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()), Times.Exactly(2));
         }
 
         [Test]
         public void AddHandler_ShouldCanRegisterAllVerbs()
         {
-            object request = new();
-
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
-
             Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            mockRouter.Object.AddHandler("path/to/somewhere", mockHandler.Object);
+            _mockRouter.Object.AddHandler("path/to/somewhere", mockHandler.Object);
 
-            mockRouter
+            _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request)
+                .Setup<Uri>("GetUri", s_request)
                 .Returns(new Uri("https://www.exmaple.com/path/to/somewhere"));
 
-            ISetup<Router<object, object>, HttpVerb> getVerbSetup = mockRouter
+            ISetup<Router<object, object>, HttpVerb> getVerbSetup = _mockRouter
                 .Protected()
-                .Setup<HttpVerb>("GetVerb", request);
+                .Setup<HttpVerb>("GetVerb", s_request);
 
             foreach (HttpVerb verb in HttpVerb.GetValues())
             {
                 getVerbSetup.Returns(verb);
 
-                Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+                Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
             }
         }
 
         [Test]
         public void Handle_ShouldBeCaseInsensitive()
         {
-            object request = new();
-
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
-
             Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns(true);
 
-            mockRouter.Object.AddHandler(HttpVerb.Get, "path/to/SOMEWHERE", mockHandler.Object);
+            _mockRouter.Object.AddHandler(HttpVerb.Get, "path/to/SOMEWHERE", mockHandler.Object);
 
-            mockRouter
+            _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request)
+                .Setup<Uri>("GetUri", s_request)
                 .Returns(new Uri("https://www.exmaple.com/PATH/to/somewhere"));
 
-            Assert.That(mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
         }
 
         [Test]
         public void AddHandler_ShouldThrowOnMissingParameterParser([Values("path/to/{missing}", "path/to/{parameter_name:missing}")] string pattern)
         {
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
-
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => mockRouter.Object.AddHandler(pattern, new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler(pattern, new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, "missing")));
         }
 
         [Test]
         public void Parameters_ShouldNotLeak()
         {
-            object request = new();
-
-            Mock<Router<object, object>> mockRouter = CreateRouter(MatchingStrategy.ShortestPrefixMatching);
-
             Mock<RequestHandler<object, object>>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
@@ -423,7 +380,7 @@ namespace NanoRoute.Tests
                 paramz_2 = null!;
 
             mockHandler_1
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
                 {
                     paramz_1 = cntx.Parameters;
@@ -431,14 +388,14 @@ namespace NanoRoute.Tests
                 });
 
             mockHandler_2
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == request), It.IsAny<Func<object>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_request), It.IsAny<Func<object>>()))
                 .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
                 {
                     paramz_2 = cntx.Parameters;
                     return true;
                 });
 
-            mockRouter.Object
+            _mockRouter.Object
                 .AddParameterParser("int", (string segment, out object? parsed) =>
                 {
                     if (int.TryParse(segment, out int userId))
@@ -457,12 +414,12 @@ namespace NanoRoute.Tests
                 .AddHandler(HttpVerb.Get, "api/users/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
                 .AddHandler(HttpVerb.Get, "api/users/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object);
 
-            mockRouter
+            _mockRouter
                 .Protected()
-                .Setup<Uri>("GetUri", request)
+                .Setup<Uri>("GetUri", s_request)
                 .Returns(new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething"));
 
-            mockRouter.Object.Handle(request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+            _mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
 
             Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
             Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id_str"] = "1986" }));

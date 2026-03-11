@@ -49,5 +49,10 @@
       <_Parameter1>NanoRoute.Tests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
+
+  <PropertyGroup>
+    <PolySharpUsePublicAccessibilityForGeneratedTypes>false</PolySharpUsePublicAccessibilityForGeneratedTypes>
+    <PolySharpExcludeTypeForwardedToDeclarations>true</PolySharpExcludeTypeForwardedToDeclarations>
+  </PropertyGroup>
   
 </Project>
