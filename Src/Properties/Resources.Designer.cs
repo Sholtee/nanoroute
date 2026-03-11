@@ -113,5 +113,14 @@ namespace NanoRoute.Properties {
                 return ResourceManager.GetString("ERR_NOT_FOUND", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter override is not allowed..
+        /// </summary>
+        internal static string ERR_PARAMETER_OVERRIDE {
+            get {
+                return ResourceManager.GetString("ERR_PARAMETER_OVERRIDE", resourceCulture);
+            }
+        }
     }
 }

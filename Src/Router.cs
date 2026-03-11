@@ -336,7 +336,10 @@ namespace NanoRoute
             {
                 if (s_matcherDefinition.Match(segment) is { Success: true } parserDefinition)
                 {
-                    string parserName = parserDefinition.Groups["name"].Value;
+                    string
+                        parserName = parserDefinition.Groups["name"].Value,  // cannot be empty
+                        parameterName = parserDefinition.Groups["parametername"].Value;
+
                     Debug.Assert(!string.IsNullOrEmpty(parserName), "Parser name could not be extracted");
 
                     if (!_parameterParsers.TryGetValue(parserName, out ParameterParser parser))
@@ -345,17 +348,19 @@ namespace NanoRoute
                             string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, parserName)
                         );
 
-                    if (parserDefinition.Groups["parametername"] is { Success: true } parameterName)
-                        parser = parser with { ParameterName = parameterName.Value };
-
                     if (target.ParameterizedChildren.SingleOrDefault(cc => cc.ParameterParser!.Name.Equals(parser.Name, StringComparison.OrdinalIgnoreCase)) is not { } parameterizedChild)
                     {
+                        if (!string.IsNullOrEmpty(parserName))
+                            parser = parser with { ParameterName = parameterName };
+
                         parameterizedChild = new RouteNode
                         {
                             ParameterParser = parser
                         };
                         target.ParameterizedChildren.Add(parameterizedChild);
                     }
+                    else if (parameterizedChild.ParameterParser!.ParameterName?.Equals(parameterName) is false)
+                        throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
 
                     target = parameterizedChild;
                 }

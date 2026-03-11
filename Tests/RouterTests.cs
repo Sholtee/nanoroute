@@ -369,6 +369,17 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void AddHandler_ShouldThrowOnParameterOverride()
+        {
+            _mockRouter.Object
+                .AddParameterParser("int", new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object)
+                .AddHandler(HttpVerb.Get, "/path/to/{id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
+
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler(HttpVerb.Get, "/path/to/{other_id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
+        }
+
+        [Test]
         public void AddParameterParser_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddParameterParser(null!, new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object))!;

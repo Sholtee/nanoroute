@@ -135,4 +135,7 @@
   <data name="ERR_NO_SUCH_PARAMETER_PARSER" xml:space="preserve">
     <value>No such parameter parser: {0}</value>
   </data>
+  <data name="ERR_PARAMETER_OVERRIDE" xml:space="preserve">
+    <value>Parameter override is not allowed.</value>
+  </data>
 </root>
