@@ -1,4 +1,3 @@
-abstract NanoRoute.Router<TRequest, TResponse>.GetRequestId(TRequest! request) -> string!
 abstract NanoRoute.Router<TRequest, TResponse>.GetUri(TRequest! request) -> System.Uri!
 abstract NanoRoute.Router<TRequest, TResponse>.GetVerb(TRequest! request) -> string!
 NanoRoute.ParameterParserDelegate

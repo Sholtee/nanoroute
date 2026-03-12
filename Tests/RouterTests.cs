@@ -5,7 +5,6 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Moq;
 using Moq.Language.Flow;
@@ -23,14 +22,22 @@ namespace NanoRoute.Tests
 
         private Mock<Router<object, object>> _mockRouter = null!;
 
+        private DebugEventListener _debugEventListener = null!;
+
+        [OneTimeSetUp]
+        public void OneTimeSetup() => _debugEventListener = new();
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            _debugEventListener?.Dispose();
+            _debugEventListener = null!;
+        }
+
         [SetUp]
         public void Setup()
         {
             _mockRouter = new Mock<Router<object, object>>(MockBehavior.Strict);
-            _mockRouter
-                .Protected()
-                .Setup<string>("GetRequestId", ItExpr.IsAny<object>())
-                .Returns("requestId");
             _mockRouter
                 .Protected()
                 .Setup<string>("GetVerb", ItExpr.IsAny<object>())

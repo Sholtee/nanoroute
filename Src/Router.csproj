@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
     <AssemblyName>NanoRoute</AssemblyName>
@@ -23,8 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
-	  <PackageReference Include="PolySharp" Version="1.15.0">
+	  <PackageReference Include="PolySharp" Version="1.15.*">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
@@ -57,8 +56,25 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <PolySharpIncludeGeneratedTypes>
+      System.Index;
+      System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
+      System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
+      System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute;
+      System.Diagnostics.CodeAnalysis.NotNullWhenAttribute;
+      System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute;
+      System.Runtime.CompilerServices.CallerArgumentExpressionAttribute;
+      System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute;
+      System.Runtime.CompilerServices.IsExternalInit;
+      System.Runtime.CompilerServices.RequiredMemberAttribute;
+    </PolySharpIncludeGeneratedTypes>
     <PolySharpUsePublicAccessibilityForGeneratedTypes>false</PolySharpUsePublicAccessibilityForGeneratedTypes>
     <PolySharpExcludeTypeForwardedToDeclarations>true</PolySharpExcludeTypeForwardedToDeclarations>
+    <!--
+      For some reason UnconditionalSuppressMessageAttribute is defined as conditional by PolySharp :D
+      Provide the condition in order to preserve the attribute usage
+    -->
+    <DefineConstants>$(DefineConstants);MULTI_TARGETING_SUPPORT_ATTRIBUTES</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>

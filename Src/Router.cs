@@ -9,9 +9,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
 namespace NanoRoute
 {
     using Properties;
@@ -39,7 +36,17 @@ namespace NanoRoute
     /// </para>
     /// <example>
     /// <code>
-    /// Router&lt;HttpRequest, IResult&gt; router = new MyRouter()
+    /// sealed class MyRouter : Router&lt;HttpRequest, IResult&gt;
+    /// {
+    ///     public IResult Route(HttpRequest request, IServiceProvider services) =&gt; Handle(request, services);
+    ///
+    ///     protected override Uri GetUri(HttpRequest request) =&gt; request.Url;
+    ///     protected override string GetVerb(HttpRequest request) =&gt; request.Method;
+    /// }
+    ///
+    /// MyRouter router = new MyRouter();
+    ///
+    /// router
     ///     .AddParameterParser("int", (string segment, out object? parsed) =&gt;
     ///     {
     ///         if (int.TryParse(segment, out int id))
@@ -62,7 +69,7 @@ namespace NanoRoute
     ///         return Results.Ok(context.Parameters["User"]);
     ///     });
     ///
-    /// IResult response = router.Handle(request, services);
+    /// IResult response = router.Route(request, services);
     /// </code>
     /// In this example, a request for <c>/api/users/42/details</c> first matches the prefix handler, which parses
     /// and stores <c>user_id</c>, then continues to the more specific handler that returns the response.
@@ -160,13 +167,17 @@ namespace NanoRoute
 
         private int _handlerCount;
 
-        private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, string[] segments, int segmentIndex, Dictionary<string, object?> paramz, ILogger? logger)
+        private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, string[] segments, int segmentIndex, Dictionary<string, object?> paramz)
         {
             if (node.HandlerRegistrations.Count > 0)
                 foreach (HandlerRegistration handlerRegistration in node.HandlerRegistrations)
                     if (handlerRegistration.Prefix || segmentIndex == segments.Length)
                     {
-                        logger?.LogDebug(Resources.DBG_COMPATIBLE_HANDLER_FOUND, node.Pattern);
+                        RouterEventSource.Log.Info("MatchingHandler", () => new
+                        {
+                            node.Pattern
+                        });
+
                         yield return handlerRegistration with { AttachedParameters = paramz };
                     }
 
@@ -182,8 +193,7 @@ namespace NanoRoute
                     exactChild,
                     segments,
                     segmentIndex + 1,
-                    paramz,
-                    logger
+                    paramz
                 );
                 foreach (HandlerRegistration match in matches)
                     yield return match;
@@ -201,8 +211,7 @@ namespace NanoRoute
                     segmentIndex + 1,
                     parameterizedChild.ParameterParser?.ParameterName is { Length: > 0 } parameterName
                         ? new Dictionary<string, object?>(paramz, StringComparer.OrdinalIgnoreCase) { [parameterName] = parsed }
-                        : paramz,
-                    logger
+                        : paramz
                 );
                 foreach (HandlerRegistration match in matches)
                     yield return match;
@@ -224,17 +233,6 @@ namespace NanoRoute
         /// matching.
         /// </remarks>
         protected abstract Uri GetUri(TRequest request);
-
-        /// <summary>
-        /// Extracts a request identifier for logging scopes.
-        /// </summary>
-        /// <param name="request">The incoming request instance.</param>
-        /// <returns>A value that uniquely identifies the request in logs.</returns>
-        /// <remarks>
-        /// This value is not used for matching. It is attached only to the logger scope created while
-        /// <see cref="Handle(TRequest, IServiceProvider)"/> processes the request.
-        /// </remarks>
-        protected abstract string GetRequestId(TRequest request);
 
         /// <summary>
         /// Extracts the HTTP method that selects the root route table.
@@ -434,7 +432,16 @@ namespace NanoRoute
         /// <exception cref="InvalidOperationException">Thrown when no handler matches the request.</exception>
         /// <example>
         /// <code>
-        /// IResult result = router.Handle(request, services);
+        /// sealed class MyRouter : Router&lt;HttpRequest, IResult&gt;
+        /// {
+        ///     public IResult Route(HttpRequest request, IServiceProvider services) =&gt; Handle(request, services);
+        ///
+        ///     protected override Uri GetUri(HttpRequest request) =&gt; request.Url;
+        ///     protected override string GetRequestId(HttpRequest request) =&gt; request.TraceIdentifier;
+        ///     protected override string GetVerb(HttpRequest request) =&gt; request.Method;
+        /// }
+        ///
+        /// IResult result = new MyRouter().Route(request, services);
         /// </code>
         /// </example>
         #if DEBUG
@@ -445,13 +452,8 @@ namespace NanoRoute
             Ensure.NotNull(request);
             Ensure.NotNull(services);
 
-            ILogger? requestLogger = services.GetService<ILoggerFactory>()?.CreateLogger
-            (
-                GetType().Name
-            );
-
             string requestVerb = GetVerb(request);
-            if (!Enum.TryParse<HttpVerb>(requestVerb, ignoreCase: true, out HttpVerb verb))
+            if (!Enum.TryParse(requestVerb, ignoreCase: true, out HttpVerb verb))
                 throw new ArgumentException
                 (
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, requestVerb), nameof(request)
@@ -460,26 +462,21 @@ namespace NanoRoute
             string requestPath = GetUri(request)
                 .AbsolutePath;  // escaped characters are normalized
 
-            using IDisposable? scope = requestLogger?.BeginScope
-            (
-                new Dictionary<string, string>
-                {
-                    ["AbsolutePath"] = requestPath,
-                    ["RequestId"] = GetRequestId(request) 
-                }
-            );
-
-            requestLogger?.LogDebug(Resources.DBG_REQUEST_PROCESSING_STARTED);
+            RouterEventSource.Log.Info("RequestProcessingStarted", () => new
+            {
+                RequestPath = requestPath
+            });
 
             using IEnumerator<HandlerRegistration> matches = FindMatches
             (
                 _root[verb],
                 requestPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries),
                 0,
-                new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
-                requestLogger
+                new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             )
             .GetEnumerator();
+
+            int executedHandlers = 0;
 
             return CallNextHandler();
 
@@ -487,7 +484,12 @@ namespace NanoRoute
             {
                 if (!matches.MoveNext())
                 {
-                    requestLogger?.LogDebug(Resources.DBG_UNPROCESSED_REQUEST);
+                    RouterEventSource.Log.Info("UnprocessedRequest", () => new
+                    {
+                        RequestPath = requestPath,
+                        ExecutedHandlers = executedHandlers
+                    });
+
                     throw new InvalidOperationException(Resources.ERR_NOT_FOUND);
                 }
 
@@ -499,6 +501,8 @@ namespace NanoRoute
                     Request = request,
                     Services = services
                 };
+
+                executedHandlers++;
 
                 return matches.Current.Handler(requestContext, CallNextHandler);
             }
