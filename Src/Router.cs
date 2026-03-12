@@ -104,7 +104,7 @@ namespace NanoRoute
         /// <summary>
         /// Represents a handler attached to a matched route node.
         /// </summary>
-        private sealed record HandlerRegistration(RequestHandler<TRequest, TResponse> Handler, int RegistrationOrder, bool Prefix, RouteNode Node)
+        private sealed record HandlerRegistration(RequestHandler<TRequest, TResponse> Handler, bool Prefix, RouteNode Node)
         {
             /// <summary>
             /// Gets the parameter snapshot associated with the current match.
@@ -165,8 +165,6 @@ namespace NanoRoute
             );
 
         private readonly Dictionary<string, ParameterParser> _parameterParsers = [];
-
-        private int _handlerCount;
 
         private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, string[] segments, int segmentIndex, Dictionary<string, object?> paramz)
         {
@@ -416,7 +414,7 @@ namespace NanoRoute
 
             target.HandlerRegistrations.Add
             (
-                new HandlerRegistration(handler, _handlerCount++, pattern[^1] is '/', target)
+                new HandlerRegistration(handler, pattern[^1] is '/', target)
             );
             target.Pattern = pattern;
 
