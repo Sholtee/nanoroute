@@ -104,7 +104,7 @@ namespace NanoRoute
         /// <summary>
         /// Represents a handler attached to a matched route node.
         /// </summary>
-        private sealed record HandlerRegistration(RequestHandler<TRequest, TResponse> Handler, int RegistrationOrder, bool Prefix)
+        private sealed record HandlerRegistration(RequestHandler<TRequest, TResponse> Handler, int RegistrationOrder, bool Prefix, RouteNode Node)
         {
             /// <summary>
             /// Gets the parameter snapshot associated with the current match.
@@ -173,14 +173,7 @@ namespace NanoRoute
             if (node.HandlerRegistrations.Count > 0)
                 foreach (HandlerRegistration handlerRegistration in node.HandlerRegistrations)
                     if (handlerRegistration.Prefix || segmentIndex == segments.Length)
-                    {
-                        RouterEventSource.Log.Info("MatchingHandler", () => new
-                        {
-                            node.Pattern
-                        });
-
                         yield return handlerRegistration with { AttachedParameters = paramz };
-                    }
 
             if (segmentIndex == segments.Length)
                 yield break;
@@ -423,7 +416,7 @@ namespace NanoRoute
 
             target.HandlerRegistrations.Add
             (
-                new HandlerRegistration(handler, _handlerCount++, pattern[^1] is '/')
+                new HandlerRegistration(handler, _handlerCount++, pattern[^1] is '/', target)
             );
             target.Pattern = pattern;
 
@@ -526,6 +519,13 @@ namespace NanoRoute
                     throw new InvalidOperationException(Resources.ERR_NOT_FOUND);
  
                 Debug.Assert(matches.Current.AttachedParameters is not null, "Parameters must be attached here");
+
+                RouterEventSource.Log.Info("MatchingHandler", () => new
+                {
+                    RequestPath = requestPath,
+                    Verb = verb,
+                    matches.Current.Node.Pattern
+                });
 
                 RequestContext<TRequest> requestContext = new()
                 {
