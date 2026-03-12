@@ -6,24 +6,22 @@ NanoRoute is a small, dependency-light router for request/response pipelines.
 
 ```csharp
 using System;
+using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
 
-sealed class HttpRouter : Router<HttpRequestMessage, string>
+sealed class HttpRouter : HttpMessageRouter
 {
-    protected override Uri GetUri(HttpRequestMessage request) => request.RequestUri;
-
-    protected override string GetRequestId(HttpRequestMessage request) =>
-        request.Headers.TryGetValues("X-Request-Id", out var values)
-            ? string.Join(",", values)
-            : Guid.NewGuid().ToString("N");
-
-    protected override string GetVerb(HttpRequestMessage request) => request.Method.Method;
+    public Task<HttpResponseMessage> RouteAsync(HttpRequestMessage request, IServiceProvider services) =>
+        Handle(request, services);
 }
 
-Router<HttpRequestMessage, string> router = new HttpRouter()
+HttpRouter router = new HttpRouter();
+
+router
     .AddParameterParser("int", (string segment, out object? parsed) =>
     {
         if (int.TryParse(segment, out int value))
@@ -42,10 +40,13 @@ Router<HttpRequestMessage, string> router = new HttpRouter()
     })
     .AddHandler("GET", "/api/users/{user_id:int}/details", (context, next) =>
     {
-        return (string) context.Parameters["User"]!;
+        return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent((string) context.Parameters["User"]!)
+        });
     });
 
-string response = router.Handle(
+HttpResponseMessage response = await router.RouteAsync(
     new HttpRequestMessage(HttpMethod.Get, "https://example.com/api/users/42/details"),
     services: new ServiceCollection().BuildServiceProvider());
 ```
@@ -64,6 +65,7 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 ## Core Types
 
 - [Router<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router-2.html)
+- [HttpMessageRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpMessageRouter.html)
 - [RequestContext<TRequest>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext-1.html)
 - [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html)
 - [RequestHandler<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler-2.html)

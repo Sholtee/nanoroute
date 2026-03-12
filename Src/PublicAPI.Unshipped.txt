@@ -1,5 +1,10 @@
 abstract NanoRoute.Router<TRequest, TResponse>.GetUri(TRequest! request) -> System.Uri!
 abstract NanoRoute.Router<TRequest, TResponse>.GetVerb(TRequest! request) -> string!
+NanoRoute.HttpListenerRouter
+NanoRoute.HttpListenerRouter.HttpListenerRouter() -> void
+NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, System.IServiceProvider! services) -> System.Threading.Tasks.Task!
+NanoRoute.HttpMessageRouter
+NanoRoute.HttpMessageRouter.HttpMessageRouter() -> void
 NanoRoute.ParameterParserDelegate
 NanoRoute.RequestContext<TRequest>
 NanoRoute.RequestContext<TRequest>.Parameters.get -> System.Collections.Generic.Dictionary<string!, object?>!
@@ -17,3 +22,5 @@ NanoRoute.Router<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnu
 NanoRoute.Router<TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.Handle(TRequest! request, System.IServiceProvider! services) -> TResponse
 NanoRoute.Router<TRequest, TResponse>.Router() -> void
+override NanoRoute.HttpMessageRouter.GetUri(System.Net.Http.HttpRequestMessage! request) -> System.Uri!
+override NanoRoute.HttpMessageRouter.GetVerb(System.Net.Http.HttpRequestMessage! request) -> string!
