@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 
 namespace NanoRoute
@@ -246,6 +247,13 @@ namespace NanoRoute
         /// Method matching is case-insensitive. A path match is ignored when it was registered for a different method.
         /// </remarks>
         protected abstract string GetVerb(TRequest request);
+
+        /// <summary>
+        /// Creates a (preferably) JSON response with the given <paramref name="statusCode"/>.
+        /// 
+        /// TODO: make doc more verbose.
+        /// </summary>
+        protected abstract TResponse CreateResponse<TContent>(HttpStatusCode statusCode, TContent content);
         #endregion
 
         /// <summary>
@@ -423,6 +431,39 @@ namespace NanoRoute
         }
 
         /// <summary>
+        /// TODO
+        /// </summary>
+        public Router<TRequest, TResponse> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (context, next) =>
+        {
+            try
+            {
+                return next();
+            }
+            catch (InvalidOperationException ioex) when (ioex.Message == Resources.ERR_NOT_FOUND)
+            {
+                RouterEventSource.Log.Info("UnprocessedRequest", () => new
+                {
+                    RequestPath = GetUri(context.Request).AbsolutePath,
+                    Verb = GetVerb(context.Request)
+                });
+
+                return CreateResponse(HttpStatusCode.NotFound, new { });
+            }
+            catch (Exception ex)
+            {
+                RouterEventSource.Log.Error("UnhandledException", () => new
+                {
+                    Error = ex.ToString()
+                });
+
+                return CreateResponse(HttpStatusCode.InternalServerError, new
+                {
+                    Reason = populateErrorInfo ? ex.ToString() : null
+                });
+            }
+        });
+
+        /// <summary>
         /// Resolves the registered handlers for the request and executes the matching pipeline.
         /// </summary>
         /// <param name="request">The request to route.</param>
@@ -464,7 +505,8 @@ namespace NanoRoute
 
             RouterEventSource.Log.Info("RequestProcessingStarted", () => new
             {
-                RequestPath = requestPath
+                RequestPath = requestPath,
+                Verb = verb
             });
 
             using IEnumerator<HandlerRegistration> matches = FindMatches
@@ -476,23 +518,13 @@ namespace NanoRoute
             )
             .GetEnumerator();
 
-            int executedHandlers = 0;
-
             return CallNextHandler();
 
             TResponse CallNextHandler()
             {
                 if (!matches.MoveNext())
-                {
-                    RouterEventSource.Log.Info("UnprocessedRequest", () => new
-                    {
-                        RequestPath = requestPath,
-                        ExecutedHandlers = executedHandlers
-                    });
-
                     throw new InvalidOperationException(Resources.ERR_NOT_FOUND);
-                }
-
+ 
                 Debug.Assert(matches.Current.AttachedParameters is not null, "Parameters must be attached here");
 
                 RequestContext<TRequest> requestContext = new()
@@ -501,8 +533,6 @@ namespace NanoRoute
                     Request = request,
                     Services = services
                 };
-
-                executedHandlers++;
 
                 return matches.Current.Handler(requestContext, CallNextHandler);
             }

@@ -1,3 +1,4 @@
+abstract NanoRoute.Router<TRequest, TResponse>.CreateResponse<TContent>(System.Net.HttpStatusCode statusCode, TContent content) -> TResponse
 abstract NanoRoute.Router<TRequest, TResponse>.GetUri(TRequest! request) -> System.Uri!
 abstract NanoRoute.Router<TRequest, TResponse>.GetVerb(TRequest! request) -> string!
 NanoRoute.HttpListenerRouter
@@ -16,6 +17,7 @@ NanoRoute.RequestContext<TRequest>.Services.get -> System.IServiceProvider!
 NanoRoute.RequestContext<TRequest>.Services.init -> void
 NanoRoute.RequestHandler<TRequest, TResponse>
 NanoRoute.Router<TRequest, TResponse>
+NanoRoute.Router<TRequest, TResponse>.AddDefaultHandler(bool populateErrorInfo = false) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
