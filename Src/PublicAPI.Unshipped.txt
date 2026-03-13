@@ -1,4 +1,4 @@
-abstract NanoRoute.Router<TRequest, TResponse>.CreateResponse<TContent>(System.Net.HttpStatusCode statusCode, TContent content) -> TResponse
+abstract NanoRoute.Router<TRequest, TResponse>.CreateJsonResponse(System.Net.HttpStatusCode statusCode, string! content) -> TResponse
 abstract NanoRoute.Router<TRequest, TResponse>.GetUri(TRequest! request) -> System.Uri!
 abstract NanoRoute.Router<TRequest, TResponse>.GetVerb(TRequest! request) -> string!
 NanoRoute.HttpListenerRouter
@@ -24,5 +24,6 @@ NanoRoute.Router<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnu
 NanoRoute.Router<TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.Handle(TRequest! request, System.IServiceProvider! services) -> TResponse
 NanoRoute.Router<TRequest, TResponse>.Router() -> void
+override NanoRoute.HttpMessageRouter.CreateJsonResponse(System.Net.HttpStatusCode statusCode, string! content) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
 override NanoRoute.HttpMessageRouter.GetUri(System.Net.Http.HttpRequestMessage! request) -> System.Uri!
 override NanoRoute.HttpMessageRouter.GetVerb(System.Net.Http.HttpRequestMessage! request) -> string!

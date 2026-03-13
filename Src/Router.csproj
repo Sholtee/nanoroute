@@ -27,6 +27,7 @@
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
+	  <PackageReference Include="System.Text.Json" Version="10.0.*" />
 	</ItemGroup>
 
   <ItemGroup>
@@ -71,8 +72,8 @@
     <PolySharpUsePublicAccessibilityForGeneratedTypes>false</PolySharpUsePublicAccessibilityForGeneratedTypes>
     <PolySharpExcludeTypeForwardedToDeclarations>true</PolySharpExcludeTypeForwardedToDeclarations>
     <!--
-      For some reason UnconditionalSuppressMessageAttribute is defined as conditional by PolySharp :D
-      Provide the condition in order to preserve the attribute usage
+      For some reason PolySharp defines UnconditionalSuppressMessageAttribute as conditional :D
+      Provide this condition.
     -->
     <DefineConstants>$(DefineConstants);MULTI_TARGETING_SUPPORT_ATTRIBUTES</DefineConstants>
   </PropertyGroup>

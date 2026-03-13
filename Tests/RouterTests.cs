@@ -5,6 +5,8 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Text.Json;
 
 using Moq;
 using Moq.Language.Flow;
@@ -394,6 +396,79 @@ namespace NanoRoute.Tests
 
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler("GET", "/path/to/{other_id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
+        }
+
+        [Test]
+        public void DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
+        {
+            _mockRouter.Object.AddDefaultHandler(populateErrorInfo);
+
+            _mockRouter
+                .Protected()
+                .Setup<object>("CreateJsonResponse", HttpStatusCode.NotFound, ItExpr.IsAny<string>())
+                .Returns<HttpStatusCode, string>((_, resp) => resp);
+
+            _mockRouter
+                .Protected()
+                .Setup<Uri>("GetUri", s_request)
+                .Returns(new Uri("https://www.exmaple.com/nonexistent"));
+
+            string resp = (string) _mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            
+            JsonResponse deserialized = JsonSerializer.Deserialize(resp, JsonContext.Default.JsonResponse)!;
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized.Reason, Is.Null);
+            Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
+
+            _mockRouter
+                .Protected()
+                .Verify<object>("CreateJsonResponse", Times.Once(), HttpStatusCode.NotFound, ItExpr.IsAny<string>());
+        }
+
+        [Test]
+        public void DefaultHandler_ShouldHandleInternalErrors([Values] bool populateErrorInfo)
+        {
+            const string ERROR_MSG = "Oooops";
+
+            _mockRouter.Object.AddDefaultHandler(populateErrorInfo);
+
+            _mockRouter
+                .Protected()
+                .Setup<object>("CreateJsonResponse", HttpStatusCode.InternalServerError, ItExpr.IsAny<string>())
+                .Returns<HttpStatusCode, string>((_, resp) => resp);
+
+            _mockRouter.Object.AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG));
+
+            _mockRouter
+                .Protected()
+                .Setup<Uri>("GetUri", s_request)
+                .Returns(new Uri("https://www.exmaple.com/somewhere"));
+
+            string resp = (string) _mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            JsonResponse deserialized = JsonSerializer.Deserialize(resp, JsonContext.Default.JsonResponse)!;
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized.Reason, populateErrorInfo ? Does.Contain(ERROR_MSG) : Is.Null);
+            Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
+
+            _mockRouter
+                .Protected()
+                .Verify<object>("CreateJsonResponse", Times.Once(), HttpStatusCode.InternalServerError, ItExpr.IsAny<string>());
+        }
+
+        [Test]
+        public void DefaultHandler_ShouldLetNormalWorkflowGo()
+        {
+            _mockRouter.Object
+                .AddDefaultHandler()
+                .AddHandler("GET", "/somewhere", (_, _) => true);
+
+            _mockRouter
+                .Protected()
+                .Setup<Uri>("GetUri", s_request)
+                .Returns(new Uri("https://www.exmaple.com/somewhere"));
+
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
         }
 
         [Test]

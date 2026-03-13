@@ -61,6 +61,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal server error..
+        /// </summary>
+        internal static string ERR_INERNAL_ERROR {
+            get {
+                return ResourceManager.GetString("ERR_INERNAL_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid verb: {0}.
         /// </summary>
         internal static string ERR_INVALID_VERB {

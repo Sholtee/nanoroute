@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace NanoRoute
@@ -240,11 +241,11 @@ namespace NanoRoute
         protected abstract string GetVerb(TRequest request);
 
         /// <summary>
-        /// Creates a (preferably) JSON response with the given <paramref name="statusCode"/>.
+        /// Creates a JSON response with the given <paramref name="statusCode"/>.
         /// 
         /// TODO: make doc more verbose.
         /// </summary>
-        protected abstract TResponse CreateResponse<TContent>(HttpStatusCode statusCode, TContent content);
+        protected abstract TResponse CreateJsonResponse(HttpStatusCode statusCode, string content);
         #endregion
 
         /// <summary>
@@ -422,7 +423,7 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// TODO
+        /// TODO: document
         /// </summary>
         public Router<TRequest, TResponse> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (context, next) =>
         {
@@ -438,7 +439,14 @@ namespace NanoRoute
                     Verb = GetVerb(context.Request)
                 });
 
-                return CreateResponse(HttpStatusCode.NotFound, new { });
+                return CreateJsonResponse
+                (
+                    HttpStatusCode.NotFound,
+                    SerializeResponse(new JsonResponse
+                    {
+                        Message = Resources.ERR_NOT_FOUND
+                    })
+                );
             }
             catch (Exception ex)
             {
@@ -447,11 +455,18 @@ namespace NanoRoute
                     Error = ex.ToString()
                 });
 
-                return CreateResponse(HttpStatusCode.InternalServerError, new
-                {
-                    Reason = populateErrorInfo ? ex.ToString() : null
-                });
+                return CreateJsonResponse
+                (
+                    HttpStatusCode.InternalServerError,
+                    SerializeResponse(new JsonResponse
+                    {
+                        Message = Resources.ERR_INERNAL_ERROR,
+                        Reason = populateErrorInfo ? ex.ToString() : null
+                    })
+                );
             }
+
+            static string SerializeResponse(JsonResponse resp) => JsonSerializer.Serialize(resp, JsonContext.Default.JsonResponse);
         });
 
         /// <summary>
