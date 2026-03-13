@@ -61,29 +61,11 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Compatible handler found. Pattern: {0}.
+        ///   Looks up a localized string similar to Internal server error..
         /// </summary>
-        internal static string DBG_COMPATIBLE_HANDLER_FOUND {
+        internal static string ERR_INERNAL_ERROR {
             get {
-                return ResourceManager.GetString("DBG_COMPATIBLE_HANDLER_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Request processing started..
-        /// </summary>
-        internal static string DBG_REQUEST_PROCESSING_STARTED {
-            get {
-                return ResourceManager.GetString("DBG_REQUEST_PROCESSING_STARTED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No handler found for the request..
-        /// </summary>
-        internal static string DBG_UNPROCESSED_REQUEST {
-            get {
-                return ResourceManager.GetString("DBG_UNPROCESSED_REQUEST", resourceCulture);
+                return ResourceManager.GetString("ERR_INERNAL_ERROR", resourceCulture);
             }
         }
         

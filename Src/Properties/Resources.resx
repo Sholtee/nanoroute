@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DBG_COMPATIBLE_HANDLER_FOUND" xml:space="preserve">
-    <value>Compatible handler found. Pattern: {0}</value>
-  </data>
-  <data name="DBG_REQUEST_PROCESSING_STARTED" xml:space="preserve">
-    <value>Request processing started.</value>
-  </data>
   <data name="ERR_NOT_FOUND" xml:space="preserve">
     <value>Not found.</value>
   </data>
@@ -132,10 +126,10 @@
   <data name="ERR_PARAMETER_OVERRIDE" xml:space="preserve">
     <value>Conflicting parameter names are not allowed for the same route segment.</value>
   </data>
-  <data name="DBG_UNPROCESSED_REQUEST" xml:space="preserve">
-    <value>No handler found for the request.</value>
-  </data>
   <data name="ERR_INVALID_VERB" xml:space="preserve">
     <value>Invalid verb: {0}</value>
+  </data>
+  <data name="ERR_INERNAL_ERROR" xml:space="preserve">
+    <value>Internal server error.</value>
   </data>
 </root>

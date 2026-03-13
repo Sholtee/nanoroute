@@ -1,6 +1,11 @@
-abstract NanoRoute.Router<TRequest, TResponse>.GetRequestId(TRequest! request) -> string!
+abstract NanoRoute.Router<TRequest, TResponse>.CreateJsonResponse(System.Net.HttpStatusCode statusCode, string! content) -> TResponse
 abstract NanoRoute.Router<TRequest, TResponse>.GetUri(TRequest! request) -> System.Uri!
 abstract NanoRoute.Router<TRequest, TResponse>.GetVerb(TRequest! request) -> string!
+NanoRoute.HttpListenerRouter
+NanoRoute.HttpListenerRouter.HttpListenerRouter() -> void
+NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, System.IServiceProvider! services) -> System.Threading.Tasks.Task!
+NanoRoute.HttpMessageRouter
+NanoRoute.HttpMessageRouter.HttpMessageRouter() -> void
 NanoRoute.ParameterParserDelegate
 NanoRoute.RequestContext<TRequest>
 NanoRoute.RequestContext<TRequest>.Parameters.get -> System.Collections.Generic.Dictionary<string!, object?>!
@@ -12,9 +17,14 @@ NanoRoute.RequestContext<TRequest>.Services.get -> System.IServiceProvider!
 NanoRoute.RequestContext<TRequest>.Services.init -> void
 NanoRoute.RequestHandler<TRequest, TResponse>
 NanoRoute.Router<TRequest, TResponse>
+NanoRoute.Router<TRequest, TResponse>.AddDefaultHandler(bool populateErrorInfo = false) -> NanoRoute.Router<TRequest!, TResponse>!
+NanoRoute.Router<TRequest, TResponse>.AddDefaultParsers() -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.Handle(TRequest! request, System.IServiceProvider! services) -> TResponse
 NanoRoute.Router<TRequest, TResponse>.Router() -> void
+override NanoRoute.HttpMessageRouter.CreateJsonResponse(System.Net.HttpStatusCode statusCode, string! content) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
+override NanoRoute.HttpMessageRouter.GetUri(System.Net.Http.HttpRequestMessage! request) -> System.Uri!
+override NanoRoute.HttpMessageRouter.GetVerb(System.Net.Http.HttpRequestMessage! request) -> string!
