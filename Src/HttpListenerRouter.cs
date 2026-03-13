@@ -20,13 +20,13 @@ namespace NanoRoute
         private const string ORIGINAL_REQUEST = "OriginalRequest";
 
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
-        private static readonly HashSet<HttpResponseHeader> s_reservedHeaders =
-        [
-            HttpResponseHeader.ContentLength,
-            HttpResponseHeader.TransferEncoding,
-            HttpResponseHeader.KeepAlive,
-            HttpResponseHeader.WwwAuthenticate
-        ];
+        private static readonly HashSet<string> s_reservedHeaders = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Content-Length",
+            "Transfer-Encoding",
+            "Keep-Alive",
+            "Server"
+        };
 
         /// <summary>
         /// 
@@ -53,7 +53,7 @@ namespace NanoRoute
                 string[] values = context.Request.Headers.GetValues(header);
 
                 bool headerSet =
-                    request.Headers.TryAddWithoutValidation(header, values) || // this may return false for content headers like Content-Type
+                    !request.Headers.TryAddWithoutValidation(header, values) || // this may return false for content headers like Content-Type
                     request.Content?.Headers.TryAddWithoutValidation(header, values) is not true; // fall back to content headers
 
                 if (!headerSet)
@@ -69,15 +69,20 @@ namespace NanoRoute
 
             context.Response.StatusCode = (int) response.StatusCode;
 
-            foreach (KeyValuePair<string, IEnumerable<string>> header in response.Headers)
-                if (Enum.TryParse(header.Key, out HttpResponseHeader responseHeader))
-                    if (!s_reservedHeaders.Contains(responseHeader))
-                        context.Response.Headers.Add(responseHeader, string.Join(",", header.Value));
+            CopyResponseHeaders(response.Headers);
+            CopyResponseHeaders(response.Content.Headers);
 
             using Stream buffer = await response.Content.ReadAsStreamAsync();
             await buffer.CopyToAsync(context.Response.OutputStream);
 
             context.Response.Close();
+
+            void CopyResponseHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
+            {
+                foreach(KeyValuePair<string, IEnumerable<string>> header in headers)
+                    if (!s_reservedHeaders.Contains(header.Key))
+                        context.Response.Headers.Add(header.Key, string.Join(",", header.Value));
+            }
         }
     }
 }
