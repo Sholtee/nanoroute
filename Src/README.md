@@ -13,15 +13,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
 
-sealed class HttpRouter : HttpMessageRouter
-{
-    public Task<HttpResponseMessage> RouteAsync(HttpRequestMessage request, IServiceProvider services) =>
-        Handle(request, services);
-}
-
-HttpRouter router = new HttpRouter();
+HttpListenerRouter router = new HttpListenerRouter();
 
 router
+    .AddDefaultHandler()
     .AddParameterParser("int", (string segment, out object? parsed) =>
     {
         if (int.TryParse(segment, out int value))
@@ -46,12 +41,15 @@ router
         });
     });
 
-HttpResponseMessage response = await router.RouteAsync(
-    new HttpRequestMessage(HttpMethod.Get, "https://example.com/api/users/42/details"),
-    services: new ServiceCollection().BuildServiceProvider());
+HttpListener listener = new HttpListener();
+listener.Prefixes.Add("http://localhost:8080/");
+listener.Start();
+
+HttpListenerContext context = await listener.GetContextAsync();
+await router.Route(context, new ServiceCollection().BuildServiceProvider());
 ```
 
-In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs before the more specific `/api/users/{user_id:int}/details` handler and can populate shared data in `Parameters`.
+In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs before the more specific `/api/users/{user_id:int}/details` handler and can populate shared data in `Parameters`. `HttpListenerRouter` then translates the `HttpListenerContext` into an `HttpRequestMessage`, executes the NanoRoute pipeline, and writes the produced `HttpResponseMessage` back to the listener response.
 
 ## Matching Rules
 
@@ -66,6 +64,7 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 
 - [Router<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router-2.html)
 - [HttpMessageRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpMessageRouter.html)
+- [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext<TRequest>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext-1.html)
 - [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html)
 - [RequestHandler<TRequest, TResponse>](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler-2.html)

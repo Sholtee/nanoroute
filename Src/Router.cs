@@ -16,7 +16,7 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
-    /// Routes requests to one or more handlers based on HTTP method and URI path segments.
+    /// Routes requests to one or more handlers based on HTTP method and URI path.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -44,6 +44,8 @@ namespace NanoRoute
     ///
     ///     protected override Uri GetUri(HttpRequest request) =&gt; request.Url;
     ///     protected override string GetVerb(HttpRequest request) =&gt; request.Method;
+    ///     protected override IResult CreateJsonResponse(HttpStatusCode statusCode, string content) =&gt;
+    ///         Results.Text(content, "application/json", statusCode: (int) statusCode);
     /// }
     ///
     /// MyRouter router = new MyRouter();
@@ -91,6 +93,7 @@ namespace NanoRoute
             Options,
             Trace
         }
+
         /// <summary>
         /// Stores a named route-segment parser and its optional bound parameter name.
         /// </summary>
@@ -218,8 +221,7 @@ namespace NanoRoute
         /// </summary>
         /// <param name="request">The incoming request instance.</param>
         /// <returns>
-        /// The URI whose <see cref="Uri.AbsolutePath"/> is split into path segments and matched against the
-        /// registered route patterns.
+        /// The URI whose <see cref="Uri.AbsolutePath"/> is matched against the registered route patterns.
         /// </returns>
         /// <remarks>
         /// Query string and fragment values are ignored by the router. Only the absolute path participates in
@@ -241,10 +243,15 @@ namespace NanoRoute
         protected abstract string GetVerb(TRequest request);
 
         /// <summary>
-        /// Creates a JSON response with the given <paramref name="statusCode"/>.
-        /// 
-        /// TODO: make doc more verbose.
+        /// Creates a JSON response used by the built-in fallback handlers.
         /// </summary>
+        /// <param name="statusCode">The HTTP status code to apply to the generated response.</param>
+        /// <param name="content">The serialized JSON payload to return.</param>
+        /// <returns>The application-specific response object.</returns>
+        /// <remarks>
+        /// <see cref="AddDefaultHandler(bool)"/> uses this factory to produce the default <c>404 Not Found</c>
+        /// and <c>500 Internal Server Error</c> responses.
+        /// </remarks>
         protected abstract TResponse CreateJsonResponse(HttpStatusCode statusCode, string content);
         #endregion
 
@@ -423,8 +430,27 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// TODO: document
+        /// Registers a catch-all handler that turns unhandled routing failures into JSON error responses.
         /// </summary>
+        /// <param name="populateErrorInfo">
+        /// <see langword="true"/> to include exception details in generated internal-server-error responses;
+        /// otherwise only the public error message is returned.
+        /// </param>
+        /// <returns>The current router instance.</returns>
+        /// <remarks>
+        /// The default handler is registered as a prefix route for all supported HTTP methods. It calls the next
+        /// matching handler and intercepts the terminal <c>not found</c> case as well as unhandled exceptions.
+        /// Responses are created through <see cref="CreateJsonResponse(HttpStatusCode, string)"/>.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// router
+        ///     .AddDefaultHandler()
+        ///     .AddHandler("GET", "/health", (context, next) =&gt; Results.Ok());
+        /// </code>
+        /// In this example, requests without a matching route receive the built-in JSON <c>404 Not Found</c>
+        /// response instead of an unhandled exception.
+        /// </example>
         public Router<TRequest, TResponse> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (context, next) =>
         {
             try
@@ -484,8 +510,9 @@ namespace NanoRoute
         ///     public IResult Route(HttpRequest request, IServiceProvider services) =&gt; Handle(request, services);
         ///
         ///     protected override Uri GetUri(HttpRequest request) =&gt; request.Url;
-        ///     protected override string GetRequestId(HttpRequest request) =&gt; request.TraceIdentifier;
         ///     protected override string GetVerb(HttpRequest request) =&gt; request.Method;
+        ///     protected override IResult CreateJsonResponse(HttpStatusCode statusCode, string content) =&gt;
+        ///         Results.Text(content, "application/json", statusCode: (int) statusCode);
         /// }
         ///
         /// IResult result = new MyRouter().Route(request, services);
