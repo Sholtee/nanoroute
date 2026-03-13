@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width">
       <meta name="title" content="Class Router&lt;TRequest, TResponse&gt; | NanoRoute ">
     
-    <meta name="description" content="Routes requests to one or more handlers based on HTTP method and URI path segments.">
+    <meta name="description" content="Routes requests to one or more handlers based on HTTP method and URI path.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -40,13 +40,14 @@
 
 
   <h1 id="NanoRoute_Router_2" data-uid="NanoRoute.Router`2" class="text-break">Class Router&lt;TRequest, TResponse&gt;</h1>
-  <div class="markdown level0 summary"><p>Routes requests to one or more handlers based on HTTP method and URI path segments.</p>
+  <div class="markdown level0 summary"><p>Routes requests to one or more handlers based on HTTP method and URI path.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><span class="xref">Router&lt;TRequest, TResponse&gt;</span></div>
+      <div class="level2"><a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -116,18 +117,20 @@ parameter matches. This allows broader prefix handlers to populate
 <a class="xref" href="NanoRoute.RequestContext-1.html#NanoRoute_RequestContext_1_Parameters">Parameters</a> before more specific handlers continue the pipeline.
 </p>
 <example>
-<pre><code class="lang-csharp">Router&lt;HttpRequest, IResult&gt; router = new MyRouter()
-    .AddParameterParser("int", (string segment, out object? parsed) =&gt;
-    {
-        if (int.TryParse(segment, out int id))
-        {
-            parsed = id;
-            return true;
-        }
+<pre><code class="lang-csharp">sealed class MyRouter : Router&lt;HttpRequest, IResult&gt;
+{
+    public IResult Route(HttpRequest request, IServiceProvider services) =&gt; Handle(request, services);
 
-        parsed = null;
-        return false;
-    })
+    protected override Uri GetUri(HttpRequest request) =&gt; request.Url;
+    protected override string GetVerb(HttpRequest request) =&gt; request.Method;
+    protected override IResult CreateJsonResponse(HttpStatusCode statusCode, string content) =&gt;
+        Results.Text(content, "application/json", statusCode: (int) statusCode);
+}
+
+MyRouter router = new MyRouter();
+
+router
+    .AddDefaultParsers()
     .AddHandler("GET", "/api/users/{user_id:int}/", (context, next) =&gt;
     {
         object user = LoadUser((int) context.Parameters["user_id"]!);
@@ -139,7 +142,7 @@ parameter matches. This allows broader prefix handlers to populate
         return Results.Ok(context.Parameters["User"]);
     });
 
-IResult response = router.Handle(request, services);</code></pre>
+IResult response = router.Route(request, services);</code></pre>
 <p>In this example, a request for <code>/api/users/42/details</code> first matches the prefix handler, which parses
 and stores <code>user_id</code>, then continues to the more specific handler that returns the response.
 </p></example>
@@ -156,6 +159,96 @@ and stores <code>user_id</code>, then continues to the more specific handler tha
   </div>
   <h3 id="methods">Methods
 </h3>
+  <a id="NanoRoute_Router_2_AddDefaultHandler_" data-uid="NanoRoute.Router`2.AddDefaultHandler*"></a>
+  <h4 id="NanoRoute_Router_2_AddDefaultHandler_System_Boolean_" data-uid="NanoRoute.Router`2.AddDefaultHandler(System.Boolean)">AddDefaultHandler(bool)</h4>
+  <div class="markdown level1 summary"><p>Registers a catch-all handler that turns unhandled routing failures into JSON error responses.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Router&lt;TRequest, TResponse&gt; AddDefaultHandler(bool populateErrorInfo = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">populateErrorInfo</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to include exception details in generated internal-server-error responses;
+otherwise only the public error message is returned.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.Router-2.html">Router</a>&lt;TRequest, TResponse&gt;</td>
+        <td><p>The current router instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_Router_2_AddDefaultHandler_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The default handler is registered as a prefix route for all supported HTTP methods. It calls the next
+matching handler and intercepts the terminal <code>not found</code> case as well as unhandled exceptions.
+Responses are created through <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_CreateJsonResponse_System_Net_HttpStatusCode_System_String_">CreateJsonResponse(HttpStatusCode, string)</a>.</p>
+</div>
+  <h5 id="NanoRoute_Router_2_AddDefaultHandler_System_Boolean__examples">Examples</h5>
+  <pre><code class="lang-csharp">router
+    .AddDefaultHandler()
+    .AddHandler("GET", "/health", (context, next) =&gt; Results.Ok());</code></pre>
+<p>In this example, requests without a matching route receive the built-in JSON <code>404 Not Found</code>
+response instead of an unhandled exception.</p>
+
+  <a id="NanoRoute_Router_2_AddDefaultParsers_" data-uid="NanoRoute.Router`2.AddDefaultParsers*"></a>
+  <h4 id="NanoRoute_Router_2_AddDefaultParsers" data-uid="NanoRoute.Router`2.AddDefaultParsers">AddDefaultParsers()</h4>
+  <div class="markdown level1 summary"><p>Registers the built-in parameter parsers for common scalar route segments.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Router&lt;TRequest, TResponse&gt; AddDefaultParsers()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.Router-2.html">Router</a>&lt;TRequest, TResponse&gt;</td>
+        <td><p>The current router instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_Router_2_AddDefaultParsers_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This convenience method registers parsers named <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code>.
+Existing registrations with the same names are overwritten.</p>
+</div>
+  <h5 id="NanoRoute_Router_2_AddDefaultParsers_examples">Examples</h5>
+  <pre><code class="lang-csharp">router
+    .AddDefaultParsers()
+    .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
+
   <a id="NanoRoute_Router_2_AddHandler_" data-uid="NanoRoute.Router`2.AddHandler*"></a>
   <h4 id="NanoRoute_Router_2_AddHandler_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_RequestHandler__0__1__" data-uid="NanoRoute.Router`2.AddHandler(System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.RequestHandler{`0,`1})">AddHandler(IEnumerable&lt;string&gt;, string, RequestHandler&lt;TRequest, TResponse&gt;)</h4>
   <div class="markdown level1 summary"><p>Registers the same handler for multiple HTTP methods.</p>
@@ -408,14 +501,18 @@ the pipeline with the next compatible handler.</p>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Router_2_GetRequestId_" data-uid="NanoRoute.Router`2.GetRequestId*"></a>
-  <h4 id="NanoRoute_Router_2_GetRequestId__0_" data-uid="NanoRoute.Router`2.GetRequestId(`0)">GetRequestId(TRequest)</h4>
-  <div class="markdown level1 summary"><p>Extracts a request identifier for logging scopes.</p>
+  <h5 id="NanoRoute_Router_2_AddParameterParser_System_String_NanoRoute_ParameterParserDelegate__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If a parser is already registered under the same <code class="paramref">parserName</code>, the new registration
+replaces the existing one.</p>
+</div>
+  <a id="NanoRoute_Router_2_CreateJsonResponse_" data-uid="NanoRoute.Router`2.CreateJsonResponse*"></a>
+  <h4 id="NanoRoute_Router_2_CreateJsonResponse_System_Net_HttpStatusCode_System_String_" data-uid="NanoRoute.Router`2.CreateJsonResponse(System.Net.HttpStatusCode,System.String)">CreateJsonResponse(HttpStatusCode, string)</h4>
+  <div class="markdown level1 summary"><p>Creates a JSON response used by the built-in fallback handlers.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract string GetRequestId(TRequest request)</code></pre>
+    <pre><code class="lang-csharp hljs">protected abstract TResponse CreateJsonResponse(HttpStatusCode statusCode, string content)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -428,9 +525,15 @@ the pipeline with the next compatible handler.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TRequest</span></td>
-        <td><span class="parametername">request</span></td>
-        <td><p>The incoming request instance.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode">HttpStatusCode</a></td>
+        <td><span class="parametername">statusCode</span></td>
+        <td><p>The HTTP status code to apply to the generated response.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">content</span></td>
+        <td><p>The serialized JSON payload to return.</p>
 </td>
       </tr>
     </tbody>
@@ -445,15 +548,15 @@ the pipeline with the next compatible handler.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>A value that uniquely identifies the request in logs.</p>
+        <td><span class="xref">TResponse</span></td>
+        <td><p>The application-specific response object.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_Router_2_GetRequestId__0__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This value is not used for matching. It is attached only to the logger scope created while
-<a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_Handle__0_System_IServiceProvider_">Handle(TRequest, IServiceProvider)</a> processes the request.</p>
+  <h5 id="NanoRoute_Router_2_CreateJsonResponse_System_Net_HttpStatusCode_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p><a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_AddDefaultHandler_System_Boolean_">AddDefaultHandler(bool)</a> uses this factory to produce the default <code>404 Not Found</code>
+and <code>500 Internal Server Error</code> responses.</p>
 </div>
   <a id="NanoRoute_Router_2_GetUri_" data-uid="NanoRoute.Router`2.GetUri*"></a>
   <h4 id="NanoRoute_Router_2_GetUri__0_" data-uid="NanoRoute.Router`2.GetUri(`0)">GetUri(TRequest)</h4>
@@ -493,8 +596,7 @@ the pipeline with the next compatible handler.</p>
     <tbody>
       <tr>
         <td><span class="xref">Uri</span></td>
-        <td><p>The URI whose <span class="xref">System.Uri.AbsolutePath</span> is split into path segments and matched against the
-registered route patterns.</p>
+        <td><p>The URI whose <span class="xref">System.Uri.AbsolutePath</span> is matched against the registered route patterns.</p>
 </td>
       </tr>
     </tbody>
@@ -557,7 +659,7 @@ matching.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TResponse Handle(TRequest request, IServiceProvider services)</code></pre>
+    <pre><code class="lang-csharp hljs">protected TResponse Handle(TRequest request, IServiceProvider services)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -600,7 +702,17 @@ matching.</p>
     </tbody>
   </table>
   <h5 id="NanoRoute_Router_2_Handle__0_System_IServiceProvider__examples">Examples</h5>
-  <pre><code class="lang-csharp">IResult result = router.Handle(request, services);</code></pre>
+  <pre><code class="lang-csharp">sealed class MyRouter : Router&lt;HttpRequest, IResult&gt;
+{
+    public IResult Route(HttpRequest request, IServiceProvider services) =&gt; Handle(request, services);
+
+    protected override Uri GetUri(HttpRequest request) =&gt; request.Url;
+    protected override string GetVerb(HttpRequest request) =&gt; request.Method;
+    protected override IResult CreateJsonResponse(HttpStatusCode statusCode, string content) =&gt;
+        Results.Text(content, "application/json", statusCode: (int) statusCode);
+}
+
+IResult result = new MyRouter().Route(request, services);</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">

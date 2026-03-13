@@ -7,6 +7,105 @@ references:
   commentId: N:NanoRoute
   fullName: NanoRoute
   nameWithType: NanoRoute
+- uid: NanoRoute.HttpListenerRouter
+  name: HttpListenerRouter
+  href: NanoRoute.HttpListenerRouter.html
+  commentId: T:NanoRoute.HttpListenerRouter
+  fullName: NanoRoute.HttpListenerRouter
+  nameWithType: HttpListenerRouter
+- uid: NanoRoute.HttpListenerRouter.#ctor
+  name: HttpListenerRouter()
+  href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter__ctor
+  commentId: M:NanoRoute.HttpListenerRouter.#ctor
+  name.vb: New()
+  fullName: NanoRoute.HttpListenerRouter.HttpListenerRouter()
+  fullName.vb: NanoRoute.HttpListenerRouter.New()
+  nameWithType: HttpListenerRouter.HttpListenerRouter()
+  nameWithType.vb: HttpListenerRouter.New()
+- uid: NanoRoute.HttpListenerRouter.#ctor*
+  name: HttpListenerRouter
+  href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter__ctor_
+  commentId: Overload:NanoRoute.HttpListenerRouter.#ctor
+  name.vb: New
+  fullName: NanoRoute.HttpListenerRouter.HttpListenerRouter
+  fullName.vb: NanoRoute.HttpListenerRouter.New
+  nameWithType: HttpListenerRouter.HttpListenerRouter
+  nameWithType.vb: HttpListenerRouter.New
+- uid: NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext,System.IServiceProvider)
+  name: Route(HttpListenerContext, IServiceProvider)
+  href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_
+  commentId: M:NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext,System.IServiceProvider)
+  fullName: NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext, System.IServiceProvider)
+  nameWithType: HttpListenerRouter.Route(HttpListenerContext, IServiceProvider)
+- uid: NanoRoute.HttpListenerRouter.Route*
+  name: Route
+  href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter_Route_
+  commentId: Overload:NanoRoute.HttpListenerRouter.Route
+  fullName: NanoRoute.HttpListenerRouter.Route
+  nameWithType: HttpListenerRouter.Route
+- uid: NanoRoute.HttpMessageRouter
+  name: HttpMessageRouter
+  href: NanoRoute.HttpMessageRouter.html
+  commentId: T:NanoRoute.HttpMessageRouter
+  fullName: NanoRoute.HttpMessageRouter
+  nameWithType: HttpMessageRouter
+- uid: NanoRoute.HttpMessageRouter.#ctor
+  name: HttpMessageRouter()
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter__ctor
+  commentId: M:NanoRoute.HttpMessageRouter.#ctor
+  name.vb: New()
+  fullName: NanoRoute.HttpMessageRouter.HttpMessageRouter()
+  fullName.vb: NanoRoute.HttpMessageRouter.New()
+  nameWithType: HttpMessageRouter.HttpMessageRouter()
+  nameWithType.vb: HttpMessageRouter.New()
+- uid: NanoRoute.HttpMessageRouter.#ctor*
+  name: HttpMessageRouter
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter__ctor_
+  commentId: Overload:NanoRoute.HttpMessageRouter.#ctor
+  name.vb: New
+  fullName: NanoRoute.HttpMessageRouter.HttpMessageRouter
+  fullName.vb: NanoRoute.HttpMessageRouter.New
+  nameWithType: HttpMessageRouter.HttpMessageRouter
+  nameWithType.vb: HttpMessageRouter.New
+- uid: NanoRoute.HttpMessageRouter.CreateJsonResponse(System.Net.HttpStatusCode,System.String)
+  name: CreateJsonResponse(HttpStatusCode, string)
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_CreateJsonResponse_System_Net_HttpStatusCode_System_String_
+  commentId: M:NanoRoute.HttpMessageRouter.CreateJsonResponse(System.Net.HttpStatusCode,System.String)
+  name.vb: CreateJsonResponse(HttpStatusCode, String)
+  fullName: NanoRoute.HttpMessageRouter.CreateJsonResponse(System.Net.HttpStatusCode, string)
+  fullName.vb: NanoRoute.HttpMessageRouter.CreateJsonResponse(System.Net.HttpStatusCode, String)
+  nameWithType: HttpMessageRouter.CreateJsonResponse(HttpStatusCode, string)
+  nameWithType.vb: HttpMessageRouter.CreateJsonResponse(HttpStatusCode, String)
+- uid: NanoRoute.HttpMessageRouter.CreateJsonResponse*
+  name: CreateJsonResponse
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_CreateJsonResponse_
+  commentId: Overload:NanoRoute.HttpMessageRouter.CreateJsonResponse
+  fullName: NanoRoute.HttpMessageRouter.CreateJsonResponse
+  nameWithType: HttpMessageRouter.CreateJsonResponse
+- uid: NanoRoute.HttpMessageRouter.GetUri(System.Net.Http.HttpRequestMessage)
+  name: GetUri(HttpRequestMessage)
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_GetUri_System_Net_Http_HttpRequestMessage_
+  commentId: M:NanoRoute.HttpMessageRouter.GetUri(System.Net.Http.HttpRequestMessage)
+  fullName: NanoRoute.HttpMessageRouter.GetUri(System.Net.Http.HttpRequestMessage)
+  nameWithType: HttpMessageRouter.GetUri(HttpRequestMessage)
+- uid: NanoRoute.HttpMessageRouter.GetUri*
+  name: GetUri
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_GetUri_
+  commentId: Overload:NanoRoute.HttpMessageRouter.GetUri
+  fullName: NanoRoute.HttpMessageRouter.GetUri
+  nameWithType: HttpMessageRouter.GetUri
+- uid: NanoRoute.HttpMessageRouter.GetVerb(System.Net.Http.HttpRequestMessage)
+  name: GetVerb(HttpRequestMessage)
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_GetVerb_System_Net_Http_HttpRequestMessage_
+  commentId: M:NanoRoute.HttpMessageRouter.GetVerb(System.Net.Http.HttpRequestMessage)
+  fullName: NanoRoute.HttpMessageRouter.GetVerb(System.Net.Http.HttpRequestMessage)
+  nameWithType: HttpMessageRouter.GetVerb(HttpRequestMessage)
+- uid: NanoRoute.HttpMessageRouter.GetVerb*
+  name: GetVerb
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_GetVerb_
+  commentId: Overload:NanoRoute.HttpMessageRouter.GetVerb
+  fullName: NanoRoute.HttpMessageRouter.GetVerb
+  nameWithType: HttpMessageRouter.GetVerb
 - uid: NanoRoute.ParameterParserDelegate
   name: ParameterParserDelegate
   href: NanoRoute.ParameterParserDelegate.html
@@ -124,6 +223,39 @@ references:
   fullName.vb: NanoRoute.Router(Of TRequest, TResponse).New
   nameWithType: Router<TRequest, TResponse>.Router
   nameWithType.vb: Router(Of TRequest, TResponse).New
+- uid: NanoRoute.Router`2.AddDefaultHandler(System.Boolean)
+  name: AddDefaultHandler(bool)
+  href: NanoRoute.Router-2.html#NanoRoute_Router_2_AddDefaultHandler_System_Boolean_
+  commentId: M:NanoRoute.Router`2.AddDefaultHandler(System.Boolean)
+  name.vb: AddDefaultHandler(Boolean)
+  fullName: NanoRoute.Router<TRequest, TResponse>.AddDefaultHandler(bool)
+  fullName.vb: NanoRoute.Router(Of TRequest, TResponse).AddDefaultHandler(Boolean)
+  nameWithType: Router<TRequest, TResponse>.AddDefaultHandler(bool)
+  nameWithType.vb: Router(Of TRequest, TResponse).AddDefaultHandler(Boolean)
+- uid: NanoRoute.Router`2.AddDefaultHandler*
+  name: AddDefaultHandler
+  href: NanoRoute.Router-2.html#NanoRoute_Router_2_AddDefaultHandler_
+  commentId: Overload:NanoRoute.Router`2.AddDefaultHandler
+  fullName: NanoRoute.Router<TRequest, TResponse>.AddDefaultHandler
+  fullName.vb: NanoRoute.Router(Of TRequest, TResponse).AddDefaultHandler
+  nameWithType: Router<TRequest, TResponse>.AddDefaultHandler
+  nameWithType.vb: Router(Of TRequest, TResponse).AddDefaultHandler
+- uid: NanoRoute.Router`2.AddDefaultParsers
+  name: AddDefaultParsers()
+  href: NanoRoute.Router-2.html#NanoRoute_Router_2_AddDefaultParsers
+  commentId: M:NanoRoute.Router`2.AddDefaultParsers
+  fullName: NanoRoute.Router<TRequest, TResponse>.AddDefaultParsers()
+  fullName.vb: NanoRoute.Router(Of TRequest, TResponse).AddDefaultParsers()
+  nameWithType: Router<TRequest, TResponse>.AddDefaultParsers()
+  nameWithType.vb: Router(Of TRequest, TResponse).AddDefaultParsers()
+- uid: NanoRoute.Router`2.AddDefaultParsers*
+  name: AddDefaultParsers
+  href: NanoRoute.Router-2.html#NanoRoute_Router_2_AddDefaultParsers_
+  commentId: Overload:NanoRoute.Router`2.AddDefaultParsers
+  fullName: NanoRoute.Router<TRequest, TResponse>.AddDefaultParsers
+  fullName.vb: NanoRoute.Router(Of TRequest, TResponse).AddDefaultParsers
+  nameWithType: Router<TRequest, TResponse>.AddDefaultParsers
+  nameWithType.vb: Router(Of TRequest, TResponse).AddDefaultParsers
 - uid: NanoRoute.Router`2.AddHandler(System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.RequestHandler{`0,`1})
   name: AddHandler(IEnumerable<string>, string, RequestHandler<TRequest, TResponse>)
   href: NanoRoute.Router-2.html#NanoRoute_Router_2_AddHandler_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_RequestHandler__0__1__
@@ -176,22 +308,23 @@ references:
   fullName.vb: NanoRoute.Router(Of TRequest, TResponse).AddParameterParser
   nameWithType: Router<TRequest, TResponse>.AddParameterParser
   nameWithType.vb: Router(Of TRequest, TResponse).AddParameterParser
-- uid: NanoRoute.Router`2.GetRequestId(`0)
-  name: GetRequestId(TRequest)
-  href: NanoRoute.Router-2.html#NanoRoute_Router_2_GetRequestId__0_
-  commentId: M:NanoRoute.Router`2.GetRequestId(`0)
-  fullName: NanoRoute.Router<TRequest, TResponse>.GetRequestId(TRequest)
-  fullName.vb: NanoRoute.Router(Of TRequest, TResponse).GetRequestId(TRequest)
-  nameWithType: Router<TRequest, TResponse>.GetRequestId(TRequest)
-  nameWithType.vb: Router(Of TRequest, TResponse).GetRequestId(TRequest)
-- uid: NanoRoute.Router`2.GetRequestId*
-  name: GetRequestId
-  href: NanoRoute.Router-2.html#NanoRoute_Router_2_GetRequestId_
-  commentId: Overload:NanoRoute.Router`2.GetRequestId
-  fullName: NanoRoute.Router<TRequest, TResponse>.GetRequestId
-  fullName.vb: NanoRoute.Router(Of TRequest, TResponse).GetRequestId
-  nameWithType: Router<TRequest, TResponse>.GetRequestId
-  nameWithType.vb: Router(Of TRequest, TResponse).GetRequestId
+- uid: NanoRoute.Router`2.CreateJsonResponse(System.Net.HttpStatusCode,System.String)
+  name: CreateJsonResponse(HttpStatusCode, string)
+  href: NanoRoute.Router-2.html#NanoRoute_Router_2_CreateJsonResponse_System_Net_HttpStatusCode_System_String_
+  commentId: M:NanoRoute.Router`2.CreateJsonResponse(System.Net.HttpStatusCode,System.String)
+  name.vb: CreateJsonResponse(HttpStatusCode, String)
+  fullName: NanoRoute.Router<TRequest, TResponse>.CreateJsonResponse(System.Net.HttpStatusCode, string)
+  fullName.vb: NanoRoute.Router(Of TRequest, TResponse).CreateJsonResponse(System.Net.HttpStatusCode, String)
+  nameWithType: Router<TRequest, TResponse>.CreateJsonResponse(HttpStatusCode, string)
+  nameWithType.vb: Router(Of TRequest, TResponse).CreateJsonResponse(HttpStatusCode, String)
+- uid: NanoRoute.Router`2.CreateJsonResponse*
+  name: CreateJsonResponse
+  href: NanoRoute.Router-2.html#NanoRoute_Router_2_CreateJsonResponse_
+  commentId: Overload:NanoRoute.Router`2.CreateJsonResponse
+  fullName: NanoRoute.Router<TRequest, TResponse>.CreateJsonResponse
+  fullName.vb: NanoRoute.Router(Of TRequest, TResponse).CreateJsonResponse
+  nameWithType: Router<TRequest, TResponse>.CreateJsonResponse
+  nameWithType.vb: Router(Of TRequest, TResponse).CreateJsonResponse
 - uid: NanoRoute.Router`2.GetUri(`0)
   name: GetUri(TRequest)
   href: NanoRoute.Router-2.html#NanoRoute_Router_2_GetUri__0_

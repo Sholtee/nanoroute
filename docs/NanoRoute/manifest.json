@@ -4,6 +4,34 @@
   "files": [
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../BIN/DOC/NanoRoute.HttpListenerRouter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.HttpListenerRouter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.HttpListenerRouter",
+      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.HttpListenerRouter.yml\" sourcestartlinenumber=\"1\">Bridges <xref href=\"System.Net.HttpListenerContext\" data-throw-if-not-resolved=\"false\"></xref> requests to <xref href=\"NanoRoute.HttpMessageRouter\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../BIN/DOC/NanoRoute.HttpMessageRouter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.HttpMessageRouter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.HttpMessageRouter",
+      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.HttpMessageRouter.yml\" sourcestartlinenumber=\"1\">Specializes <xref href=\"NanoRoute.Router%602\" data-throw-if-not-resolved=\"false\"></xref> for <xref href=\"System.Net.Http.HttpRequestMessage\" data-throw-if-not-resolved=\"false\"></xref> requests and\nasynchronous <xref href=\"System.Net.Http.HttpResponseMessage\" data-throw-if-not-resolved=\"false\"></xref> responses.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../BIN/DOC/NanoRoute.ParameterParserDelegate.yml",
       "output": {
         ".html": {
@@ -56,7 +84,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.Router<TRequest, TResponse>",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.Router-2.yml\" sourcestartlinenumber=\"1\">Routes requests to one or more handlers based on HTTP method and URI path segments.</p>\n"
+      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.Router-2.yml\" sourcestartlinenumber=\"1\">Routes requests to one or more handlers based on HTTP method and URI path.</p>\n"
     },
     {
       "type": "ManagedReference",
