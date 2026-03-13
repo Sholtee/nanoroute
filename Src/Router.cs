@@ -51,17 +51,7 @@ namespace NanoRoute
     /// MyRouter router = new MyRouter();
     ///
     /// router
-    ///     .AddParameterParser("int", (string segment, out object? parsed) =&gt;
-    ///     {
-    ///         if (int.TryParse(segment, out int id))
-    ///         {
-    ///             parsed = id;
-    ///             return true;
-    ///         }
-    ///
-    ///         parsed = null;
-    ///         return false;
-    ///     })
+    ///     .AddDefaultParsers()
     ///     .AddHandler("GET", "/api/users/{user_id:int}/", (context, next) =&gt;
     ///     {
     ///         object user = LoadUser((int) context.Parameters["user_id"]!);
@@ -261,6 +251,10 @@ namespace NanoRoute
         /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
         /// <returns>The current router instance.</returns>
+        /// <remarks>
+        /// If a parser is already registered under the same <paramref name="parserName"/>, the new registration
+        /// replaces the existing one.
+        /// </remarks>
         public Router<TRequest, TResponse> AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
         {
             Ensure.NotNull(parserName);
@@ -270,6 +264,46 @@ namespace NanoRoute
 
             return this;
         }
+
+        /// <summary>
+        /// Registers the built-in parameter parsers for common scalar route segments.
+        /// </summary>
+        /// <returns>The current router instance.</returns>
+        /// <remarks>
+        /// This convenience method registers parsers named <c>int</c>, <c>guid</c>, <c>bool</c>, and <c>str</c>.
+        /// Existing registrations with the same names are overwritten.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// router
+        ///     .AddDefaultParsers()
+        ///     .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));
+        /// </code>
+        /// </example>
+        public Router<TRequest, TResponse> AddDefaultParsers() =>
+            AddParameterParser("int", static (string segment, out object? parsed) =>
+            {
+                bool success = int.TryParse(segment, out int value);
+                parsed = success ? value : null;
+                return success;
+            })
+            .AddParameterParser("guid", static (string segment, out object? parsed) =>
+            {
+                bool success = Guid.TryParse(segment, out Guid value);
+                parsed = success ? value : null;
+                return success;
+            })
+            .AddParameterParser("bool", static (string segment, out object? parsed) =>
+            {
+                bool success = bool.TryParse(segment, out bool value);
+                parsed = success ? value : null;
+                return success;
+            })
+            .AddParameterParser("str", static (string segment, out object? parsed) =>
+            {
+                parsed = segment;
+                return true;
+            });
 
         /// <summary>
         /// Registers a handler for all supported HTTP methods.
@@ -451,7 +485,7 @@ namespace NanoRoute
         /// In this example, requests without a matching route receive the built-in JSON <c>404 Not Found</c>
         /// response instead of an unhandled exception.
         /// </example>
-        public Router<TRequest, TResponse> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (context, next) =>
+        public Router<TRequest, TResponse> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (RequestContext<TRequest> context, Func<TResponse> next) =>
         {
             try
             {

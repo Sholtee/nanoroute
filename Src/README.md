@@ -17,17 +17,7 @@ HttpListenerRouter router = new HttpListenerRouter();
 
 router
     .AddDefaultHandler()
-    .AddParameterParser("int", (string segment, out object? parsed) =>
-    {
-        if (int.TryParse(segment, out int value))
-        {
-            parsed = value;
-            return true;
-        }
-
-        parsed = null;
-        return false;
-    })
+    .AddDefaultParsers()
     .AddHandler("GET", "/api/users/{user_id:int}/", (context, next) =>
     {
         context.Parameters["User"] = $"user-{context.Parameters["user_id"]}";

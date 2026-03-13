@@ -471,6 +471,33 @@ namespace NanoRoute.Tests
             Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
         }
 
+        private static IEnumerable<TestCaseData> AddDefaultParsers_ShouldRegisterTheBuiltInParsers_Cases()
+        {
+            yield return new TestCaseData("int", 42);
+            yield return new TestCaseData("guid", Guid.Parse("4a91f2c0-0e3c-4ec8-9f8c-8d2d2f2c7d1a"));
+            yield return new TestCaseData("bool", true);
+            yield return new TestCaseData("str", "spikey");
+        }
+
+        [TestCaseSource(nameof(AddDefaultParsers_ShouldRegisterTheBuiltInParsers_Cases))]
+        public void AddDefaultParsers_ShouldRegisterTheBuiltInParsers(string parserName, object expectedValue)
+        {
+            _mockRouter.Object
+                .AddDefaultParsers()
+                .AddHandler("GET", $"/items/{{value:{parserName}}}", (context, _) =>
+                {
+                    Assert.That(context.Parameters["value"], Is.EqualTo(expectedValue));
+                    return true;
+                });
+
+            _mockRouter
+                .Protected()
+                .Setup<Uri>("GetUri", s_request)
+                .Returns(new Uri($"https://www.exmaple.com/items/{expectedValue}"));
+
+            Assert.That(_mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+        }
+
         [Test]
         public void AddParameterParser_ShouldBeNullChecked() => Assert.Multiple(() =>
         {

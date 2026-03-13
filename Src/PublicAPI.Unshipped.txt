@@ -18,6 +18,7 @@ NanoRoute.RequestContext<TRequest>.Services.init -> void
 NanoRoute.RequestHandler<TRequest, TResponse>
 NanoRoute.Router<TRequest, TResponse>
 NanoRoute.Router<TRequest, TResponse>.AddDefaultHandler(bool populateErrorInfo = false) -> NanoRoute.Router<TRequest!, TResponse>!
+NanoRoute.Router<TRequest, TResponse>.AddDefaultParsers() -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
 NanoRoute.Router<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse>! handler) -> NanoRoute.Router<TRequest!, TResponse>!
