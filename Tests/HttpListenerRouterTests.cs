@@ -4,8 +4,10 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 using Moq;
@@ -60,18 +62,33 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Post_Test()
         {
-            _router.AddHandler("POST", "/welcome", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+            _router.AddHandler("POST", "/welcome", async (context, _) =>
             {
-                Content = new StringContent($"Hello { await context.Request.Content!.ReadAsStringAsync() }")
+                Assert.That(context.Request.Headers.TryGetValues("X-Custom-Request-Header", out IEnumerable<string>? values), Is.True);
+                Assert.That(values, Is.EquivalentTo(new string[] { "cica" }));
+
+                HttpResponseMessage resp = new(HttpStatusCode.OK)
+                {
+                    Content = new StringContent($"Hello {await context.Request.Content!.ReadAsStringAsync()}")
+                };
+                resp.Headers.Add("X-Custom-Response-Header", "kutya");
+
+                return resp;
             });
 
+            _client.DefaultRequestHeaders.Add("X-Custom-Request-Header", "cica");
             Task<HttpResponseMessage> resp = _client.PostAsync("welcome", new StringContent("Spikey"));
 
             await HandleRequest();
 
             HttpResponseMessage msg = await resp;
+
+            Assert.That(msg.Headers.TryGetValues("X-Custom-Response-Header", out IEnumerable<string>? values), Is.True);
+            Assert.That(values, Is.EquivalentTo(new string[] { "kutya" }));
+
             Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(msg.Content, Is.Not.Null);
+            Assert.That(msg.Content.Headers.ContentType!.MediaType, Is.EqualTo("text/plain"));
             Assert.That(await msg.Content.ReadAsStringAsync(), Is.EqualTo("Hello Spikey"));
         }
 
@@ -80,19 +97,49 @@ namespace NanoRoute.Tests
         {
             _router
                 .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
-                .AddHandler("Get", "/welcome/{name:str}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                .AddHandler("Get", "/welcome/{name:str}", async (context, _) =>
                 {
-                    Content = new StringContent($"Hello {context.Parameters["name"]}")
+                    Assert.That(context.Request.Headers.TryGetValues("X-Custom-Request-Header", out IEnumerable<string>? values), Is.True);
+                    Assert.That(values, Is.EquivalentTo(new string[] { "cica" }));
+
+                    HttpResponseMessage resp = new(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent($"Hello {context.Parameters["name"]}")
+                    };
+                    resp.Headers.Add("X-Custom-Response-Header", "kutya");
+
+                    return resp;
                 });
 
+            _client.DefaultRequestHeaders.Add("X-Custom-Request-Header", "cica");
             Task<HttpResponseMessage> resp = _client.GetAsync("welcome/Spikey");
 
             await HandleRequest();
 
             HttpResponseMessage msg = await resp;
+
+            Assert.That(msg.Headers.TryGetValues("X-Custom-Response-Header", out IEnumerable<string>? values), Is.True);
+            Assert.That(values, Is.EquivalentTo(new string[] { "kutya" }));
+
             Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(msg.Content, Is.Not.Null);
+            Assert.That(msg.Content.Headers.ContentType!.MediaType, Is.EqualTo("text/plain"));
             Assert.That(await msg.Content.ReadAsStringAsync(), Is.EqualTo("Hello Spikey"));
+        }
+
+        [Test]
+        public async Task NotFound_Test()
+        {
+            Task<HttpResponseMessage> resp = _client.GetAsync("welcome");
+
+            await HandleRequest();
+
+            HttpResponseMessage msg = await resp;
+
+            Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(msg.Content, Is.Not.Null);
+            Assert.That(msg.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
+            Assert.That(await msg.Content.ReadAsStringAsync(), Is.EqualTo("{\"Message\":\"Not found.\"}"));
         }
     }
 }
