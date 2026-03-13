@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 using Moq;
@@ -29,15 +30,29 @@ namespace NanoRoute.Tests
             _router = new HttpListenerRouter();
             _router.AddDefaultHandler();
 
+            Uri baseAddress = new ($"http://localhost:{GetFreePort()}/");
+
             _listener = new HttpListener();
-            _listener.Prefixes.Add("http://localhost:1986/");
+            _listener.Prefixes.Add(baseAddress.AbsoluteUri);
             _listener.Start();
 
             _client = new HttpClient
             {
-                BaseAddress = new Uri("http://localhost:1986/")
+                BaseAddress = baseAddress
             };
 
+        }
+
+        private static int GetFreePort()
+        {
+            TcpListener listener = new(IPAddress.Loopback, 0);
+            listener.Start();
+
+            int port = ((IPEndPoint) listener.LocalEndpoint).Port;
+
+            listener.Stop();
+
+            return port;
         }
 
         private async Task HandleRequest()
