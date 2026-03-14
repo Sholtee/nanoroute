@@ -398,6 +398,8 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
         }
 
+        private sealed record JsonResponse(string Message, string? Reason);
+
         [Test]
         public void DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
         {
@@ -415,7 +417,7 @@ namespace NanoRoute.Tests
 
             string resp = (string) _mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             
-            JsonResponse deserialized = JsonSerializer.Deserialize(resp, JsonContext.Default.JsonResponse)!;
+            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp)!;
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized.Reason, Is.Null);
             Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
@@ -446,7 +448,7 @@ namespace NanoRoute.Tests
 
             string resp = (string) _mockRouter.Object.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
 
-            JsonResponse deserialized = JsonSerializer.Deserialize(resp, JsonContext.Default.JsonResponse)!;
+            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp)!;
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized.Reason, populateErrorInfo ? Does.Contain(ERROR_MSG) : Is.Null);
             Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_INERNAL_ERROR));

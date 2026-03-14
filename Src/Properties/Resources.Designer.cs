@@ -97,6 +97,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only prefix patterns are allowed..
+        /// </summary>
+        internal static string ERR_NOT_PREFIX {
+            get {
+                return ResourceManager.GetString("ERR_NOT_PREFIX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Conflicting parameter names are not allowed for the same route segment..
         /// </summary>
         internal static string ERR_PARAMETER_OVERRIDE {
