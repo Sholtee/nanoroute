@@ -311,7 +311,9 @@ namespace NanoRoute
             {
                 return CreateJsonResponse(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
             }
-            catch (Exception ex)
+            // OperationCanceledException should be handled by the router implementation:
+            // when the Router.Handle() is called with a cancelled token this handler won't be even called
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 return CreateJsonResponse(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, populateErrorInfo ? ex.ToString() : null);
             }

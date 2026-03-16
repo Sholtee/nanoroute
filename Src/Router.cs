@@ -92,12 +92,13 @@ namespace NanoRoute
             Ensure.NotNull(services);
 
             HttpRequestMessage requestMessage = await GetRequest(request);
-
             if (!Enum.TryParse(requestMessage.Method.Method, ignoreCase: true, out HttpVerb verb))
                 throw new ArgumentException
                 (
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, requestMessage.Method.Method), nameof(request)
                 );
+
+            requestMessage.Properties["OriginalRequest"] = request;
 
             string requestPath = requestMessage
                 .RequestUri
