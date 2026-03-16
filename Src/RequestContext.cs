@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace NanoRoute
 {
     /// <summary>
-    /// Request context
+    /// TODO
     /// </summary>
     public sealed class RequestContext<TRequest>
     {
@@ -27,5 +27,10 @@ namespace NanoRoute
         /// The original request
         /// </summary>
         public required TRequest Request { get; init; }
+
+        /// <summary>
+        /// THe router instance that provided this context.
+        /// </summary>
+        public required object Router { get; init; }
     }
 }

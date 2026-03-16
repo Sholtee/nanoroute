@@ -13,6 +13,8 @@ NanoRoute.RequestContext<TRequest>.Parameters.init -> void
 NanoRoute.RequestContext<TRequest>.Request.get -> TRequest
 NanoRoute.RequestContext<TRequest>.Request.init -> void
 NanoRoute.RequestContext<TRequest>.RequestContext() -> void
+NanoRoute.RequestContext<TRequest>.Router.get -> object!
+NanoRoute.RequestContext<TRequest>.Router.init -> void
 NanoRoute.RequestContext<TRequest>.Services.get -> System.IServiceProvider!
 NanoRoute.RequestContext<TRequest>.Services.init -> void
 NanoRoute.RequestHandler<TRequest, TResponse>
@@ -20,15 +22,16 @@ NanoRoute.Router<TRequest, TResponse>
 NanoRoute.Router<TRequest, TResponse>.AddDefaultHandler(bool populateErrorInfo = false) -> void
 NanoRoute.Router<TRequest, TResponse>.Handle(TRequest! request, System.IServiceProvider! services) -> TResponse
 NanoRoute.Router<TRequest, TResponse>.Router() -> void
-NanoRoute.RouterBuilder<TRequest, TResponse>
-NanoRoute.RouterBuilder<TRequest, TResponse>.AddDefaultHandler(bool populateErrorInfo = false) -> void
-NanoRoute.RouterBuilder<TRequest, TResponse>.AddDefaultParsers() -> NanoRoute.RouterBuilder<TRequest, TResponse>!
-NanoRoute.RouterBuilder<TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.RequestHandler<TRequest, TResponse>! handler) -> NanoRoute.RouterBuilder<TRequest, TResponse>!
-NanoRoute.RouterBuilder<TRequest, TResponse>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandler<TRequest, TResponse>! handler) -> NanoRoute.RouterBuilder<TRequest, TResponse>!
-NanoRoute.RouterBuilder<TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandler<TRequest, TResponse>! handler) -> NanoRoute.RouterBuilder<TRequest, TResponse>!
-NanoRoute.RouterBuilder<TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRequest, TResponse>!
-NanoRoute.RouterBuilder<TRequest, TResponse>.RouterBuilder() -> void
-NanoRoute.RouterBuilder<TRequest, TResponse>.WithBase(string! pattern) -> NanoRoute.RouterBuilder<TRequest, TResponse>!
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddDefaultHandler(bool populateErrorInfo = false) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddDefaultParsers() -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse!>! handler) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse!>! handler) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandler<TRequest!, TResponse!>! handler) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.CreateRouter() -> TRouter!
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.RouterBuilder(System.Action<TRouter!>! configureRouter) -> void
+NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.WithBase(string! pattern) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
 NanoRoute.RoutingContext<TRequest, TResponse>
 NanoRoute.RoutingContext<TRequest, TResponse>.RoutingContext() -> void
 override NanoRoute.HttpMessageRouter.CreateJsonResponse(System.Net.HttpStatusCode statusCode, string! content) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!

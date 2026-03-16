@@ -66,14 +66,14 @@ namespace NanoRoute
     /// and stores <c>user_id</c>, then continues to the more specific handler that returns the response.
     /// </example>
     /// </remarks>
-    public abstract class Router<TRequest, TResponse>: RouterBuilder<TRequest, TResponse> where TRequest : class
+    public abstract class Router<TRequest, TResponse>: RoutingContext<TRequest, TResponse> where TRequest : class
     {
         #region Private
         private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, HttpVerb verb, string[] segments, int segmentIndex, Dictionary<string, object?> paramz)
         {
             if (node.HandlerRegistrations.TryGetValue(verb, out List<HandlerRegistration>? handlerRegistrations))
                 foreach (HandlerRegistration handlerRegistration in handlerRegistrations)
-                    if (handlerRegistration.Prefix || segmentIndex == segments.Length)
+                    if (handlerRegistration.Pattern.EndsWith("/") || segmentIndex == segments.Length)
                         yield return handlerRegistration with { AttachedParameters = paramz };
 
             if (segmentIndex == segments.Length)
@@ -142,6 +142,7 @@ namespace NanoRoute
         /// Method matching is case-insensitive. A path match is ignored when it was registered for a different method.
         /// </remarks>
         protected abstract string GetVerb(TRequest request);
+        #endregion
 
         /// <summary>
         /// Creates a JSON response used by the built-in fallback handlers.
@@ -149,12 +150,7 @@ namespace NanoRoute
         /// <param name="statusCode">The HTTP status code to apply to the generated response.</param>
         /// <param name="content">The serialized JSON payload to return.</param>
         /// <returns>The application-specific response object.</returns>
-        /// <remarks>
-        /// <see cref="AddDefaultHandler(bool)"/> uses this factory to produce the default <c>404 Not Found</c>
-        /// and <c>500 Internal Server Error</c> responses.
-        /// </remarks>
-        protected abstract TResponse CreateJsonResponse(HttpStatusCode statusCode, string content);
-        #endregion
+        public abstract TResponse CreateJsonResponse(HttpStatusCode statusCode, string content);
 
         /// <summary>
         /// Resolves the registered handlers for the request and executes the matching pipeline.
@@ -205,7 +201,7 @@ namespace NanoRoute
 
             using IEnumerator<HandlerRegistration> matches = FindMatches
             (
-                _root,
+                Root,
                 verb,
                 requestPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries),
                 0,
@@ -226,14 +222,15 @@ namespace NanoRoute
                 {
                     RequestPath = requestPath,
                     Verb = verb,
-                    matches.Current.Node.Pattern
+                    matches.Current.Pattern
                 });
 
                 RequestContext<TRequest> requestContext = new()
                 {
                     Parameters = matches.Current.AttachedParameters!,
                     Request = request,
-                    Services = services
+                    Services = services,
+                    Router = this
                 };
 
                 return matches.Current.Handler(requestContext, CallNextHandler);
