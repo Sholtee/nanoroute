@@ -8,18 +8,22 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace NanoRoute
 {
+    using Internals;
     using Properties;
 
     /// <summary>
     /// TODO
     /// </summary>
-    public sealed class RouterBuilder<TRouter, TRequest, TResponse> : RoutingContext<TRequest, TResponse>
+    public sealed class RouterBuilder<TRouter, TRequest, TResponse> : RoutingContext
         where TRouter: Router<TRequest, TResponse>, new()
         where TResponse : class
         where TRequest : class
@@ -33,7 +37,7 @@ namespace NanoRoute
         private readonly Action<TRouter>? _configureRouter;
 
         /// <summary>
-        /// Gets or creates the <see cref="RoutingContext{TRequest, TResponse}.RouteNode"/> that matches the given <paramref name="pattern"/>.
+        /// Gets or creates the <see cref="RouteNode"/> that matches the given <paramref name="pattern"/>.
         /// </summary>
         private RouteNode FindNode(string pattern)
         {
@@ -177,7 +181,7 @@ namespace NanoRoute
         /// router.AddHandler("/health", (context, next) =&gt; Results.Ok());
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(string pattern, RequestHandler<TRequest, TResponse> handler)
+        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(string pattern, RequestHandler handler)
         {
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
@@ -212,7 +216,7 @@ namespace NanoRoute
         ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler<TRequest, TResponse> handler)
+        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler handler)
         {
             Ensure.NotNull(verbs);
             Ensure.NotNull(pattern);
@@ -251,7 +255,7 @@ namespace NanoRoute
         /// });
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(string verb, string pattern, RequestHandler<TRequest, TResponse> handler)
+        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(string verb, string pattern, RequestHandler handler)
         {
             Ensure.NotNull(verb);
             Ensure.NotNull(pattern);
@@ -297,7 +301,7 @@ namespace NanoRoute
         /// In this example, requests without a matching route receive the built-in JSON <c>404 Not Found</c>
         /// response instead of an unhandled exception.
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (RequestContext<TRequest> context, Func<TResponse> next) =>
+        public RouterBuilder<TRouter, TRequest, TResponse> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
         {
             try
             {
@@ -305,32 +309,24 @@ namespace NanoRoute
             }
             catch (HttpException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
-                TRouter router = (TRouter) context.Router;
-
-                return router.CreateJsonResponse
-                (
-                    HttpStatusCode.NotFound,
-                    CreateResponse(Resources.ERR_NOT_FOUND, null)
-                );
+                return CreateJsonResponse(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
             }
             catch (Exception ex)
             {
-                TRouter router = (TRouter) context.Router;
-
-                return router.CreateJsonResponse
-                (
-                    HttpStatusCode.InternalServerError,
-                    CreateResponse
-                    (
-                        Resources.ERR_INERNAL_ERROR,
-                        populateErrorInfo ? ex.ToString() : null
-                    )
-                );
+                return CreateJsonResponse(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, populateErrorInfo ? ex.ToString() : null);
             }
 
-            static string CreateResponse(string message, string? reason)
+            static Task<HttpResponseMessage> CreateJsonResponse(HttpStatusCode status, string message, string? reason = null)
             {
-                return $"{{{KeyValue(message)}{(reason is not null ? "," + KeyValue(reason) : string.Empty)}}}";
+                return Task.FromResult(new HttpResponseMessage(status)
+                {
+                    Content = new StringContent
+                    (
+                        $"{{{KeyValue(message)}{(reason is not null ? "," + KeyValue(reason) : string.Empty)}}}",
+                        Encoding.UTF8,
+                        "application/json"
+                    )
+                });
 
                 static string KeyValue(string value, [CallerArgumentExpression(nameof(value))] string? key = null) =>
                     $"\"{key}\":\"{HttpUtility.JavaScriptStringEncode(value)}\"";

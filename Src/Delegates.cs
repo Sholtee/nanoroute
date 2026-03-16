@@ -4,11 +4,13 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NanoRoute
 {
     /// <summary>
-    /// Tries to parse a single route segment into a value that can be stored in <see cref="RequestContext{TRequest}.Parameters"/>.
+    /// Tries to parse a single route segment into a value that can be stored in <see cref="RequestContext.Parameters"/>.
     /// </summary>
     /// <param name="segment">The raw path segment extracted from the request URI.</param>
     /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
@@ -33,8 +35,6 @@ namespace NanoRoute
     /// <summary>
     /// Represents a request handler in the router pipeline.
     /// </summary>
-    /// <typeparam name="TRequest">The application-specific request type.</typeparam>
-    /// <typeparam name="TResponse">The application-specific response type.</typeparam>
     /// <param name="requestContext">The current request context, including parsed route parameters and services.</param>
     /// <param name="callNext">Invokes the next compatible handler in the pipeline.</param>
     /// <returns>
@@ -49,6 +49,6 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate TResponse RequestHandler<TRequest, TResponse>(RequestContext<TRequest> requestContext, Func<TResponse> callNext);
+    public delegate Task<HttpResponseMessage> RequestHandler(RequestContext requestContext, Func<Task<HttpResponseMessage>> callNext);
 
 }

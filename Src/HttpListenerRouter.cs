@@ -8,10 +8,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NanoRoute
 {
+    using Internals;
+
     /// <summary>
     /// Bridges <see cref="HttpListenerContext"/> requests to <see cref="HttpMessageRouter"/>.
     /// </summary>
@@ -36,7 +39,7 @@ namespace NanoRoute
     /// await router.Route(listenerContext, services);
     /// </code>
     /// </example>
-    public class HttpListenerRouter : HttpMessageRouter
+    public class HttpListenerRouter : Router<HttpListenerRequest, HttpResponseMessage>
     {
         private const string ORIGINAL_REQUEST = "OriginalRequest";
 
@@ -61,38 +64,21 @@ namespace NanoRoute
         /// and <see cref="HttpResponseMessage.Content"/> are written back to the listener response, except for
         /// headers that <see cref="HttpListenerResponse"/> manages itself.
         /// </remarks>
-        public async Task Route(HttpListenerContext context, IServiceProvider services)
+        public async Task Route(HttpListenerContext context, IServiceProvider services, CancellationToken cancellation)
         {
             Ensure.NotNull(context);
             Ensure.NotNull(services);
 
-            HttpRequestMessage request = new
-            (
-                new HttpMethod(context.Request.HttpMethod),
-                context.Request.Url
-            );
-
-            if (context.Request.HasEntityBody)
-                request.Content = new StreamContent(context.Request.InputStream);
-
-            foreach (string header in context.Request.Headers.AllKeys)
+            try
             {
-                string[] values = context.Request.Headers.GetValues(header);
-
-                bool headerSet =
-                    !request.Headers.TryAddWithoutValidation(header, values) || // this may return false for content headers like Content-Type
-                    request.Content?.Headers.TryAddWithoutValidation(header, values) is not true; // fall back to content headers
-
-                if (!headerSet)
-                    RouterEventSource.Log.Warn("HeaderCopyFailed", () => new
-                    {
-                        Header = header
-                    });
+                HttpResponseMessage response = await Handle(context.Request, services);
             }
-            
-            request.Properties[ORIGINAL_REQUEST] = context.Request;
-            
-            HttpResponseMessage response = await Handle(request, services);
+            catch (OperationCanceledException)
+            {
+                context.Response.Abort();
+                return;
+            }
+
 
             context.Response.StatusCode = (int) response.StatusCode;
 
@@ -111,5 +97,40 @@ namespace NanoRoute
                         context.Response.Headers.Add(header.Key, string.Join(",", header.Value));
             }
         }
+
+        /// <inheritdoc/>
+        protected override Task<HttpRequestMessage> GetRequest(HttpListenerRequest request)
+        {
+            HttpRequestMessage requestMessage = new
+            (
+                new HttpMethod(request.HttpMethod),
+                request.Url
+            );
+
+            if (request.HasEntityBody)
+                requestMessage.Content = new StreamContent(request.InputStream);
+
+            foreach (string header in request.Headers.AllKeys)
+            {
+                string[] values = request.Headers.GetValues(header);
+
+                bool headerSet =
+                    !requestMessage.Headers.TryAddWithoutValidation(header, values) || // this may return false for content headers like Content-Type
+                    requestMessage.Content?.Headers.TryAddWithoutValidation(header, values) is not true; // fall back to content headers
+
+                if (!headerSet)
+                    RouterEventSource.Log.Warn("HeaderCopyFailed", () => new
+                    {
+                        Header = header
+                    });
+            }
+
+            requestMessage.Properties[ORIGINAL_REQUEST] = request;
+
+            return Task.FromResult(requestMessage);
+        }
+
+        /// <inheritdoc/>
+        protected override Task<HttpResponseMessage> GetResponse(HttpResponseMessage response) => Task.FromResult(response);
     }
 }

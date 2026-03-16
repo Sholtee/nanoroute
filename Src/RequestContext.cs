@@ -5,13 +5,15 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
 
 namespace NanoRoute
 {
     /// <summary>
     /// TODO
     /// </summary>
-    public sealed class RequestContext<TRequest>
+    public sealed class RequestContext
     {
         /// <summary>
         /// Request parameters
@@ -26,11 +28,11 @@ namespace NanoRoute
         /// <summary>
         /// The original request
         /// </summary>
-        public required TRequest Request { get; init; }
+        public required HttpRequestMessage Request { get; init; }
 
         /// <summary>
-        /// THe router instance that provided this context.
+        /// <see cref="CancellationToken"/> associated with this request.
         /// </summary>
-        public required object Router { get; init; }
+        public required CancellationToken Cancellation { get; init; }
     }
 }

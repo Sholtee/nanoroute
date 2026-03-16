@@ -1,17 +1,19 @@
 /********************************************************************************
-* RoutingContext.cs                                                             *
+* HttpVerb.cs                                                                   *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
-namespace NanoRoute
+namespace NanoRoute.Internals
 {
-    using Internals;
-
-    /// <summary>
-    /// TOTO
-    /// </summary>
-    public abstract class RoutingContext
+    internal enum HttpVerb
     {
-        internal RouteNode Root { get; init; } = null!;  // this cannot be required =(
+        Get,
+        Post,
+        Put,
+        Delete,
+        Patch,
+        Head,
+        Options,
+        Trace
     }
 }

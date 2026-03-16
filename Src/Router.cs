@@ -7,66 +7,19 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NanoRoute
 {
+    using Internals;
     using Properties;
 
     /// <summary>
-    /// Routes requests to one or more handlers based on HTTP method and URI path.
+    /// TODO
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Routes are registered as path patterns. Literal segments are matched case-insensitively, while parameter
-    /// segments use parsers registered through <see cref="RouterBuilder{TRequest, TResponse}.AddParameterParser(string, ParameterParserDelegate)"/>.
-    /// A pattern ending with <c>/</c> acts as a prefix route, so it also matches longer paths that start with the
-    /// same segments. A pattern without a trailing slash is treated as an exact match.
-    /// </para>
-    /// <para>
-    /// When multiple handlers match the same request, they are invoked as a pipeline. Each handler receives a
-    /// <see cref="RequestContext{TRequest}"/> and a <c>next</c> delegate. Calling <c>next()</c> transfers control
-    /// to the next compatible handler; returning directly short-circuits the pipeline.
-    /// </para>
-    /// <para>
-    /// When multiple handlers match the same request, the router evaluates the shortest compatible prefix first, then
-    /// continues toward more specific matches. At the same path depth, literal segment matches are preferred over
-    /// parameter matches. This allows broader prefix handlers to populate
-    /// <see cref="RequestContext{TRequest}.Parameters"/> before more specific handlers continue the pipeline.
-    /// </para>
-    /// <example>
-    /// <code>
-    /// sealed class MyRouter : Router&lt;HttpRequest, IResult&gt;
-    /// {
-    ///     public IResult Route(HttpRequest request, IServiceProvider services) =&gt; Handle(request, services);
-    ///
-    ///     protected override Uri GetUri(HttpRequest request) =&gt; request.Url;
-    ///     protected override string GetVerb(HttpRequest request) =&gt; request.Method;
-    ///     protected override IResult CreateJsonResponse(HttpStatusCode statusCode, string content) =&gt;
-    ///         Results.Text(content, "application/json", statusCode: (int) statusCode);
-    /// }
-    ///
-    /// MyRouter router = new MyRouter();
-    ///
-    /// router
-    ///     .AddDefaultParsers()
-    ///     .AddHandler("GET", "/api/users/{user_id:int}/", (context, next) =&gt;
-    ///     {
-    ///         object user = LoadUser((int) context.Parameters["user_id"]!);
-    ///         context.Parameters["User"] = user;
-    ///         return next();
-    ///     })
-    ///     .AddHandler("GET", "/api/users/{user_id:int}/details", (context, next) =&gt;
-    ///     {
-    ///         return Results.Ok(context.Parameters["User"]);
-    ///     });
-    ///
-    /// IResult response = router.Route(request, services);
-    /// </code>
-    /// In this example, a request for <c>/api/users/42/details</c> first matches the prefix handler, which parses
-    /// and stores <c>user_id</c>, then continues to the more specific handler that returns the response.
-    /// </example>
-    /// </remarks>
-    public abstract class Router<TRequest, TResponse>: RoutingContext<TRequest, TResponse> where TRequest : class
+    public abstract class Router<TRequest, TResponse>: RoutingContext
     {
         #region Private
         private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, HttpVerb verb, string[] segments, int segmentIndex, Dictionary<string, object?> paramz)
@@ -118,79 +71,36 @@ namespace NanoRoute
 
         #region Protected
         /// <summary>
-        /// Extracts the request URI used during route matching.
+        /// TODO
         /// </summary>
-        /// <param name="request">The incoming request instance.</param>
-        /// <returns>
-        /// The URI whose <see cref="Uri.AbsolutePath"/> is matched against the registered route patterns.
-        /// </returns>
-        /// <remarks>
-        /// Query string and fragment values are ignored by the router. Only the absolute path participates in
-        /// matching.
-        /// </remarks>
-        protected abstract Uri GetUri(TRequest request);
+        protected abstract Task<HttpRequestMessage> GetRequest(TRequest request);
 
         /// <summary>
-        /// Extracts the HTTP method that selects the root route table.
+        /// TODO
         /// </summary>
-        /// <param name="request">The incoming request instance.</param>
-        /// <returns>
-        /// The HTTP method string whose registered handlers should be considered for the request, for example
-        /// <c>GET</c>, <c>POST</c>, or <c>DELETE</c>.
-        /// </returns>
-        /// <remarks>
-        /// Method matching is case-insensitive. A path match is ignored when it was registered for a different method.
-        /// </remarks>
-        protected abstract string GetVerb(TRequest request);
+        protected abstract Task<TResponse> GetResponse(HttpResponseMessage response);
         #endregion
 
         /// <summary>
-        /// Creates a JSON response used by the built-in fallback handlers.
+        /// TODO
         /// </summary>
-        /// <param name="statusCode">The HTTP status code to apply to the generated response.</param>
-        /// <param name="content">The serialized JSON payload to return.</param>
-        /// <returns>The application-specific response object.</returns>
-        public abstract TResponse CreateJsonResponse(HttpStatusCode statusCode, string content);
-
-        /// <summary>
-        /// Resolves the registered handlers for the request and executes the matching pipeline.
-        /// </summary>
-        /// <param name="request">The request to route.</param>
-        /// <param name="services">The service provider exposed through the created <see cref="RequestContext{TRequest}"/>.</param>
-        /// <returns>The response returned by the first handler that completes the pipeline.</returns>
-        /// <exception cref="ArgumentException">Thrown when the request exposes an unsupported HTTP method.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when no handler matches the request.</exception>
-        /// <example>
-        /// <code>
-        /// sealed class MyRouter : Router&lt;HttpRequest, IResult&gt;
-        /// {
-        ///     public IResult Route(HttpRequest request, IServiceProvider services) =&gt; Handle(request, services);
-        ///
-        ///     protected override Uri GetUri(HttpRequest request) =&gt; request.Url;
-        ///     protected override string GetVerb(HttpRequest request) =&gt; request.Method;
-        ///     protected override IResult CreateJsonResponse(HttpStatusCode statusCode, string content) =&gt;
-        ///         Results.Text(content, "application/json", statusCode: (int) statusCode);
-        /// }
-        ///
-        /// IResult result = new MyRouter().Route(request, services);
-        /// </code>
-        /// </example>
         #if DEBUG
         internal
         #endif
-        protected TResponse Handle(TRequest request, IServiceProvider services)
+        protected virtual async Task<TResponse> Handle(TRequest request, IServiceProvider services, CancellationToken cancellation = default)
         {
-            Ensure.NotNull(request);
             Ensure.NotNull(services);
 
-            string requestVerb = GetVerb(request);
-            if (!Enum.TryParse(requestVerb, ignoreCase: true, out HttpVerb verb))
+            HttpRequestMessage requestMessage = await GetRequest(request);
+
+            if (!Enum.TryParse(requestMessage.Method.Method, ignoreCase: true, out HttpVerb verb))
                 throw new ArgumentException
                 (
-                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, requestVerb), nameof(request)
+                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, requestMessage.Method.Method), nameof(request)
                 );
 
-            string requestPath = GetUri(request)
+            string requestPath = requestMessage
+                .RequestUri
                 .AbsolutePath;  // escaped characters are normalized
 
             RouterEventSource.Log.Info("RequestProcessingStarted", () => new
@@ -209,10 +119,12 @@ namespace NanoRoute
             )
             .GetEnumerator();
 
-            return CallNextHandler();
+            return await GetResponse(await CallNextHandler());
 
-            TResponse CallNextHandler()
+            async Task<HttpResponseMessage> CallNextHandler()
             {
+                cancellation.ThrowIfCancellationRequested();
+
                 if (!matches.MoveNext())
                     throw new HttpException(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
  
@@ -225,15 +137,15 @@ namespace NanoRoute
                     matches.Current.Pattern
                 });
 
-                RequestContext<TRequest> requestContext = new()
+                RequestContext requestContext = new()
                 {
                     Parameters = matches.Current.AttachedParameters!,
-                    Request = request,
+                    Request = requestMessage,
                     Services = services,
-                    Router = this
+                    Cancellation = cancellation
                 };
 
-                return matches.Current.Handler(requestContext, CallNextHandler);
+                return await matches.Current.Handler(requestContext, CallNextHandler);
             }
         }
     }
