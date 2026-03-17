@@ -16,29 +16,8 @@ namespace NanoRoute
     using Internals;
 
     /// <summary>
-    /// Bridges <see cref="HttpListenerContext"/> requests to <see cref="HttpMessageRouter"/>.
+    /// 
     /// </summary>
-    /// <remarks>
-    /// This router translates the incoming <see cref="HttpListenerRequest"/> into an
-    /// <see cref="HttpRequestMessage"/>, executes the registered NanoRoute pipeline, then copies the produced
-    /// <see cref="HttpResponseMessage"/> back to <see cref="HttpListenerResponse"/>.
-    /// </remarks>
-    /// <example>
-    /// <code>
-    /// HttpListenerRouter router = new HttpListenerRouter();
-    ///
-    /// router
-    ///     .AddDefaultHandler()
-    ///     .AddHandler("GET", "/health", (context, next) =&gt;
-    ///         Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-    ///         {
-    ///             Content = new StringContent("ok")
-    ///         }));
-    ///
-    /// HttpListenerContext listenerContext = await listener.GetContextAsync();
-    /// await router.Route(listenerContext, services);
-    /// </code>
-    /// </example>
     public class HttpListenerRouter : Router<HttpListenerRequest, HttpResponseMessage>
     {
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
@@ -71,17 +50,12 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Routes a single <see cref="HttpListenerContext"/> through the configured handlers.
+        /// TODO
         /// </summary>
-        /// <param name="context">The listener context containing the incoming request and outgoing response.</param>
-        /// <param name="services">The service provider exposed through the created <see cref="RequestContext{TRequest}"/>.</param>
-        /// <returns>A task that completes when the response has been written to the listener output stream.</returns>
-        /// <remarks>
-        /// Request headers are copied to the intermediate <see cref="HttpRequestMessage"/>, including content
-        /// headers when the request has a body. Response headers from both <see cref="HttpResponseMessage.Headers"/>
-        /// and <see cref="HttpResponseMessage.Content"/> are written back to the listener response, except for
-        /// headers that <see cref="HttpListenerResponse"/> manages itself.
-        /// </remarks>
+        /// <param name="context"></param>
+        /// <param name="services"></param>
+        /// <param name="cancellation"></param>
+        /// <returns></returns>
         public async Task Route(HttpListenerContext context, IServiceProvider services, CancellationToken cancellation)
         {
             Ensure.NotNull(context);
@@ -133,5 +107,10 @@ namespace NanoRoute
 
         /// <inheritdoc/>
         protected override Task<HttpResponseMessage> GetResponse(HttpResponseMessage response) => Task.FromResult(response);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static RouterBuilder<HttpListenerRouter> CreateBuilder() => new(static _ => { });
     }
 }

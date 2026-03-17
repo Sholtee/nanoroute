@@ -3,8 +3,6 @@ abstract NanoRoute.Router<TRequest, TResponse>.GetResponse(System.Net.Http.HttpR
 NanoRoute.HttpListenerRouter
 NanoRoute.HttpListenerRouter.HttpListenerRouter() -> void
 NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, System.IServiceProvider! services, System.Threading.CancellationToken cancellation) -> System.Threading.Tasks.Task!
-NanoRoute.HttpMessageRouter
-NanoRoute.HttpMessageRouter.HttpMessageRouter() -> void
 NanoRoute.ParameterParserDelegate
 NanoRoute.RequestContext
 NanoRoute.RequestContext.Cancellation.get -> System.Threading.CancellationToken
@@ -18,22 +16,21 @@ NanoRoute.RequestContext.Services.get -> System.IServiceProvider!
 NanoRoute.RequestContext.Services.init -> void
 NanoRoute.RequestHandler
 NanoRoute.Router<TRequest, TResponse>
+NanoRoute.Router<TRequest, TResponse>.Handle(TRequest request, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResponse>!
 NanoRoute.Router<TRequest, TResponse>.Router() -> void
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddDefaultHandler(bool populateErrorInfo = false) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddDefaultParsers() -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddHandler(string! pattern, NanoRoute.RequestHandler! handler) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandler! handler) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandler! handler) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.CreateRouter() -> TRouter!
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.RouterBuilder(System.Action<TRouter!>! configureRouter) -> void
-NanoRoute.RouterBuilder<TRouter, TRequest, TResponse>.WithBase(string! pattern) -> NanoRoute.RouterBuilder<TRouter!, TRequest!, TResponse!>!
+NanoRoute.RouterBuilder<TRouter>
+NanoRoute.RouterBuilder<TRouter>.AddDefaultHandler(bool populateErrorInfo = false) -> NanoRoute.RouterBuilder<TRouter!>!
+NanoRoute.RouterBuilder<TRouter>.AddDefaultParsers() -> NanoRoute.RouterBuilder<TRouter!>!
+NanoRoute.RouterBuilder<TRouter>.AddHandler(string! pattern, NanoRoute.RequestHandler! handler) -> NanoRoute.RouterBuilder<TRouter!>!
+NanoRoute.RouterBuilder<TRouter>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandler! handler) -> NanoRoute.RouterBuilder<TRouter!>!
+NanoRoute.RouterBuilder<TRouter>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandler! handler) -> NanoRoute.RouterBuilder<TRouter!>!
+NanoRoute.RouterBuilder<TRouter>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!>!
+NanoRoute.RouterBuilder<TRouter>.CreateRouter() -> TRouter!
+NanoRoute.RouterBuilder<TRouter>.ParameterParsers.get -> System.Collections.Generic.IEnumerable<string!>!
+NanoRoute.RouterBuilder<TRouter>.RouterBuilder(System.Action<TRouter!>! configureRouter) -> void
+NanoRoute.RouterBuilder<TRouter>.WithBase(string! pattern) -> NanoRoute.RouterBuilder<TRouter!>!
 NanoRoute.RoutingContext
 NanoRoute.RoutingContext.RoutingContext() -> void
 override NanoRoute.HttpListenerRouter.GetRequest(System.Net.HttpListenerRequest! request) -> System.Threading.Tasks.Task<System.Net.Http.HttpRequestMessage!>!
 override NanoRoute.HttpListenerRouter.GetResponse(System.Net.Http.HttpResponseMessage! response) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
-override NanoRoute.HttpMessageRouter.CreateJsonResponse(System.Net.HttpStatusCode statusCode, string! content) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
-override NanoRoute.HttpMessageRouter.GetUri(System.Net.Http.HttpRequestMessage! request) -> System.Uri!
-override NanoRoute.HttpMessageRouter.GetVerb(System.Net.Http.HttpRequestMessage! request) -> string!
-virtual NanoRoute.Router<TRequest, TResponse>.Handle(TRequest request, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResponse>!
+static NanoRoute.HttpListenerRouter.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.HttpListenerRouter!>!

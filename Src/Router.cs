@@ -26,7 +26,7 @@ namespace NanoRoute
         {
             if (node.HandlerRegistrations.TryGetValue(verb, out List<HandlerRegistration>? handlerRegistrations))
                 foreach (HandlerRegistration handlerRegistration in handlerRegistrations)
-                    if (handlerRegistration.Pattern.EndsWith("/") || segmentIndex == segments.Length)
+                    if (handlerRegistration.IsPrefix || segmentIndex == segments.Length)
                         yield return handlerRegistration with { AttachedParameters = paramz };
 
             if (segmentIndex == segments.Length)
@@ -87,7 +87,7 @@ namespace NanoRoute
         #if DEBUG
         internal
         #endif
-        protected virtual async Task<TResponse> Handle(TRequest request, IServiceProvider services, CancellationToken cancellation = default)
+        protected async Task<TResponse> Handle(TRequest request, IServiceProvider services, CancellationToken cancellation = default)
         {
             Ensure.NotNull(services);
 

@@ -23,16 +23,14 @@ namespace NanoRoute
     /// <summary>
     /// TODO
     /// </summary>
-    public sealed class RouterBuilder<TRouter, TRequest, TResponse> : RoutingContext
-        where TRouter: Router<TRequest, TResponse>, new()
-        where TResponse : class
-        where TRequest : class
+    public sealed class RouterBuilder<TRouter> : RoutingContext where TRouter: RoutingContext, new()
     {
         #region Private
         // avoid using the constructor that accepts RegexOptions, since it is not AOT compatible
         private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}");
 
-        private readonly Dictionary<string, ParameterParser> _parameterParsers = [];
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Dictionary<string, ParameterParser> _parameterParsers;
 
         private readonly Action<TRouter>? _configureRouter;
 
@@ -94,13 +92,17 @@ namespace NanoRoute
             return target;
         }
 
-        private RouterBuilder(RouteNode root) => Root = root;
+        private RouterBuilder(RouteNode root, Dictionary<string, ParameterParser> inheritedParsers)
+        {
+            Root = root;
+            _parameterParsers = new Dictionary<string, ParameterParser>(inheritedParsers, StringComparer.OrdinalIgnoreCase);
+        }
         #endregion
 
         /// <summary>
-        /// Creates a new see <see cref="RouterBuilder{TRouter, TRequest, TResponse}"/> instance
+        /// Creates a new see <see cref="RouterBuilder{TRouter}"/> instance
         /// </summary>
-        public RouterBuilder(Action<TRouter> configureRouter) : this (new RouteNode { Segment = string.Empty })
+        public RouterBuilder(Action<TRouter> configureRouter) : this(new RouteNode { Segment = string.Empty }, [])
         {
             Ensure.NotNull(configureRouter);
             _configureRouter = configureRouter;
@@ -111,12 +113,12 @@ namespace NanoRoute
         /// </summary>
         /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
-        /// <returns>The current <see cref="RouterBuilder{TRouter, TRequest, TResponse}"/> instance.</returns>
+        /// <returns>The current <see cref="RouterBuilder{TRouter}"/> instance.</returns>
         /// <remarks>
         /// If a parser is already registered under the same <paramref name="parserName"/>, the new registration
         /// replaces the existing one.
         /// </remarks>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
+        public RouterBuilder<TRouter> AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
         {
             Ensure.NotNull(parserName);
             Ensure.NotNull(tryParseDelegate);
@@ -129,7 +131,7 @@ namespace NanoRoute
         /// <summary>
         /// Registers the built-in parameter parsers for common scalar route segments.
         /// </summary>
-        /// <returns>The current <see cref="RouterBuilder{TRouter, TRequest, TResponse}"/> instance.</returns>
+        /// <returns>The current <see cref="RouterBuilder{TRouter}"/> instance.</returns>
         /// <remarks>
         /// This convenience method registers parsers named <c>int</c>, <c>guid</c>, <c>bool</c>, and <c>str</c>.
         /// Existing registrations with the same names are overwritten.
@@ -141,7 +143,7 @@ namespace NanoRoute
         ///     .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddDefaultParsers() =>
+        public RouterBuilder<TRouter> AddDefaultParsers() =>
             AddParameterParser("int", static (string segment, out object? parsed) =>
             {
                 bool success = int.TryParse(segment, out int value);
@@ -181,7 +183,7 @@ namespace NanoRoute
         /// router.AddHandler("/health", (context, next) =&gt; Results.Ok());
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(string pattern, RequestHandler handler)
+        public RouterBuilder<TRouter> AddHandler(string pattern, RequestHandler handler)
         {
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
@@ -216,7 +218,7 @@ namespace NanoRoute
         ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler handler)
+        public RouterBuilder<TRouter> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler handler)
         {
             Ensure.NotNull(verbs);
             Ensure.NotNull(pattern);
@@ -255,7 +257,7 @@ namespace NanoRoute
         /// });
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddHandler(string verb, string pattern, RequestHandler handler)
+        public RouterBuilder<TRouter> AddHandler(string verb, string pattern, RequestHandler handler)
         {
             Ensure.NotNull(verb);
             Ensure.NotNull(pattern);
@@ -277,7 +279,7 @@ namespace NanoRoute
 
             handlerRegistrations.Add
             (
-                new HandlerRegistration(handler, pattern)
+                new HandlerRegistration(handler, pattern.EndsWith("/"))
             );
 
             return this;
@@ -301,7 +303,7 @@ namespace NanoRoute
         /// In this example, requests without a matching route receive the built-in JSON <c>404 Not Found</c>
         /// response instead of an unhandled exception.
         /// </example>
-        public RouterBuilder<TRouter, TRequest, TResponse> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+        public RouterBuilder<TRouter> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
         {
             try
             {
@@ -340,16 +342,17 @@ namespace NanoRoute
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns>
-        public RouterBuilder<TRouter, TRequest, TResponse> WithBase(string pattern)
+        public RouterBuilder<TRouter> WithBase(string pattern)
         {
             Ensure.NotNull(pattern);
 
             if (!pattern.EndsWith("/"))
                 throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
 
-            return new RouterBuilder<TRouter, TRequest, TResponse>
+            return new RouterBuilder<TRouter>
             (
-                FindNode(pattern)
+                FindNode(pattern),
+                _parameterParsers
             );
         }
 
@@ -371,5 +374,11 @@ namespace NanoRoute
 
             return router;
         }
+
+        /// <summary>
+        /// TODO
+        /// Parameter parsers assigned to this instance.
+        /// </summary>
+        public IEnumerable<string> ParameterParsers => _parameterParsers.Keys;
     }
 }
