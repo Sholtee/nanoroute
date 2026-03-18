@@ -27,8 +27,10 @@ NanoRoute.RouterBuilder<TRouter>.AddHandler(System.Collections.Generic.IEnumerab
 NanoRoute.RouterBuilder<TRouter>.AddParameterParser(string! parserName, NanoRoute.ParameterParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!>!
 NanoRoute.RouterBuilder<TRouter>.CreateRouter() -> TRouter!
 NanoRoute.RouterBuilder<TRouter>.ParameterParsers.get -> System.Collections.Generic.IEnumerable<string!>!
+NanoRoute.RouterBuilder<TRouter>.RoutePatterns.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouterBuilder<TRouter>.RouterBuilder(System.Action<TRouter!>! configureRouter) -> void
 NanoRoute.RouterBuilder<TRouter>.WithBase(string! pattern) -> NanoRoute.RouterBuilder<TRouter!>!
+NanoRoute.RouterBuilder<TRouter>.WithBase(string! pattern, System.Action<NanoRoute.RouterBuilder<TRouter!>!>! configureRoutes) -> NanoRoute.RouterBuilder<TRouter!>!
 NanoRoute.RoutingContext
 NanoRoute.RoutingContext.RoutingContext() -> void
 override NanoRoute.HttpListenerRouter.GetRequest(System.Net.HttpListenerRequest! request) -> System.Threading.Tasks.Task<System.Net.Http.HttpRequestMessage!>!

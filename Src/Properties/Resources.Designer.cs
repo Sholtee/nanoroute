@@ -79,6 +79,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid pattern..
+        /// </summary>
+        internal static string ERR_INVALID_PATTERN {
+            get {
+                return ResourceManager.GetString("ERR_INVALID_PATTERN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid verb: {0}.
         /// </summary>
         internal static string ERR_INVALID_VERB {

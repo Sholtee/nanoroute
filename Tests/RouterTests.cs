@@ -7,12 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 using Moq;
-using Moq.Language.Flow;
-using Moq.Protected;
 using NUnit.Framework;
 
 namespace NanoRoute.Tests
@@ -24,8 +21,6 @@ namespace NanoRoute.Tests
     {
         private static readonly object s_request = new();
 
-        private static readonly HttpRequestMessage s_converted_request = new();
-
         private static readonly HttpResponseMessage s_response = new();
 
         private Mock<Func<object, HttpRequestMessage>> _mockGetRequest = null!;
@@ -35,6 +30,8 @@ namespace NanoRoute.Tests
         private DebugEventListener _debugEventListener = null!;
 
         private RouterBuilder<TestRouter> _routerBuilder = null!;
+
+        private HttpRequestMessage _converted_request = null!;
 
         private sealed class TestRouter : Router<object, object>
         {
@@ -60,10 +57,12 @@ namespace NanoRoute.Tests
         [SetUp]
         public void Setup()
         {
+            _converted_request = new HttpRequestMessage() { Method = HttpMethod.Get };
+
             _mockGetRequest = new Mock<Func<object, HttpRequestMessage>>(MockBehavior.Strict);
             _mockGetRequest
                 .Setup(r => r.Invoke(s_request))
-                .Returns(s_converted_request);
+                .Returns(_converted_request);
 
             _mockGetResponse = new Mock<Func<HttpResponseMessage, object>>(MockBehavior.Strict);
             _mockGetResponse
@@ -78,7 +77,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void Handle_ShouldMatchTheShortestPrefix()
+        public async Task Handle_ShouldMatchTheShortestPrefix()
         {
             Mock<RequestHandler>
                 mockHandler_1 = new(MockBehavior.Strict),
@@ -89,17 +88,17 @@ namespace NanoRoute.Tests
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == s_converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == s_converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_3
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == s_converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
@@ -110,14 +109,16 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
                 .CreateRouter();
 
-            Assert.That(router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
+
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
 
             _mockGetRequest.Verify(r => r.Invoke(s_request), Times.Once);
             _mockGetResponse.Verify(r => r.Invoke(s_response), Times.Once);
         }
 
         [Test]
-        public void Handle_ShouldMatchTheShortestPrefix_BasePrefix()
+        public async Task Handle_ShouldMatchTheShortestPrefix_BasePrefix()
         {
             Mock<RequestHandler>
                 mockHandler_1 = new(MockBehavior.Strict),
@@ -128,30 +129,31 @@ namespace NanoRoute.Tests
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == s_converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == s_converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_3
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == s_converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
-            _routerBuilder
+            TestRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
                 .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
-                .WithBase("/path/to/")
+                .WithBase("/path/to/", routerBuilder => routerBuilder
                     .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
                     .AddHandler("GET", "/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
-                    .AddHandler("GET", "/explicit/something/", mockHandler_2.Object);  // should match 2nd
+                    .AddHandler("GET", "/explicit/something/", mockHandler_2.Object))  // should match 2nd
+                .CreateRouter();
 
-            TestRouter router = _routerBuilder.CreateRouter();
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
 
-            Assert.That(router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
 
             _mockGetRequest.Verify(r => r.Invoke(s_request), Times.Once);
             _mockGetResponse.Verify(r => r.Invoke(s_response), Times.Once);
@@ -159,161 +161,194 @@ namespace NanoRoute.Tests
 
 
         [Test]
-        public void Handle_ShouldSupportExactMatches()
+        public async Task Handle_ShouldSupportExactMatches()
         {
-            Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns(true);
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
 
-            _mockRouter.Object.AddHandler("GET", "/path/to/explicit/something", mockHandler.Object);
+            _routerBuilder.AddHandler("GET", "/path/to/explicit/something", mockHandler.Object);
 
-            ISetup<Router<object, object>, Uri> getUriSetup = _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request);
+            TestRouter router = _routerBuilder.CreateRouter();
 
-            getUriSetup.Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/cica"));
-
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
+            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
-            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext<object>>(), It.IsAny<Func<object>>()), Times.Never);
+            Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
 
-            getUriSetup.Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/"));
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
-        public void Handle_ShouldSupportPrefixes()
+        public async Task Handle_ShouldSupportPrefixes()
         {
-            Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns(true);
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
 
-            _mockRouter.Object.AddHandler("GET", "/path/to/explicit/something/", mockHandler.Object);
+            _routerBuilder.AddHandler("GET", "/path/to/explicit/something/", mockHandler.Object);
 
-            ISetup<Router<object, object>, Uri> getUriSetup = _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request);
+            TestRouter router = _routerBuilder.CreateRouter();
 
-            getUriSetup.Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/cica"));
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext<object>>(), It.IsAny<Func<object>>()), Times.Once);
-
-            getUriSetup.Returns(new Uri("https://www.exmaple.com/path/to/explicit/something/"));
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Exactly(2));
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Exactly(2));
         }
 
         [Test]
-        public void Handle_ShouldSupportMultipleHandlersAgainstTheSamePattern([Values("/path/to/explicit/something", "/path/to/{some_str:any}/something")] string pattern)
+        public async Task Handle_ShouldSupportMultipleHandlersAgainstTheSamePattern([Values("/path/to/explicit/something", "/path/to/{some_str:any}/something")] string pattern)
         {
             MockSequence seq = new();
 
-            Mock<RequestHandler<object, object>>
+            Mock<RequestHandler>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns<RequestContext<object>, Func<object>>((_, next) => next());
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns(true);
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
 
-            _mockRouter.Object
+            TestRouter router = _routerBuilder
                 .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler("GET", pattern, mockHandler_1.Object)
-                .AddHandler("GET", pattern, mockHandler_2.Object);
+                .AddHandler("GET", pattern, mockHandler_2.Object)
+                .CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/path/to/explicit/something"));
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
-            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
+            _mockGetRequest.Verify(r => r.Invoke(s_request), Times.Once);
+            _mockGetResponse.Verify(r => r.Invoke(s_response), Times.Once);
         }
 
         [Test]
-        public void ExactMatch_ShouldHaveThePriority([Values] bool explicitFirst)
+        public async Task ExactMatch_ShouldHaveThePriority([Values] bool explicitFirst)
         {
             MockSequence seq = new();
 
-            Mock<RequestHandler<object, object>>
+            Mock<RequestHandler>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns<RequestContext<object>, Func<object>>((_, next) => next());
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns(true);
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
 
-            _mockRouter.Object.AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; });
+            _routerBuilder.AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; });
 
             if (explicitFirst)
-                _mockRouter.Object
+                _routerBuilder
                     .AddHandler("GET", "/path/to/explicit/something", mockHandler_1.Object)
                     .AddHandler("GET", "/path/to/{some_str:any}/something", mockHandler_2.Object);
             else
-                _mockRouter.Object
+                _routerBuilder
                     .AddHandler("GET", "/path/to/{some_str:any}/something", mockHandler_2.Object)
                     .AddHandler("GET", "/path/to/explicit/something", mockHandler_1.Object);
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/path/to/explicit/something"));
+            TestRouter router = _routerBuilder.CreateRouter();
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
-            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
-        public void Handlers_MayShareData()
+        public async Task ExactMatch_ShouldHaveThePriority_BasePrefix([Values] bool explicitFirst)
         {
             MockSequence seq = new();
 
-            Mock<RequestHandler<object, object>>
+            Mock<RequestHandler>
+                mockHandler_1 = new(MockBehavior.Strict),
+                mockHandler_2 = new(MockBehavior.Strict);
+
+            mockHandler_1
+                .InSequence(seq)
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
+
+            mockHandler_2
+                .InSequence(seq)
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
+
+            RouterBuilder<TestRouter> pathTo = _routerBuilder
+                .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .WithBase("/path/to/");
+
+            if (explicitFirst)
+                pathTo
+                    .AddHandler("GET", "explicit/something", mockHandler_1.Object)
+                    .AddHandler("GET", "{some_str:any}/something", mockHandler_2.Object);
+            else
+                pathTo
+                    .AddHandler("GET", "{some_str:any}/something", mockHandler_2.Object)
+                    .AddHandler("GET", "explicit/something", mockHandler_1.Object);
+
+            TestRouter router = _routerBuilder.CreateRouter();
+
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Handlers_MayShareData()
+        {
+            MockSequence seq = new();
+
+            Mock<RequestHandler>
                 mockGetUser = new(MockBehavior.Strict),
                 mockDoSomethingWithUser = new(MockBehavior.Strict);
 
             mockGetUser
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     Assert.That(cntx.Parameters, Does.ContainKey("user_id"));
                     Assert.That(cntx.Parameters["user_id"], Is.EqualTo(1986));
 
                     cntx.Parameters["User"] = new object();  // user object
-                    return next();
+                    return await next();
                 });
 
             mockDoSomethingWithUser
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     Assert.That(cntx.Parameters, Does.ContainKey("User"));
                     Assert.That(cntx.Parameters["User"], Is.InstanceOf<object>());
 
-                    return true;
+                    return s_response;
                 });
 
-            _mockRouter.Object
+            TestRouter router = _routerBuilder
                 .AddParameterParser("int", (string segment, out object? parsed) =>
                 {
                     if (int.TryParse(segment, out int userId))
@@ -325,308 +360,168 @@ namespace NanoRoute.Tests
                     return false;
                 })
                 .AddHandler("GET", "api/users/{user_id:int}/", mockGetUser.Object)
-                .AddHandler("GET", "api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object);
+                .AddHandler("GET", "api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object)
+                .CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/api/users/1986/dosomething"));
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
-            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
-        public void Handler_ShouldBeBoundToVerb()
+        public async Task Handlers_MayShareData_BasePrefix()
         {
-            Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
+            MockSequence seq = new();
+
+            Mock<RequestHandler>
+                mockGetUser = new(MockBehavior.Strict),
+                mockDoSomethingWithUser = new(MockBehavior.Strict);
+
+            mockGetUser
+                .InSequence(seq)
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
+                {
+                    Assert.That(cntx.Parameters, Does.ContainKey("user_id"));
+                    Assert.That(cntx.Parameters["user_id"], Is.EqualTo(1986));
+
+                    cntx.Parameters["User"] = new object();  // user object
+                    return await next();
+                });
+
+            mockDoSomethingWithUser
+                .InSequence(seq)
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
+                {
+                    Assert.That(cntx.Parameters, Does.ContainKey("User"));
+                    Assert.That(cntx.Parameters["User"], Is.InstanceOf<object>());
+
+                    return s_response;
+                });
+
+            TestRouter router = _routerBuilder
+                .AddParameterParser("int", (string segment, out object? parsed) =>
+                {
+                    if (int.TryParse(segment, out int userId))
+                    {
+                        parsed = userId;
+                        return true;
+                    }
+                    parsed = null;
+                    return false;
+                })
+                .WithBase("api/users/{user_id:int}/", routerBuilder => routerBuilder
+                    .AddHandler("GET", "/", mockGetUser.Object)
+                    .AddHandler("GET", "/dosomething", mockDoSomethingWithUser.Object))
+                .CreateRouter();
+
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
+
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Handler_ShouldBeBoundToVerb()
+        {
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns(true);
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
 
-            _mockRouter.Object.AddHandler("POST", "path/to/somewhere", mockHandler.Object);
+            TestRouter router = _routerBuilder.AddHandler("POST", "path/to/somewhere", mockHandler.Object).CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/path/to/somewhere"));
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
+            _converted_request.Method = HttpMethod.Get;
 
-            ISetup<Router<object, object>, string> getVerbSetup = _mockRouter
-                .Protected()
-                .Setup<string>("GetVerb", s_converted_request);
 
-            getVerbSetup.Returns("GET");
-
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
-            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext<object>>(), It.IsAny<Func<object>>()), Times.Never);
+            Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
 
-            getVerbSetup.Returns("POST");
+            _converted_request.Method = HttpMethod.Post;
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
-        public void Handler_ShouldHandleMultipleVerbs()
+        public async Task Handler_ShouldHandleMultipleVerbs()
         {
-            Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns(true);
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
 
-            _mockRouter.Object.AddHandler(["GET", "POST"], "path/to/somewhere", mockHandler.Object);
+            TestRouter router = _routerBuilder.AddHandler(["GET", "POST"], "path/to/somewhere", mockHandler.Object).CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/path/to/somewhere"));
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
+            _converted_request.Method = HttpMethod.Get;
 
-            ISetup<Router<object, object>, string> getVerbSetup = _mockRouter
-                .Protected()
-                .Setup<string>("GetVerb", s_converted_request);
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
 
-            getVerbSetup.Returns("GET");
+            _converted_request.Method = HttpMethod.Post;
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Once);
-
-            getVerbSetup.Returns("POST");
-
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()), Times.Exactly(2));
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Exactly(2));
         }
 
         [Test]
-        public void AddHandler_ShouldCanRegisterAllVerbs()
+        public async Task AddHandler_ShouldCanRegisterAllVerbs()
         {
-            Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns(true);
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
 
-            _mockRouter.Object.AddHandler("path/to/somewhere", mockHandler.Object);
+            TestRouter router = _routerBuilder
+                .AddHandler("path/to/somewhere", mockHandler.Object)
+                .CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/path/to/somewhere"));
-
-            ISetup<Router<object, object>, string> getVerbSetup = _mockRouter
-                .Protected()
-                .Setup<string>("GetVerb", s_converted_request);
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
 
             foreach (string verb in new[] { "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE" })
             {
-                getVerbSetup.Returns(verb);
+                _converted_request.Method = new HttpMethod(verb);
 
-                Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+                Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
             }
         }
 
         [Test]
-        public void Handle_ShouldBeCaseInsensitive()
+        public async Task Handle_ShouldBeCaseInsensitive()
         {
-            Mock<RequestHandler<object, object>> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns(true);
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
 
-            _mockRouter.Object.AddHandler("GET", "path/to/SOMEWHERE", mockHandler.Object);
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", "path/to/SOMEWHERE", mockHandler.Object)
+                .CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/PATH/to/somewhere"));
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/PATH/to/somewhere");
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
         }
-
-        [Test]
-        public void AddHandler_ShouldThrowOnMissingParameterParser([Values("path/to/{missing}", "path/to/{parameter_name:missing}")] string pattern)
-        {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler(pattern, new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, "missing")));
-        }
-
-
-        [Test]
-        public void AddHandler_ShouldThrowOnInvalidVerb()
-        {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _mockRouter.Object.AddHandler("INVALID", "/path/to/somewhere", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("verb"));
-            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "INVALID")));
-        }
-
-        [Test]
-        public void AddHandler_ShouldThrowOnParameterOverride()
-        {
-            _mockRouter.Object
-                .AddParameterParser("int", new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/path/to/{id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
-
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler("GET", "/path/to/{other_id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
-        }
-
-        private sealed record JsonResponse(string Message, string? Reason);
-
-        [Test]
-        public void DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
-        {
-            _mockRouter.Object.AddDefaultHandler(populateErrorInfo);
-
-            _mockRouter
-                .Protected()
-                .Setup<object>("CreateJsonResponse", HttpStatusCode.NotFound, ItExpr.IsAny<string>())
-                .Returns<HttpStatusCode, string>((_, resp) => resp);
-
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/nonexistent"));
-
-            string resp = (string) _mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
-            
-            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp)!;
-            Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized.Reason, Is.Null);
-            Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
-
-            _mockRouter
-                .Protected()
-                .Verify<object>("CreateJsonResponse", Times.Once(), HttpStatusCode.NotFound, ItExpr.IsAny<string>());
-        }
-
-        [Test]
-        public void DefaultHandler_ShouldHandleInternalErrors([Values] bool populateErrorInfo)
-        {
-            const string ERROR_MSG = "Oooops";
-
-            _mockRouter.Object.AddDefaultHandler(populateErrorInfo);
-
-            _mockRouter
-                .Protected()
-                .Setup<object>("CreateJsonResponse", HttpStatusCode.InternalServerError, ItExpr.IsAny<string>())
-                .Returns<HttpStatusCode, string>((_, resp) => resp);
-
-            _mockRouter.Object.AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG));
-
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/somewhere"));
-
-            string resp = (string) _mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
-
-            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp)!;
-            Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized.Reason, populateErrorInfo ? Does.Contain(ERROR_MSG) : Is.Null);
-            Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
-
-            _mockRouter
-                .Protected()
-                .Verify<object>("CreateJsonResponse", Times.Once(), HttpStatusCode.InternalServerError, ItExpr.IsAny<string>());
-        }
-
-        [Test]
-        public void DefaultHandler_ShouldLetNormalWorkflowGo()
-        {
-            _mockRouter.Object
-                .AddDefaultHandler()
-                .AddHandler("GET", "/somewhere", (_, _) => true);
-
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/somewhere"));
-
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-        }
-
-        private static IEnumerable<TestCaseData> AddDefaultParsers_ShouldRegisterTheBuiltInParsers_Cases()
-        {
-            yield return new TestCaseData("int", 42);
-            yield return new TestCaseData("guid", Guid.Parse("4a91f2c0-0e3c-4ec8-9f8c-8d2d2f2c7d1a"));
-            yield return new TestCaseData("bool", true);
-            yield return new TestCaseData("str", "spikey");
-        }
-
-        [TestCaseSource(nameof(AddDefaultParsers_ShouldRegisterTheBuiltInParsers_Cases))]
-        public void AddDefaultParsers_ShouldRegisterTheBuiltInParsers(string parserName, object expectedValue)
-        {
-            _mockRouter.Object
-                .AddDefaultParsers()
-                .AddHandler("GET", $"/items/{{value:{parserName}}}", (context, _) =>
-                {
-                    Assert.That(context.Parameters["value"], Is.EqualTo(expectedValue));
-                    return true;
-                });
-
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri($"https://www.exmaple.com/items/{expectedValue}"));
-
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-        }
-
-        [Test]
-        public void AddParameterParser_ShouldBeNullChecked() => Assert.Multiple(() =>
-        {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddParameterParser(null!, new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("parserName"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddParameterParser("any", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
-        });
-
-        [Test]
-        public void AddHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
-        {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(null!, (_, _) => new object()))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("path", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("handler"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler((IEnumerable<string>) null!, "path", (_, _) => new object()))!;
-            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler((string) null!, "path", (_, _) => new object()))!;
-            Assert.That(ex.ParamName, Is.EqualTo("verb"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(["GET"], null!, (_, _) => new object()))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(["GET"], "path", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("handler"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("GET", null!, (_, _) => new object()))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("GET", "path", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("handler"));
-        });
 
         [Test]
         public void Handle_ShouldBeNullChecked()
         {
-            Assert.Multiple(() =>
-            {
-                ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.Handle(null!, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
-                Assert.That(ex.ParamName, Is.EqualTo("request"));
-
-                ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.Handle(s_converted_request, null!))!;
-                Assert.That(ex.ParamName, Is.EqualTo("services"));
-            });
+            ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>(() => _routerBuilder.CreateRouter().Handle(_converted_request, null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("services"));
         }
 
         [Test]
-        public void Parameters_ShouldNotLeak()
+        public async Task Parameters_ShouldNotLeak()
         {
-            Mock<RequestHandler<object, object>>
+            Mock<RequestHandler>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
@@ -635,22 +530,22 @@ namespace NanoRoute.Tests
                 paramz_2 = null!;
 
             mockHandler_1
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     paramz_1 = cntx.Parameters;
-                    return next();
+                    return await next();
                 });
 
             mockHandler_2
-                .Setup(h => h.Invoke(It.Is<RequestContext<object>>(c => c.Request == s_converted_request), It.IsAny<Func<object>>()))
-                .Returns<RequestContext<object>, Func<object>>((cntx, next) =>
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     paramz_2 = cntx.Parameters;
-                    return true;
+                    return s_response;
                 });
 
-            _mockRouter.Object
+            TestRouter router = _routerBuilder
                 .AddParameterParser("int", (string segment, out object? parsed) =>
                 {
                     if (int.TryParse(segment, out int userId))
@@ -667,14 +562,12 @@ namespace NanoRoute.Tests
                     return true;
                 })
                 .AddHandler("GET", "api/users/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
-                .AddHandler("GET", "api/users/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object);
+                .AddHandler("GET", "api/users/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object)
+                .CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething"));
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething");
 
-            _mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+            await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
 
             Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
             Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id_str"] = "1986" }));

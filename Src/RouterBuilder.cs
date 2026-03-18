@@ -26,8 +26,12 @@ namespace NanoRoute
     public sealed class RouterBuilder<TRouter> : RoutingContext where TRouter: RoutingContext, new()
     {
         #region Private
+        private const string SEGMENT_DEFINITION = @"(?:[\w.-]+|\{(?:\w+:)?\w+\})";
+
         // avoid using the constructor that accepts RegexOptions, since it is not AOT compatible
-        private static readonly Regex s_matcherDefinition = new("\\{(?:(?<parametername>\\w+):)?(?<name>\\w+)\\}");
+        private static readonly Regex
+            s_parserDefinition = new(@"^\{(?:(?<parametername>\w+):)?(?<name>\w+)\}$"),
+            s_patternValidator = new($@"^(?:/?|/?{SEGMENT_DEFINITION}(?:/{SEGMENT_DEFINITION})*/?)$");
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Dictionary<string, ParameterParser> _parameterParsers;
@@ -39,11 +43,14 @@ namespace NanoRoute
         /// </summary>
         private RouteNode FindNode(string pattern)
         {
+            if (!s_patternValidator.IsMatch(pattern))
+                throw new ArgumentException(Resources.ERR_INVALID_PATTERN, nameof(pattern));
+
             RouteNode target = Root;
 
             foreach (string segment in pattern.Split(['/'], StringSplitOptions.RemoveEmptyEntries))
             {
-                if (s_matcherDefinition.Match(segment) is { Success: true } parserDefinition)
+                if (s_parserDefinition.Match(segment) is { Success: true } parserDefinition)
                 {
                     string
                         parserName = parserDefinition.Groups["name"].Value,  // cannot be empty
@@ -279,7 +286,7 @@ namespace NanoRoute
 
             handlerRegistrations.Add
             (
-                new HandlerRegistration(handler, pattern.EndsWith("/"))
+                new HandlerRegistration(handler, pattern)
             );
 
             return this;
@@ -314,7 +321,7 @@ namespace NanoRoute
                 return CreateJsonResponse(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
             }
             // OperationCanceledException should be handled by the router implementation:
-            // when the Router.Handle() is called with a cancelled token this handler won't be even called
+            // Calling the Router.Handle() with a cancelled token will prevent this handler from being called.
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 return CreateJsonResponse(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, populateErrorInfo ? ex.ToString() : null);
@@ -357,6 +364,22 @@ namespace NanoRoute
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public RouterBuilder<TRouter> WithBase(string pattern, Action<RouterBuilder<TRouter>> configureRoutes)
+        {
+            Ensure.NotNull(pattern);
+            Ensure.NotNull(configureRoutes);
+
+            configureRoutes
+            (
+                WithBase(pattern)
+            );
+
+            return this;
+        }
+
+        /// <summary>
         /// TODO
         /// </summary>
         /// <returns></returns>
@@ -380,5 +403,37 @@ namespace NanoRoute
         /// Parameter parsers assigned to this instance.
         /// </summary>
         public IEnumerable<string> ParameterParsers => _parameterParsers.Keys;
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public IEnumerable<string> RoutePatterns
+        {
+            get
+            {
+                HashSet<string> patterns = [];
+
+                Walk(Root, string.Empty, patterns);
+
+                return patterns.OrderBy(static p => p);
+
+                static void Walk(RouteNode node, string currentPath, HashSet<string> patterns)
+                {
+                    string path = node.Segment.Length > 0
+                        ? $"{currentPath}/{node.Segment}"
+                        : currentPath;
+
+                    foreach (KeyValuePair<HttpVerb, List<HandlerRegistration>> handlerRegistrations in node.HandlerRegistrations)
+                        foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
+                            patterns.Add($"[{handlerRegistrations.Key}] {path}{(handlerRegistration.IsPrefix ? "/" : string.Empty)}");
+ 
+                    foreach (RouteNode childNode in node.ExactChildren.Values)
+                        Walk(childNode, path, patterns);
+
+                    foreach (RouteNode childNode in node.ParameterizedChildren)
+                        Walk(childNode, path, patterns);
+                }
+            }
+        }
     }
 }
