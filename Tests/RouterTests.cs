@@ -427,6 +427,27 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task Handle_ShouldSupportParametersWithoutName()
+        {
+            Dictionary<string, object?> paramz = null!;
+
+            TestRouter router = _routerBuilder
+                .AddDefaultParsers()
+                .AddHandler("GET", "users/{user_id:int}/{str}/cica", async (context, next) =>
+                {
+                    paramz = context.Parameters;
+                    return s_response;
+                })
+                .CreateRouter();
+
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com/users/1986/any_string/cica");
+
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(paramz, Has.Count.EqualTo(1));
+            Assert.That(paramz["user_id"], Is.EqualTo(1986));
+        }
+
+        [Test]
         public async Task Handler_ShouldBeBoundToVerb()
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);

@@ -286,7 +286,7 @@ namespace NanoRoute
 
             handlerRegistrations.Add
             (
-                new HandlerRegistration(handler, pattern)
+                new HandlerRegistration(handler, pattern.EndsWith("/"))
             );
 
             return this;

@@ -12,11 +12,12 @@ using NUnit.Framework;
 namespace NanoRoute.Tests
 {
     using Internals;
+    using Properties;
 
     [TestFixture]
     internal sealed class RouterBuilderTests
     {
-        private sealed class TestRouter : RoutingContext { } 
+        internal sealed class TestRouter : RoutingContext { } 
 
         private RouterBuilder<TestRouter> _routerBuilder = null!;
 
@@ -33,6 +34,9 @@ namespace NanoRoute.Tests
         [Test]
         public void CreateRouter_ShouldCopyTheRootNode()
         {
+            _mockConfigureRouter
+                .Setup(s => s.Invoke(It.IsAny<TestRouter>()));
+
             Mock<RequestHandler> mockRequestHandler = new(MockBehavior.Strict);
 
             _routerBuilder.AddHandler("GET", "", mockRequestHandler.Object);
@@ -48,15 +52,68 @@ namespace NanoRoute.Tests
         [Test]
         public void WithBase_ShouldInheritTheParentParameterParsers()
         {
-            // TODO
+            RouterBuilder<TestRouter> childBuilder = _routerBuilder
+                .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .WithBase("/to/")
+                .AddParameterParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
+
+            Assert.That(_routerBuilder.ParameterParsers.ToList(), Has.Count.EqualTo(1).And.Contains("str"));
+            Assert.That(childBuilder.ParameterParsers.ToList(), Has.Count.EqualTo(2).And.Contains("str").And.Contains("int"));
         }
 
-        /*
+        [Test]
+        public void RoutePatterns_ShouldReflectTheActualBranch()
+        {
+            _routerBuilder
+                .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddHandler("GET", "/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/somewhere/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/{some_str_1:any}/not-prefix", new Mock<RequestHandler>(MockBehavior.Strict).Object);
+
+            RouterBuilder<TestRouter> childBuilder = _routerBuilder.WithBase("/path/to/")
+                .AddHandler("GET", "", new Mock<RequestHandler>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/{some_str_2:any}/something/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/explicit/something/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/not-prefix", new Mock<RequestHandler>(MockBehavior.Strict).Object);
+
+            Assert.That(_routerBuilder.RoutePatterns, Is.EqualTo(new string[]
+            {
+                "[Get] /",
+                "[Get] /{some_str_1:any}/not-prefix",
+                "[Get] /path/to",
+                "[Get] /path/to/{some_str_2:any}/something/",
+                "[Get] /path/to/explicit/something/",
+                "[Get] /path/to/not-prefix",
+                "[Get] /somewhere/",
+            }));
+            Assert.That(childBuilder.RoutePatterns, Is.EqualTo(new string[]
+            {
+                "[Get] /to",
+                "[Get] /to/{some_str_2:any}/something/",
+                "[Get] /to/explicit/something/",
+                "[Get] /to/not-prefix"
+            }));
+        }
+
+        [Test]
+        public void WithBase_ShouldThrowOnNonPrefixPattern([Values("", "/not-prefix", "/some/not-prefix")] string pattern)
+        {
+        }
+
+        [Test]
+        public void WithBase_ShouldThrowOnInvalidPattern([Values(/*TODO*/)] string pattern)
+        {
+        }
+
+        [Test]
+        public void AddHandler_ShouldThrowOnInvalidPattern([Values(/*TODO*/)] string pattern)
+        {
+        }
 
         [Test]
         public void AddHandler_ShouldThrowOnMissingParameterParser([Values("path/to/{missing}", "path/to/{parameter_name:missing}")] string pattern)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler(pattern, new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler(pattern, new Mock<RequestHandler>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, "missing")));
         }
 
@@ -64,38 +121,28 @@ namespace NanoRoute.Tests
         [Test]
         public void AddHandler_ShouldThrowOnInvalidVerb()
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _mockRouter.Object.AddHandler("INVALID", "/path/to/somewhere", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("INVALID", "/path/to/somewhere", new Mock<RequestHandler>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
             Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "INVALID")));
         }
-
+        
         [Test]
         public void AddHandler_ShouldThrowOnParameterOverride()
         {
-            _mockRouter.Object
+            _routerBuilder
                 .AddParameterParser("int", new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/path/to/{id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object);
+                .AddHandler("GET", "/path/to/{id:int}", new Mock<RequestHandler>(MockBehavior.Strict).Object);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _mockRouter.Object.AddHandler("GET", "/path/to/{other_id:int}", new Mock<RequestHandler<object, object>>(MockBehavior.Strict).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", "/path/to/{other_id:int}", new Mock<RequestHandler>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
         }
-
+        /*
         private sealed record JsonResponse(string Message, string? Reason);
 
         [Test]
         public void DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
         {
-            _mockRouter.Object.AddDefaultHandler(populateErrorInfo);
-
-            _mockRouter
-                .Protected()
-                .Setup<object>("CreateJsonResponse", HttpStatusCode.NotFound, ItExpr.IsAny<string>())
-                .Returns<HttpStatusCode, string>((_, resp) => resp);
-
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/nonexistent"));
+            _routerBuilder.AddDefaultHandler(populateErrorInfo);
 
             string resp = (string)_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
 
@@ -154,7 +201,7 @@ namespace NanoRoute.Tests
 
             Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
         }
-
+        /*
         private static IEnumerable<TestCaseData> AddDefaultParsers_ShouldRegisterTheBuiltInParsers_Cases()
         {
             yield return new TestCaseData("int", 42);

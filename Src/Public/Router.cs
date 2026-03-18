@@ -135,7 +135,7 @@ namespace NanoRoute
                 {
                     RequestPath = requestPath,
                     Verb = verb,
-                    matches.Current.Pattern
+                   // matches.Current.Pattern
                 });
 
                 RequestContext requestContext = new()
