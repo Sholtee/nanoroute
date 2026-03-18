@@ -14,6 +14,7 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
+    using Internals;
     using Properties;
 
     [TestFixture]

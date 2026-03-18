@@ -7,7 +7,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 
-namespace NanoRoute
+namespace NanoRoute.Internals
 {
     /// <summary>
     /// Exposes events from this library.

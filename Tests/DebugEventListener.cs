@@ -9,6 +9,8 @@ using System.Diagnostics.Tracing;
 
 namespace NanoRoute.Tests
 {
+    using Internals;
+
     internal sealed class DebugEventListener : EventListener
     {
         protected override void OnEventSourceCreated(EventSource eventSource)
