@@ -85,13 +85,13 @@ namespace NanoRoute
                 }
                 else
                 {
-                    if (!target.ExactChildren.TryGetValue(segment, out RouteNode exactChild))
+                    if (!target.LiteralChildren.TryGetValue(segment, out RouteNode exactChild))
                     {
                         exactChild = new RouteNode
                         {
                             Segment = segment
                         };
-                        target.ExactChildren.Add(segment, exactChild);
+                        target.LiteralChildren.Add(segment, exactChild);
                     }
 
                     target = exactChild;
@@ -433,7 +433,7 @@ namespace NanoRoute
                         foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
                             patterns.Add($"[{handlerRegistrations.Key}] {handlerRegistration.Pattern}");
  
-                    foreach (RouteNode childNode in node.ExactChildren.Values)
+                    foreach (RouteNode childNode in node.LiteralChildren.Values)
                         Walk(childNode, patterns);
 
                     foreach (RouteNode childNode in node.ParameterizedChildren)

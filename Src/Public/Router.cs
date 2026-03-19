@@ -31,11 +31,11 @@ namespace NanoRoute
             if (segment?.Value is null)
                 yield break;
 
-            if (node.ExactChildren.TryGetValue(segment.Value, out RouteNode exactChild))
+            if (node.LiteralChildren.TryGetValue(segment.Value, out RouteNode literalChild))
             {
                 IEnumerable<HandlerRegistration> matches = FindMatches
                 (
-                    exactChild,
+                    literalChild,
                     verb,
                     segment.Next,
                     paramz

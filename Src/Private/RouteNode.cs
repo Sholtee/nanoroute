@@ -5,7 +5,6 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NanoRoute.Internals
 {
@@ -32,7 +31,7 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Gets literal child nodes keyed by case-insensitive segment value.
         /// </summary>
-        public Dictionary<string, RouteNode> ExactChildren { get; } = new(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, RouteNode> LiteralChildren { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets parameter-based child nodes evaluated after literal matches.
@@ -42,7 +41,7 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Creates a deep-copy from this node.
         /// </summary>
-        public RouteNode Copy()  // TODO: test this carefully 
+        public RouteNode Copy()
         {
             RouteNode result = new()
             {
@@ -50,20 +49,16 @@ namespace NanoRoute.Internals
                 Segment = Segment
             };
 
-            result.ParameterizedChildren.AddRange
-            (
-                ParameterizedChildren.Select(static n => n.Copy())
-            );
-
-            CopyDict(HandlerRegistrations, result.HandlerRegistrations, static v => [..v]);
-            CopyDict(ExactChildren, result.ExactChildren, static n => n.Copy());
+            CopyCollection(ParameterizedChildren, result.ParameterizedChildren, static c => c.Copy());
+            CopyCollection(HandlerRegistrations,  result.HandlerRegistrations,  static kvp => new(kvp.Key, [..kvp.Value]));
+            CopyCollection(LiteralChildren,       result.LiteralChildren,       static kvp => new(kvp.Key, kvp.Value.Copy()));
 
             return result;
 
-            static void CopyDict<TKey, TValue>(Dictionary<TKey, TValue> src, Dictionary<TKey, TValue> dst, Func<TValue, TValue> valueCopy)
+            static void CopyCollection<TValue>(ICollection<TValue> src, ICollection<TValue> dst, Func<TValue, TValue> valueCopy)
             {
-                foreach(KeyValuePair<TKey, TValue> kvp in src)
-                    dst.Add(kvp.Key, valueCopy(kvp.Value));
+                foreach(TValue item in src)
+                    dst.Add(valueCopy(item));
             }
         }
     }
