@@ -18,7 +18,7 @@ namespace NanoRoute
     /// <summary>
     /// 
     /// </summary>
-    public class HttpListenerRouter : Router<HttpListenerRequest, HttpResponseMessage>
+    public class HttpListenerRouter : Router
     {
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
         private static readonly HashSet<string> s_reservedHeaders = new(StringComparer.OrdinalIgnoreCase)
@@ -49,34 +49,7 @@ namespace NanoRoute
             }
         }
 
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="services"></param>
-        /// <param name="cancellation"></param>
-        /// <returns></returns>
-        public async Task Route(HttpListenerContext context, IServiceProvider services, CancellationToken cancellation)
-        {
-            Ensure.NotNull(context);
-            Ensure.NotNull(services);
-
-            HttpResponseMessage response;
-            try
-            {
-                response = await Handle(context.Request, services, cancellation);
-            }
-            catch (OperationCanceledException)
-            {
-                context.Response.Abort();
-                return;
-            }
-
-            await HandleResponse(response, context.Response);
-        }
-
-        /// <inheritdoc/>
-        protected override Task<HttpRequestMessage> GetRequest(HttpListenerRequest request)
+        private static HttpRequestMessage GetRequest(HttpListenerRequest request)
         {
             HttpRequestMessage requestMessage = new
             (
@@ -86,6 +59,8 @@ namespace NanoRoute
 
             if (request.HasEntityBody)
                 requestMessage.Content = new StreamContent(request.InputStream);
+
+            requestMessage.Properties["OriginalRequest"] = request;
 
             foreach (string header in request.Headers.AllKeys)
             {
@@ -102,11 +77,34 @@ namespace NanoRoute
                     });
             }
 
-            return Task.FromResult(requestMessage);
+            return requestMessage;
         }
 
-        /// <inheritdoc/>
-        protected override Task<HttpResponseMessage> GetResponse(HttpResponseMessage response) => Task.FromResult(response);
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="services"></param>
+        /// <param name="cancellation"></param>
+        /// <returns></returns>
+        public async Task Route(HttpListenerContext context, IServiceProvider services, CancellationToken cancellation)
+        {
+            Ensure.NotNull(context);
+            Ensure.NotNull(services);
+
+            HttpResponseMessage response;
+            try
+            {
+                response = await Handle(GetRequest(context.Request), services, cancellation);
+            }
+            catch (OperationCanceledException)
+            {
+                context.Response.Abort();
+                return;
+            }
+
+            await HandleResponse(response, context.Response);
+        }
 
         /// <summary>
         /// 

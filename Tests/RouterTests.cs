@@ -20,29 +20,16 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class RouterTests
     {
-        private static readonly object s_request = new();
-
         private static readonly HttpResponseMessage s_response = new();
-
-        private Mock<Func<object, HttpRequestMessage>> _mockGetRequest = null!;
-
-        private Mock<Func<HttpResponseMessage, object>> _mockGetResponse = null!;
 
         private DebugEventListener _debugEventListener = null!;
 
         private RouterBuilder<TestRouter> _routerBuilder = null!;
 
-        private HttpRequestMessage _converted_request = null!;
+        private HttpRequestMessage _request = null!;
 
-        private sealed class TestRouter : Router<object, object>
+        private sealed class TestRouter : Router
         {
-            protected override async Task<HttpRequestMessage> GetRequest(object request) => GetRequestImpl(request);
-
-            protected override async Task<object> GetResponse(HttpResponseMessage response) => GetResponseImpl(response);
-
-            public Func<object, HttpRequestMessage> GetRequestImpl { get; set; } = null!;
-
-            public Func<HttpResponseMessage, object> GetResponseImpl { get; set; } = null!;
         }
 
         [OneTimeSetUp]
@@ -58,23 +45,9 @@ namespace NanoRoute.Tests
         [SetUp]
         public void Setup()
         {
-            _converted_request = new HttpRequestMessage() { Method = HttpMethod.Get };
+            _request = new HttpRequestMessage() { Method = HttpMethod.Get };
 
-            _mockGetRequest = new Mock<Func<object, HttpRequestMessage>>(MockBehavior.Strict);
-            _mockGetRequest
-                .Setup(r => r.Invoke(s_request))
-                .Returns(_converted_request);
-
-            _mockGetResponse = new Mock<Func<HttpResponseMessage, object>>(MockBehavior.Strict);
-            _mockGetResponse
-                .Setup(r => r.Invoke(s_response))
-                .Returns(true);
-
-            _routerBuilder = new RouterBuilder<TestRouter>(r =>
-            {
-                r.GetRequestImpl = _mockGetRequest.Object;
-                r.GetResponseImpl = _mockGetResponse.Object;
-            });
+            _routerBuilder = new RouterBuilder<TestRouter>(r => { });
         }
 
         [Test]
@@ -89,17 +62,17 @@ namespace NanoRoute.Tests
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_3
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
@@ -110,12 +83,9 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-
-            _mockGetRequest.Verify(r => r.Invoke(s_request), Times.Once);
-            _mockGetResponse.Verify(r => r.Invoke(s_response), Times.Once);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
         }
 
         [Test]
@@ -130,17 +100,17 @@ namespace NanoRoute.Tests
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_3
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
@@ -152,12 +122,9 @@ namespace NanoRoute.Tests
                     .AddHandler("GET", "/explicit/something/", mockHandler_2.Object))  // should match 2nd
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-
-            _mockGetRequest.Verify(r => r.Invoke(s_request), Times.Once);
-            _mockGetResponse.Verify(r => r.Invoke(s_response), Times.Once);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
         }
 
         [Test]
@@ -165,16 +132,16 @@ namespace NanoRoute.Tests
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
                 .AddHandler("GET", path, mockHandler.Object)
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com");
+            _request.RequestUri = new Uri("https://www.exmaple.com");
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
         }
 
         [Test]
@@ -182,22 +149,22 @@ namespace NanoRoute.Tests
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             _routerBuilder.AddHandler("GET", "/path/to/explicit/something", mockHandler.Object);
 
             TestRouter router = _routerBuilder.CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
-            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
+            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
@@ -205,20 +172,20 @@ namespace NanoRoute.Tests
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             _routerBuilder.AddHandler("GET", "/path/to/explicit/something/", mockHandler.Object);
 
             TestRouter router = _routerBuilder.CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Exactly(2));
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Exactly(2));
         }
 
         [Test]
@@ -232,12 +199,12 @@ namespace NanoRoute.Tests
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
@@ -246,13 +213,10 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", pattern, mockHandler_2.Object)
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
-            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
-
-            _mockGetRequest.Verify(r => r.Invoke(s_request), Times.Once);
-            _mockGetResponse.Verify(r => r.Invoke(s_response), Times.Once);
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
@@ -266,12 +230,12 @@ namespace NanoRoute.Tests
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             _routerBuilder.AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; });
@@ -287,10 +251,10 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder.CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
-            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
@@ -304,12 +268,12 @@ namespace NanoRoute.Tests
 
             mockHandler_1
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (_, next) => await next());
 
             mockHandler_2
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             RouterBuilder<TestRouter> pathTo = _routerBuilder
@@ -327,10 +291,10 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder.CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
-            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
@@ -344,7 +308,7 @@ namespace NanoRoute.Tests
 
             mockGetUser
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     Assert.That(cntx.Parameters, Does.ContainKey("user_id"));
@@ -356,7 +320,7 @@ namespace NanoRoute.Tests
 
             mockDoSomethingWithUser
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     Assert.That(cntx.Parameters, Does.ContainKey("User"));
@@ -380,11 +344,11 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object)
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
+            _request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
-            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
@@ -398,7 +362,7 @@ namespace NanoRoute.Tests
 
             mockGetUser
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     Assert.That(cntx.Parameters, Does.ContainKey("user_id"));
@@ -410,7 +374,7 @@ namespace NanoRoute.Tests
 
             mockDoSomethingWithUser
                 .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     Assert.That(cntx.Parameters, Does.ContainKey("User"));
@@ -435,11 +399,11 @@ namespace NanoRoute.Tests
                     .AddHandler("GET", "/dosomething", mockDoSomethingWithUser.Object))
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
+            _request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
-            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockGetUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockDoSomethingWithUser.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
@@ -456,9 +420,9 @@ namespace NanoRoute.Tests
                 })
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/users/1986/any_string/cica");
+            _request.RequestUri = new Uri("https://www.exmaple.com/users/1986/any_string/cica");
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             Assert.That(paramz, Has.Count.EqualTo(1));
             Assert.That(paramz["user_id"], Is.EqualTo(1986));
         }
@@ -468,24 +432,24 @@ namespace NanoRoute.Tests
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder.AddHandler("POST", "path/to/somewhere", mockHandler.Object).CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
-            _converted_request.Method = HttpMethod.Get;
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
+            _request.Method = HttpMethod.Get;
 
 
-            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
 
-            _converted_request.Method = HttpMethod.Post;
+            _request.Method = HttpMethod.Post;
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]
@@ -493,21 +457,21 @@ namespace NanoRoute.Tests
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder.AddHandler(["GET", "POST"], "path/to/somewhere", mockHandler.Object).CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
-            _converted_request.Method = HttpMethod.Get;
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
+            _request.Method = HttpMethod.Get;
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
 
-            _converted_request.Method = HttpMethod.Post;
+            _request.Method = HttpMethod.Post;
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
-            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Exactly(2));
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Exactly(2));
         }
 
         [Test]
@@ -515,20 +479,20 @@ namespace NanoRoute.Tests
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
                 .AddHandler("path/to/somewhere", mockHandler.Object)
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
 
             foreach (string verb in new[] { "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE" })
             {
-                _converted_request.Method = new HttpMethod(verb);
+                _request.Method = new HttpMethod(verb);
 
-                Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+                Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             }
         }
 
@@ -537,22 +501,22 @@ namespace NanoRoute.Tests
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
             mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
                 .AddHandler("GET", "path/to/SOMEWHERE", mockHandler.Object)
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/PATH/to/somewhere");
+            _request.RequestUri = new Uri("https://www.exmaple.com/PATH/to/somewhere");
 
-            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
         }
 
         [Test]
         public void Handle_ShouldBeNullChecked()
         {
-            ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>(() => _routerBuilder.CreateRouter().Handle(_converted_request, null!))!;
+            ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>(() => _routerBuilder.CreateRouter().Handle(_request, null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("services"));
         }
 
@@ -568,7 +532,7 @@ namespace NanoRoute.Tests
                 paramz_2 = null!;
 
             mockHandler_1
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     paramz_1 = cntx.Parameters;
@@ -576,7 +540,7 @@ namespace NanoRoute.Tests
                 });
 
             mockHandler_2
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
                 {
                     paramz_2 = cntx.Parameters;
@@ -603,9 +567,9 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "api/users/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object)
                 .CreateRouter();
 
-            _converted_request.RequestUri = new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething");
+            _request.RequestUri = new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething");
 
-            await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+            await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
 
             Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
             Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id_str"] = "1986" }));

@@ -19,9 +19,8 @@ namespace NanoRoute
     /// <summary>
     /// TODO
     /// </summary>
-    public abstract class Router<TRequest, TResponse>: RoutingContext
+    public abstract class Router: RoutingContext
     {
-        #region Private
         private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, HttpVerb verb, StringSegment? segment, Dictionary<string, object?> paramz)
         {
             if (node.HandlerRegistrations.TryGetValue(verb, out List<HandlerRegistration>? handlerRegistrations))
@@ -63,19 +62,6 @@ namespace NanoRoute
                     yield return match;
             }
         }
-        #endregion
-
-        #region Protected
-        /// <summary>
-        /// TODO
-        /// </summary>
-        protected abstract Task<HttpRequestMessage> GetRequest(TRequest request);
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        protected abstract Task<TResponse> GetResponse(HttpResponseMessage response);
-        #endregion
 
         /// <summary>
         /// TODO
@@ -83,20 +69,18 @@ namespace NanoRoute
         #if DEBUG
         internal
         #endif
-        protected async Task<TResponse> Handle(TRequest request, IServiceProvider services, CancellationToken cancellation = default)
+        protected async Task<HttpResponseMessage> Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)
         {
+            Ensure.NotNull(request);
             Ensure.NotNull(services);
 
-            HttpRequestMessage requestMessage = await GetRequest(request);
-            if (!Enum.TryParse(requestMessage.Method.Method, ignoreCase: true, out HttpVerb verb))
+            if (!Enum.TryParse(request.Method.Method, ignoreCase: true, out HttpVerb verb))
                 throw new ArgumentException
                 (
-                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, requestMessage.Method.Method), nameof(request)
+                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(request)
                 );
 
-            requestMessage.Properties["OriginalRequest"] = request;
-
-            string requestPath = requestMessage
+            string requestPath = request
                 .RequestUri
                 .AbsolutePath;  // escaped characters are normalized
 
@@ -115,7 +99,7 @@ namespace NanoRoute
             )
             .GetEnumerator();
 
-            return await GetResponse(await CallNextHandler());
+            return await CallNextHandler();
 
             async Task<HttpResponseMessage> CallNextHandler()
             {
@@ -136,7 +120,7 @@ namespace NanoRoute
                 RequestContext requestContext = new()
                 {
                     Parameters = matches.Current.AttachedParameters!,
-                    Request = requestMessage,
+                    Request = request,
                     Services = services,
                     Cancellation = cancellation
                 };

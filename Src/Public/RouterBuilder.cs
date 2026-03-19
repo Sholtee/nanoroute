@@ -23,7 +23,7 @@ namespace NanoRoute
     /// <summary>
     /// TODO
     /// </summary>
-    public sealed class RouterBuilder<TRouter> : RoutingContext where TRouter: RoutingContext, new()
+    public sealed class RouterBuilder<TRouter> : RoutingContext where TRouter: Router, new()
     {
         #region Private
         private const string SEGMENT_DEFINITION = @"(?:[\w.-]+|\{(?:\w+:)?\w+\})";

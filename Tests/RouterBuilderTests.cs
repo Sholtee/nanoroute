@@ -17,7 +17,7 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class RouterBuilderTests
     {
-        internal sealed class TestRouter : RoutingContext { } 
+        internal sealed class TestRouter : Router { } 
 
         private RouterBuilder<TestRouter> _routerBuilder = null!;
 
