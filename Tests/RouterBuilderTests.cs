@@ -47,11 +47,10 @@ namespace NanoRoute.Tests
 
             Mock<RequestHandler> mockRequestHandler = new(MockBehavior.Strict);
 
-            _routerBuilder.AddHandler("GET", "", mockRequestHandler.Object);
-            Assert.That(_routerBuilder.Root.HandlerRegistrations[HttpVerb.Get], Has.Count.EqualTo(1));
-            Assert.That(_routerBuilder.Root.HandlerRegistrations[HttpVerb.Get].Single().Handler, Is.SameAs(mockRequestHandler.Object));
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", "", mockRequestHandler.Object)
+                .CreateRouter();
 
-            TestRouter router = _routerBuilder.CreateRouter();
             Assert.That(router.Root, Is.Not.SameAs(_routerBuilder.Root));
             Assert.That(router.Root.HandlerRegistrations[HttpVerb.Get], Has.Count.EqualTo(1));
             Assert.That(router.Root.HandlerRegistrations[HttpVerb.Get].Single().Handler, Is.SameAs(mockRequestHandler.Object));

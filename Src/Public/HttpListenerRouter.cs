@@ -34,10 +34,14 @@ namespace NanoRoute
             response.StatusCode = (int) responseMessage.StatusCode;
 
             CopyResponseHeaders(responseMessage.Headers);
-            CopyResponseHeaders(responseMessage.Content.Headers);
 
-            using Stream buffer = await responseMessage.Content.ReadAsStreamAsync();
-            await buffer.CopyToAsync(response.OutputStream);
+            if (responseMessage.Content is not null)
+            {
+                CopyResponseHeaders(responseMessage.Content.Headers);
+
+                using Stream buffer = await responseMessage.Content.ReadAsStreamAsync();
+                await buffer.CopyToAsync(response.OutputStream);
+            }
 
             response.Close();
 
