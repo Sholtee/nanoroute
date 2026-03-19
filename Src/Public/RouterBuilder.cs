@@ -321,11 +321,11 @@ namespace NanoRoute
         /// In this example, requests without a matching route receive the built-in JSON <c>404 Not Found</c>
         /// response instead of an unhandled exception.
         /// </example>
-        public RouterBuilder<TRouter> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+        public RouterBuilder<TRouter> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
         {
             try
             {
-                return next();
+                return await next();
             }
             catch (HttpException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
@@ -338,9 +338,9 @@ namespace NanoRoute
                 return CreateJsonResponse(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, populateErrorInfo ? ex.ToString() : null);
             }
 
-            static Task<HttpResponseMessage> CreateJsonResponse(HttpStatusCode status, string message, string? reason = null)
+            static HttpResponseMessage CreateJsonResponse(HttpStatusCode status, string message, string? reason = null)
             {
-                return Task.FromResult(new HttpResponseMessage(status)
+                return new HttpResponseMessage(status)
                 {
                     Content = new StringContent
                     (
@@ -348,7 +348,7 @@ namespace NanoRoute
                         Encoding.UTF8,
                         "application/json"
                     )
-                });
+                };
 
                 static string KeyValue(string value, [CallerArgumentExpression(nameof(value))] string? key = null) =>
                     $"\"{key}\":\"{HttpUtility.JavaScriptStringEncode(value)}\"";

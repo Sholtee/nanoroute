@@ -18,19 +18,26 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class HttpListenerRouterTests
     {
-        /*
         private HttpListener _listener = null!;
+
+        private HttpClient _client = null!;
 
         private HttpListenerRouter _router = null!;
 
-        private HttpClient _client = null!;
+        private void CreateRouter(Action<RouterBuilder<HttpListenerRouter>> configureRouter)
+        {
+            RouterBuilder<HttpListenerRouter> routerBuilder = HttpListenerRouter
+                .CreateBuilder()
+                .AddDefaultHandler();
+
+            configureRouter(routerBuilder);
+
+            _router = routerBuilder.CreateRouter();
+        }
         
         [SetUp]
         public void Setup()
         {
-            _router = new HttpListenerRouter();
-            _router.AddDefaultHandler();
-
             Uri baseAddress = new ($"http://localhost:{GetFreePort()}/");
 
             _listener = new HttpListener();
@@ -41,7 +48,6 @@ namespace NanoRoute.Tests
             {
                 BaseAddress = baseAddress
             };
-
         }
 
         private static int GetFreePort()
@@ -68,28 +74,29 @@ namespace NanoRoute.Tests
             _listener?.Close();
             _listener = null!;
 
-            _router = null!;
-
             _client?.Dispose();
             _client = null!;
+
+            _router = null!;
         }
 
         [Test]
         public async Task Post_Test()
         {
-            _router.AddHandler("POST", "/welcome", async (context, _) =>
-            {
-                Assert.That(context.Request.Headers.TryGetValues("X-Custom-Request-Header", out IEnumerable<string>? values), Is.True);
-                Assert.That(values, Is.EquivalentTo(new string[] { "cica" }));
-
-                HttpResponseMessage resp = new(HttpStatusCode.OK)
+            CreateRouter(bldr => bldr
+                .AddHandler("POST", "/welcome", async (context, _) =>
                 {
-                    Content = new StringContent($"Hello {await context.Request.Content!.ReadAsStringAsync()}")
-                };
-                resp.Headers.Add("X-Custom-Response-Header", "kutya");
+                    Assert.That(context.Request.Headers.TryGetValues("X-Custom-Request-Header", out IEnumerable<string>? values), Is.True);
+                    Assert.That(values, Is.EquivalentTo(new string[] { "cica" }));
 
-                return resp;
-            });
+                    HttpResponseMessage resp = new(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent($"Hello {await context.Request.Content!.ReadAsStringAsync()}")
+                    };
+                    resp.Headers.Add("X-Custom-Response-Header", "kutya");
+
+                    return resp;
+                }));
 
             _client.DefaultRequestHeaders.Add("X-Custom-Request-Header", "cica");
             Task<HttpResponseMessage> resp = _client.PostAsync("welcome", new StringContent("Spikey"));
@@ -110,7 +117,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Get_Test()
         {
-            _router
+            CreateRouter(bldr => bldr
                 .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler("Get", "/welcome/{name:str}", async (context, _) =>
                 {
@@ -124,7 +131,7 @@ namespace NanoRoute.Tests
                     resp.Headers.Add("X-Custom-Response-Header", "kutya");
 
                     return resp;
-                });
+                }));
 
             _client.DefaultRequestHeaders.Add("X-Custom-Request-Header", "cica");
             Task<HttpResponseMessage> resp = _client.GetAsync("welcome/Spikey");
@@ -145,7 +152,9 @@ namespace NanoRoute.Tests
         [Test]
         public async Task NotFound_Test()
         {
-            Task<HttpResponseMessage> resp = _client.GetAsync("welcome");
+            CreateRouter(_ => { });
+
+            Task <HttpResponseMessage> resp = _client.GetAsync("welcome");
 
             await HandleRequest();
 
@@ -154,8 +163,7 @@ namespace NanoRoute.Tests
             Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(msg.Content, Is.Not.Null);
             Assert.That(msg.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
-            Assert.That(await msg.Content.ReadAsStringAsync(), Is.EqualTo("{\"Message\":\"Not found.\"}"));
+            Assert.That(await msg.Content.ReadAsStringAsync(), Is.EqualTo("{\"message\":\"Not found.\"}"));
         }
-        */
     }
 }

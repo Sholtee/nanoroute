@@ -87,7 +87,7 @@ namespace NanoRoute
         /// <param name="services"></param>
         /// <param name="cancellation"></param>
         /// <returns></returns>
-        public async Task Route(HttpListenerContext context, IServiceProvider services, CancellationToken cancellation)
+        public async Task Route(HttpListenerContext context, IServiceProvider services, CancellationToken cancellation = default)
         {
             Ensure.NotNull(context);
             Ensure.NotNull(services);
