@@ -160,6 +160,22 @@ namespace NanoRoute.Tests
             _mockGetResponse.Verify(r => r.Invoke(s_response), Times.Once);
         }
 
+        [Test]
+        public async Task Handle_ShouldWorkWithEmptyPaths([Values("", "/")] string path)
+        {
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            mockHandler
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _converted_request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", path, mockHandler.Object)
+                .CreateRouter();
+
+            _converted_request.RequestUri = new Uri("https://www.exmaple.com");
+
+            Assert.That(await router.Handle(s_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+        }
 
         [Test]
         public async Task Handle_ShouldSupportExactMatches()

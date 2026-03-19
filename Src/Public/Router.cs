@@ -22,26 +22,23 @@ namespace NanoRoute
     public abstract class Router<TRequest, TResponse>: RoutingContext
     {
         #region Private
-        private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, HttpVerb verb, string[] segments, int segmentIndex, Dictionary<string, object?> paramz)
+        private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, HttpVerb verb, StringSegment? segment, Dictionary<string, object?> paramz)
         {
             if (node.HandlerRegistrations.TryGetValue(verb, out List<HandlerRegistration>? handlerRegistrations))
                 foreach (HandlerRegistration handlerRegistration in handlerRegistrations)
-                    if (handlerRegistration.IsPrefix || segmentIndex == segments.Length)
+                    if (handlerRegistration.IsPrefix || segment?.Value is null)
                         yield return handlerRegistration with { AttachedParameters = paramz };
 
-            if (segmentIndex == segments.Length)
+            if (segment?.Value is null)
                 yield break;
 
-            string segment = segments[segmentIndex];
-
-            if (node.ExactChildren.TryGetValue(segment, out RouteNode exactChild))
+            if (node.ExactChildren.TryGetValue(segment.Value, out RouteNode exactChild))
             {
                 IEnumerable<HandlerRegistration> matches = FindMatches
                 (
                     exactChild,
                     verb,
-                    segments,
-                    segmentIndex + 1,
+                    segment.Next,
                     paramz
                 );
                 foreach (HandlerRegistration match in matches)
@@ -50,15 +47,14 @@ namespace NanoRoute
 
             foreach (RouteNode parameterizedChild in node.ParameterizedChildren)
             {
-                if (!parameterizedChild.ParameterParser!.TryParse(segment, out object? parsed))
+                if (!parameterizedChild.ParameterParser!.TryParse(segment.Value, out object? parsed))
                     continue;
 
                 IEnumerable<HandlerRegistration> matches = FindMatches
                 (
                     parameterizedChild,
                     verb,
-                    segments,
-                    segmentIndex + 1,
+                    segment.Next,
                     parameterizedChild.ParameterParser?.ParameterName is { Length: > 0 } parameterName
                         ? new Dictionary<string, object?>(paramz, StringComparer.OrdinalIgnoreCase) { [parameterName] = parsed }
                         : paramz
@@ -114,8 +110,7 @@ namespace NanoRoute
             (
                 Root,
                 verb,
-                requestPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries),
-                0,
+                new StringSegment(requestPath, '/'),
                 new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             )
             .GetEnumerator();
