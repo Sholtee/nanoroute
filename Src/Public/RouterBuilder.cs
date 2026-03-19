@@ -38,6 +38,8 @@ namespace NanoRoute
 
         private readonly Action<TRouter>? _configureRouter;
 
+        private readonly string _basePattern;
+
         /// <summary>
         /// Gets or creates the <see cref="RouteNode"/> that matches the given <paramref name="pattern"/>.
         /// </summary>
@@ -99,20 +101,29 @@ namespace NanoRoute
             return target;
         }
 
-        private RouterBuilder(RouteNode root, Dictionary<string, ParameterParser> inheritedParsers)
+        private static string JoinPattern(string a, string b) => $"{a.TrimEnd('/')}/{b.TrimStart('/')}";
+
+        private RouterBuilder(RouterBuilder<TRouter> parent, string baseUrl)
         {
-            Root = root;
-            _parameterParsers = new Dictionary<string, ParameterParser>(inheritedParsers, StringComparer.OrdinalIgnoreCase);
+            Root = parent.FindNode(baseUrl);
+
+            _parameterParsers = new Dictionary<string, ParameterParser>(parent._parameterParsers, StringComparer.OrdinalIgnoreCase);
+            _basePattern = JoinPattern(parent._basePattern, baseUrl);
         }
         #endregion
 
         /// <summary>
         /// Creates a new see <see cref="RouterBuilder{TRouter}"/> instance
         /// </summary>
-        public RouterBuilder(Action<TRouter> configureRouter) : this(new RouteNode { Segment = string.Empty }, [])
+        public RouterBuilder(Action<TRouter> configureRouter)
         {
             Ensure.NotNull(configureRouter);
+
+            Root = new RouteNode { Segment = string.Empty };
+
+            _parameterParsers = new Dictionary<string, ParameterParser>(StringComparer.OrdinalIgnoreCase);
             _configureRouter = configureRouter;
+            _basePattern = string.Empty;
         }
 
         /// <summary>
@@ -286,7 +297,7 @@ namespace NanoRoute
 
             handlerRegistrations.Add
             (
-                new HandlerRegistration(handler, pattern.EndsWith("/"))
+                new HandlerRegistration(handler, JoinPattern(_basePattern, pattern))
             );
 
             return this;
@@ -356,11 +367,7 @@ namespace NanoRoute
             if (!pattern.EndsWith("/"))
                 throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
 
-            return new RouterBuilder<TRouter>
-            (
-                FindNode(pattern),
-                _parameterParsers
-            );
+            return new RouterBuilder<TRouter>(this, pattern);
         }
 
         /// <summary>
@@ -402,7 +409,10 @@ namespace NanoRoute
         /// TODO
         /// Parameter parsers assigned to this instance.
         /// </summary>
-        public IEnumerable<string> ParameterParsers => _parameterParsers.Keys;
+        public IEnumerable<KeyValuePair<string, ParameterParserDelegate>> ParameterParsers => _parameterParsers.Select
+        (
+            static kvp => new KeyValuePair<string, ParameterParserDelegate>(kvp.Key, kvp.Value.TryParse)
+        );
 
         /// <summary>
         /// TODO
@@ -413,25 +423,21 @@ namespace NanoRoute
             {
                 HashSet<string> patterns = [];
 
-                Walk(Root, string.Empty, patterns);
+                Walk(Root, patterns);
 
                 return patterns.OrderBy(static p => p);
 
-                static void Walk(RouteNode node, string currentPath, HashSet<string> patterns)
+                static void Walk(RouteNode node, HashSet<string> patterns)
                 {
-                    string path = node.Segment.Length > 0
-                        ? $"{currentPath}/{node.Segment}"
-                        : currentPath;
-
                     foreach (KeyValuePair<HttpVerb, List<HandlerRegistration>> handlerRegistrations in node.HandlerRegistrations)
                         foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
-                            patterns.Add($"[{handlerRegistrations.Key}] {path}{(handlerRegistration.IsPrefix ? "/" : string.Empty)}");
+                            patterns.Add($"[{handlerRegistrations.Key}] {handlerRegistration.Pattern}");
  
                     foreach (RouteNode childNode in node.ExactChildren.Values)
-                        Walk(childNode, path, patterns);
+                        Walk(childNode, patterns);
 
                     foreach (RouteNode childNode in node.ParameterizedChildren)
-                        Walk(childNode, path, patterns);
+                        Walk(childNode, patterns);
                 }
             }
         }

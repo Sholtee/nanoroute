@@ -57,8 +57,8 @@ namespace NanoRoute.Tests
                 .WithBase("/to/")
                 .AddParameterParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
 
-            Assert.That(_routerBuilder.ParameterParsers.ToList(), Has.Count.EqualTo(1).And.Contains("str"));
-            Assert.That(childBuilder.ParameterParsers.ToList(), Has.Count.EqualTo(2).And.Contains("str").And.Contains("int"));
+            Assert.That(_routerBuilder.ParameterParsers.Select(p => p.Key).ToList(), Has.Count.EqualTo(1).And.Contains("str"));
+            Assert.That(childBuilder.ParameterParsers.Select(p => p.Key).ToList(), Has.Count.EqualTo(2).And.Contains("str").And.Contains("int"));
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace NanoRoute.Tests
             {
                 "[Get] /",
                 "[Get] /{some_str_1:any}/not-prefix",
-                "[Get] /path/to",
+                "[Get] /path/to/",
                 "[Get] /path/to/{some_str_2:any}/something/",
                 "[Get] /path/to/explicit/something/",
                 "[Get] /path/to/not-prefix",
@@ -88,10 +88,10 @@ namespace NanoRoute.Tests
             }));
             Assert.That(childBuilder.RoutePatterns, Is.EqualTo(new string[]
             {
-                "[Get] /to",
-                "[Get] /to/{some_str_2:any}/something/",
-                "[Get] /to/explicit/something/",
-                "[Get] /to/not-prefix"
+                "[Get] /path/to/",
+                "[Get] /path/to/{some_str_2:any}/something/",
+                "[Get] /path/to/explicit/something/",
+                "[Get] /path/to/not-prefix"
             }));
         }
 
