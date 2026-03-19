@@ -521,6 +521,18 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task Handle_CanBeCancelled()
+        {
+            // TODO
+        }
+
+        [Test]
+        public async Task Handle_ShouldPropagateTheServiceProvider()
+        {
+            // TODO
+        }
+
+        [Test]
         public async Task Parameters_ShouldNotLeak()
         {
             Mock<RequestHandler>

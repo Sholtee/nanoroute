@@ -4,7 +4,12 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 using Moq;
 using NUnit.Framework;
@@ -13,6 +18,7 @@ namespace NanoRoute.Tests
 {
     using Internals;
     using Properties;
+
 
     [TestFixture]
     internal sealed class RouterBuilderTests
@@ -27,6 +33,8 @@ namespace NanoRoute.Tests
         public void Setup()
         {
             _mockConfigureRouter = new Mock<Action<TestRouter>>(MockBehavior.Strict);
+            _mockConfigureRouter
+                .Setup(c => c.Invoke(It.IsAny<TestRouter>()));
 
             _routerBuilder = new RouterBuilder<TestRouter>(_mockConfigureRouter.Object);
         }
@@ -136,72 +144,62 @@ namespace NanoRoute.Tests
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", "/path/to/{other_id:int}", new Mock<RequestHandler>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
         }
-        /*
+
         private sealed record JsonResponse(string Message, string? Reason);
 
         [Test]
-        public void DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
+        public async Task DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
         {
-            _routerBuilder.AddDefaultHandler(populateErrorInfo);
+            TestRouter router = _routerBuilder
+                .AddDefaultHandler(populateErrorInfo)
+                .CreateRouter();
 
-            string resp = (string)_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
 
-            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp)!;
+            string resp = await response.Content.ReadAsStringAsync();
+
+            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized.Reason, Is.Null);
             Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
-
-            _mockRouter
-                .Protected()
-                .Verify<object>("CreateJsonResponse", Times.Once(), HttpStatusCode.NotFound, ItExpr.IsAny<string>());
         }
 
         [Test]
-        public void DefaultHandler_ShouldHandleInternalErrors([Values] bool populateErrorInfo)
+        public async Task DefaultHandler_ShouldHandleInternalErrors([Values] bool populateErrorInfo)
         {
             const string ERROR_MSG = "Oooops";
 
-            _mockRouter.Object.AddDefaultHandler(populateErrorInfo);
+            TestRouter router = _routerBuilder
+                .AddDefaultHandler(populateErrorInfo)
+                .AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG))
+                .CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<object>("CreateJsonResponse", HttpStatusCode.InternalServerError, ItExpr.IsAny<string>())
-                .Returns<HttpStatusCode, string>((_, resp) => resp);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/somewhere") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
 
-            _mockRouter.Object.AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG));
+            string resp = await response.Content.ReadAsStringAsync();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/somewhere"));
-
-            string resp = (string)_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
-
-            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp)!;
+            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized.Reason, populateErrorInfo ? Does.Contain(ERROR_MSG) : Is.Null);
             Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
-
-            _mockRouter
-                .Protected()
-                .Verify<object>("CreateJsonResponse", Times.Once(), HttpStatusCode.InternalServerError, ItExpr.IsAny<string>());
         }
-
+        
         [Test]
-        public void DefaultHandler_ShouldLetNormalWorkflowGo()
+        public async Task DefaultHandler_ShouldLetNormalWorkflowGo()
         {
-            _mockRouter.Object
+            TestRouter router = _routerBuilder
                 .AddDefaultHandler()
-                .AddHandler("GET", "/somewhere", (_, _) => true);
+                .AddHandler("GET", "/somewhere", async (_, _) => new HttpResponseMessage { Content = new StringContent("Hello") })
+                .CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri("https://www.exmaple.com/somewhere"));
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/somewhere") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("Hello"));
         }
-        /*
+
         private static IEnumerable<TestCaseData> AddDefaultParsers_ShouldRegisterTheBuiltInParsers_Cases()
         {
             yield return new TestCaseData("int", 42);
@@ -211,61 +209,57 @@ namespace NanoRoute.Tests
         }
 
         [TestCaseSource(nameof(AddDefaultParsers_ShouldRegisterTheBuiltInParsers_Cases))]
-        public void AddDefaultParsers_ShouldRegisterTheBuiltInParsers(string parserName, object expectedValue)
+        public async Task AddDefaultParsers_ShouldRegisterTheBuiltInParsers(string parserName, object expectedValue)
         {
-            _mockRouter.Object
+            TestRouter router = _routerBuilder
                 .AddDefaultParsers()
-                .AddHandler("GET", $"/items/{{value:{parserName}}}", (context, _) =>
-                {
-                    Assert.That(context.Parameters["value"], Is.EqualTo(expectedValue));
-                    return true;
-                });
+                .AddHandler("GET", $"/items/{{value:{parserName}}}", async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["value"]!.ToString()!) })
+                .CreateRouter();
 
-            _mockRouter
-                .Protected()
-                .Setup<Uri>("GetUri", s_converted_request)
-                .Returns(new Uri($"https://www.exmaple.com/items/{expectedValue}"));
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri($"https://test.test/items/{expectedValue}") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
 
-            Assert.That(_mockRouter.Object.Handle(s_converted_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.True);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo(expectedValue.ToString()));
         }
-
+       
         [Test]
         public void AddParameterParser_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddParameterParser(null!, new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddParameterParser(null!, new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("parserName"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddParameterParser("any", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddParameterParser("any", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
         });
 
         [Test]
         public void AddHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(null!, (_, _) => new object()))!;
+            RequestHandler requestHandler = async (_, _) => new HttpResponseMessage();
+
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, requestHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("path", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("path", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler((IEnumerable<string>)null!, "path", (_, _) => new object()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>)null!, "path", requestHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler((string)null!, "path", (_, _) => new object()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string)null!, "path", requestHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(["GET"], null!, (_, _) => new object()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], null!, requestHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler(["GET"], "path", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], "path", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("GET", null!, (_, _) => new object()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", null!, requestHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _mockRouter.Object.AddHandler("GET", "path", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "path", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
         });
-        */
     }
 }
