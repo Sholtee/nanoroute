@@ -58,6 +58,34 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void CreateRouter_ShouldInvokeTheConfigureCallbackOnTheCreatedRouter()
+        {
+            TestRouter? configuredRouter = null;
+
+            _mockConfigureRouter
+                .Setup(c => c.Invoke(It.IsAny<TestRouter>()))
+                .Callback<TestRouter>(router => configuredRouter = router);
+
+            TestRouter router = _routerBuilder.CreateRouter();
+
+            _mockConfigureRouter.Verify(c => c.Invoke(It.IsAny<TestRouter>()), Times.Once);
+            Assert.That(configuredRouter, Is.SameAs(router));
+        }
+
+        [Test]
+        public async Task CreateRouter_ShouldCreateAnImmutableSnapshot()
+        {
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", "/before", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .CreateRouter();
+
+            _routerBuilder.AddHandler("GET", "/after", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
+
+            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/after") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
         public void WithBase_ShouldInheritTheParentParameterParsers()
         {
             RouterBuilder<TestRouter> childBuilder = _routerBuilder
@@ -65,8 +93,61 @@ namespace NanoRoute.Tests
                 .WithBase("/to/")
                 .AddParameterParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
 
-            Assert.That(_routerBuilder.ParameterParsers.Select(p => p.Key).ToList(), Has.Count.EqualTo(1).And.Contains("str"));
-            Assert.That(childBuilder.ParameterParsers.Select(p => p.Key).ToList(), Has.Count.EqualTo(2).And.Contains("str").And.Contains("int"));
+
+            Assert.DoesNotThrow(() => childBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandler>(MockBehavior.Strict).Object));
+        }
+
+        [Test]
+        public void WithBase_ShouldCreateAnIndependentParserScope()
+        {
+            _routerBuilder
+                .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .WithBase("/to/")
+                .AddParameterParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
+
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandler>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, "int")));
+        }
+
+        [Test]
+        public async Task AddParameterParser_ShouldReplaceExistingParserRegistrations()
+        {
+            TestRouter router = _routerBuilder
+                .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"first:{segment}"; return true; })
+                .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"second:{segment}"; return true; })
+                .AddHandler("GET", "/items/{id:value}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(context.Parameters["id"]!.ToString()!) })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/items/42") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("second:42"));
+        }
+
+        [Test]
+        public async Task WithBase_ShouldKeepChildParserOverridesLocal()
+        {
+            RouterBuilder<TestRouter> childBuilder = _routerBuilder
+                .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"parent:{segment}"; return true; })
+                .WithBase("/child/")
+                .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"child:{segment}"; return true; });
+
+            RequestHandler handler = async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["id"]!.ToString()!) };
+
+            childBuilder
+                .AddHandler("GET", "/{id:value}", handler);
+
+            _routerBuilder
+                .AddHandler("GET", "/{id:value}", handler);
+
+            TestRouter router = _routerBuilder.CreateRouter();
+
+            HttpResponseMessage
+                parentResponse = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/42") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object),
+                childResponse = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/child/42") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(await parentResponse.Content.ReadAsStringAsync(), Is.EqualTo("parent:42"));
+            Assert.That(await childResponse.Content.ReadAsStringAsync(), Is.EqualTo("child:42"));
         }
 
         [Test]
@@ -104,6 +185,21 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void RoutePatterns_ShouldDeduplicateIdenticalEntries()
+        {
+            RequestHandler handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
+
+            _routerBuilder
+                .AddHandler("GET", "/items", handler)
+                .AddHandler("GET", "/items", handler);
+
+            Assert.That(_routerBuilder.RoutePatterns, Is.EqualTo(new[]
+            {
+                "[Get] /items"
+            }));
+        }
+
+        [Test]
         public void WithBase_ShouldThrowOnNonPrefixPattern([Values("", "/not-prefix", "/some/not-prefix")] string pattern)
         {
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
@@ -117,6 +213,21 @@ namespace NanoRoute.Tests
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
+        }
+
+        [Test]
+        public void WithBase_WithConfigureRoutes_ShouldBeNullChecked()
+        {
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.WithBase("/base/", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("configureRoutes"));
+        }
+
+        [Test]
+        public void WithBase_WithConfigureRoutes_ShouldReturnTheOriginalBuilder()
+        {
+            RouterBuilder<TestRouter> result = _routerBuilder.WithBase("/base/", _ => { });
+
+            Assert.That(result, Is.SameAs(_routerBuilder));
         }
 
         [Test]
@@ -154,7 +265,12 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
         }
 
-        private sealed record JsonResponse(string Message, string? Reason);
+        private sealed class JsonResponse
+        {
+            public required string Message { get; set; }
+
+            public string? Reason { get; set; }
+        }
 
         [Test]
         public async Task DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
@@ -193,6 +309,25 @@ namespace NanoRoute.Tests
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized.Reason, populateErrorInfo ? Does.Contain(ERROR_MSG) : Is.Null);
             Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
+        }
+
+        [Test]
+        public async Task DefaultHandler_ShouldEscapeSpecialCharactersInErrorInfo()
+        {
+            const string ERROR_MSG = "Bad \"quote\"\r\nnext line";
+
+            TestRouter router = _routerBuilder
+                .AddDefaultHandler(populateErrorInfo: true)
+                .AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG))
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/somewhere") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            string resp = await response.Content.ReadAsStringAsync();
+
+            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+            Assert.That(deserialized, Is.Not.Null);
+            Assert.That(deserialized.Reason, Does.Contain(ERROR_MSG));
         }
         
         [Test]
