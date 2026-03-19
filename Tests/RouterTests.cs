@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
@@ -521,15 +522,41 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Handle_CanBeCancelled()
+        public void Handle_CanBeCancelled()
         {
-            // TODO
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", "/", mockHandler.Object)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/");
+
+            using CancellationTokenSource cts = new();
+            cts.Cancel();
+
+            Assert.ThrowsAsync<OperationCanceledException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cts.Token));
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
         }
 
         [Test]
         public async Task Handle_ShouldPropagateTheServiceProvider()
         {
-            // TODO
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<IServiceProvider> mockServices = new(MockBehavior.Strict);
+
+            mockHandler
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && c.Services == mockServices.Object), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", "/", mockHandler.Object)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/");
+
+            Assert.That(await router.Handle(_request, mockServices.Object), Is.EqualTo(s_response));
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]

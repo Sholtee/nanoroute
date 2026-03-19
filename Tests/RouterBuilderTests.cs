@@ -106,16 +106,25 @@ namespace NanoRoute.Tests
         [Test]
         public void WithBase_ShouldThrowOnNonPrefixPattern([Values("", "/not-prefix", "/some/not-prefix")] string pattern)
         {
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_NOT_PREFIX));
         }
 
         [Test]
-        public void WithBase_ShouldThrowOnInvalidPattern([Values(/*TODO*/)] string pattern)
+        public void WithBase_ShouldThrowOnInvalidPattern([Values("//", "/path//to/", "/path/{invalid-segment}/")] string pattern)
         {
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
         }
 
         [Test]
-        public void AddHandler_ShouldThrowOnInvalidPattern([Values(/*TODO*/)] string pattern)
+        public void AddHandler_ShouldThrowOnInvalidPattern([Values("//", "/path//to", "/path/{invalid-segment}")] string pattern)
         {
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandler>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
         }
 
         [Test]
