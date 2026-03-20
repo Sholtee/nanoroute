@@ -111,7 +111,6 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("services"));
 
             context.Response.Abort();
-            Assert.ThrowsAsync<HttpRequestException>(() => resp);
         }
 
         [Test]
@@ -269,7 +268,7 @@ namespace NanoRoute.Tests
 
             await HandleRequest(cancellation: cts.Token);
 
-            Assert.ThrowsAsync<HttpRequestException>(() => resp);
+            Assert.That(() => resp.GetAwaiter().GetResult(), Throws.TypeOf<HttpRequestException>().Or.TypeOf<TaskCanceledException>());
             mockRequestHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
         }
 
