@@ -67,10 +67,11 @@ namespace NanoRoute.Tests
             return port;
         }
 
-        private async Task HandleRequest(CancellationToken cancellation = default)
+        private async Task<HttpListenerContext> HandleRequest(CancellationToken cancellation = default)
         {
             HttpListenerContext context = await _listener.GetContextAsync();
             await _router.Route(context, new Mock<IServiceProvider>(MockBehavior.Strict).Object, cancellation);
+            return context;
         }
 
         [TearDown]
@@ -266,9 +267,9 @@ namespace NanoRoute.Tests
 
             Task<HttpResponseMessage> resp = _client.GetAsync("");
 
-            await HandleRequest(cancellation: cts.Token);
+            HttpListenerContext context = await HandleRequest(cancellation: cts.Token);
 
-            Assert.That(() => resp.GetAwaiter().GetResult(), Throws.TypeOf<HttpRequestException>().Or.TypeOf<TaskCanceledException>());
+            Assert.Throws<ObjectDisposedException>(() => _ = context.Response.OutputStream);
             mockRequestHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
         }
 
