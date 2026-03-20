@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace NanoRoute
 {
@@ -44,9 +45,11 @@ namespace NanoRoute
                     yield return match;
             }
 
+            string decodedSegment = HttpUtility.UrlDecode(segment.Value);
+
             foreach (RouteNode parameterizedChild in node.ParameterizedChildren)
             {
-                if (!parameterizedChild.ParameterParser!.TryParse(segment.Value, out object? parsed))
+                if (!parameterizedChild.ParameterParser!.TryParse(decodedSegment, out object? parsed))
                     continue;
 
                 IEnumerable<HandlerRegistration> matches = FindMatches

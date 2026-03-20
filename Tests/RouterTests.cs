@@ -665,6 +665,41 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task Handle_ShouldPassDecodedSegmentsToParameterParsers()
+        {
+            Mock<ParameterParserDelegate> mockParser = new(MockBehavior.Strict);
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+
+            object? parsed = null;
+            mockParser
+                .Setup(p => p.Invoke("a b", out parsed))
+                .Returns((string segment, out object? parsed) =>
+                {
+                    parsed = segment;
+                    return true;
+                });
+
+            mockHandler
+                .Setup(h => h.Invoke
+                (
+                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["name"], "a b")),
+                    It.IsAny<Func<Task<HttpResponseMessage>>>()
+                ))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddParameterParser("str", mockParser.Object)
+                .AddHandler("GET", "/files/{name:str}", mockHandler.Object)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
+
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockParser.Verify(p => p.Invoke("a b", out parsed), Times.Once);
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+        }
+
+        [Test]
         public async Task Handle_ShouldNormalizeDotSegmentsInUriPaths()
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
