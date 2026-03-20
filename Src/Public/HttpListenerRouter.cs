@@ -71,8 +71,8 @@ namespace NanoRoute
                 string[] values = request.Headers.GetValues(header);
 
                 bool headerSet =
-                    !requestMessage.Headers.TryAddWithoutValidation(header, values) || // this may return false for content headers like Content-Type
-                    requestMessage.Content?.Headers.TryAddWithoutValidation(header, values) is not true; // fall back to content headers
+                    requestMessage.Headers.TryAddWithoutValidation(header, values) || // normal request headers
+                    requestMessage.Content?.Headers.TryAddWithoutValidation(header, values) is true; // fall back to content headers
 
                 if (!headerSet)
                     RouterEventSource.Log.Warn("HeaderCopyFailed", () => new

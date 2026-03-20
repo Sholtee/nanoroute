@@ -85,8 +85,13 @@ namespace NanoRoute.Tests
             _router = null!;
         }
 
+        private sealed class HelloRequest
+        {
+            public required string Name { get; set; }
+        }
+
         [Test]
-        public async Task Post_Test()
+        public async Task Route_ShouldHandlePostRequests()
         {
             CreateRouter(bldr => bldr
                 .AddHandler("POST", "/welcome", async (context, _) =>
@@ -96,7 +101,10 @@ namespace NanoRoute.Tests
 
                     HttpResponseMessage resp = new(HttpStatusCode.OK)
                     {
-                        Content = new StringContent($"Hello {await context.Request.Content!.ReadAsStringAsync()}")
+                        Content = new StringContent
+                        (
+                            "Hello " + JsonSerializer.Deserialize<HelloRequest>(await context.Request.Content!.ReadAsStringAsync())!.Name
+                        )
                     };
                     resp.Headers.Add("X-Custom-Response-Header", "kutya");
 
@@ -104,7 +112,7 @@ namespace NanoRoute.Tests
                 }));
 
             _client.DefaultRequestHeaders.Add("X-Custom-Request-Header", "cica");
-            Task<HttpResponseMessage> resp = _client.PostAsync("welcome", new StringContent("Spikey"));
+            Task<HttpResponseMessage> resp = _client.PostAsync("welcome", new StringContent(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }), Encoding.UTF8, "application/json"));
 
             await HandleRequest();
 
@@ -120,7 +128,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Get_Test()
+        public async Task Route_ShouldHandleGetRequests()
         {
             CreateRouter(bldr => bldr
                 .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
@@ -155,7 +163,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task NotFound_Test()
+        public async Task Route_ShouldReturnNotFoundForUnknownRoutes()
         {
             CreateRouter(_ => { });
 
@@ -184,11 +192,14 @@ namespace NanoRoute.Tests
 
                     return new HttpResponseMessage(HttpStatusCode.OK)
                     {
-                        Content = new StringContent("Hello " + JsonSerializer.Deserialize<Dictionary<string, string>>(await context.Request.Content.ReadAsStringAsync())!["name"])
+                        Content = new StringContent
+                        (
+                            "Hello " + JsonSerializer.Deserialize<HelloRequest>(await context.Request.Content!.ReadAsStringAsync())!.Name
+                        )
                     };
                 }));
 
-            Task<HttpResponseMessage> resp = _client.PostAsync("welcome", new StringContent(JsonSerializer.Serialize(new { name = "Spikey" }), Encoding.UTF8, "application/json"));
+            Task<HttpResponseMessage> resp = _client.PostAsync("welcome", new StringContent(JsonSerializer.Serialize(new HelloRequest{ Name = "Spikey" }), Encoding.UTF8, "application/json"));
 
             await HandleRequest();
 
@@ -274,7 +285,7 @@ namespace NanoRoute.Tests
             CreateRouter(bldr => bldr
                 .AddHandler("GET", "/welcome", async (_, _) =>
                 {
-                    StringContent content = new(JsonSerializer.Serialize(new { message = "Hello" }));
+                    StringContent content = new(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }));
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json")
                     {
                         CharSet = "utf-8"
@@ -298,7 +309,7 @@ namespace NanoRoute.Tests
             Assert.That(msg.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
             Assert.That(msg.Content.Headers.ContentType!.CharSet, Is.EqualTo("utf-8"));
             Assert.That(msg.Content.Headers.ContentLanguage, Does.Contain("en"));
-            Assert.That(JsonSerializer.Deserialize<Dictionary<string, string>>(await msg.Content.ReadAsStringAsync())!["message"], Is.EqualTo("Hello"));
+            Assert.That(JsonSerializer.Deserialize<HelloRequest>(await msg.Content.ReadAsStringAsync())!.Name, Is.EqualTo("Spikey"));
         }
 
         [Test]
