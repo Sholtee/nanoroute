@@ -45,6 +45,9 @@ namespace NanoRoute
                     yield return match;
             }
 
+            if (node.ParameterizedChildren.Count is 0)
+                yield break;
+
             string decodedSegment = HttpUtility.UrlDecode(segment.Value);
 
             foreach (RouteNode parameterizedChild in node.ParameterizedChildren)
