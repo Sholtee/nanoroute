@@ -150,6 +150,15 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void CreateRouter_ShouldThrowWhenCalledOnAChildBuilder()
+        {
+            RouterBuilder<TestRouter> childBuilder = _routerBuilder.WithBase("/child/");
+
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => childBuilder.CreateRouter())!;
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_CANT_CREATE_ROUTER_INSTANCE));
+        }
+
+        [Test]
         public void RoutePatterns_ShouldReflectTheActualBranch()
         {
             _routerBuilder
@@ -235,6 +244,12 @@ namespace NanoRoute.Tests
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandler>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
+        }
+
+        [Test]
+        public void AddHandler_ShouldAllowUriLiteralCharacters([Values("/users/~denes", "/files/a%20b", "/mail/a%40b")] string pattern)
+        {
+            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandler>(MockBehavior.Strict).Object));
         }
 
         [Test]

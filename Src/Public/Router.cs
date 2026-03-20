@@ -82,7 +82,7 @@ namespace NanoRoute
 
             string requestPath = request
                 .RequestUri
-                .AbsolutePath;  // escaped characters are normalized
+                .AbsolutePath;
 
             RouterEventSource.Log.Info("RequestProcessingStarted", () => new
             {
