@@ -91,6 +91,30 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void Route_ShouldBeNullCheckedForContext()
+        {
+            CreateRouter(_ => { });
+
+            ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>(() => _router.Route(null!, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("context"));
+        }
+
+        [Test]
+        public async Task Route_ShouldBeNullCheckedForServices()
+        {
+            CreateRouter(_ => { });
+
+            Task<HttpResponseMessage> resp = _client.GetAsync("");
+            HttpListenerContext context = await _listener.GetContextAsync();
+
+            ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>(() => _router.Route(context, null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("services"));
+
+            context.Response.Abort();
+            Assert.ThrowsAsync<HttpRequestException>(() => resp);
+        }
+
+        [Test]
         public async Task Route_ShouldHandlePostRequests()
         {
             CreateRouter(bldr => bldr

@@ -602,8 +602,9 @@ namespace NanoRoute.Tests
                     parsed = segment;
                     return true;
                 })
-                .AddHandler("GET", "api/users/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
-                .AddHandler("GET", "api/users/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object)
+                .WithBase("/api/users/", bldr => bldr
+                    .AddHandler("GET", "/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
+                    .AddHandler("GET", "/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object))
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething");
@@ -612,6 +613,115 @@ namespace NanoRoute.Tests
 
             Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
             Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id_str"] = "1986" }));
+        }
+
+        [Test]
+        public void Handle_ShouldRejectUnsupportedVerbs()
+        {
+            TestRouter router = _routerBuilder.CreateRouter();
+
+            _request.Method = new HttpMethod("BREW");
+            _request.RequestUri = new Uri("https://www.exmaple.com/");
+
+            ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("request"));
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "BREW")));
+        }
+
+        [Test]
+        public async Task Handle_ShouldNormalizeEscapedPaths()
+        {
+            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            mockHandler
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", "/users/~denes", mockHandler.Object)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/users/%7Edenes");
+
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Handle_ShouldPreferLiteralSegmentsOverParameterizedSegmentsInDeeperBranches()
+        {
+            Mock<RequestHandler>
+                mockLiteralHandler = new(MockBehavior.Strict),
+                mockParameterizedHandler = new(MockBehavior.Strict);
+
+            mockLiteralHandler
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .WithBase("/api/", bldr => bldr
+                    .AddHandler("GET", "/{scope:any}/details/settings", mockLiteralHandler.Object)
+                    .AddHandler("GET", "/{scope:any}/details/{section:any}", mockParameterizedHandler.Object))
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/api/admin/details/settings");
+
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockLiteralHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockParameterizedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
+        }
+
+        [Test]
+        public async Task Handle_ShouldContinueMatchingWhenAParameterParserReturnsFalse()
+        {
+            Mock<RequestHandler>
+                mockIntHandler = new(MockBehavior.Strict),
+                mockStringHandler = new(MockBehavior.Strict);
+
+            Mock<ParameterParserDelegate>
+                mockIntParser = new(MockBehavior.Strict),
+                mockStringParser = new(MockBehavior.Strict);
+
+            MockSequence seq = new();
+
+            object? parsed = null;
+            mockIntParser
+                .InSequence(seq)
+                .Setup(p => p.Invoke("abc", out parsed))
+                .Returns(false);
+
+            mockStringParser
+                .InSequence(seq)
+                .Setup(p => p.Invoke("abc", out parsed))
+                .Returns((string segment, out object? parsed) =>
+                {
+                    parsed = segment;
+                    return true;
+                });
+
+            mockStringHandler
+                .Setup(h => h.Invoke
+                (
+                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["slug"], "abc")),
+                    It.IsAny<Func<Task<HttpResponseMessage>>>()
+                ))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddParameterParser("int", mockIntParser.Object)
+                .AddParameterParser("str", mockStringParser.Object)
+                .WithBase("/api/", bldr => bldr
+                    .AddHandler("GET", "/{id:int}/details", mockIntHandler.Object)
+                    .AddHandler("GET", "/{slug:str}/details", mockStringHandler.Object))
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/api/abc/details");
+
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockIntHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
+            mockStringHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+            mockIntParser.Verify(p => p.Invoke("abc", out parsed), Times.Once);
+            mockStringParser.Verify(p => p.Invoke("abc", out parsed), Times.Once);
         }
     }
 }
