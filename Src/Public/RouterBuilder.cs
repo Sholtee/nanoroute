@@ -7,13 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace NanoRoute
 {
@@ -306,58 +300,6 @@ namespace NanoRoute
 
             return this;
         }
-
-        /// <summary>
-        /// Registers a catch-all handler that turns unhandled routing failures into JSON error responses.
-        /// </summary>
-        /// <param name="populateErrorInfo">
-        /// <see langword="true"/> to include exception details in generated internal-server-error responses;
-        /// otherwise only the public error message is returned.
-        /// </param>
-        /// <remarks>
-        /// The default handler is registered as a prefix route for all supported HTTP methods. It calls the next
-        /// matching handler and intercepts the terminal <c>not found</c> case as well as unhandled exceptions.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// TODO
-        /// </code>
-        /// In this example, requests without a matching route receive the built-in JSON <c>404 Not Found</c>
-        /// response instead of an unhandled exception.
-        /// </example>
-        public RouterBuilder<TRouter> AddDefaultHandler(bool populateErrorInfo = false) => AddHandler("/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
-        {
-            try
-            {
-                return await next();
-            }
-            catch (HttpException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
-            {
-                return CreateJsonResponse(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
-            }
-            // OperationCanceledException should be handled by the router implementation:
-            // Calling the Router.Handle() with a cancelled token will prevent this handler from being called.
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                return CreateJsonResponse(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, populateErrorInfo ? ex.ToString() : null);
-            }
-
-            static HttpResponseMessage CreateJsonResponse(HttpStatusCode status, string message, string? reason = null)
-            {
-                return new HttpResponseMessage(status)
-                {
-                    Content = new StringContent
-                    (
-                        $"{{{KeyValue(message)}{(reason is not null ? "," + KeyValue(reason) : string.Empty)}}}",
-                        Encoding.UTF8,
-                        "application/json"
-                    )
-                };
-
-                static string KeyValue(string value, [CallerArgumentExpression(nameof(value))] string? key = null) =>
-                    $"\"{key}\":\"{HttpUtility.JavaScriptStringEncode(value)}\"";
-            }
-        });
 
         /// <summary>
         /// 

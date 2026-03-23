@@ -22,6 +22,16 @@ namespace NanoRoute
     /// </summary>
     public abstract class Router: RoutingContext
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public const string TRACE_ID_NAME = "TraceId";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public const string ORIGINAL_REQUEST_NAME = "OriginalRequest";
+
         private static IEnumerable<HandlerRegistration> FindMatches(RouteNode node, HttpVerb verb, StringSegment? segment, Dictionary<string, object?> paramz)
         {
             if (node.HandlerRegistrations.TryGetValue(verb, out List<HandlerRegistration>? handlerRegistrations))
@@ -109,11 +119,9 @@ namespace NanoRoute
 
             async Task<HttpResponseMessage> CallNextHandler()
             {
-                cancellation.ThrowIfCancellationRequested();
-
                 if (!matches.MoveNext())
-                    throw new HttpException(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
- 
+                    HttpRequestException.Throw(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
+
                 Debug.Assert(matches.Current.AttachedParameters is not null, "Parameters must be attached here");
 
                 RouterEventSource.Log.Info("MatchingHandler", () => new

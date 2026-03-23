@@ -61,6 +61,24 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bad content type..
+        /// </summary>
+        internal static string ERR_BAD_CONTENT_TYPE {
+            get {
+                return ResourceManager.GetString("ERR_BAD_CONTENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bad request..
+        /// </summary>
+        internal static string ERR_BAD_REQUEST {
+            get {
+                return ResourceManager.GetString("ERR_BAD_REQUEST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Router instance creation is not allowed from this builder..
         /// </summary>
         internal static string ERR_CANT_CREATE_ROUTER_INSTANCE {
@@ -97,6 +115,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Method not allowed..
+        /// </summary>
+        internal static string ERR_METHOD_NOT_ALLOWED {
+            get {
+                return ResourceManager.GetString("ERR_METHOD_NOT_ALLOWED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No such parameter parser: {0}.
         /// </summary>
         internal static string ERR_NO_SUCH_PARAMETER_PARSER {
@@ -129,6 +156,15 @@ namespace NanoRoute.Properties {
         internal static string ERR_PARAMETER_OVERRIDE {
             get {
                 return ResourceManager.GetString("ERR_PARAMETER_OVERRIDE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Request timed out..
+        /// </summary>
+        internal static string ERR_REQUEST_TIMED_OUT {
+            get {
+                return ResourceManager.GetString("ERR_REQUEST_TIMED_OUT", resourceCulture);
             }
         }
     }

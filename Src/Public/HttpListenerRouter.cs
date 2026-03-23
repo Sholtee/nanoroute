@@ -29,7 +29,7 @@ namespace NanoRoute
             "Server"
         };
 
-        private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response)
+        private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
             response.StatusCode = (int) responseMessage.StatusCode;
 
@@ -40,13 +40,17 @@ namespace NanoRoute
                 CopyResponseHeaders(responseMessage.Content.Headers);
 
                 using Stream buffer = await responseMessage.Content.ReadAsStreamAsync();
-                await buffer.CopyToAsync(response.OutputStream);
+
+                // https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/IO/Stream.cs#L148
+                await buffer.CopyToAsync(response.OutputStream, (int) Math.Min(81920, response.OutputStream.Length), cancellation);
             }
 
             response.Close();
 
             void CopyResponseHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
             {
+                cancellation.ThrowIfCancellationRequested();
+
                 foreach (KeyValuePair<string, IEnumerable<string>> header in headers)
                     if (!s_reservedHeaders.Contains(header.Key))
                         response.Headers.Add(header.Key, string.Join(",", header.Value));
@@ -64,7 +68,8 @@ namespace NanoRoute
             if (request.HasEntityBody)
                 requestMessage.Content = new StreamContent(request.InputStream);
 
-            requestMessage.Properties["OriginalRequest"] = request;
+            requestMessage.Properties[ORIGINAL_REQUEST_NAME] = request;
+            requestMessage.Properties[TRACE_ID_NAME] = request.RequestTraceIdentifier.ToString("N");
 
             foreach (string header in request.Headers.AllKeys)
             {
@@ -96,18 +101,17 @@ namespace NanoRoute
             Ensure.NotNull(context);
             Ensure.NotNull(services);
 
-            HttpResponseMessage response;
+            using HttpRequestMessage request = GetRequest(context.Request);
+
             try
             {
-                response = await Handle(GetRequest(context.Request), services, cancellation);
+                using HttpResponseMessage response = await Handle(request, services, cancellation);
+                await HandleResponse(response, context.Response, cancellation);
             }
             catch (OperationCanceledException)
             {
                 context.Response.Abort();
-                return;
             }
-
-            await HandleResponse(response, context.Response);
         }
 
         /// <summary>
