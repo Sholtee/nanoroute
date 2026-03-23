@@ -42,7 +42,7 @@ namespace NanoRoute
                 using Stream buffer = await responseMessage.Content.ReadAsStreamAsync();
 
                 // https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/IO/Stream.cs#L148
-                await buffer.CopyToAsync(response.OutputStream, (int) Math.Min(81920, response.OutputStream.Length), cancellation);
+                await buffer.CopyToAsync(response.OutputStream, (int) Math.Min(81920, buffer.Length), cancellation);
             }
 
             response.Close();

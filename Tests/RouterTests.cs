@@ -15,7 +15,6 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
-    using Internals;
     using Properties;
 
     [TestFixture]
@@ -158,9 +157,9 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder.CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
-            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
-            Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
@@ -442,9 +441,9 @@ namespace NanoRoute.Tests
             _request.Method = HttpMethod.Get;
 
 
-            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
-            Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
 
             _request.Method = HttpMethod.Post;
@@ -525,6 +524,13 @@ namespace NanoRoute.Tests
         public void Handle_CanBeCancelled()
         {
             Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            mockHandler
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>((context, _) =>
+                {
+                    context.Cancellation.ThrowIfCancellationRequested();
+                    return Task.FromResult(s_response);
+                });
 
             TestRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler.Object)
@@ -536,7 +542,7 @@ namespace NanoRoute.Tests
             cts.Cancel();
 
             Assert.ThrowsAsync<OperationCanceledException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cts.Token));
-            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
         [Test]

@@ -17,6 +17,7 @@ using NUnit.Framework;
 namespace NanoRoute.Tests
 {
     using Internals;
+    using Json;
     using Properties;
 
 
@@ -80,8 +81,8 @@ namespace NanoRoute.Tests
 
             _routerBuilder.AddHandler("GET", "/after", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
 
-            HttpException ex = Assert.ThrowsAsync<HttpException>(() => router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/after") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/after") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
         }
 
         [Test]
@@ -279,13 +280,6 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
         }
 
-        private sealed class JsonResponse
-        {
-            public required string Message { get; set; }
-
-            public string? Reason { get; set; }
-        }
-
         [Test]
         public async Task DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
         {
@@ -293,15 +287,21 @@ namespace NanoRoute.Tests
                 .AddDefaultHandler(populateErrorInfo)
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
+            request.Properties[Router.TRACE_ID_NAME] = "trace-1";
+
+            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
 
             string resp = await response.Content.ReadAsStringAsync();
 
-            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized.Reason, Is.Null);
-            Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
+            Assert.That(deserialized.Status, Is.EqualTo((int) HttpStatusCode.NotFound));
+            Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
+            Assert.That(deserialized.TraceId, Is.EqualTo("trace-1"));
+            Assert.That(deserialized.Errors, Is.Null);
+            Assert.That(deserialized.DeveloperMessage, Is.Null);
         }
 
         [Test]
@@ -314,15 +314,40 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/somewhere") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
+            request.Properties[Router.TRACE_ID_NAME] = "trace-2";
+
+            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
 
             string resp = await response.Content.ReadAsStringAsync();
 
-            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized.Reason, populateErrorInfo ? Does.Contain(ERROR_MSG) : Is.Null);
-            Assert.That(deserialized.Message, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
+            Assert.That(deserialized.Status, Is.EqualTo((int) HttpStatusCode.InternalServerError));
+            Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
+            Assert.That(deserialized.TraceId, Is.EqualTo("trace-2"));
+            Assert.That(deserialized.Errors, Is.Null);
+            Assert.That(deserialized.DeveloperMessage, populateErrorInfo ? Has.Some.Contains(ERROR_MSG) : Is.Null);
+        }
+
+        [Test]
+        public async Task DefaultHandler_ShouldHandleCancellationErrors()
+        {
+            // TODO
+        }
+
+        [Test]
+        public async Task DefaultHandler_ShouldHandleTimeoutErrors()
+        {
+            // TODO
+        }
+
+
+        [Test]
+        public async Task DefaultHandler_ShouldHandleAggregateExceptions()
+        {
+            // TODO
         }
 
         [Test]
@@ -335,13 +360,16 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/somewhere") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpRequestMessage request = new() { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/somewhere") };
+            request.Properties[Router.TRACE_ID_NAME] = "trace-3";
+
+            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             string resp = await response.Content.ReadAsStringAsync();
 
-            JsonResponse deserialized = JsonSerializer.Deserialize<JsonResponse>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
             Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized.Reason, Does.Contain(ERROR_MSG));
+            Assert.That(deserialized.DeveloperMessage, Has.Some.Contains(ERROR_MSG));
         }
         
         [Test]

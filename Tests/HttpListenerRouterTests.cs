@@ -20,6 +20,9 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
+    using Json;
+    using Properties;
+
     [TestFixture]
     internal sealed class HttpListenerRouterTests
     {
@@ -200,7 +203,13 @@ namespace NanoRoute.Tests
             Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(msg.Content, Is.Not.Null);
             Assert.That(msg.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
-            Assert.That(await msg.Content.ReadAsStringAsync(), Is.EqualTo("{\"message\":\"Not found.\"}"));
+
+            ErrorDetails body = JsonSerializer.Deserialize<ErrorDetails>(await msg.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            Assert.That(body.Status, Is.EqualTo((int) HttpStatusCode.NotFound));
+            Assert.That(body.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
+            Assert.That(body.TraceId, Is.Not.Empty);
+            Assert.That(body.Errors, Is.Null);
+            Assert.That(body.DeveloperMessage, Is.Null);
         }
 
         [Test]
