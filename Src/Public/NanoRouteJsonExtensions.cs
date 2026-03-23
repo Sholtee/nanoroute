@@ -20,7 +20,7 @@ namespace NanoRoute.Json
     using Properties;
 
     [JsonSerializable(typeof(ErrorDetails))]
-    [JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSourceGenerationOptions(JsonSerializerDefaults.Web, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     internal partial class JsonContext : JsonSerializerContext  // cannot be nested =(
     {
     }
@@ -30,11 +30,6 @@ namespace NanoRoute.Json
     /// </summary>
     public static class NanoRouteJsonExtensions
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public const string BODY_PARAM_NAME = "body";
-
         extension<TRouter>(RouterBuilder<TRouter> routerBuilder) where TRouter: Router, new()
         {
             /// <summary>
@@ -61,7 +56,7 @@ namespace NanoRoute.Json
                         return null!;
                     }
 
-                    if (content.Headers.ContentType.MediaType.Equals("application/json", StringComparison.OrdinalIgnoreCase))
+                    if (!"application/json".Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
                         HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_BAD_CONTENT_TYPE);
 
                     Stream contentStream = await content.ReadAsStreamAsync();
@@ -87,12 +82,17 @@ namespace NanoRoute.Json
             /// 
             /// </summary>
             /// <returns></returns>
-            public RouterBuilder<TRouter> WithJsonBody<TBody>() => routerBuilder.AddJsonBody
-            (
-                JsonTypeInfo.CreateJsonTypeInfo<TBody>(JsonSerializerOptions.Default),
-                BODY_PARAM_NAME,
-                "POST", "PUT"
-            );
+            public RouterBuilder<TRouter> AddJsonBody(Type type, string paramName, params IEnumerable<string> verbs)
+            {
+                Ensure.NotNull(type);
+
+                return routerBuilder.AddJsonBody
+                (
+                    JsonSerializerOptions.Web.GetTypeInfo(type),
+                    paramName,
+                    verbs
+                );
+            }
 
             /// <summary>
             /// Registers a catch-all handler that turns unhandled routing failures into JSON error responses.
@@ -203,7 +203,9 @@ namespace NanoRoute.Json
             {
                 Ensure.NotNull(options);
 
-                return Json(statusCode, body, JsonTypeInfo.CreateJsonTypeInfo<T>(options));
+                options.TypeInfoResolver ??= new DefaultJsonTypeInfoResolver();
+
+                return Json(statusCode, body, options.GetTypeInfo(typeof(T)));
             }
 
             /// <summary>
@@ -213,7 +215,7 @@ namespace NanoRoute.Json
             /// <param name="statusCode"></param>
             /// <param name="body"></param>
             /// <returns></returns>
-            public static HttpResponseMessage Json<T>(HttpStatusCode statusCode, T? body) => Json(statusCode, body, JsonSerializerOptions.Default);
+            public static HttpResponseMessage Json<T>(HttpStatusCode statusCode, T? body) => Json(statusCode, body, JsonSerializerOptions.Web);
 
             /// <summary>
             /// 

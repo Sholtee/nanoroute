@@ -1,6 +1,5 @@
 const NanoRoute.HttpRequestExceptionExtensions.ERRORS_NAME = "Errors" -> string!
 const NanoRoute.HttpRequestExceptionExtensions.STATUS_NAME = "StatusCode" -> string!
-const NanoRoute.Json.NanoRouteJsonExtensions.BODY_PARAM_NAME = "body" -> string!
 const NanoRoute.Router.ORIGINAL_REQUEST_NAME = "OriginalRequest" -> string!
 const NanoRoute.Router.TRACE_ID_NAME = "TraceId" -> string!
 NanoRoute.ErrorDetails
@@ -25,7 +24,7 @@ NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMes
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TRouter>(NanoRoute.RouterBuilder<TRouter!>!)
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TRouter>(NanoRoute.RouterBuilder<TRouter!>!).AddDefaultHandler(bool populateErrorInfo = false) -> NanoRoute.RouterBuilder<TRouter!>!
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TRouter>(NanoRoute.RouterBuilder<TRouter!>!).AddJsonBody(System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo, string! paramName, params System.Collections.Generic.IEnumerable<string!>! verbs) -> NanoRoute.RouterBuilder<TRouter!>!
-NanoRoute.Json.NanoRouteJsonExtensions.extension<TRouter>(NanoRoute.RouterBuilder<TRouter!>!).WithJsonBody<TBody>() -> NanoRoute.RouterBuilder<TRouter!>!
+NanoRoute.Json.NanoRouteJsonExtensions.extension<TRouter>(NanoRoute.RouterBuilder<TRouter!>!).AddJsonBody(System.Type! type, string! paramName, params System.Collections.Generic.IEnumerable<string!>! verbs) -> NanoRoute.RouterBuilder<TRouter!>!
 NanoRoute.ParameterParserDelegate
 NanoRoute.RequestContext
 NanoRoute.RequestContext.Cancellation.get -> System.Threading.CancellationToken

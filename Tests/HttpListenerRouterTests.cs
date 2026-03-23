@@ -249,7 +249,7 @@ namespace NanoRoute.Tests
                 .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler("GET", "", async (context, _) =>
                 {
-                    Assert.That(context.Request.Properties.TryGetValue("OriginalRequest", out object? originalRequest), Is.True);
+                    Assert.That(context.Request.Properties.TryGetValue(Router.ORIGINAL_REQUEST_NAME, out object? originalRequest), Is.True);
                     Assert.That(originalRequest, Is.InstanceOf<HttpListenerRequest>());
 
                     return new HttpResponseMessage(HttpStatusCode.OK);
