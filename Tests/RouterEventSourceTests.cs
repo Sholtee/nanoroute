@@ -18,7 +18,7 @@ namespace NanoRoute.Tests
         [Test]
         public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload()
         {
-            using TestEventListener listener = new(EventLevel.LogAlways);
+            using DebugEventListener listener = new(EventLevel.LogAlways);
 
             RouterEventSource.Log.Debug("DebugEvent", () => new { Value = "debug" });
             RouterEventSource.Log.Info("InfoEvent", () => new { Value = "info" });

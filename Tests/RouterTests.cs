@@ -35,22 +35,18 @@ namespace NanoRoute.Tests
         {
         }
 
-        [OneTimeSetUp]
-        public void OneTimeSetup() => _debugEventListener = new();
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            _debugEventListener?.Dispose();
-            _debugEventListener = null!;
-        }
-
         [SetUp]
         public void Setup()
         {
             _request = new HttpRequestMessage() { Method = HttpMethod.Get };
-
+            _debugEventListener = new DebugEventListener(EventLevel.LogAlways);
             _routerBuilder = new RouterBuilder<TestRouter>(r => { });
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _debugEventListener?.Dispose();
         }
 
         [Test]
@@ -807,8 +803,6 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldLogTheRequestLifecycle()
         {
-            using TestEventListener listener = new(EventLevel.LogAlways);
-
             TestRouter router = _routerBuilder
                 .AddHandler("GET", "/path/to/somewhere", async (_, _) => s_response)
                 .CreateRouter();
@@ -818,11 +812,11 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
 
             Assert.That(response, Is.EqualTo(s_response));
-            Assert.That(SpinWait.SpinUntil(() => listener.Events.Count >= 2, 1000), Is.True);
+            Assert.That(SpinWait.SpinUntil(() => _debugEventListener.Events.Count >= 2, 1000), Is.True);
 
             EventWrittenEventArgs
-                requestStarted = listener.Events.Single(e => e.EventName == "RequestProcessingStarted"),
-                matchingHandler = listener.Events.Single(e => e.EventName == "MatchingHandler");
+                requestStarted = _debugEventListener.Events.Single(e => e.EventName == "RequestProcessingStarted"),
+                matchingHandler = _debugEventListener.Events.Single(e => e.EventName == "MatchingHandler");
 
             Assert.Multiple(() =>
             {
@@ -839,8 +833,6 @@ namespace NanoRoute.Tests
         [Test]
         public void Handle_ShouldLogWhenNoHandlerMatches()
         {
-            using TestEventListener listener = new(EventLevel.LogAlways);
-
             TestRouter router = _routerBuilder.CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/nowhere");
@@ -849,11 +841,11 @@ namespace NanoRoute.Tests
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(SpinWait.SpinUntil(() => listener.Events.Count >= 2, 1000), Is.True);
+            Assert.That(SpinWait.SpinUntil(() => _debugEventListener.Events.Count >= 2, 1000), Is.True);
 
             EventWrittenEventArgs
-                requestStarted = listener.Events.Single(e => e.EventName == "RequestProcessingStarted"),
-                noMatchingHandler = listener.Events.Single(e => e.EventName == "NoMatchingHandler");
+                requestStarted = _debugEventListener.Events.Single(e => e.EventName == "RequestProcessingStarted"),
+                noMatchingHandler = _debugEventListener.Events.Single(e => e.EventName == "NoMatchingHandler");
 
             Assert.Multiple(() =>
             {
