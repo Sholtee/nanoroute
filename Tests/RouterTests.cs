@@ -5,8 +5,10 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Net;
 using System.Net.Http;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +17,7 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
+    using Internals;
     using Properties;
 
     [TestFixture]
@@ -799,6 +802,69 @@ namespace NanoRoute.Tests
             mockStringHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
             mockIntParser.Verify(p => p.Invoke("abc", out parsed), Times.Once);
             mockStringParser.Verify(p => p.Invoke("abc", out parsed), Times.Once);
+        }
+
+        [Test]
+        public async Task Handle_ShouldLogTheRequestLifecycle()
+        {
+            using TestEventListener listener = new(EventLevel.LogAlways);
+
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", "/path/to/somewhere", async (_, _) => s_response)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
+
+            HttpResponseMessage response = await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+
+            Assert.That(response, Is.EqualTo(s_response));
+            Assert.That(SpinWait.SpinUntil(() => listener.Events.Count >= 2, 1000), Is.True);
+
+            EventWrittenEventArgs
+                requestStarted = listener.Events.Single(e => e.EventName == "RequestProcessingStarted"),
+                matchingHandler = listener.Events.Single(e => e.EventName == "MatchingHandler");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(requestStarted.Level, Is.EqualTo(EventLevel.Informational));
+                Assert.That(requestStarted.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb" }));
+                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "/path/to/somewhere", HttpVerb.Get }));
+
+                Assert.That(matchingHandler.Level, Is.EqualTo(EventLevel.Informational));
+                Assert.That(matchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb", "Pattern" }));
+                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "/path/to/somewhere", HttpVerb.Get, "/path/to/somewhere" }));
+            });
+        }
+
+        [Test]
+        public void Handle_ShouldLogWhenNoHandlerMatches()
+        {
+            using TestEventListener listener = new(EventLevel.LogAlways);
+
+            TestRouter router = _routerBuilder.CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/nowhere");
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
+            Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(SpinWait.SpinUntil(() => listener.Events.Count >= 2, 1000), Is.True);
+
+            EventWrittenEventArgs
+                requestStarted = listener.Events.Single(e => e.EventName == "RequestProcessingStarted"),
+                noMatchingHandler = listener.Events.Single(e => e.EventName == "NoMatchingHandler");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(requestStarted.Level, Is.EqualTo(EventLevel.Informational));
+                Assert.That(requestStarted.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb" }));
+                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "/path/to/nowhere", HttpVerb.Get }));
+
+                Assert.That(noMatchingHandler.Level, Is.EqualTo(EventLevel.Informational));
+                Assert.That(noMatchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb" }));
+                Assert.That(noMatchingHandler.Payload, Is.EquivalentTo(new object?[] { "/path/to/nowhere", HttpVerb.Get }));
+            });
         }
     }
 }

@@ -120,7 +120,15 @@ namespace NanoRoute
             async Task<HttpResponseMessage> CallNextHandler()
             {
                 if (!matches.MoveNext())
+                {
+                    RouterEventSource.Log.Info("NoMatchingHandler", () => new
+                    {
+                        RequestPath = requestPath,
+                        Verb = verb
+                    });
+
                     HttpRequestException.Throw(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
+                }
 
                 Debug.Assert(matches.Current.AttachedParameters is not null, "Parameters must be attached here");
 

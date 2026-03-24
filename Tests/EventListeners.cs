@@ -1,9 +1,10 @@
 /********************************************************************************
-* DebugEventListener.cs                                                         *
+* EventListeners.cs                                                             *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
@@ -32,5 +33,20 @@ namespace NanoRoute.Tests
                 Debug.WriteLine(dump);
             }
         }
+    }
+
+    internal sealed class TestEventListener(EventLevel level) : EventListener
+    {
+        private readonly List<EventWrittenEventArgs> _events = [];
+
+        public List<EventWrittenEventArgs> Events => _events;
+
+        protected override void OnEventSourceCreated(EventSource eventSource)
+        {
+            if (eventSource.Name == RouterEventSource.EVENT_SOURCE_NAME)
+                EnableEvents(eventSource, level);
+        }
+
+        protected override void OnEventWritten(EventWrittenEventArgs eventData) => _events.Add(eventData);
     }
 }
