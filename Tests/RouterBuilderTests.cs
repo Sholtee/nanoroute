@@ -26,11 +26,11 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class RouterBuilderTests
     {
-        internal sealed class TestRouter : Router { } 
+        internal sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> routerBuilder) : Router(routerBuilder, routerBuilder.RouterConfig) { } 
 
-        private RouterBuilder<TestRouter> _routerBuilder = null!;
+        private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
 
-        private Mock<Action<TestRouter>> _mockConfigureRouter = null!;
+        private Mock<Func<RouterConfig, TestRouter>> _mockConfigureRouter = null!;
 
         private sealed class TestJsonPayload
         {
@@ -40,19 +40,17 @@ namespace NanoRoute.Tests
         [SetUp]
         public void Setup()
         {
-            _mockConfigureRouter = new Mock<Action<TestRouter>>(MockBehavior.Strict);
+            _mockConfigureRouter = new Mock<Func<RouterConfig, TestRouter>>(MockBehavior.Strict);
             _mockConfigureRouter
-                .Setup(c => c.Invoke(It.IsAny<TestRouter>()));
+                .Setup(c => c.Invoke(It.IsAny<RouterConfig>()))
+                .Returns<RouterConfig>(_ => new TestRouter { MatchingBehavior = MatchingBehavior.LiteralFirst });
 
-            _routerBuilder = new RouterBuilder<TestRouter>(_mockConfigureRouter.Object);
+            _routerBuilder = new RouterBuilder<TestRouter, RouterConfig>(_mockConfigureRouter.Object);
         }
 
         [Test]
         public void CreateRouter_ShouldCopyTheRootNode()
         {
-            _mockConfigureRouter
-                .Setup(s => s.Invoke(It.IsAny<TestRouter>()));
-
             Mock<RequestHandler> mockRequestHandler = new(MockBehavior.Strict);
 
             TestRouter router = _routerBuilder
@@ -62,21 +60,6 @@ namespace NanoRoute.Tests
             Assert.That(router.Root, Is.Not.SameAs(_routerBuilder.Root));
             Assert.That(router.Root.HandlerRegistrations[HttpVerb.Get], Has.Count.EqualTo(1));
             Assert.That(router.Root.HandlerRegistrations[HttpVerb.Get].Single().Handler, Is.SameAs(mockRequestHandler.Object));
-        }
-
-        [Test]
-        public void CreateRouter_ShouldInvokeTheConfigureCallbackOnTheCreatedRouter()
-        {
-            TestRouter? configuredRouter = null;
-
-            _mockConfigureRouter
-                .Setup(c => c.Invoke(It.IsAny<TestRouter>()))
-                .Callback<TestRouter>(router => configuredRouter = router);
-
-            TestRouter router = _routerBuilder.CreateRouter();
-
-            _mockConfigureRouter.Verify(c => c.Invoke(It.IsAny<TestRouter>()), Times.Once);
-            Assert.That(configuredRouter, Is.SameAs(router));
         }
 
         [Test]
@@ -95,11 +78,10 @@ namespace NanoRoute.Tests
         [Test]
         public void WithBase_ShouldInheritTheParentParameterParsers()
         {
-            RouterBuilder<TestRouter> childBuilder = _routerBuilder
+            RouteBuilder childBuilder = _routerBuilder
                 .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .WithBase("/to/")
                 .AddParameterParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
-
 
             Assert.DoesNotThrow(() => childBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandler>(MockBehavior.Strict).Object));
         }
@@ -134,7 +116,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task WithBase_ShouldKeepChildParserOverridesLocal()
         {
-            RouterBuilder<TestRouter> childBuilder = _routerBuilder
+            RouteBuilder childBuilder = _routerBuilder
                 .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"parent:{segment}"; return true; })
                 .WithBase("/child/")
                 .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"child:{segment}"; return true; });
@@ -158,16 +140,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void CreateRouter_ShouldThrowWhenCalledOnAChildBuilder()
-        {
-            RouterBuilder<TestRouter> childBuilder = _routerBuilder.WithBase("/child/");
-
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => childBuilder.CreateRouter())!;
-            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_CANT_CREATE_ROUTER_INSTANCE));
-        }
-
-        [Test]
-        public void RoutePatterns_ShouldReflectTheActualBranch()
+        public void Patterns_ShouldReflectTheActualBranch()
         {
             _routerBuilder
                 .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
@@ -175,13 +148,13 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/somewhere/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/{some_str_1:any}/not-prefix", new Mock<RequestHandler>(MockBehavior.Strict).Object);
 
-            RouterBuilder<TestRouter> childBuilder = _routerBuilder.WithBase("/path/to/")
+            RouteBuilder childBuilder = _routerBuilder.WithBase("/path/to/")
                 .AddHandler("GET", "", new Mock<RequestHandler>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/{some_str_2:any}/something/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/explicit/something/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/not-prefix", new Mock<RequestHandler>(MockBehavior.Strict).Object);
 
-            Assert.That(_routerBuilder.RoutePatterns, Is.EqualTo(new string[]
+            Assert.That(_routerBuilder.Patterns, Is.EqualTo(new string[]
             {
                 "[Get] /",
                 "[Get] /{some_str_1:any}/not-prefix",
@@ -191,7 +164,7 @@ namespace NanoRoute.Tests
                 "[Get] /path/to/not-prefix",
                 "[Get] /somewhere/",
             }));
-            Assert.That(childBuilder.RoutePatterns, Is.EqualTo(new string[]
+            Assert.That(childBuilder.Patterns, Is.EqualTo(new string[]
             {
                 "[Get] /path/to/",
                 "[Get] /path/to/{some_str_2:any}/something/",
@@ -209,7 +182,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/items", handler)
                 .AddHandler("GET", "/items", handler);
 
-            Assert.That(_routerBuilder.RoutePatterns, Is.EqualTo(new[]
+            Assert.That(_routerBuilder.Patterns, Is.EqualTo(new[]
             {
                 "[Get] /items"
             }));
@@ -241,7 +214,7 @@ namespace NanoRoute.Tests
         [Test]
         public void WithBase_WithConfigureRoutes_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter> result = _routerBuilder.WithBase("/base/", _ => { });
+            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.WithBase("/base/", _ => { });
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }
@@ -616,7 +589,7 @@ namespace NanoRoute.Tests
         [Test]
         public void JsonHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter>) null!).AddJsonBody(typeof(TestJsonPayload), "payload", "POST"))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddJsonBody(typeof(TestJsonPayload), "payload", "POST"))!;
             Assert.That(ex.ParamName, Is.EqualTo("routerBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(typeInfo: null!, "payload", "POST"))!;

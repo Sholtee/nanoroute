@@ -32,9 +32,9 @@ namespace NanoRoute.Tests
 
         private HttpListenerRouter _router = null!;
 
-        private void CreateRouter(Action<RouterBuilder<HttpListenerRouter>> configureRouter)
+        private void CreateRouter(Action<RouterBuilder<HttpListenerRouter, RouterConfig>> configureRouter)
         {
-            RouterBuilder<HttpListenerRouter> routerBuilder = HttpListenerRouter
+            RouterBuilder<HttpListenerRouter, RouterConfig> routerBuilder = HttpListenerRouter
                 .CreateBuilder()
                 .AddDefaultHandler();
 

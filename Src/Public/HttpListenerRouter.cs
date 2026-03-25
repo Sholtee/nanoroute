@@ -18,7 +18,7 @@ namespace NanoRoute
     /// <summary>
     /// 
     /// </summary>
-    public class HttpListenerRouter : Router
+    public class HttpListenerRouter: Router
     {
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
         private static readonly HashSet<string> s_reservedHeaders = new(StringComparer.OrdinalIgnoreCase)
@@ -89,6 +89,8 @@ namespace NanoRoute
             return requestMessage;
         }
 
+        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig) { }
+
         /// <summary>
         /// TODO
         /// </summary>
@@ -117,6 +119,6 @@ namespace NanoRoute
         /// <summary>
         /// 
         /// </summary>
-        public static RouterBuilder<HttpListenerRouter> CreateBuilder() => new(static _ => { });
+        public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static bldr => new HttpListenerRouter(bldr));
     }
 }

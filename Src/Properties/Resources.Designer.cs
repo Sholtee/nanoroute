@@ -79,15 +79,6 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Router instance creation is not allowed from this builder..
-        /// </summary>
-        internal static string ERR_CANT_CREATE_ROUTER_INSTANCE {
-            get {
-                return ResourceManager.GetString("ERR_CANT_CREATE_ROUTER_INSTANCE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Internal server error..
         /// </summary>
         internal static string ERR_INERNAL_ERROR {

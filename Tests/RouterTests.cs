@@ -27,7 +27,7 @@ namespace NanoRoute.Tests
 
         private DebugEventListener _debugEventListener = null!;
 
-        private RouterBuilder<TestRouter> _routerBuilder = null!;
+        private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
 
         private HttpRequestMessage _request = null!;
 
@@ -40,7 +40,7 @@ namespace NanoRoute.Tests
         {
             _request = new HttpRequestMessage() { Method = HttpMethod.Get };
             _debugEventListener = new DebugEventListener(EventLevel.LogAlways);
-            _routerBuilder = new RouterBuilder<TestRouter>(r => { });
+            _routerBuilder = new RouterBuilder<TestRouter, RouterConfig>(_ => new TestRouter { MatchingBehavior = MatchingBehavior.LiteralFirst });
         }
 
         [TearDown]
@@ -275,7 +275,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
 
-            RouterBuilder<TestRouter> pathTo = _routerBuilder
+            RouteBuilder pathTo = _routerBuilder
                 .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .WithBase("/path/to/");
 

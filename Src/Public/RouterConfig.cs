@@ -1,19 +1,18 @@
 /********************************************************************************
-* RoutingContext.cs                                                             *
+* RouterConfig.cs                                                              *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 namespace NanoRoute
 {
-    using Internals;
-
     /// <summary>
-    /// TOTO
+    /// 
     /// </summary>
-    public abstract class RoutingContext
+    public class RouterConfig
     {
-        internal RoutingContext(RouteNode root) => Root = root;
-
-        internal RouteNode Root { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public MatchingBehavior MatchingBehavior { get; set; }
     }
 }

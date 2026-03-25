@@ -1,19 +1,14 @@
 /********************************************************************************
-* RoutingContext.cs                                                             *
+* HttpListenerRouterConfig.cs                                                         *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 namespace NanoRoute
 {
-    using Internals;
-
     /// <summary>
-    /// TOTO
+    /// 
     /// </summary>
-    public abstract class RoutingContext
+    public sealed class HttpListenerRouterConfig : RouterConfig
     {
-        internal RoutingContext(RouteNode root) => Root = root;
-
-        internal RouteNode Root { get; }
     }
 }

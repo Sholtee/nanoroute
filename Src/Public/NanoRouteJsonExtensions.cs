@@ -30,7 +30,7 @@ namespace NanoRoute.Json
     /// </summary>
     public static class NanoRouteJsonExtensions
     {
-        extension<TRouter>(RouterBuilder<TRouter> routerBuilder) where TRouter: Router, new()
+        extension<TBuilder>(TBuilder routeBuilder) where TBuilder: RouteBuilder
         {
             /// <summary>
             /// 
@@ -39,14 +39,14 @@ namespace NanoRoute.Json
             /// <param name="paramName"></param>
             /// <param name="verbs"></param>
             /// <returns></returns>
-            public RouterBuilder<TRouter> AddJsonBody(JsonTypeInfo typeInfo, string paramName, params IEnumerable<string> verbs)
+            public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName, params IEnumerable<string> verbs)
             {
-                Ensure.NotNull(routerBuilder);
+                Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(typeInfo);
                 Ensure.NotNull(paramName);
                 Ensure.NotNull(verbs);
 
-                return routerBuilder.AddHandler(verbs: verbs, pattern: "/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+                routeBuilder.AddHandler(verbs: verbs, pattern: "/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
                 {
                     context.Cancellation.ThrowIfCancellationRequested();
 
@@ -76,17 +76,19 @@ namespace NanoRoute.Json
 
                     return await next();
                 });
+
+                return routeBuilder;
             }
 
             /// <summary>
             /// 
             /// </summary>
             /// <returns></returns>
-            public RouterBuilder<TRouter> AddJsonBody(Type type, string paramName, params IEnumerable<string> verbs)
+            public TBuilder AddJsonBody(Type type, string paramName, params IEnumerable<string> verbs)
             {
                 Ensure.NotNull(type);
 
-                return routerBuilder.AddJsonBody
+                return routeBuilder.AddJsonBody
                 (
                     JsonSerializerOptions.Web.GetTypeInfo(type),
                     paramName,
@@ -112,11 +114,11 @@ namespace NanoRoute.Json
             /// In this example, requests without a matching route receive the built-in JSON <c>404 Not Found</c>
             /// response instead of an unhandled exception.
             /// </example>
-            public RouterBuilder<TRouter> AddDefaultHandler(bool populateErrorInfo = false)
+            public TBuilder AddDefaultHandler(bool populateErrorInfo = false)
             {
-                Ensure.NotNull(routerBuilder);
+                Ensure.NotNull(routeBuilder);
 
-                return routerBuilder.AddHandler("/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+                routeBuilder.AddHandler("/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
                 {
                     try
                     {
@@ -164,6 +166,8 @@ namespace NanoRoute.Json
                         JsonContext.Default.ErrorDetails
                     );
                 });
+
+                return routeBuilder;
             }
         }
 

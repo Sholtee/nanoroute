@@ -5,123 +5,29 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace NanoRoute
 {
     using Internals;
-    using Properties;
 
     /// <summary>
-    /// TODO
+    /// 
     /// </summary>
-    public sealed class RouterBuilder<TRouter> : RoutingContext where TRouter: Router, new()
+    /// <typeparam name="TRouter"></typeparam>
+    /// <typeparam name="TConfig"></typeparam>
+    public sealed class RouterBuilder<TRouter, TConfig> : RouteBuilder where TRouter : Router where TConfig: RouterConfig, new()
     {
-        #region Private
-        private const string
-            // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences
-            LITERAL_SEGMENT_DEFINITION = @"(?:(?:[\w.\-~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+)",
-            PARAMETER_SEGMENT_DEFINITION = @"\{(?:\w+:)?\w+\}",
-            SEGMENT_DEFINITION = $@"(?:{LITERAL_SEGMENT_DEFINITION}|{PARAMETER_SEGMENT_DEFINITION})";
-
-        // avoid using the constructor that accepts RegexOptions, since it is not AOT compatible
-        private static readonly Regex
-            s_parserDefinition = new(@"^\{(?:(?<parametername>\w+):)?(?<name>\w+)\}$"),
-            s_patternValidator = new($@"^(?:/?|/?{SEGMENT_DEFINITION}(?:/{SEGMENT_DEFINITION})*/?)$");
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Dictionary<string, ParameterParser> _parameterParsers;
-
-        private readonly Action<TRouter>? _configureRouter;
-
-        private readonly string _basePattern;
+        private readonly Func<RouterBuilder<TRouter, TConfig>, TRouter> _routerFactory;
 
         /// <summary>
-        /// Gets or creates the <see cref="RouteNode"/> that matches the given <paramref name="pattern"/>.
+        /// 
         /// </summary>
-        private RouteNode FindNode(string pattern)
+        /// <param name="routerFactory"></param>
+        public RouterBuilder(Func<RouterBuilder<TRouter, TConfig>, TRouter> routerFactory): base()
         {
-            if (!s_patternValidator.IsMatch(pattern))
-                throw new ArgumentException(Resources.ERR_INVALID_PATTERN, nameof(pattern));
+            Ensure.NotNull(routerFactory);
 
-            RouteNode target = Root;
-
-            foreach (string segment in new StringSegment(pattern, '/').Enumerate())
-            {
-                if (s_parserDefinition.Match(segment) is { Success: true } parserDefinition)
-                {
-                    string
-                        parserName = parserDefinition.Groups["name"].Value,  // cannot be empty
-                        parameterName = parserDefinition.Groups["parametername"].Value;
-
-                    Debug.Assert(!string.IsNullOrEmpty(parserName), "Parser name could not be extracted");
-
-                    if (!_parameterParsers.TryGetValue(parserName, out ParameterParser parser))
-                        throw new InvalidOperationException
-                        (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, parserName)
-                        );
-
-                    if (target.ParameterizedChildren.SingleOrDefault(cc => cc.ParameterParser!.Name.Equals(parser.Name, StringComparison.OrdinalIgnoreCase)) is not { } parameterizedChild)
-                    {
-                        if (!string.IsNullOrEmpty(parserName))
-                            parser = parser with { ParameterName = parameterName };
-
-                        parameterizedChild = new RouteNode
-                        {
-                            ParameterParser = parser,
-                            Segment = segment
-                        };
-                        target.ParameterizedChildren.Add(parameterizedChild);
-                    }
-                    else if (parameterizedChild.ParameterParser!.ParameterName?.Equals(parameterName) is false)
-                        throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
-
-                    target = parameterizedChild;
-                }
-                else
-                {
-                    if (!target.LiteralChildren.TryGetValue(segment, out RouteNode exactChild))
-                    {
-                        exactChild = new RouteNode
-                        {
-                            Segment = segment
-                        };
-                        target.LiteralChildren.Add(segment, exactChild);
-                    }
-
-                    target = exactChild;
-                }
-            }
-
-            return target;
-        }
-
-        private static string JoinPattern(string a, string b) => $"{a.TrimEnd('/')}/{b.TrimStart('/')}";
-
-        private RouterBuilder(RouterBuilder<TRouter> parent, string baseUrl)
-        {
-            Root = parent.FindNode(baseUrl);
-
-            _parameterParsers = new Dictionary<string, ParameterParser>(parent._parameterParsers, StringComparer.OrdinalIgnoreCase);
-            _basePattern = JoinPattern(parent._basePattern, baseUrl);
-        }
-        #endregion
-
-        /// <summary>
-        /// Creates a new see <see cref="RouterBuilder{TRouter}"/> instance
-        /// </summary>
-        public RouterBuilder(Action<TRouter> configureRouter)
-        {
-            Ensure.NotNull(configureRouter);
-
-            Root = new RouteNode { Segment = string.Empty };
-
-            _parameterParsers = new Dictionary<string, ParameterParser>(StringComparer.OrdinalIgnoreCase);
-            _configureRouter = configureRouter;
-            _basePattern = string.Empty;
+            _routerFactory = routerFactory;
         }
 
         /// <summary>
@@ -129,60 +35,16 @@ namespace NanoRoute
         /// </summary>
         /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
-        /// <returns>The current <see cref="RouterBuilder{TRouter}"/> instance.</returns>
+        /// <returns>The current <see cref="RouterBuilder{TRouter, TConfig}"/> instance.</returns>
         /// <remarks>
         /// If a parser is already registered under the same <paramref name="parserName"/>, the new registration
         /// replaces the existing one.
         /// </remarks>
-        public RouterBuilder<TRouter> AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
+        public new RouterBuilder<TRouter, TConfig> AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
         {
-            Ensure.NotNull(parserName);
-            Ensure.NotNull(tryParseDelegate);
-
-            _parameterParsers[parserName] = new ParameterParser(parserName, tryParseDelegate);
-
+            base.AddParameterParser(parserName, tryParseDelegate);
             return this;
         }
-
-        /// <summary>
-        /// Registers the built-in parameter parsers for common scalar route segments.
-        /// </summary>
-        /// <returns>The current <see cref="RouterBuilder{TRouter}"/> instance.</returns>
-        /// <remarks>
-        /// This convenience method registers parsers named <c>int</c>, <c>guid</c>, <c>bool</c>, and <c>str</c>.
-        /// Existing registrations with the same names are overwritten.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// router
-        ///     .AddDefaultParsers()
-        ///     .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));
-        /// </code>
-        /// </example>
-        public RouterBuilder<TRouter> AddDefaultParsers() =>
-            AddParameterParser("int", static (string segment, out object? parsed) =>
-            {
-                bool success = int.TryParse(segment, out int value);
-                parsed = success ? value : null;
-                return success;
-            })
-            .AddParameterParser("guid", static (string segment, out object? parsed) =>
-            {
-                bool success = Guid.TryParse(segment, out Guid value);
-                parsed = success ? value : null;
-                return success;
-            })
-            .AddParameterParser("bool", static (string segment, out object? parsed) =>
-            {
-                bool success = bool.TryParse(segment, out bool value);
-                parsed = success ? value : null;
-                return success;
-            })
-            .AddParameterParser("str", static (string segment, out object? parsed) =>
-            {
-                parsed = segment;
-                return true;
-            });
 
         /// <summary>
         /// Registers a handler for all supported HTTP methods.
@@ -199,20 +61,10 @@ namespace NanoRoute
         /// router.AddHandler("/health", (context, next) =&gt; Results.Ok());
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter> AddHandler(string pattern, RequestHandler handler)
+        public new RouterBuilder<TRouter, TConfig> AddHandler(string pattern, RequestHandler handler)
         {
-            Ensure.NotNull(pattern);
-            Ensure.NotNull(handler);
-
-            return AddHandler
-            (
-                Enum.GetNames
-                (
-                    typeof(HttpVerb)
-                ),
-                pattern,
-                handler
-            );
+            base.AddHandler(pattern, handler);
+            return this;
         }
 
         /// <summary>
@@ -234,15 +86,9 @@ namespace NanoRoute
         ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler handler)
+        public new RouterBuilder<TRouter, TConfig> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler handler)
         {
-            Ensure.NotNull(verbs);
-            Ensure.NotNull(pattern);
-            Ensure.NotNull(handler);
-
-            foreach (string verb in verbs)
-                AddHandler(verb, pattern, handler);
-
+            base.AddHandler(verbs, pattern, handler);
             return this;
         }
 
@@ -273,31 +119,9 @@ namespace NanoRoute
         /// });
         /// </code>
         /// </example>
-        public RouterBuilder<TRouter> AddHandler(string verb, string pattern, RequestHandler handler)
+        public new RouterBuilder<TRouter, TConfig> AddHandler(string verb, string pattern, RequestHandler handler)
         {
-            Ensure.NotNull(verb);
-            Ensure.NotNull(pattern);
-            Ensure.NotNull(handler);
-
-            if (!Enum.TryParse(verb, ignoreCase: true, out HttpVerb v))
-                throw new ArgumentException
-                (
-                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, verb), nameof(verb)
-                );
-
-            RouteNode target = FindNode(pattern);
-
-            if (!target.HandlerRegistrations.TryGetValue(v, out List<HandlerRegistration> handlerRegistrations))
-            {
-                handlerRegistrations = [];
-                target.HandlerRegistrations.Add(v, handlerRegistrations);
-            }
-
-            handlerRegistrations.Add
-            (
-                new HandlerRegistration(handler, JoinPattern(_basePattern, pattern))
-            );
-
+            base.AddHandler(verb, pattern, handler);
             return this;
         }
 
@@ -305,87 +129,37 @@ namespace NanoRoute
         /// 
         /// </summary>
         /// <param name="pattern"></param>
+        /// <param name="configureRoutes"></param>
         /// <returns></returns>
-        public RouterBuilder<TRouter> WithBase(string pattern)
+        public new RouterBuilder<TRouter, TConfig> WithBase(string pattern, Action<RouteBuilder> configureRoutes)
         {
-            Ensure.NotNull(pattern);
-
-            if (!pattern.EndsWith("/"))
-                throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
-
-            return new RouterBuilder<TRouter>(this, pattern);
+            base.WithBase(pattern, configureRoutes);
+            return this;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public RouterBuilder<TRouter> WithBase(string pattern, Action<RouterBuilder<TRouter>> configureRoutes)
+        /// <param name="updateConfig"></param>
+        /// <returns></returns>
+        public RouterBuilder<TRouter, TConfig> WithConfiguration(Action<TConfig> updateConfig)
         {
-            Ensure.NotNull(pattern);
-            Ensure.NotNull(configureRoutes);
+            Ensure.NotNull(updateConfig);
 
-            configureRoutes
-            (
-                WithBase(pattern)
-            );
+            updateConfig(RouterConfig);
 
             return this;
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public TConfig RouterConfig { get; } = new();
+
+        /// <summary>
         /// TODO
         /// </summary>
         /// <returns></returns>
-        public TRouter CreateRouter()
-        {
-            if (_configureRouter is null)
-                throw new InvalidOperationException(Resources.ERR_CANT_CREATE_ROUTER_INSTANCE);
-
-            TRouter router = new()
-            {
-                Root = Root.Copy()
-            };
-
-            _configureRouter(router);
-
-            return router;
-        }
-
-        /// <summary>
-        /// TODO
-        /// Parameter parsers assigned to this instance.
-        /// </summary>
-        public IEnumerable<KeyValuePair<string, ParameterParserDelegate>> ParameterParsers => _parameterParsers.Select
-        (
-            static kvp => new KeyValuePair<string, ParameterParserDelegate>(kvp.Key, kvp.Value.TryParse)
-        );
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        public IEnumerable<string> RoutePatterns
-        {
-            get
-            {
-                HashSet<string> patterns = [];
-
-                Walk(Root, patterns);
-
-                return patterns.OrderBy(static p => p);
-
-                static void Walk(RouteNode node, HashSet<string> patterns)
-                {
-                    foreach (KeyValuePair<HttpVerb, List<HandlerRegistration>> handlerRegistrations in node.HandlerRegistrations)
-                        foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
-                            patterns.Add($"[{handlerRegistrations.Key}] {handlerRegistration.Pattern}");
- 
-                    foreach (RouteNode childNode in node.LiteralChildren.Values)
-                        Walk(childNode, patterns);
-
-                    foreach (RouteNode childNode in node.ParameterizedChildren)
-                        Walk(childNode, patterns);
-                }
-            }
-        }
+        public TRouter CreateRouter() => _routerFactory(this);
     }
 }

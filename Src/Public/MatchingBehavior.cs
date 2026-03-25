@@ -1,19 +1,23 @@
 /********************************************************************************
-* RoutingContext.cs                                                             *
+* MatchingBehavior.cs                                                           *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 namespace NanoRoute
 {
-    using Internals;
-
     /// <summary>
-    /// TOTO
+    /// 
     /// </summary>
-    public abstract class RoutingContext
+    public enum MatchingBehavior
     {
-        internal RoutingContext(RouteNode root) => Root = root;
+        /// <summary>
+        /// 
+        /// </summary>
+        LiteralFirst,
 
-        internal RouteNode Root { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        ParameterizedChildrenFirst
     }
 }

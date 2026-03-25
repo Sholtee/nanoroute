@@ -135,9 +135,6 @@
   <data name="ERR_NOT_PREFIX" xml:space="preserve">
     <value>Only prefix patterns are allowed.</value>
   </data>
-  <data name="ERR_CANT_CREATE_ROUTER_INSTANCE" xml:space="preserve">
-    <value>Router instance creation is not allowed from this builder.</value>
-  </data>
   <data name="ERR_INVALID_PATTERN" xml:space="preserve">
     <value>Invalid pattern.</value>
   </data>
