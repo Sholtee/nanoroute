@@ -33,49 +33,57 @@ namespace NanoRoute
         /// </summary>
         public const string ORIGINAL_REQUEST_NAME = "OriginalRequest";
 
-        private delegate IEnumerable<HandlerRegistration> FindMatchDelegate(RouteNode node, HttpVerb verb, StringSegment segment, Dictionary<string, object?> paramz);
+        private sealed record MatchingContext(RouteNode Node, HttpVerb Verb, StringSegment? Segment, Dictionary<string, object?> Parameters);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly IReadOnlyList<FindMatchDelegate> _findMatchDelegates = null!;
+        private readonly IReadOnlyList<Func<MatchingContext, IEnumerable<HandlerRegistration>>> _findMatchDelegates = null!;
 
-        private IEnumerable<HandlerRegistration> FindMatches(RouteNode node, HttpVerb verb, StringSegment? segment, Dictionary<string, object?> paramz)
+        private IEnumerable<HandlerRegistration> FindMatches(MatchingContext context)
         {
-            if (node.HandlerRegistrations.TryGetValue(verb, out List<HandlerRegistration>? handlerRegistrations))
+            (RouteNode Node, HttpVerb Verb, StringSegment? Segment, Dictionary<string, object?> Parameters) = context;
+
+            if (Node.HandlerRegistrations.TryGetValue(Verb, out List<HandlerRegistration>? handlerRegistrations))
                 foreach (HandlerRegistration handlerRegistration in handlerRegistrations)
-                    if (handlerRegistration.IsPrefix || segment?.Value is null)
-                        yield return handlerRegistration with { AttachedParameters = paramz };
+                {
+                    if (Segment?.Value is not null && !handlerRegistration.IsPrefix)
+                        continue;
 
-            if (segment?.Value is not null)
-                foreach(FindMatchDelegate findMatchesDelegate in _findMatchDelegates)
-                    foreach (HandlerRegistration match in findMatchesDelegate(node, verb, segment, paramz))
-                        yield return match;
-        }
+                    yield return handlerRegistration with { AttachedParameters = Parameters };
+                }
 
-        private IEnumerable<HandlerRegistration> FindLiteralMatches(RouteNode node, HttpVerb verb, StringSegment segment, Dictionary<string, object?> paramz)
-        {
-            Debug.Assert(segment.Value is not null, "Invalid segment");
-
-            return node.LiteralChildren.TryGetValue(segment.Value!, out RouteNode literalChild)
-                ? FindMatches
-                (
-                    literalChild,
-                    verb,
-                    segment.Next,
-                    paramz
-                )
-                : Array.Empty<HandlerRegistration>();
-        }
-
-        private IEnumerable<HandlerRegistration> FindParameterMatches(RouteNode node, HttpVerb verb, StringSegment segment, Dictionary<string, object?> paramz)
-        {
-            Debug.Assert(segment.Value is not null, "Invalid segment");
-
-            if (node.ParameterizedChildren.Count is 0)
+            if (Segment?.Value is null)
                 yield break;
 
-            string decodedSegment = HttpUtility.UrlDecode(segment.Value);
+            foreach(Func<MatchingContext, IEnumerable<HandlerRegistration>> findMatchesDelegate in _findMatchDelegates)
+                foreach (HandlerRegistration match in findMatchesDelegate(context))
+                    yield return match;
+        }
 
-            foreach (RouteNode parameterizedChild in node.ParameterizedChildren)
+        private IEnumerable<HandlerRegistration> FindLiteralMatches(MatchingContext context)
+        {
+            (RouteNode Node, _, StringSegment? Segment, _) = context;
+
+            Debug.Assert(Segment?.Value is not null, "Invalid segment");
+
+            if (!Node.LiteralChildren.TryGetValue(Segment!.Value!, out RouteNode literalChild))
+                yield break;
+
+            foreach (HandlerRegistration match in FindMatches(context with { Node = literalChild, Segment = Segment.Next }))
+                yield return match;
+        }
+
+        private IEnumerable<HandlerRegistration> FindParameterMatches(MatchingContext context)
+        {
+            (RouteNode Node, _, StringSegment? Segment, Dictionary<string, object?> Parameters) = context;
+
+            Debug.Assert(Segment?.Value is not null, "Invalid segment");
+
+            if (Node.ParameterizedChildren.Count is 0)
+                yield break;
+
+            string decodedSegment = HttpUtility.UrlDecode(Segment!.Value!);
+
+            foreach (RouteNode parameterizedChild in Node.ParameterizedChildren)
             {
                 Debug.Assert(parameterizedChild.ParameterParser is not null, "Child node must have parameter parser assigned");
 
@@ -83,20 +91,20 @@ namespace NanoRoute
                     continue;
 
                 Dictionary<string, object?> extended = parameterizedChild.ParameterParser?.ParameterName is { Length: > 0 } parameterName
-                    ? new(paramz, StringComparer.OrdinalIgnoreCase)
+                    ? new(Parameters, StringComparer.OrdinalIgnoreCase)
                     {
                         [parameterName] = parsed
                     }
-                    : paramz;
+                    : Parameters;
 
-                foreach (HandlerRegistration match in FindMatches(parameterizedChild, verb, segment.Next, extended))
+                foreach (HandlerRegistration match in FindMatches(context with { Node = parameterizedChild, Segment = Segment.Next, Parameters = extended }))
                     yield return match;
             }
         }
 
         private static RouteNode CopyRoot(RouteBuilder routeBuilder)
         {
-            // We have to do it here since the base() constructor invocation runs first
+            // The base() ctor invocation runs first so we have to do the validation here
             Ensure.NotNull(routeBuilder);
             return routeBuilder.Root.Copy();
         }
@@ -162,10 +170,14 @@ namespace NanoRoute
 
             using IEnumerator<HandlerRegistration> matches = FindMatches
             (
-                Root,
-                verb,
-                new StringSegment(requestPath, '/'),
-                new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
+                new MatchingContext
+                (
+                    Root,
+                    verb,
+                    new StringSegment(requestPath, '/'),
+                    new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
+                )
+                
             )
             .GetEnumerator();
 
