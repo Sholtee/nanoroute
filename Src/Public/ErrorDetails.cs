@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System.Collections.Generic;
+using System.Net;
 
 namespace NanoRoute
 {
@@ -20,7 +21,7 @@ namespace NanoRoute
         /// <summary>
         /// HTTP status code.
         /// </summary>
-        public required int Status { get; init; }
+        public required HttpStatusCode Status { get; init; }
 
         /// <summary>
         /// Unique identifier of the request (logs entries should contain the same id).

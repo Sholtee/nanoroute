@@ -1,5 +1,6 @@
-const NanoRoute.HttpRequestExceptionExtensions.ERRORS_NAME = "Errors" -> string!
-const NanoRoute.HttpRequestExceptionExtensions.STATUS_NAME = "StatusCode" -> string!
+const NanoRoute.NanoRouteExceptionExtensions.DEVELOPER_MESSAGE = "DeveloperMessage" -> string!
+const NanoRoute.NanoRouteExceptionExtensions.ERRORS_NAME = "Errors" -> string!
+const NanoRoute.NanoRouteExceptionExtensions.STATUS_NAME = "StatusCode" -> string!
 const NanoRoute.Router.ORIGINAL_REQUEST_NAME = "OriginalRequest" -> string!
 const NanoRoute.Router.TRACE_ID_NAME = "TraceId" -> string!
 NanoRoute.ErrorDetails
@@ -8,7 +9,7 @@ NanoRoute.ErrorDetails.DeveloperMessage.init -> void
 NanoRoute.ErrorDetails.ErrorDetails() -> void
 NanoRoute.ErrorDetails.Errors.get -> System.Collections.Generic.IEnumerable<string!>?
 NanoRoute.ErrorDetails.Errors.init -> void
-NanoRoute.ErrorDetails.Status.get -> int
+NanoRoute.ErrorDetails.Status.get -> System.Net.HttpStatusCode
 NanoRoute.ErrorDetails.Status.init -> void
 NanoRoute.ErrorDetails.Title.get -> string!
 NanoRoute.ErrorDetails.Title.init -> void
@@ -18,17 +19,22 @@ NanoRoute.HttpListenerRouter
 NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 NanoRoute.HttpListenerRouterConfig
 NanoRoute.HttpListenerRouterConfig.HttpListenerRouterConfig() -> void
-NanoRoute.HttpRequestExceptionExtensions
-NanoRoute.HttpRequestExceptionExtensions.extension(System.Net.Http.HttpRequestException!)
 NanoRoute.Json.NanoRouteJsonExtensions
 NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!)
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!)
-NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddDefaultHandler(bool populateErrorInfo = false) -> TBuilder!
-NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo, string! paramName, params System.Collections.Generic.IEnumerable<string!>! verbs) -> TBuilder!
-NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Type! type, string! paramName, params System.Collections.Generic.IEnumerable<string!>! verbs) -> TBuilder!
+NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddHttpRequestExceptionHandler(bool populateErrorInfo = false) -> TBuilder!
+NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo, string! paramName, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
+NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Type! type, string! paramName, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
+NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody<TBody>(string! paramName, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.MatchingBehavior
 NanoRoute.MatchingBehavior.LiteralFirst = 0 -> NanoRoute.MatchingBehavior
 NanoRoute.MatchingBehavior.ParameterizedChildrenFirst = 1 -> NanoRoute.MatchingBehavior
+NanoRoute.NanoRouteExceptionExtensions
+NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!)
+NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).GetErrorDetails(bool populateErrorInfo = false, string? traceId = null) -> NanoRoute.ErrorDetails!
+NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!)
+NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler() -> TBuilder!
+NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler(System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.ParameterParserDelegate
 NanoRoute.RequestContext
 NanoRoute.RequestContext.Cancellation.get -> System.Threading.CancellationToken
@@ -73,8 +79,9 @@ NanoRoute.RouterConfig.MatchingBehavior.set -> void
 NanoRoute.RouterConfig.RouterConfig() -> void
 NanoRoute.RoutingContext
 static NanoRoute.HttpListenerRouter.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.HttpListenerRouter!, NanoRoute.HttpListenerRouterConfig!>!
-static NanoRoute.HttpRequestExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Throw(System.Net.HttpStatusCode status, string! title, params string![]! errors) -> void
 static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json(System.Net.HttpStatusCode statusCode, object? body, System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo) -> System.Net.Http.HttpResponseMessage!
 static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json<T>(System.Net.HttpStatusCode statusCode, T? body) -> System.Net.Http.HttpResponseMessage!
 static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json<T>(System.Net.HttpStatusCode statusCode, T? body, System.Text.Json.JsonSerializerOptions! options) -> System.Net.Http.HttpResponseMessage!
 static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json<T>(T? body) -> System.Net.Http.HttpResponseMessage!
+static NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Throw(System.Net.HttpStatusCode status, string! title, params System.Collections.Generic.IReadOnlyCollection<string!>! errors) -> void
+static NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Throw(System.Net.HttpStatusCode status, string! title, System.Exception? original = null, System.Collections.Generic.IReadOnlyCollection<string!>? errors = null, System.Collections.Generic.IReadOnlyCollection<string!>? developerMessage = null) -> void

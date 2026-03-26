@@ -565,7 +565,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Parameters_ShouldNotLeak()
+        public async Task Handle_ShouldNotLeakTheParameters_1()
         {
             Mock<RequestHandler>
                 mockHandler_1 = new(MockBehavior.Strict),
@@ -618,6 +618,58 @@ namespace NanoRoute.Tests
 
             Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
             Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id_str"] = "1986" }));
+        }
+
+        [Test]
+        public async Task Handle_ShouldNotLeakTheParameters_2()
+        {
+            Mock<RequestHandler>
+                mockHandler_1 = new(MockBehavior.Strict),
+                mockHandler_2 = new(MockBehavior.Strict);
+
+            Dictionary<string, object?>
+                paramz_1 = null!,
+                paramz_2 = null!;
+
+            mockHandler_1
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
+                {
+                    paramz_1 = cntx.Parameters;
+                    return await next();
+                });
+
+            mockHandler_2
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .Returns<RequestContext, Func<Task<HttpResponseMessage>>>(async (cntx, next) =>
+                {
+                    paramz_2 = cntx.Parameters;
+                    return s_response;
+                });
+
+            TestRouter router = _routerBuilder
+                .AddParameterParser("int", (string segment, out object? parsed) =>
+                {
+                    if (int.TryParse(segment, out int userId))
+                    {
+                        parsed = userId;
+                        return true;
+                    }
+                    parsed = null;
+                    return false;
+                })
+                .WithConfiguration(config => config.MatchingBehavior = MatchingBehavior.ParameterizedChildrenFirst)
+                .WithBase("/api/users/", bldr => bldr
+                    .AddHandler("GET", "/{user_id:int}/dosomething", mockHandler_1.Object)
+                    .AddHandler("GET", "/1986/dosomething", mockHandler_2.Object))
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
+
+            await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+
+            Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["user_id"] = 1986 }));
+            Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object>(0)));
         }
 
         [Test]

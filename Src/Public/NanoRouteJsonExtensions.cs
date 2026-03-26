@@ -20,7 +20,7 @@ namespace NanoRoute.Json
     using Properties;
 
     [JsonSerializable(typeof(ErrorDetails))]
-    [JsonSourceGenerationOptions(JsonSerializerDefaults.Web, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSourceGenerationOptions(JsonSerializerDefaults.Web, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, UseStringEnumConverter = false)]
     internal partial class JsonContext : JsonSerializerContext  // cannot be nested =(
     {
     }
@@ -39,7 +39,7 @@ namespace NanoRoute.Json
             /// <param name="paramName"></param>
             /// <param name="verbs"></param>
             /// <returns></returns>
-            public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName, params IEnumerable<string> verbs)
+            public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName, params IReadOnlyCollection<string> verbs)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(typeInfo);
@@ -84,7 +84,7 @@ namespace NanoRoute.Json
             /// 
             /// </summary>
             /// <returns></returns>
-            public TBuilder AddJsonBody(Type type, string paramName, params IEnumerable<string> verbs)
+            public TBuilder AddJsonBody(Type type, string paramName, params IReadOnlyCollection<string> verbs)
             {
                 Ensure.NotNull(type);
 
@@ -97,24 +97,25 @@ namespace NanoRoute.Json
             }
 
             /// <summary>
-            /// Registers a catch-all handler that turns unhandled routing failures into JSON error responses.
+            /// 
             /// </summary>
-            /// <param name="populateErrorInfo">
-            /// <see langword="true"/> to include exception details in generated internal-server-error responses;
-            /// otherwise only the public error message is returned.
-            /// </param>
-            /// <remarks>
-            /// The default handler is registered as a prefix route for all supported HTTP methods. It calls the next
-            /// matching handler and intercepts the terminal <c>not found</c> case as well as unhandled exceptions.
-            /// </remarks>
-            /// <example>
-            /// <code>
-            /// TODO
-            /// </code>
-            /// In this example, requests without a matching route receive the built-in JSON <c>404 Not Found</c>
-            /// response instead of an unhandled exception.
-            /// </example>
-            public TBuilder AddDefaultHandler(bool populateErrorInfo = false)
+            /// <returns></returns>
+            public TBuilder AddJsonBody<TBody>(string paramName, params IReadOnlyCollection<string> verbs)
+            {
+                Ensure.NotNull(verbs);
+
+                if (verbs.Count is 0)
+                    verbs = ["POST", "PUT"];
+
+                return routeBuilder.AddJsonBody(typeof(TBody), paramName, verbs);
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="populateErrorInfo"></param>
+            /// <returns></returns>
+            public TBuilder AddHttpRequestExceptionHandler(bool populateErrorInfo = false)
             {
                 Ensure.NotNull(routeBuilder);
 
@@ -122,49 +123,19 @@ namespace NanoRoute.Json
                 {
                     try
                     {
-                        context.Cancellation.ThrowIfCancellationRequested();
-
                         return await next();
                     }
-                    catch (HttpRequestException ex) when (ex.Data[HttpRequestExceptionExtensions.STATUS_NAME] is HttpStatusCode status)
+                    catch (HttpRequestException ex)
                     {
-                        return CreateErrorResponse(status, ex.Message, errors: ex.Data[HttpRequestExceptionExtensions.ERRORS_NAME] as IEnumerable<string>);
+                        ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, context.Request.Properties[Router.TRACE_ID_NAME] as string);
+
+                        return HttpResponseMessage.Json
+                        (
+                            errorDetails.Status,
+                            errorDetails,
+                            JsonContext.Default.ErrorDetails
+                        );
                     }
-                    catch (Exception ex) when (ex is OperationCanceledException or TimeoutException)
-                    {
-                        return CreateErrorResponse(HttpStatusCode.RequestTimeout, Resources.ERR_REQUEST_TIMED_OUT);
-                    }
-                    catch (Exception ex)
-                    {
-                        List<string>? developerMessage = null;
-
-                        if (populateErrorInfo)
-                        {
-                            developerMessage = [];
-
-                            if (ex is AggregateException aggregateException)
-                                foreach (Exception innerException in aggregateException.InnerExceptions)
-                                    developerMessage.Add(innerException.ToString());
-                            else
-                                developerMessage.Add(ex.ToString());
-                        }
-
-                        return CreateErrorResponse(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, developerMessage: developerMessage);
-                    }
-
-                    HttpResponseMessage CreateErrorResponse(HttpStatusCode status, string title, IEnumerable<string>? errors = null, IEnumerable<string>? developerMessage = null) => HttpResponseMessage.Json
-                    (
-                        status,
-                        new ErrorDetails
-                        {
-                            Status = (int) status,
-                            Title = title,
-                            TraceId = (string) context.Request.Properties[Router.TRACE_ID_NAME],
-                            Errors = errors,
-                            DeveloperMessage = developerMessage
-                        },
-                        JsonContext.Default.ErrorDetails
-                    );
                 });
 
                 return routeBuilder;
