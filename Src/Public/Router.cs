@@ -106,7 +106,7 @@ namespace NanoRoute
         {
             // The base() ctor invocation runs first so we have to do the validation here
             Ensure.NotNull(routeBuilder);
-            return routeBuilder.Root.Copy();
+            return routeBuilder.GetRoot();
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace NanoRoute
             (
                 new MatchingContext
                 (
-                    Root,
+                    _root,
                     verb,
                     new StringSegment(requestPath, '/'),
                     new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)

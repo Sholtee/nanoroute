@@ -32,11 +32,11 @@ namespace NanoRoute.Tests
 
         private HttpListenerRouter _router = null!;
 
-        private void CreateRouter(Action<RouterBuilder<HttpListenerRouter, RouterConfig>> configureRouter)
+        private void CreateRouter(Action<RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig>> configureRouter)
         {
-            RouterBuilder<HttpListenerRouter, RouterConfig> routerBuilder = HttpListenerRouter
+            RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> routerBuilder = HttpListenerRouter
                 .CreateBuilder()
-                .AddDefaultHandler();
+                .AddJsonErrorDetails();
 
             configureRouter(routerBuilder);
 
@@ -205,7 +205,7 @@ namespace NanoRoute.Tests
             Assert.That(msg.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
 
             ErrorDetails body = JsonSerializer.Deserialize<ErrorDetails>(await msg.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-            Assert.That(body.Status, Is.EqualTo((int) HttpStatusCode.NotFound));
+            Assert.That(body.Status, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(body.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(body.TraceId, Is.Not.Empty);
             Assert.That(body.Errors, Is.Null);
@@ -262,24 +262,6 @@ namespace NanoRoute.Tests
             HttpResponseMessage msg = await resp;
 
             Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        }
-
-        [Test]
-        public async Task Route_ShouldAbortTheResponseWhenCancelled()
-        {
-            Mock<RequestHandler> mockRequestHandler = new(MockBehavior.Strict);
-
-            CreateRouter(bldr => bldr.AddHandler("GET", "", mockRequestHandler.Object));
-
-            using CancellationTokenSource cts = new();
-            cts.Cancel();
-
-            Task<HttpResponseMessage> resp = _client.GetAsync("");
-
-            HttpListenerContext context = await HandleRequest(cancellation: cts.Token);
-
-            Assert.Throws<ObjectDisposedException>(() => _ = context.Response.OutputStream);
-            mockRequestHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Never);
         }
 
         [Test]

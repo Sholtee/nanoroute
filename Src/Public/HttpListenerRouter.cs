@@ -104,16 +104,9 @@ namespace NanoRoute
             Ensure.NotNull(services);
 
             using HttpRequestMessage request = GetRequest(context.Request);
+            using HttpResponseMessage response = await Handle(request, services, cancellation);
 
-            try
-            {
-                using HttpResponseMessage response = await Handle(request, services, cancellation);
-                await HandleResponse(response, context.Response, cancellation);
-            }
-            catch (OperationCanceledException)
-            {
-                context.Response.Abort();
-            }
+            await HandleResponse(response, context.Response, cancellation);
         }
 
         /// <summary>

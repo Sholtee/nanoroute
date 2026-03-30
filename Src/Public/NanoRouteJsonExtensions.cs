@@ -115,28 +115,30 @@ namespace NanoRoute.Json
             /// </summary>
             /// <param name="populateErrorInfo"></param>
             /// <returns></returns>
-            public TBuilder AddHttpRequestExceptionHandler(bool populateErrorInfo = false)
+            public TBuilder AddJsonErrorDetails(bool populateErrorInfo = false)
             {
                 Ensure.NotNull(routeBuilder);
 
-                routeBuilder.AddHandler("/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
-                {
-                    try
+                routeBuilder
+                    .AddHandler("/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
                     {
-                        return await next();
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, context.Request.Properties[Router.TRACE_ID_NAME] as string);
+                        try
+                        {
+                            return await next();
+                        }
+                        catch (HttpRequestException ex)
+                        {
+                            ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, context.Request.Properties[Router.TRACE_ID_NAME] as string);
 
-                        return HttpResponseMessage.Json
-                        (
-                            errorDetails.Status,
-                            errorDetails,
-                            JsonContext.Default.ErrorDetails
-                        );
-                    }
-                });
+                            return HttpResponseMessage.Json
+                            (
+                                errorDetails.Status,
+                                errorDetails,
+                                JsonContext.Default.ErrorDetails
+                            );
+                        }
+                    })
+                    .AddExceptionHandler();
 
                 return routeBuilder;
             }

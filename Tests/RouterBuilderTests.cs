@@ -5,7 +5,6 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -30,7 +29,7 @@ namespace NanoRoute.Tests
 
         private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
 
-        private Mock<Func<RouterConfig, TestRouter>> _mockConfigureRouter = null!;
+        private Mock<Func<RouterBuilder<TestRouter, RouterConfig>, TestRouter>> _mockRouterFactory = null!;
 
         private sealed class TestJsonPayload
         {
@@ -40,26 +39,21 @@ namespace NanoRoute.Tests
         [SetUp]
         public void Setup()
         {
-            _mockConfigureRouter = new Mock<Func<RouterConfig, TestRouter>>(MockBehavior.Strict);
-            _mockConfigureRouter
-                .Setup(c => c.Invoke(It.IsAny<RouterConfig>()))
-                .Returns<RouterConfig>(_ => new TestRouter { MatchingBehavior = MatchingBehavior.LiteralFirst });
+            _mockRouterFactory = new Mock<Func<RouterBuilder<TestRouter, RouterConfig>, TestRouter>>(MockBehavior.Strict);
+            _routerBuilder = new RouterBuilder<TestRouter, RouterConfig>(_mockRouterFactory.Object);
 
-            _routerBuilder = new RouterBuilder<TestRouter, RouterConfig>(_mockConfigureRouter.Object);
+            _mockRouterFactory
+                .Setup(c => c.Invoke(_routerBuilder))
+                .Returns<RouterBuilder<TestRouter, RouterConfig>>(bldr => new TestRouter(bldr));
         }
 
         [Test]
-        public void CreateRouter_ShouldCopyTheRootNode()
+        public void CreateRouter_ShouldPassTheBuilderIntoTheRouterFactory()
         {
-            Mock<RequestHandler> mockRequestHandler = new(MockBehavior.Strict);
+            TestRouter router = _routerBuilder.CreateRouter();
 
-            TestRouter router = _routerBuilder
-                .AddHandler("GET", "", mockRequestHandler.Object)
-                .CreateRouter();
-
-            Assert.That(router.Root, Is.Not.SameAs(_routerBuilder.Root));
-            Assert.That(router.Root.HandlerRegistrations[HttpVerb.Get], Has.Count.EqualTo(1));
-            Assert.That(router.Root.HandlerRegistrations[HttpVerb.Get].Single().Handler, Is.SameAs(mockRequestHandler.Object));
+            Assert.That(router, Is.Not.Null);
+            _mockRouterFactory.Verify(c => c.Invoke(_routerBuilder), Times.Once);
         }
 
         [Test]
@@ -264,7 +258,7 @@ namespace NanoRoute.Tests
         public async Task DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
         {
             TestRouter router = _routerBuilder
-                .AddDefaultHandler(populateErrorInfo)
+                .AddJsonErrorDetails(populateErrorInfo)
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
@@ -277,7 +271,7 @@ namespace NanoRoute.Tests
 
             ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized.Status, Is.EqualTo((int) HttpStatusCode.NotFound));
+            Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-1"));
             Assert.That(deserialized.Errors, Is.Null);
@@ -290,7 +284,7 @@ namespace NanoRoute.Tests
             const string ERROR_MSG = "Oooops";
 
             TestRouter router = _routerBuilder
-                .AddDefaultHandler(populateErrorInfo)
+                .AddJsonErrorDetails(populateErrorInfo)
                 .AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG))
                 .CreateRouter();
 
@@ -304,7 +298,7 @@ namespace NanoRoute.Tests
 
             ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized.Status, Is.EqualTo((int) HttpStatusCode.InternalServerError));
+            Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-2"));
             Assert.That(deserialized.Errors, Is.Null);
@@ -315,7 +309,7 @@ namespace NanoRoute.Tests
         public async Task DefaultHandler_ShouldHandleCancellationErrors()
         {
             TestRouter router = _routerBuilder
-                .AddDefaultHandler()
+                .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere", (context, _) =>
                 {
                     context.Cancellation.ThrowIfCancellationRequested();
@@ -335,7 +329,7 @@ namespace NanoRoute.Tests
             ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.RequestTimeout));
-            Assert.That(deserialized.Status, Is.EqualTo((int) HttpStatusCode.RequestTimeout));
+            Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.RequestTimeout));
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_REQUEST_TIMED_OUT));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-cancel"));
             Assert.That(deserialized.Errors, Is.Null);
@@ -346,7 +340,7 @@ namespace NanoRoute.Tests
         public async Task DefaultHandler_ShouldHandleTimeoutErrors()
         {
             TestRouter router = _routerBuilder
-                .AddDefaultHandler()
+                .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere", (_, _) => throw new TimeoutException())
                 .CreateRouter();
 
@@ -359,7 +353,7 @@ namespace NanoRoute.Tests
             ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.RequestTimeout));
-            Assert.That(deserialized.Status, Is.EqualTo((int) HttpStatusCode.RequestTimeout));
+            Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.RequestTimeout));
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_REQUEST_TIMED_OUT));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-timeout"));
             Assert.That(deserialized.Errors, Is.Null);
@@ -376,7 +370,7 @@ namespace NanoRoute.Tests
             );
 
             TestRouter router = _routerBuilder
-                .AddDefaultHandler(populateErrorInfo)
+                .AddJsonErrorDetails(populateErrorInfo)
                 .AddHandler("GET", "/somewhere", (_, _) => throw aggregate)
                 .CreateRouter();
 
@@ -389,7 +383,7 @@ namespace NanoRoute.Tests
             ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
-            Assert.That(deserialized.Status, Is.EqualTo((int) HttpStatusCode.InternalServerError));
+            Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-aggregate"));
             if (populateErrorInfo)
@@ -408,7 +402,7 @@ namespace NanoRoute.Tests
             const string ERROR_MSG = "Bad \"quote\"\r\nnext line";
 
             TestRouter router = _routerBuilder
-                .AddDefaultHandler(populateErrorInfo: true)
+                .AddJsonErrorDetails(populateErrorInfo: true)
                 .AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG))
                 .CreateRouter();
 
@@ -428,7 +422,7 @@ namespace NanoRoute.Tests
         public async Task DefaultHandler_ShouldLetNormalWorkflowGo()
         {
             TestRouter router = _routerBuilder
-                .AddDefaultHandler()
+                .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere", async (_, _) => new HttpResponseMessage { Content = new StringContent("Hello") })
                 .CreateRouter();
 
@@ -498,8 +492,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_METHOD_NOT_ALLOWED));
-            Assert.That(ex.Data[HttpRequestExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.MethodNotAllowed));
-            Assert.That(ex.Data[HttpRequestExceptionExtensions.ERRORS_NAME], Is.Null);
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.MethodNotAllowed));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.Null);
         }
 
         [Test]
@@ -517,8 +511,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[HttpRequestExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[HttpRequestExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
         }
 
         [Test]
@@ -536,8 +530,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[HttpRequestExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[HttpRequestExceptionExtensions.ERRORS_NAME], Is.Not.Null);
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.Not.Null);
         }
 
         [Test]
@@ -590,7 +584,7 @@ namespace NanoRoute.Tests
         public void JsonHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddJsonBody(typeof(TestJsonPayload), "payload", "POST"))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routerBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(typeInfo: null!, "payload", "POST"))!;
             Assert.That(ex.ParamName, Is.EqualTo("typeInfo"));

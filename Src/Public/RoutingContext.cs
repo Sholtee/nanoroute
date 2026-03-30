@@ -12,8 +12,8 @@ namespace NanoRoute
     /// </summary>
     public abstract class RoutingContext
     {
-        internal RoutingContext(RouteNode root) => Root = root;
+        private protected readonly RouteNode _root;
 
-        internal RouteNode Root { get; }
+        private protected RoutingContext(RouteNode root) => _root = root;
     }
 }

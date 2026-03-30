@@ -31,7 +31,7 @@ namespace NanoRoute.Tests
 
         private HttpRequestMessage _request = null!;
 
-        private sealed class TestRouter : Router
+        private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router(builder, builder.RouterConfig)
         {
         }
 
@@ -40,7 +40,7 @@ namespace NanoRoute.Tests
         {
             _request = new HttpRequestMessage() { Method = HttpMethod.Get };
             _debugEventListener = new DebugEventListener(EventLevel.LogAlways);
-            _routerBuilder = new RouterBuilder<TestRouter, RouterConfig>(_ => new TestRouter { MatchingBehavior = MatchingBehavior.LiteralFirst });
+            _routerBuilder = new RouterBuilder<TestRouter, RouterConfig>(bldr => new TestRouter(bldr));
         }
 
         [TearDown]
@@ -294,6 +294,52 @@ namespace NanoRoute.Tests
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
             mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Handle_ShouldRespectConfiguredMatchingBehavior([Values(MatchingBehavior.LiteralFirst, MatchingBehavior.ParameterizedChildrenFirst)] MatchingBehavior matchingBehavior)
+        {
+            Mock<RequestHandler>
+                mockLiteralHandler = new(MockBehavior.Strict),
+                mockParameterizedHandler = new(MockBehavior.Strict);
+
+            mockLiteralHandler
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
+                .ReturnsAsync(s_response);
+
+            mockParameterizedHandler
+                .Setup(h => h.Invoke
+                (
+                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["value"], "literal")),
+                    It.IsAny<Func<Task<HttpResponseMessage>>>()
+                ))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddParameterParser("str", (string segment, out object? parsed) =>
+                {
+                    parsed = segment;
+                    return true;
+                })
+                .WithConfiguration(config => config.MatchingBehavior = matchingBehavior)
+                .AddHandler("GET", "/items/literal", mockLiteralHandler.Object)
+                .AddHandler("GET", "/items/{value:str}", mockParameterizedHandler.Object)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/items/literal");
+
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            mockLiteralHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), matchingBehavior == MatchingBehavior.LiteralFirst ? Times.Once() : Times.Never());
+            mockParameterizedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), matchingBehavior == MatchingBehavior.ParameterizedChildrenFirst ? Times.Once() : Times.Never());
+        }
+
+        [Test]
+        public void Handle_ShouldRejectUnknownMatchingBehavior()
+        {
+            _routerBuilder.WithConfiguration(config => config.MatchingBehavior = (MatchingBehavior) 100);
+
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => _routerBuilder.CreateRouter())!;
+            Assert.That(ex.ParamName, Is.EqualTo("value"));
         }
 
         [Test]
@@ -877,8 +923,8 @@ namespace NanoRoute.Tests
                 Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "/path/to/somewhere", HttpVerb.Get }));
 
                 Assert.That(matchingHandler.Level, Is.EqualTo(EventLevel.Informational));
-                Assert.That(matchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb", "Pattern" }));
-                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "/path/to/somewhere", HttpVerb.Get, "/path/to/somewhere" }));
+                Assert.That(matchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb", "Pattern", "ParameterCount" }));
+                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "/path/to/somewhere", HttpVerb.Get, "/path/to/somewhere", 0 }));
             });
         }
 

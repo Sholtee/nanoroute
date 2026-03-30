@@ -50,5 +50,4 @@ namespace NanoRoute
     /// </code>
     /// </example>
     public delegate Task<HttpResponseMessage> RequestHandler(RequestContext requestContext, Func<Task<HttpResponseMessage>> callNext);
-
 }

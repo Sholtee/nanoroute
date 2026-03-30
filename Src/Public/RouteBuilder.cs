@@ -44,7 +44,7 @@ namespace NanoRoute
             if (!s_patternValidator.IsMatch(pattern))
                 throw new ArgumentException(Resources.ERR_INVALID_PATTERN, nameof(pattern));
 
-            RouteNode target = Root;
+            RouteNode target = _root;
 
             foreach (string segment in new StringSegment(pattern, '/').Enumerate())
             {
@@ -110,6 +110,12 @@ namespace NanoRoute
             _parameterParsers = new Dictionary<string, ParameterParser>(StringComparer.OrdinalIgnoreCase);
             _basePattern = string.Empty;
         }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
+        internal RouteNode GetRoot() => _root.Copy();
         #endregion
 
         /// <summary>
@@ -295,7 +301,7 @@ namespace NanoRoute
             {
                 HashSet<string> patterns = [];
 
-                Walk(Root, patterns);
+                Walk(_root, patterns);
 
                 return patterns.OrderBy(static p => p);
 

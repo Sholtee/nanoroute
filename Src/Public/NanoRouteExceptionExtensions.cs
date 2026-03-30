@@ -44,7 +44,7 @@ namespace NanoRoute
                     {
                         return await next();
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is not HttpRequestException)
                     {
                         switch (ex)
                         {
