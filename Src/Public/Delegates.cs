@@ -4,11 +4,13 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NanoRoute
 {
     /// <summary>
-    /// Tries to parse a single route segment into a value that can be stored in <see cref="RequestContext{TRequest}.Parameters"/>.
+    /// Tries to parse a single route segment into a value that can be stored in <see cref="RequestContext.Parameters"/>.
     /// </summary>
     /// <param name="segment">The raw path segment extracted from the request URI.</param>
     /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
@@ -33,13 +35,18 @@ namespace NanoRoute
     /// <summary>
     /// Represents a request handler in the router pipeline.
     /// </summary>
-    /// <typeparam name="TRequest">The application-specific request type.</typeparam>
-    /// <typeparam name="TResponse">The application-specific response type.</typeparam>
     /// <param name="requestContext">The current request context, including parsed route parameters and services.</param>
     /// <param name="callNext">Invokes the next compatible handler in the pipeline.</param>
     /// <returns>
     /// The response produced by the current handler, or by a later handler when <paramref name="callNext"/> is invoked.
     /// </returns>
+    /// <remarks>
+    /// Handlers may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
+    /// <c>AddExceptionHandler()</c>, <c>AddJsonErrorDetails()</c>, or equivalent custom middleware is registered,
+    /// those exceptions can be translated into structured error responses. Throwing other exception types is also
+    /// supported, but they are treated as unexpected failures: the built-in exception middleware converts them into
+    /// internal server error responses, while without such middleware they propagate to the caller unchanged.
+    /// </remarks>
     /// <example>
     /// <code>
     /// router.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
@@ -49,6 +56,5 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate TResponse RequestHandler<TRequest, TResponse>(RequestContext<TRequest> requestContext, Func<TResponse> callNext);
-
+    public delegate Task<HttpResponseMessage> RequestHandlerDelegate(RequestContext requestContext, Func<Task<HttpResponseMessage>> callNext);
 }

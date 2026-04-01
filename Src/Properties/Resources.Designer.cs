@@ -61,6 +61,24 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bad content type..
+        /// </summary>
+        internal static string ERR_BAD_CONTENT_TYPE {
+            get {
+                return ResourceManager.GetString("ERR_BAD_CONTENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bad request..
+        /// </summary>
+        internal static string ERR_BAD_REQUEST {
+            get {
+                return ResourceManager.GetString("ERR_BAD_REQUEST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal server error..
         /// </summary>
         internal static string ERR_INERNAL_ERROR {
@@ -70,11 +88,29 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid pattern..
+        /// </summary>
+        internal static string ERR_INVALID_PATTERN {
+            get {
+                return ResourceManager.GetString("ERR_INVALID_PATTERN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid verb: {0}.
         /// </summary>
         internal static string ERR_INVALID_VERB {
             get {
                 return ResourceManager.GetString("ERR_INVALID_VERB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method not allowed..
+        /// </summary>
+        internal static string ERR_METHOD_NOT_ALLOWED {
+            get {
+                return ResourceManager.GetString("ERR_METHOD_NOT_ALLOWED", resourceCulture);
             }
         }
         
@@ -97,11 +133,29 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only prefix patterns are allowed..
+        /// </summary>
+        internal static string ERR_NOT_PREFIX {
+            get {
+                return ResourceManager.GetString("ERR_NOT_PREFIX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Conflicting parameter names are not allowed for the same route segment..
         /// </summary>
         internal static string ERR_PARAMETER_OVERRIDE {
             get {
                 return ResourceManager.GetString("ERR_PARAMETER_OVERRIDE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Request timed out..
+        /// </summary>
+        internal static string ERR_REQUEST_TIMED_OUT {
+            get {
+                return ResourceManager.GetString("ERR_REQUEST_TIMED_OUT", resourceCulture);
             }
         }
     }

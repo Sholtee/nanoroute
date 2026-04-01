@@ -4,17 +4,22 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
 namespace NanoRoute.Tests
 {
-    internal sealed class DebugEventListener : EventListener
+    using Internals;
+
+    internal sealed class DebugEventListener(EventLevel level) : EventListener
     {
+        public List<EventWrittenEventArgs> Events { get; } = [];
+
         protected override void OnEventSourceCreated(EventSource eventSource)
         {
             if (eventSource.Name == RouterEventSource.EVENT_SOURCE_NAME)
-                EnableEvents(eventSource, EventLevel.LogAlways, EventKeywords.All);
+                EnableEvents(eventSource, level);
         }
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
@@ -28,6 +33,8 @@ namespace NanoRoute.Tests
                         dump += $"{Environment.NewLine}{names[i]} = {values[i]}";
 
                 Debug.WriteLine(dump);
+
+                Events.Add(eventData);
             }
         }
     }

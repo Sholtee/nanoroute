@@ -1,7 +1,8 @@
 *.binlog
 *.user
-.vs
 .dotnet
+.nuget
+.vs
 [Aa]rtifacts/
 [Bb]in/
 [Oo]bj/
