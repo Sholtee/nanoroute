@@ -130,10 +130,10 @@ namespace NanoRoute
                 ex.Data[STATUS_NAME] = status;
 
                 if (errors?.Count > 0)
-                    ex.Data[ERRORS_NAME] = errors;
+                    ex.Data[ERRORS_NAME] = errors.ToArray();  // On .NET FW the Data members must be serializable (string[] it is)
 
                 if (developerMessage?.Count > 0)
-                    ex.Data[DEVELOPER_MESSAGE] = developerMessage;
+                    ex.Data[DEVELOPER_MESSAGE] = developerMessage.ToArray();
 
                 throw ex;
             }
