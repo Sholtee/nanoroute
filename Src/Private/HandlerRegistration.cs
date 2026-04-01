@@ -10,7 +10,7 @@ namespace NanoRoute.Internals
     /// <summary>
     /// Represents a request <paramref cref="Handler"/> registration.
     /// </summary>
-    internal sealed record HandlerRegistration(RequestHandler Handler, string Pattern)
+    internal sealed record HandlerRegistration(RequestHandlerDelegate Handler, string Pattern)
     {
         /// <summary>
         /// Gets the parameter snapshot associated with the current match.

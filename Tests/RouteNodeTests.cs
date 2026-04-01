@@ -24,10 +24,10 @@ namespace NanoRoute.Tests
 
             ParameterParser parser = new("str", parserDelegate) { ParameterName = "id" };
 
-            RequestHandler
-                rootHandler = new Mock<RequestHandler>(MockBehavior.Strict).Object,
-                literalHandler = new Mock<RequestHandler>(MockBehavior.Strict).Object,
-                parameterizedHandler = new Mock<RequestHandler>(MockBehavior.Strict).Object;
+            RequestHandlerDelegate
+                rootHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
+                literalHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
+                parameterizedHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
 
             RouteNode root = new() { Segment = string.Empty };
             root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(rootHandler, "/")];

@@ -52,7 +52,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldMatchTheShortestPrefix()
         {
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict),
                 mockHandler_3 = new(MockBehavior.Strict);
@@ -79,7 +79,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/path/to/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
                 .AddHandler("GET", "/path/to/explicit/something/", mockHandler_2.Object)  // should match 2nd
                 .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
-                .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
@@ -90,7 +90,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldMatchTheShortestPrefix_BasePrefix()
         {
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict),
                 mockHandler_3 = new(MockBehavior.Strict);
@@ -114,7 +114,7 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
-                .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandler>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .WithBase("/path/to/", routerBuilder => routerBuilder
                     .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
                     .AddHandler("GET", "/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
@@ -129,7 +129,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldWorkWithEmptyPaths([Values("", "/")] string path)
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -146,7 +146,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldSupportExactMatches()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -169,7 +169,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldSupportPrefixes()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -192,7 +192,7 @@ namespace NanoRoute.Tests
         {
             MockSequence seq = new();
 
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
@@ -223,7 +223,7 @@ namespace NanoRoute.Tests
         {
             MockSequence seq = new();
 
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
@@ -261,7 +261,7 @@ namespace NanoRoute.Tests
         {
             MockSequence seq = new();
 
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
@@ -299,7 +299,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldRespectConfiguredMatchingBehavior([Values(MatchingBehavior.LiteralFirst, MatchingBehavior.ParameterizedChildrenFirst)] MatchingBehavior matchingBehavior)
         {
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockLiteralHandler = new(MockBehavior.Strict),
                 mockParameterizedHandler = new(MockBehavior.Strict);
 
@@ -347,7 +347,7 @@ namespace NanoRoute.Tests
         {
             MockSequence seq = new();
 
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockGetUser = new(MockBehavior.Strict),
                 mockDoSomethingWithUser = new(MockBehavior.Strict);
 
@@ -401,7 +401,7 @@ namespace NanoRoute.Tests
         {
             MockSequence seq = new();
 
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockGetUser = new(MockBehavior.Strict),
                 mockDoSomethingWithUser = new(MockBehavior.Strict);
 
@@ -475,7 +475,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handler_ShouldBeBoundToVerb()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -500,7 +500,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handler_ShouldHandleMultipleVerbs()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -522,7 +522,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_ShouldCanRegisterAllVerbs()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -544,7 +544,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldBeCaseInsensitive()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -568,7 +568,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Handle_CanBeCancelled()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .Returns<RequestContext, Func<Task<HttpResponseMessage>>>((context, _) =>
@@ -593,7 +593,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldPropagateTheServiceProvider()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             Mock<IServiceProvider> mockServices = new(MockBehavior.Strict);
 
             mockHandler
@@ -613,7 +613,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldNotLeakTheParameters_1()
         {
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
@@ -669,7 +669,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldNotLeakTheParameters_2()
         {
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
@@ -734,7 +734,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldNormalizeEscapedPaths()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -752,7 +752,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldMatchPercentEncodedLiteralSegments()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -771,7 +771,7 @@ namespace NanoRoute.Tests
         public async Task Handle_ShouldPassDecodedSegmentsToParameterParsers()
         {
             Mock<ParameterParserDelegate> mockParser = new(MockBehavior.Strict);
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
 
             object? parsed = null;
             mockParser
@@ -805,7 +805,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldNormalizeDotSegmentsInUriPaths()
         {
-            Mock<RequestHandler> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<Func<Task<HttpResponseMessage>>>()))
                 .ReturnsAsync(s_response);
@@ -823,7 +823,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldPreferLiteralSegmentsOverParameterizedSegmentsInDeeperBranches()
         {
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockLiteralHandler = new(MockBehavior.Strict),
                 mockParameterizedHandler = new(MockBehavior.Strict);
 
@@ -848,7 +848,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldContinueMatchingWhenAParameterParserReturnsFalse()
         {
-            Mock<RequestHandler>
+            Mock<RequestHandlerDelegate>
                 mockIntHandler = new(MockBehavior.Strict),
                 mockStringHandler = new(MockBehavior.Strict);
 

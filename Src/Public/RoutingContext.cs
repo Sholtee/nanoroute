@@ -8,7 +8,7 @@ namespace NanoRoute
     using Internals;
 
     /// <summary>
-    /// TOTO
+    /// Provides shared access to the route tree used during building and routing.
     /// </summary>
     public abstract class RoutingContext
     {

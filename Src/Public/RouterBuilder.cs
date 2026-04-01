@@ -11,18 +11,20 @@ namespace NanoRoute
     using Internals;
 
     /// <summary>
-    /// 
+    /// Builds a concrete <see cref="Router"/> type together with its strongly typed configuration object.
     /// </summary>
-    /// <typeparam name="TRouter"></typeparam>
-    /// <typeparam name="TConfig"></typeparam>
+    /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter"/>.</typeparam>
+    /// <typeparam name="TConfig">The configuration type exposed by <see cref="RouterConfig"/>.</typeparam>
     public sealed class RouterBuilder<TRouter, TConfig> : RouteBuilder where TRouter : Router where TConfig: RouterConfig, new()
     {
         private readonly Func<RouterBuilder<TRouter, TConfig>, TRouter> _routerFactory;
 
         /// <summary>
-        /// 
+        /// Creates a builder that can produce <typeparamref name="TRouter"/> instances.
         /// </summary>
-        /// <param name="routerFactory"></param>
+        /// <param name="routerFactory">
+        /// A factory that receives this builder and returns a router backed by its current route snapshot.
+        /// </param>
         public RouterBuilder(Func<RouterBuilder<TRouter, TConfig>, TRouter> routerFactory): base()
         {
             Ensure.NotNull(routerFactory);
@@ -55,13 +57,13 @@ namespace NanoRoute
         /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
         /// </param>
         /// <param name="handler">The handler to execute when the pattern matches.</param>
-        /// <returns>The current router instance.</returns>
+        /// <returns>The current <see cref="RouterBuilder{TRouter, TConfig}"/> instance.</returns>
         /// <example>
         /// <code>
-        /// router.AddHandler("/health", (context, next) =&gt; Results.Ok());
+        /// builder.AddHandler("/health", (context, next) =&gt; Results.Ok());
         /// </code>
         /// </example>
-        public new RouterBuilder<TRouter, TConfig> AddHandler(string pattern, RequestHandler handler)
+        public new RouterBuilder<TRouter, TConfig> AddHandler(string pattern, RequestHandlerDelegate handler)
         {
             base.AddHandler(pattern, handler);
             return this;
@@ -77,16 +79,18 @@ namespace NanoRoute
         /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
         /// </param>
         /// <param name="handler">The handler to execute when the route matches.</param>
-        /// <returns>The current router instance.</returns>
+        /// <returns>The current <see cref="RouterBuilder{TRouter, TConfig}"/> instance.</returns>
+        /// <exception cref="ArgumentException">Thrown when some of the <paramref name="verbs"/> represent a not supported HTTP method.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
-        /// router.AddHandler(
+        /// builder.AddHandler(
         ///     ["GET", "POST"],
         ///     "/api/items/{id:int}",
         ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
         /// </code>
         /// </example>
-        public new RouterBuilder<TRouter, TConfig> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler handler)
+        public new RouterBuilder<TRouter, TConfig> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandlerDelegate handler)
         {
             base.AddHandler(verbs, pattern, handler);
             return this;
@@ -107,30 +111,30 @@ namespace NanoRoute
         /// </param>
         /// <returns>The current router instance.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown when the pattern references a parameter parser that has not been registered yet.
-        /// </exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
-        /// router.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
+        /// builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
         /// {
         ///     string path = (string) context.Parameters["path"]!;
         ///     return ServeFile(path);
         /// });
         /// </code>
         /// </example>
-        public new RouterBuilder<TRouter, TConfig> AddHandler(string verb, string pattern, RequestHandler handler)
+        public new RouterBuilder<TRouter, TConfig> AddHandler(string verb, string pattern, RequestHandlerDelegate handler)
         {
             base.AddHandler(verb, pattern, handler);
             return this;
         }
 
         /// <summary>
-        /// 
+        /// Creates a scoped child builder under the given base prefix, invokes a configuration callback, and returns this builder.
         /// </summary>
-        /// <param name="pattern"></param>
-        /// <param name="configureRoutes"></param>
-        /// <returns></returns>
+        /// <param name="pattern">The base prefix that child routes will be registered under.</param>
+        /// <param name="configureRoutes">A callback that configures routes on the child builder.</param>
+        /// <returns>The current builder.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> is not a valid route <paramref name="pattern"/> or does not end with <c>/</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
         public new RouterBuilder<TRouter, TConfig> WithBase(string pattern, Action<RouteBuilder> configureRoutes)
         {
             base.WithBase(pattern, configureRoutes);
@@ -138,10 +142,10 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// 
+        /// Updates the router configuration object that will be used by future router instances.
         /// </summary>
-        /// <param name="updateConfig"></param>
-        /// <returns></returns>
+        /// <param name="updateConfig">A callback that mutates <see cref="RouterConfig"/>.</param>
+        /// <returns>The current builder.</returns>
         public RouterBuilder<TRouter, TConfig> WithConfiguration(Action<TConfig> updateConfig)
         {
             Ensure.NotNull(updateConfig);
@@ -152,14 +156,18 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// 
+        /// Gets the mutable configuration object applied when <see cref="CreateRouter"/> is called.
         /// </summary>
         public TConfig RouterConfig { get; } = new();
 
         /// <summary>
-        /// TODO
+        /// Creates a router from the builder's current routes, parser registrations, and configuration.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A new <typeparamref name="TRouter"/> instance.</returns>
+        /// <remarks>
+        /// The created router is an immutable snapshot. Later changes to the builder or its configuration do not
+        /// affect routers that have already been created.
+        /// </remarks>
         public TRouter CreateRouter() => _routerFactory(this);
     }
 }

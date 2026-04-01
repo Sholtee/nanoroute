@@ -40,6 +40,13 @@ namespace NanoRoute
     /// <returns>
     /// The response produced by the current handler, or by a later handler when <paramref name="callNext"/> is invoked.
     /// </returns>
+    /// <remarks>
+    /// Handlers may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
+    /// <c>AddExceptionHandler()</c>, <c>AddJsonErrorDetails()</c>, or equivalent custom middleware is registered,
+    /// those exceptions can be translated into structured error responses. Throwing other exception types is also
+    /// supported, but they are treated as unexpected failures: the built-in exception middleware converts them into
+    /// internal server error responses, while without such middleware they propagate to the caller unchanged.
+    /// </remarks>
     /// <example>
     /// <code>
     /// router.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
@@ -49,5 +56,5 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate Task<HttpResponseMessage> RequestHandler(RequestContext requestContext, Func<Task<HttpResponseMessage>> callNext);
+    public delegate Task<HttpResponseMessage> RequestHandlerDelegate(RequestContext requestContext, Func<Task<HttpResponseMessage>> callNext);
 }

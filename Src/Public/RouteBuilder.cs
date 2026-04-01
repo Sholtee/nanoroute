@@ -15,8 +15,13 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
-    /// TODO
+    /// Builder responsible for route configuration.
     /// </summary>
+    /// <remarks>
+    /// Route patterns support literal segments and parser-backed parameter segments such as
+    /// <c>/users/{id:int}</c>. A trailing <c>/</c> marks the pattern as a prefix match, while patterns without
+    /// a trailing slash must match the full path exactly.
+    /// </remarks>
     public class RouteBuilder : RoutingContext
     {
         #region Private
@@ -112,9 +117,9 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// TODO
+        /// Creates an immutable snapshot of the current route tree.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A copy of the configured root node.</returns>
         internal RouteNode GetRoot() => _root.Copy();
         #endregion
 
@@ -150,10 +155,10 @@ namespace NanoRoute
         /// <returns>The current router instance.</returns>
         /// <example>
         /// <code>
-        /// router.AddHandler("/health", (context, next) =&gt; Results.Ok());
+        /// builder.AddHandler("/health", (context, next) =&gt; Results.Ok());
         /// </code>
         /// </example>
-        public RouteBuilder AddHandler(string pattern, RequestHandler handler)
+        public RouteBuilder AddHandler(string pattern, RequestHandlerDelegate handler)
         {
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
@@ -182,13 +187,13 @@ namespace NanoRoute
         /// <returns>The current router instance.</returns>
         /// <example>
         /// <code>
-        /// router.AddHandler(
+        /// builder.AddHandler(
         ///     ["GET", "POST"],
         ///     "/api/items/{id:int}",
         ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
         /// </code>
         /// </example>
-        public RouteBuilder AddHandler(IEnumerable<string> verbs, string pattern, RequestHandler handler)
+        public RouteBuilder AddHandler(IEnumerable<string> verbs, string pattern, RequestHandlerDelegate handler)
         {
             Ensure.NotNull(verbs);
             Ensure.NotNull(pattern);
@@ -220,14 +225,14 @@ namespace NanoRoute
         /// </exception>
         /// <example>
         /// <code>
-        /// router.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
+        /// builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
         /// {
         ///     string path = (string) context.Parameters["path"]!;
         ///     return ServeFile(path);
         /// });
         /// </code>
         /// </example>
-        public RouteBuilder AddHandler(string verb, string pattern, RequestHandler handler)
+        public RouteBuilder AddHandler(string verb, string pattern, RequestHandlerDelegate handler)
         {
             Ensure.NotNull(verb);
             Ensure.NotNull(pattern);
@@ -256,10 +261,25 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// 
+        /// Creates a child builder whose routes are rooted under the given prefix.
         /// </summary>
-        /// <param name="pattern"></param>
-        /// <returns></returns>
+        /// <param name="pattern">
+        /// The base prefix. It must be a valid route pattern ending in <c>/</c> so child routes can be appended to it.
+        /// </param>
+        /// <returns>A child builder that shares the current route tree but has its own parser registration scope.</returns>
+        /// <remarks>
+        /// Child builders inherit the parent's registered parameter parsers at creation time. Additional parser
+        /// registrations or overrides made on the child builder stay local to that branch.
+        /// </remarks>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> is not a valid route pattern or does not end with <c>/</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
+        /// <example>
+        /// <code>
+        /// RouteBuilder api = builder.WithBase("/api/");
+        ///
+        /// api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());
+        /// </code>
+        /// </example>
         public RouteBuilder WithBase(string pattern)
         {
             Ensure.NotNull(pattern);
@@ -271,8 +291,22 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// 
+        /// Creates a child builder for the given prefix, invokes a configuration callback, and returns the current builder.
         /// </summary>
+        /// <param name="pattern">
+        /// The base prefix. It must be a valid route pattern ending in <c>/</c> so child routes can be appended to it.
+        /// </param>
+        /// <param name="configureRoutes">A callback that configures routes on the child builder.</param>
+        /// <returns>The current builder.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> is not a valid route pattern or does not end with <c>/</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
+        /// <example>
+        /// <code>
+        /// builder.WithBase("/api/", api =&gt; api
+        ///     .AddHandler("GET", "/health", (context, _) =&gt; Results.Ok())
+        ///     .AddHandler("GET", "/users", (context, _) =&gt; Results.Ok()));
+        /// </code>
+        /// </example>
         public RouteBuilder WithBase(string pattern, Action<RouteBuilder> configureRoutes)
         {
             Ensure.NotNull(pattern);
@@ -287,14 +321,21 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// TODO
-        /// Parameter parsers assigned to this instance.
+        /// Gets the parameter parser names currently registered on this builder instance.
         /// </summary>
+        /// <remarks>
+        /// For child builders created with <see cref="WithBase(string)"/>, this sequence reflects the inherited
+        /// parsers plus any overrides added to that child scope.
+        /// </remarks>
         public IEnumerable<string> ParameterParsers => _parameterParsers.Keys;
 
         /// <summary>
-        /// TODO
+        /// Gets the distinct route patterns currently visible from this builder branch.
         /// </summary>
+        /// <remarks>
+        /// Each entry is formatted as <c>[Verb] Pattern</c>. Child builders list only the routes reachable from
+        /// their base path, while the root builder lists the whole configured tree.
+        /// </remarks>
         public IEnumerable<string> Patterns
         {
             get

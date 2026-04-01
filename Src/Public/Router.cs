@@ -19,17 +19,21 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
-    /// TODO
+    /// Executes the route matching pipeline built by <see cref="RouteBuilder"/>.
     /// </summary>
+    /// <remarks>
+    /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches parsed parameters, and invokes compatible
+    /// handlers in order until one returns a response without delegating further.
+    /// </remarks>
     public abstract class Router: RoutingContext
     {
         /// <summary>
-        /// 
+        /// The request property key that stores the trace identifier associated with the current request.
         /// </summary>
         public const string TRACE_ID_NAME = "TraceId";
 
         /// <summary>
-        /// 
+        /// The request property key that stores the original transport-specific request object.
         /// </summary>
         public const string ORIGINAL_REQUEST_NAME = "OriginalRequest";
 
@@ -110,10 +114,10 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// 
+        /// Initializes a router from a route builder snapshot and router configuration.
         /// </summary>
-        /// <param name="routeBuilder"></param>
-        /// <param name="config"></param>
+        /// <param name="routeBuilder">The builder whose current route tree should be frozen into this router.</param>
+        /// <param name="config">The router configuration that controls runtime behavior.</param>
         [SuppressMessage("ApiDesign", "RS0022:Constructor make noninheritable base class inheritable")]
         protected Router(RouteBuilder routeBuilder, RouterConfig config): base(CopyRoot(routeBuilder))
         {
@@ -124,7 +128,7 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// 
+        /// Gets the configured precedence between literal and parameterized child segments.
         /// </summary>
         public MatchingBehavior MatchingBehavior
         {
@@ -142,8 +146,19 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// TODO
+        /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
         /// </summary>
+        /// <param name="request">The request to process.</param>
+        /// <param name="services">The service provider exposed to handlers through <see cref="RequestContext.Services"/>.</param>
+        /// <param name="cancellation">A token that can cancel request processing.</param>
+        /// <returns>The <see cref="HttpResponseMessage"/> produced by the matching handlers.</returns>
+        /// <remarks>
+        /// Prefix routes can participate in the same pipeline as exact routes. When several handlers match, NanoRoute
+        /// evaluates compatible matches from shorter prefixes toward more specific matches and honors
+        /// <see cref="MatchingBehavior"/> when both literal and parameterized segments are available at the same depth.
+        /// </remarks>
+        /// <exception cref="HttpRequestException">Thrown when no handler matches the request path.</exception>
+        /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
         #if DEBUG
         internal
         #endif

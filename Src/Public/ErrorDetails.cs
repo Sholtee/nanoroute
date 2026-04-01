@@ -9,8 +9,12 @@ using System.Net;
 namespace NanoRoute
 {
     /// <summary>
-    /// 
+    /// Describes an HTTP error in a structured, serializer-agnostic format.
     /// </summary>
+    /// <remarks>
+    /// Instances of this type can be serialized to JSON, XML, or any other format chosen by the caller.
+    /// NanoRoute's JSON helpers use it as the default payload shape for error responses.
+    /// </remarks>
     public sealed class ErrorDetails
     {
         /// <summary>
@@ -34,7 +38,7 @@ namespace NanoRoute
         public IEnumerable<string>? Errors { get; init; }
 
         /// <summary>
-        /// Message to the devs (may contain sensitive information). Won't be set in production environment.
+        /// Message to the devs (may contain sensitive information). Should NOT be set in production environment.
         /// </summary>
         public IEnumerable<string>? DeveloperMessage { get; init; }
     }

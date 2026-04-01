@@ -17,22 +17,33 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
-    /// 
+    /// Adds helpers for normalizing exceptions and extracting structured error details.
     /// </summary>
     public static class NanoRouteExceptionExtensions
     {
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
         {
             /// <summary>
-            /// 
+            /// Adds an exception-handling middleware for all supported HTTP methods.
             /// </summary>
-            /// <returns></returns>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
+            /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
+            /// values are allowed to flow through unchanged.
+            /// </remarks>
             public TBuilder AddExceptionHandler() => routeBuilder.AddExceptionHandler(Enum.GetNames(typeof(HttpVerb)));
 
             /// <summary>
-            /// 
+            /// Adds an exception-handling middleware for the selected HTTP methods.
             /// </summary>
-            /// <returns></returns>
+            /// <param name="verbs">The HTTP methods that should use the exception-handling middleware.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
+            /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
+            /// values are allowed to flow through unchanged.
+            /// </remarks>
             public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs)
             {
                 Ensure.NotNull(routeBuilder);
@@ -66,40 +77,51 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// 
+        /// The <see cref="Exception.Data"/> key used to store client-facing error messages.
         /// </summary>
+        /// <remarks>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
+        /// </remarks>
         public const string ERRORS_NAME = "Errors";
 
         /// <summary>
-        /// 
+        /// The <see cref="Exception.Data"/> key used to store developer-facing diagnostic details.
         /// </summary>
+        /// <remarks>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
+        /// </remarks>
         public const string DEVELOPER_MESSAGE = "DeveloperMessage";
 
         /// <summary>
-        /// 
+        /// The <see cref="Exception.Data"/> key used to store the HTTP status code.
         /// </summary>
+        /// <remarks>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
+        /// </remarks>
         public const string STATUS_NAME = "StatusCode";
-
 
         extension(HttpRequestException)
         {
             /// <summary>
-            /// 
+            /// Throws an <see cref="HttpRequestException"/> enriched with an HTTP status code and public error messages.
             /// </summary>
-            /// <param name="status"></param>
-            /// <param name="title"></param>
-            /// <param name="errors">Should not contain sensitive data</param>
+            /// <param name="status">The HTTP status code that should be associated with the exception.</param>
+            /// <param name="title">The human-readable error title.</param>
+            /// <param name="errors">Optional client-facing error messages that should not contain sensitive data.</param>
             [DoesNotReturn]
             public static void Throw(HttpStatusCode status, string title, params IReadOnlyCollection<string> errors) => Throw(status, title, null, errors, null);
 
             /// <summary>
-            /// 
+            /// Throws an <see cref="HttpRequestException"/> enriched with routing-specific metadata.
             /// </summary>
-            /// <param name="status"></param>
-            /// <param name="title"></param>
-            /// <param name="original"></param>
-            /// <param name="errors">Should not contain sensitive data</param>
-            /// <param name="developerMessage">May contain sensitive data</param>
+            /// <param name="status">The HTTP status code that should be associated with the exception.</param>
+            /// <param name="title">The human-readable error title.</param>
+            /// <param name="original">The original exception, if any.</param>
+            /// <param name="errors">Optional client-facing error messages that should not contain sensitive data.</param>
+            /// <param name="developerMessage">Optional developer-facing messages that may contain sensitive data.</param>
             [DoesNotReturn]
             public static void Throw(HttpStatusCode status, string title, Exception? original = null, IReadOnlyCollection<string>? errors = null, IReadOnlyCollection<string>? developerMessage = null)
             {
@@ -120,11 +142,13 @@ namespace NanoRoute
         extension(HttpRequestException requestException)
         {
             /// <summary>
-            /// 
+            /// Converts an <see cref="HttpRequestException"/> into an <see cref="ErrorDetails"/> payload.
             /// </summary>
-            /// <param name="populateErrorInfo"></param>
-            /// <param name="traceId"></param>
-            /// <returns></returns>
+            /// <param name="populateErrorInfo">
+            /// <see langword="true"/> to include developer-facing details when present; otherwise <see langword="false"/>.
+            /// </param>
+            /// <param name="traceId">The trace identifier to expose in the resulting payload.</param>
+            /// <returns>The structured error payload.</returns>
             public ErrorDetails GetErrorDetails(bool populateErrorInfo = false, string? traceId = null)
             {
                 Ensure.NotNull(requestException);

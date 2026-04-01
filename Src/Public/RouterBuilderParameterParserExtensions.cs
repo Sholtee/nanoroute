@@ -10,8 +10,11 @@ namespace NanoRoute
     using Internals;
 
     /// <summary>
-    /// 
+    /// Provides convenience methods for registering parameter parsers.
     /// </summary>
+    /// <remarks>
+    /// These helpers build on top of <see cref="RouteBuilder.AddParameterParser(string, ParameterParserDelegate)"/>.
+    /// </remarks>
     public static class RouterBuilderParameterParserExtensions
     {
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
@@ -24,9 +27,10 @@ namespace NanoRoute
             /// This convenience method registers parsers named <c>int</c>, <c>guid</c>, <c>bool</c>, and <c>str</c>.
             /// Existing registrations with the same names are overwritten.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeBuilder"/> is <see langword="null"/>.</exception>
             /// <example>
             /// <code>
-            /// router
+            /// builder
             ///     .AddDefaultParsers()
             ///     .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));
             /// </code>
