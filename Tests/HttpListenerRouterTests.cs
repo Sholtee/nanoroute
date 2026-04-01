@@ -342,5 +342,74 @@ namespace NanoRoute.Tests
             Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
             Assert.That(await msg.Content.ReadAsStringAsync(), Is.Empty);
         }
+
+        [Test]
+        public async Task ReadmeQuickStartExample_ShouldRouteRequests()
+        {
+            CreateRouter(bldr => bldr
+                .AddParameterParser("int", static (string segment, out object? parsed) =>
+                {
+                    bool success = int.TryParse(segment, out int value);
+                    parsed = success ? value : null;
+                    return success;
+                })
+                .AddHandler("GET", "/api/users/{user_id:int}/", async (context, next) =>
+                {
+                    context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
+                    return await next();
+                })
+                .AddHandler("GET", "/api/users/{user_id:int}/details", async (context, _) =>
+                {
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent((string) context.Parameters["user"]!)
+                    };
+                }));
+
+            Task<HttpResponseMessage> responseTask = _client.GetAsync("api/users/42/details");
+
+            await HandleRequest();
+
+            HttpResponseMessage response = await responseTask;
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Content.Headers.ContentType!.MediaType, Is.EqualTo("text/plain"));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("user-42"));
+        }
+
+        [Test]
+        public async Task ReadmeAdvancedUsageExample_ShouldSupportWithBase()
+        {
+            CreateRouter(bldr => bldr
+                .AddDefaultParsers()
+                .WithBase("/api/users/{user_id:int}/", users => users
+                    .AddHandler("GET", "/", async (context, next) =>
+                    {
+                        context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
+                        return await next();
+                    })
+                    .AddHandler("GET", "/details", async (context, _) =>
+                    {
+                        return HttpResponseMessage.Json(new
+                        {
+                            id = context.Parameters["user_id"],
+                            name = context.Parameters["user"]
+                        });
+                    })));
+
+            Task<HttpResponseMessage> responseTask = _client.GetAsync("api/users/42/details");
+
+            await HandleRequest();
+
+            HttpResponseMessage response = await responseTask;
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
+
+            JsonElement body = JsonSerializer.Deserialize<JsonElement>(await response.Content.ReadAsStringAsync());
+
+            Assert.That(body.GetProperty("id").GetInt32(), Is.EqualTo(42));
+            Assert.That(body.GetProperty("name").GetString(), Is.EqualTo("user-42"));
+        }
     }
 }
