@@ -2,6 +2,8 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with an optional `HttpListener` adapter and focused helpers for JSON payloads and error handling.
 
+The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+
 ## Quick Start
 
 ```csharp
@@ -79,6 +81,35 @@ HttpListenerRouter router = builder.CreateRouter();
 ```
 
 This produces the same effective routes as registering `/api/users/{user_id:int}/` and `/api/users/{user_id:int}/details` directly, but keeps repeated base patterns out of individual `AddHandler()` calls.
+
+## Custom Routers
+
+If `HttpListenerRouter` is not the transport you want, you can derive from `Router` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
+
+```csharp
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+using NanoRoute;
+
+public sealed class InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder) : Router(builder, builder.RouterConfig)
+{
+    public static RouterBuilder<InMemoryRouter, RouterConfig> CreateBuilder() =>
+        new(static builder => new InMemoryRouter(builder));
+
+    public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
+        Handle(request, services, cancellation);
+}
+
+InMemoryRouter router = InMemoryRouter
+    .CreateBuilder()
+    .AddHandler("GET", "/health", async (_, _) => new HttpResponseMessage())
+    .CreateRouter();
+```
+
+This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, parameter parsing, and handler pipeline.
 
 ## Matching Rules
 
