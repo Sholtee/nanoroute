@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width">
       <meta name="title" content="Class HttpListenerRouter | NanoRoute ">
     
-    <meta name="description" content="Bridges  requests to .">
+    <meta name="description" content="Routes  instances through a NanoRoute pipeline.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -40,56 +40,29 @@
 
 
   <h1 id="NanoRoute_HttpListenerRouter" data-uid="NanoRoute.HttpListenerRouter" class="text-break">Class HttpListenerRouter</h1>
-  <div class="markdown level0 summary"><p>Bridges <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenercontext">HttpListenerContext</a> requests to <a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a>.</p>
+  <div class="markdown level0 summary"><p>Routes <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenercontext">HttpListenerContext</a> instances through a NanoRoute pipeline.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><a class="xref" href="NanoRoute.Router-2.html">Router</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</div>
-    <div class="level2"><a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a></div>
+    <div class="level1"><a class="xref" href="NanoRoute.RoutingContext.html">RoutingContext</a></div>
+    <div class="level2"><a class="xref" href="NanoRoute.Router.html">Router</a></div>
     <div class="level3"><span class="xref">HttpListenerRouter</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_GetUri_System_Net_Http_HttpRequestMessage_">HttpMessageRouter.GetUri(HttpRequestMessage)</a>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_TRACE_ID_NAME">Router.TRACE_ID_NAME</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_GetVerb_System_Net_Http_HttpRequestMessage_">HttpMessageRouter.GetVerb(HttpRequestMessage)</a>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_ORIGINAL_REQUEST_NAME">Router.ORIGINAL_REQUEST_NAME</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_CreateJsonResponse_System_Net_HttpStatusCode_System_String_">HttpMessageRouter.CreateJsonResponse(HttpStatusCode, string)</a>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_">Router.Handle(HttpRequestMessage, IServiceProvider, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_GetUri__0_">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.GetUri(HttpRequestMessage)</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_GetVerb__0_">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.GetVerb(HttpRequestMessage)</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_CreateJsonResponse_System_Net_HttpStatusCode_System_String_">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.CreateJsonResponse(HttpStatusCode, string)</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_AddParameterParser_System_String_NanoRoute_ParameterParserDelegate_">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.AddParameterParser(string, ParameterParserDelegate)</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_AddDefaultParsers">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.AddDefaultParsers()</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_AddHandler_System_String_NanoRoute_RequestHandler__0__1__">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.AddHandler(string, RequestHandler&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_AddHandler_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_RequestHandler__0__1__">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.AddHandler(IEnumerable&lt;string&gt;, string, RequestHandler&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_AddHandler_System_String_System_String_NanoRoute_RequestHandler__0__1__">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.AddHandler(string, string, RequestHandler&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_AddDefaultHandler_System_Boolean_">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.AddDefaultHandler(bool)</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_Handle__0_System_IServiceProvider_">Router&lt;HttpRequestMessage, Task&lt;HttpResponseMessage&gt;&gt;.Handle(HttpRequestMessage, IServiceProvider)</a>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_MatchingBehavior">Router.MatchingBehavior</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
@@ -117,47 +90,47 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_HttpListenerRouter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class HttpListenerRouter : HttpMessageRouter</code></pre>
+    <pre><code class="lang-csharp hljs">public class HttpListenerRouter : Router</code></pre>
   </div>
   <h5 id="NanoRoute_HttpListenerRouter_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>This router translates the incoming <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerrequest">HttpListenerRequest</a> into an
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>, executes the registered NanoRoute pipeline, then copies the produced
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> back to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerresponse">HttpListenerResponse</a>.</p>
+  <div class="markdown level0 remarks"><p>This adapter converts incoming <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> traffic into the core
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>/<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> pipeline used by NanoRoute.</p>
 </div>
-  <h5 id="NanoRoute_HttpListenerRouter_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">HttpListenerRouter router = new HttpListenerRouter();
-
-router
-    .AddDefaultHandler()
-    .AddHandler("GET", "/health", (context, next) =&gt;
-        Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent("ok")
-        }));
-
-HttpListenerContext listenerContext = await listener.GetContextAsync();
-await router.Route(listenerContext, services);</code></pre>
-
-  <h3 id="constructors">Constructors
-</h3>
-  <a id="NanoRoute_HttpListenerRouter__ctor_" data-uid="NanoRoute.HttpListenerRouter.#ctor*"></a>
-  <h4 id="NanoRoute_HttpListenerRouter__ctor" data-uid="NanoRoute.HttpListenerRouter.#ctor">HttpListenerRouter()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public HttpListenerRouter()</code></pre>
-  </div>
   <h3 id="methods">Methods
 </h3>
-  <a id="NanoRoute_HttpListenerRouter_Route_" data-uid="NanoRoute.HttpListenerRouter.Route*"></a>
-  <h4 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_" data-uid="NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext,System.IServiceProvider)">Route(HttpListenerContext, IServiceProvider)</h4>
-  <div class="markdown level1 summary"><p>Routes a single <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenercontext">HttpListenerContext</a> through the configured handlers.</p>
+  <a id="NanoRoute_HttpListenerRouter_CreateBuilder_" data-uid="NanoRoute.HttpListenerRouter.CreateBuilder*"></a>
+  <h4 id="NanoRoute_HttpListenerRouter_CreateBuilder" data-uid="NanoRoute.HttpListenerRouter.CreateBuilder">CreateBuilder()</h4>
+  <div class="markdown level1 summary"><p>Creates a strongly typed builder for configuring an <a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task Route(HttpListenerContext context, IServiceProvider services)</code></pre>
+    <pre><code class="lang-csharp hljs">public static RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; CreateBuilder()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;<a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>, <a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a>&gt;</td>
+        <td><p>A builder that can register handlers, parameter parsers, and router configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_HttpListenerRouter_Route_" data-uid="NanoRoute.HttpListenerRouter.Route*"></a>
+  <h4 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_System_Threading_CancellationToken_" data-uid="NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext,System.IServiceProvider,System.Threading.CancellationToken)">Route(HttpListenerContext, IServiceProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Routes a single <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> request and writes the produced response.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task Route(HttpListenerContext context, IServiceProvider services, CancellationToken cancellation = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -172,13 +145,19 @@ await router.Route(listenerContext, services);</code></pre>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenercontext">HttpListenerContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The listener context containing the incoming request and outgoing response.</p>
+        <td><p>The listener context that supplies the request and receives the response.</p>
 </td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a></td>
         <td><span class="parametername">services</span></td>
-        <td><p>The service provider exposed through the created <a class="xref" href="NanoRoute.RequestContext-1.html">RequestContext&lt;TRequest&gt;</a>.</p>
+        <td><p>The service provider exposed to handlers through <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Services">Services</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">cancellation</span></td>
+        <td><p>A token that can cancel request processing and response streaming.</p>
 </td>
       </tr>
     </tbody>
@@ -194,17 +173,32 @@ await router.Route(listenerContext, services);</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>A task that completes when the response has been written to the listener output stream.</p>
+        <td><p>A task that completes after the router has finished writing the response.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Request headers are copied to the intermediate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>, including content
-headers when the request has a body. Response headers from both <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage.headers">Headers</a>
-and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage.content">Content</a> are written back to the listener response, except for
-headers that <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerresponse">HttpListenerResponse</a> manages itself.</p>
+  <h5 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Request and content headers are copied into the intermediate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>.
+The original <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerrequest">HttpListenerRequest</a> is stored in
+<a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_ORIGINAL_REQUEST_NAME">ORIGINAL_REQUEST_NAME</a> on the generated request message.
+Response headers are copied back except for reserved <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerresponse">HttpListenerResponse</a> headers that
+must be managed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> itself.</p>
 </div>
+  <h5 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_System_Threading_CancellationToken__examples">Examples</h5>
+  <pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .AddJsonErrorDetails()
+    .AddDefaultParsers()
+    .AddHandler("GET", "/hello/{name:str}", (context, _) =&gt;
+        Task.FromResult(HttpResponseMessage.Json(new
+        {
+            message = $"Hello {context.Parameters["name"]}"
+        })))
+    .CreateRouter();
+
+await router.Route(listenerContext, services, cancellationToken);</code></pre>
+
 
 </article>
           </div>

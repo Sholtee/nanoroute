@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class Router | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class Router | NanoRoute ">
+    
+    <meta name="description" content="Executes the route matching pipeline built by .">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.Router">
+
+
+
+  <h1 id="NanoRoute_Router" data-uid="NanoRoute.Router" class="text-break">Class Router</h1>
+  <div class="markdown level0 summary"><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="NanoRoute.RoutingContext.html">RoutingContext</a></div>
+    <div class="level2"><span class="xref">Router</span></div>
+      <div class="level3"><a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_Router_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class Router : RoutingContext</code></pre>
+  </div>
+  <h5 id="NanoRoute_Router_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>A router is created from a builder snapshot. Matching walks the configured route tree, attaches parsed parameters, and invokes compatible
+handlers in order until one returns a response without delegating further.</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+  <a id="NanoRoute_Router__ctor_" data-uid="NanoRoute.Router.#ctor*"></a>
+  <h4 id="NanoRoute_Router__ctor_NanoRoute_RouteBuilder_NanoRoute_RouterConfig_" data-uid="NanoRoute.Router.#ctor(NanoRoute.RouteBuilder,NanoRoute.RouterConfig)">Router(RouteBuilder, RouterConfig)</h4>
+  <div class="markdown level1 summary"><p>Initializes a router from a route builder snapshot and router configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected Router(RouteBuilder routeBuilder, RouterConfig config)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td><p>The builder whose current route tree should be frozen into this router.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a></td>
+        <td><span class="parametername">config</span></td>
+        <td><p>The router configuration that controls runtime behavior.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+</h3>
+  <h4 id="NanoRoute_Router_ORIGINAL_REQUEST_NAME" data-uid="NanoRoute.Router.ORIGINAL_REQUEST_NAME">ORIGINAL_REQUEST_NAME</h4>
+  <div class="markdown level1 summary"><p>The request property key that stores the original transport-specific request object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const string ORIGINAL_REQUEST_NAME = &quot;OriginalRequest&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h4 id="NanoRoute_Router_TRACE_ID_NAME" data-uid="NanoRoute.Router.TRACE_ID_NAME">TRACE_ID_NAME</h4>
+  <div class="markdown level1 summary"><p>The request property key that stores the trace identifier associated with the current request.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const string TRACE_ID_NAME = &quot;TraceId&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+  <a id="NanoRoute_Router_MatchingBehavior_" data-uid="NanoRoute.Router.MatchingBehavior*"></a>
+  <h4 id="NanoRoute_Router_MatchingBehavior" data-uid="NanoRoute.Router.MatchingBehavior">MatchingBehavior</h4>
+  <div class="markdown level1 summary"><p>Gets the configured precedence between literal and parameterized child segments.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MatchingBehavior MatchingBehavior { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.MatchingBehavior.html">MatchingBehavior</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_Router_Handle_" data-uid="NanoRoute.Router.Handle*"></a>
+  <h4 id="NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_" data-uid="NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)">Handle(HttpRequestMessage, IServiceProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Routes an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> through the configured handler pipeline.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected Task&lt;HttpResponseMessage&gt; Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a></td>
+        <td><span class="parametername">request</span></td>
+        <td><p>The request to process.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a></td>
+        <td><span class="parametername">services</span></td>
+        <td><p>The service provider exposed to handlers through <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Services">Services</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">cancellation</span></td>
+        <td><p>A token that can cancel request processing.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;</td>
+        <td><p>The <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> produced by the matching handlers.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Prefix routes can participate in the same pipeline as exact routes. When several handlers match, NanoRoute
+evaluates compatible matches from shorter prefixes toward more specific matches and honors
+<a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_MatchingBehavior">MatchingBehavior</a> when both literal and parameterized segments are available at the same depth.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown when no handler matches the request path.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when the request uses an unsupported HTTP method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

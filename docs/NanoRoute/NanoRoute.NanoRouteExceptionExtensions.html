@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class NanoRouteExceptionExtensions | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class NanoRouteExceptionExtensions | NanoRoute ">
+    
+    <meta name="description" content="Adds helpers for normalizing exceptions and extracting structured error details.">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.NanoRouteExceptionExtensions">
+
+
+
+  <h1 id="NanoRoute_NanoRouteExceptionExtensions" data-uid="NanoRoute.NanoRouteExceptionExtensions" class="text-break">Class NanoRouteExceptionExtensions</h1>
+  <div class="markdown level0 summary"><p>Adds helpers for normalizing exceptions and extracting structured error details.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">NanoRouteExceptionExtensions</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class NanoRouteExceptionExtensions</code></pre>
+  </div>
+  <h3 id="fields">Fields
+</h3>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_DEVELOPER_MESSAGE" data-uid="NanoRoute.NanoRouteExceptionExtensions.DEVELOPER_MESSAGE">DEVELOPER_MESSAGE</h4>
+  <div class="markdown level1 summary"><p>The <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.data">Data</a> key used to store developer-facing diagnostic details.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const string DEVELOPER_MESSAGE = &quot;DeveloperMessage&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_DEVELOPER_MESSAGE_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Written by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IReadOnlyCollection_System_String__System_Collections_Generic_IReadOnlyCollection_System_String__">Throw(HttpStatusCode, string, Exception?, IReadOnlyCollection&lt;string&gt;?, IReadOnlyCollection&lt;string&gt;?)</a>
+and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_">GetErrorDetails(HttpRequestException, bool, string?)</a>.</p>
+</div>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_ERRORS_NAME" data-uid="NanoRoute.NanoRouteExceptionExtensions.ERRORS_NAME">ERRORS_NAME</h4>
+  <div class="markdown level1 summary"><p>The <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.data">Data</a> key used to store client-facing error messages.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const string ERRORS_NAME = &quot;Errors&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_ERRORS_NAME_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Written by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IReadOnlyCollection_System_String__System_Collections_Generic_IReadOnlyCollection_System_String__">Throw(HttpStatusCode, string, Exception?, IReadOnlyCollection&lt;string&gt;?, IReadOnlyCollection&lt;string&gt;?)</a>
+and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_">GetErrorDetails(HttpRequestException, bool, string?)</a>.</p>
+</div>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_STATUS_NAME" data-uid="NanoRoute.NanoRouteExceptionExtensions.STATUS_NAME">STATUS_NAME</h4>
+  <div class="markdown level1 summary"><p>The <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.data">Data</a> key used to store the HTTP status code.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const string STATUS_NAME = &quot;StatusCode&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_STATUS_NAME_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Written by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IReadOnlyCollection_System_String__System_Collections_Generic_IReadOnlyCollection_System_String__">Throw(HttpStatusCode, string, Exception?, IReadOnlyCollection&lt;string&gt;?, IReadOnlyCollection&lt;string&gt;?)</a>
+and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_">GetErrorDetails(HttpRequestException, bool, string?)</a>.</p>
+</div>
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0)">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</h4>
+  <div class="markdown level1 summary"><p>Adds an exception-handling middleware for all supported HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The inserted middleware converts unexpected exceptions into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> values
+with normalized status codes and diagnostic payloads. Existing <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
+values are allowed to flow through unchanged.</p>
+</div>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IReadOnlyCollection_System_String__" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IReadOnlyCollection{System.String})">AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds an exception-handling middleware for the selected HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, IReadOnlyCollection&lt;string&gt; verbs) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that should use the exception-handling middleware.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IReadOnlyCollection_System_String___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The inserted middleware converts unexpected exceptions into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> values
+with normalized status codes and diagnostic payloads. Existing <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
+values are allowed to flow through unchanged.</p>
+</div>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_" data-uid="NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails(System.Net.Http.HttpRequestException,System.Boolean,System.String)">GetErrorDetails(HttpRequestException, bool, string?)</h4>
+  <div class="markdown level1 summary"><p>Converts an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> into an <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> payload.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ErrorDetails GetErrorDetails(this HttpRequestException requestException, bool populateErrorInfo = false, string? traceId = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><span class="parametername">requestException</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">populateErrorInfo</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to include developer-facing details when present; otherwise <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">traceId</span></td>
+        <td><p>The trace identifier to expose in the resulting payload.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a></td>
+        <td><p>The structured error payload.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_Throw_" data-uid="NanoRoute.NanoRouteExceptionExtensions.Throw*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Collections_Generic_IReadOnlyCollection_System_String__" data-uid="NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode,System.String,System.Collections.Generic.IReadOnlyCollection{System.String})">Throw(HttpStatusCode, string, params IReadOnlyCollection&lt;string&gt;)</h4>
+  <div class="markdown level1 summary"><p>Throws an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> enriched with an HTTP status code and public error messages.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Throw(HttpStatusCode status, string title, params IReadOnlyCollection&lt;string&gt; errors)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode">HttpStatusCode</a></td>
+        <td><span class="parametername">status</span></td>
+        <td><p>The HTTP status code that should be associated with the exception.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">title</span></td>
+        <td><p>The human-readable error title.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">errors</span></td>
+        <td><p>Optional client-facing error messages that should not contain sensitive data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_Throw_" data-uid="NanoRoute.NanoRouteExceptionExtensions.Throw*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IReadOnlyCollection_System_String__System_Collections_Generic_IReadOnlyCollection_System_String__" data-uid="NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode,System.String,System.Exception,System.Collections.Generic.IReadOnlyCollection{System.String},System.Collections.Generic.IReadOnlyCollection{System.String})">Throw(HttpStatusCode, string, Exception?, IReadOnlyCollection&lt;string&gt;?, IReadOnlyCollection&lt;string&gt;?)</h4>
+  <div class="markdown level1 summary"><p>Throws an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> enriched with routing-specific metadata.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Throw(HttpStatusCode status, string title, Exception? original = null, IReadOnlyCollection&lt;string&gt;? errors = null, IReadOnlyCollection&lt;string&gt;? developerMessage = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode">HttpStatusCode</a></td>
+        <td><span class="parametername">status</span></td>
+        <td><p>The HTTP status code that should be associated with the exception.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">title</span></td>
+        <td><p>The human-readable error title.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><span class="parametername">original</span></td>
+        <td><p>The original exception, if any.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">errors</span></td>
+        <td><p>Optional client-facing error messages that should not contain sensitive data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">developerMessage</span></td>
+        <td><p>Optional developer-facing messages that may contain sensitive data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

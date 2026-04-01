@@ -44,26 +44,52 @@
     <h3 id="classes">
 Classes
 </h3>
+      <h4><a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a></h4>
+      <section><p>Describes an HTTP error in a structured, serializer-agnostic format.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></h4>
-      <section><p>Bridges <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenercontext">HttpListenerContext</a> requests to <a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a>.</p>
+      <section><p>Routes <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenercontext">HttpListenerContext</a> instances through a NanoRoute pipeline.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a></h4>
-      <section><p>Specializes <a class="xref" href="NanoRoute.Router-2.html">Router&lt;TRequest, TResponse&gt;</a> for <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> requests and
-asynchronous <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> responses.</p>
+      <h4><a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a></h4>
+      <section><p>Configuration settings for <a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.RequestContext-1.html">RequestContext&lt;TRequest&gt;</a></h4>
-      <section><p>Request context</p>
+      <h4><a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html">NanoRouteExceptionExtensions</a></h4>
+      <section><p>Adds helpers for normalizing exceptions and extracting structured error details.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.Router-2.html">Router&lt;TRequest, TResponse&gt;</a></h4>
-      <section><p>Routes requests to one or more handlers based on HTTP method and URI path.</p>
+      <h4><a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a></h4>
+      <section><p>Carries request-specific data through the NanoRoute handler pipeline.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></h4>
+      <section><p>Builder responsible for route configuration.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.Router.html">Router</a></h4>
+      <section><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.RouterBuilderParameterParserExtensions.html">RouterBuilderParameterParserExtensions</a></h4>
+      <section><p>Provides convenience methods for registering parameter parsers.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a></h4>
+      <section><p>Builds a concrete <a class="xref" href="NanoRoute.Router.html">Router</a> type together with its strongly typed configuration object.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a></h4>
+      <section><p>Configures runtime behavior of <a class="xref" href="NanoRoute.Router.html">Router</a> instances.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.RoutingContext.html">RoutingContext</a></h4>
+      <section><p>Provides shared access to the route tree used during building and routing.</p>
+</section>
+    <h3 id="enums">
+Enums
+</h3>
+      <h4><a class="xref" href="NanoRoute.MatchingBehavior.html">MatchingBehavior</a></h4>
+      <section><p>Controls how the router prioritizes literal and parameterized child segments during matching.</p>
 </section>
     <h3 id="delegates">
 Delegates
 </h3>
       <h4><a class="xref" href="NanoRoute.ParameterParserDelegate.html">ParameterParserDelegate</a></h4>
-      <section><p>Tries to parse a single route segment into a value that can be stored in <a class="xref" href="NanoRoute.RequestContext-1.html#NanoRoute_RequestContext_1_Parameters">Parameters</a>.</p>
+      <section><p>Tries to parse a single route segment into a value that can be stored in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.RequestHandler-2.html">RequestHandler&lt;TRequest, TResponse&gt;</a></h4>
+      <h4><a class="xref" href="NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></h4>
       <section><p>Represents a request handler in the router pipeline.</p>
 </section>
 

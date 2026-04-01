@@ -1,20 +1,20 @@
-<svg width="175.7" height="20" viewBox="0 0 1757 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="tests: Passed: 32, Skipped: 0">
-  <title>tests: Passed: 32, Skipped: 0</title>
+<svg width="182.7" height="20" viewBox="0 0 1827 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="tests: Passed: 108, Skipped: 0">
+  <title>tests: Passed: 108, Skipped: 0</title>
   <linearGradient id="a" x2="0" y2="100%">
     <stop offset="0" stop-opacity=".1" stop-color="#EEE"/>
     <stop offset="1" stop-opacity=".1"/>
   </linearGradient>
-  <mask id="m"><rect width="1757" height="200" rx="30" fill="#FFF"/></mask>
+  <mask id="m"><rect width="1827" height="200" rx="30" fill="#FFF"/></mask>
   <g mask="url(#m)">
     <rect width="366" height="200" fill="#555"/>
-    <rect width="1391" height="200" fill="#3C1" x="366"/>
-    <rect width="1757" height="200" fill="url(#a)"/>
+    <rect width="1461" height="200" fill="#3C1" x="366"/>
+    <rect width="1827" height="200" fill="url(#a)"/>
   </g>
   <g aria-hidden="true" fill="#fff" text-anchor="start" font-family="Verdana,DejaVu Sans,sans-serif" font-size="110">
     <text x="60" y="148" textLength="266" fill="#000" opacity="0.25">tests</text>
     <text x="50" y="138" textLength="266">tests</text>
-    <text x="421" y="148" textLength="1291" fill="#000" opacity="0.25">Passed: 32, Skipped: 0</text>
-    <text x="411" y="138" textLength="1291">Passed: 32, Skipped: 0</text>
+    <text x="421" y="148" textLength="1361" fill="#000" opacity="0.25">Passed: 108, Skipped: 0</text>
+    <text x="411" y="138" textLength="1361">Passed: 108, Skipped: 0</text>
   </g>
   
 </svg>

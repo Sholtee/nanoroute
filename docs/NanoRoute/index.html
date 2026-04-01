@@ -38,20 +38,26 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="nanoroute">NanoRoute</h1>
 
-<p>NanoRoute is a small router for request/response pipelines.</p>
+<p>NanoRoute is a small router for <code>HttpRequestMessage</code> pipelines with an optional <code>HttpListener</code> adapter.</p>
 <p>The API documentation for this package is generated from the XML comments in the source. The links below are the intended published locations for the generated pages.</p>
-<h2 id="overview">Overview</h2>
-<ul>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.html">NanoRoute namespace</a></li>
-</ul>
 <h2 id="core-types">Core Types</h2>
 <ul>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router-2.html">Router&lt;TRequest, TResponse&gt;</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html">RouteBuilder</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html">Router</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html">RouterBuilder`2</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext-1.html">RequestContext<trequest></trequest></a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html">RequestContext</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html">ErrorDetails</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html">ParameterParserDelegate</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler-2.html">RequestHandler&lt;TRequest, TResponse&gt;</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler.html">RequestHandler</a></li>
+</ul>
+<h2 id="highlights">Highlights</h2>
+<ul>
+<li>Routes can be exact matches or prefix matches depending on whether the pattern ends with <code>/</code>.</li>
+<li>Parameter parsers turn path segments into typed values stored in <code>RequestContext.Parameters</code>.</li>
+<li><code>WithBase()</code> creates scoped route subtrees without forcing you to repeat common prefixes.</li>
+<li><code>MatchingBehavior</code> lets you choose whether literal or parameterized child segments take precedence.</li>
+<li><code>NanoRoute.Json</code> adds JSON request binding and JSON error/response helpers on top of the core pipeline.</li>
 </ul>
 
 </article>

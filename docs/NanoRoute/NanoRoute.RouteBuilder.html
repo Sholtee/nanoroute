@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class RouteBuilder | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class RouteBuilder | NanoRoute ">
+    
+    <meta name="description" content="Builder responsible for route configuration.">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.RouteBuilder">
+
+
+
+  <h1 id="NanoRoute_RouteBuilder" data-uid="NanoRoute.RouteBuilder" class="text-break">Class RouteBuilder</h1>
+  <div class="markdown level0 summary"><p>Builder responsible for route configuration.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="NanoRoute.RoutingContext.html">RoutingContext</a></div>
+    <div class="level2"><span class="xref">RouteBuilder</span></div>
+      <div class="level3"><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_RouteBuilder_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class RouteBuilder : RoutingContext</code></pre>
+  </div>
+  <h5 id="NanoRoute_RouteBuilder_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Route patterns support literal segments and parser-backed parameter segments such as
+<code>/users/{id:int}</code>. A trailing <code>/</code> marks the pattern as a prefix match, while patterns without
+a trailing slash must match the full path exactly.</p>
+</div>
+  <h3 id="properties">Properties
+</h3>
+  <a id="NanoRoute_RouteBuilder_ParameterParsers_" data-uid="NanoRoute.RouteBuilder.ParameterParsers*"></a>
+  <h4 id="NanoRoute_RouteBuilder_ParameterParsers" data-uid="NanoRoute.RouteBuilder.ParameterParsers">ParameterParsers</h4>
+  <div class="markdown level1 summary"><p>Gets the parameter parser names currently registered on this builder instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;string&gt; ParameterParsers { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_ParameterParsers_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>For child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_System_String_">WithBase(string)</a>, this sequence reflects the inherited
+parsers plus any overrides added to that child scope.</p>
+</div>
+  <a id="NanoRoute_RouteBuilder_Patterns_" data-uid="NanoRoute.RouteBuilder.Patterns*"></a>
+  <h4 id="NanoRoute_RouteBuilder_Patterns" data-uid="NanoRoute.RouteBuilder.Patterns">Patterns</h4>
+  <div class="markdown level1 summary"><p>Gets the distinct route patterns currently visible from this builder branch.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;string&gt; Patterns { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_Patterns_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Each entry is formatted as <code>[Verb] Pattern</code>. Child builders list only the routes reachable from
+their base path, while the root builder lists the whole configured tree.</p>
+</div>
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_RouteBuilder_AddHandler_" data-uid="NanoRoute.RouteBuilder.AddHandler*"></a>
+  <h4 id="NanoRoute_RouteBuilder_AddHandler_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.RouteBuilder.AddHandler(System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.RequestHandlerDelegate)">AddHandler(IEnumerable&lt;string&gt;, string, RequestHandlerDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers the same handler for multiple HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RouteBuilder AddHandler(IEnumerable&lt;string&gt; verbs, string pattern, RequestHandlerDelegate handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that should use the handler.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
+registered parsers in the form <code>{parameterName:parserName}</code>, and a trailing <code>/</code> turns the
+pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The handler to execute when the route matches.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><p>The current router instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_AddHandler_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler(
+    ["GET", "POST"],
+    "/api/items/{id:int}",
+    (context, next) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
+
+  <a id="NanoRoute_RouteBuilder_AddHandler_" data-uid="NanoRoute.RouteBuilder.AddHandler*"></a>
+  <h4 id="NanoRoute_RouteBuilder_AddHandler_System_String_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.RouteBuilder.AddHandler(System.String,NanoRoute.RequestHandlerDelegate)">AddHandler(string, RequestHandlerDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers a handler for all supported HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RouteBuilder AddHandler(string pattern, RequestHandlerDelegate handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
+registered parsers in the form <code>{parameterName:parserName}</code>, and a trailing <code>/</code> turns the
+pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The handler to execute when the pattern matches.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><p>The current router instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_AddHandler_System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler("/health", (context, next) =&gt; Results.Ok());</code></pre>
+
+  <a id="NanoRoute_RouteBuilder_AddHandler_" data-uid="NanoRoute.RouteBuilder.AddHandler*"></a>
+  <h4 id="NanoRoute_RouteBuilder_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.RouteBuilder.AddHandler(System.String,System.String,NanoRoute.RequestHandlerDelegate)">AddHandler(string, string, RequestHandlerDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers a handler for a single HTTP method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RouteBuilder AddHandler(string verb, string pattern, RequestHandlerDelegate handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">verb</span></td>
+        <td><p>The HTTP method that activates the handler.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
+registered parsers in the form <code>{parameterName:parserName}</code>, and a trailing <code>/</code> turns the
+pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The handler to execute. If several handlers match, calling the supplied <code>next</code> delegate continues
+the pipeline with the next compatible handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><p>The current router instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
+{
+    string path = (string) context.Parameters["path"]!;
+    return ServeFile(path);
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">verb</code> is not a supported HTTP method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when the pattern references a parameter parser that has not been registered yet.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_RouteBuilder_AddParameterParser_" data-uid="NanoRoute.RouteBuilder.AddParameterParser*"></a>
+  <h4 id="NanoRoute_RouteBuilder_AddParameterParser_System_String_NanoRoute_ParameterParserDelegate_" data-uid="NanoRoute.RouteBuilder.AddParameterParser(System.String,NanoRoute.ParameterParserDelegate)">AddParameterParser(string, ParameterParserDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers a parser that can convert a route segment into a typed parameter value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RouteBuilder AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">parserName</span></td>
+        <td><p>The name used in route patterns such as <code>{id:int}</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.ParameterParserDelegate.html">ParameterParserDelegate</a></td>
+        <td><span class="parametername">tryParseDelegate</span></td>
+        <td><p>The delegate that validates and parses a single path segment.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><p>The current instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_AddParameterParser_System_String_NanoRoute_ParameterParserDelegate__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If a parser is already registered under the same <code class="paramref">parserName</code>, the new registration
+replaces the existing one.</p>
+</div>
+  <a id="NanoRoute_RouteBuilder_WithBase_" data-uid="NanoRoute.RouteBuilder.WithBase*"></a>
+  <h4 id="NanoRoute_RouteBuilder_WithBase_System_String_" data-uid="NanoRoute.RouteBuilder.WithBase(System.String)">WithBase(string)</h4>
+  <div class="markdown level1 summary"><p>Creates a child builder whose routes are rooted under the given prefix.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RouteBuilder WithBase(string pattern)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The base prefix. It must be a valid route pattern ending in <code>/</code> so child routes can be appended to it.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><p>A child builder that shares the current route tree but has its own parser registration scope.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_WithBase_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Child builders inherit the parent's registered parameter parsers at creation time. Additional parser
+registrations or overrides made on the child builder stay local to that branch.</p>
+</div>
+  <h5 id="NanoRoute_RouteBuilder_WithBase_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">RouteBuilder api = builder.WithBase("/api/");
+
+api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> is not a valid route pattern or does not end with <code>/</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when the <code class="paramref">pattern</code> references a parameter parser that has not been registered yet.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_RouteBuilder_WithBase_" data-uid="NanoRoute.RouteBuilder.WithBase*"></a>
+  <h4 id="NanoRoute_RouteBuilder_WithBase_System_String_System_Action_NanoRoute_RouteBuilder__" data-uid="NanoRoute.RouteBuilder.WithBase(System.String,System.Action{NanoRoute.RouteBuilder})">WithBase(string, Action&lt;RouteBuilder&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a child builder for the given prefix, invokes a configuration callback, and returns the current builder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RouteBuilder WithBase(string pattern, Action&lt;RouteBuilder&gt; configureRoutes)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The base prefix. It must be a valid route pattern ending in <code>/</code> so child routes can be appended to it.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>&gt;</td>
+        <td><span class="parametername">configureRoutes</span></td>
+        <td><p>A callback that configures routes on the child builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><p>The current builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_WithBase_System_String_System_Action_NanoRoute_RouteBuilder___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.WithBase("/api/", api =&gt; api
+    .AddHandler("GET", "/health", (context, _) =&gt; Results.Ok())
+    .AddHandler("GET", "/users", (context, _) =&gt; Results.Ok()));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> is not a valid route pattern or does not end with <code>/</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when the <code class="paramref">pattern</code> references a parameter parser that has not been registered yet.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_System_Collections_Generic_IReadOnlyCollection_System_String__">NanoRouteJsonExtensions.AddJsonBody&lt;TBuilder&gt;(TBuilder, JsonTypeInfo, string, params IReadOnlyCollection&lt;string&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_System_String_System_Collections_Generic_IReadOnlyCollection_System_String__">NanoRouteJsonExtensions.AddJsonBody&lt;TBuilder&gt;(TBuilder, JsonTypeInfo, string, string, params IReadOnlyCollection&lt;string&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Type_System_String_System_Collections_Generic_IReadOnlyCollection_System_String__">NanoRouteJsonExtensions.AddJsonBody&lt;TBuilder&gt;(TBuilder, Type, string, params IReadOnlyCollection&lt;string&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__2___0_System_String_System_Collections_Generic_IReadOnlyCollection_System_String__">NanoRouteJsonExtensions.AddJsonBody&lt;TBuilder, TBody&gt;(TBuilder, string, params IReadOnlyCollection&lt;string&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, bool)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IReadOnlyCollection_System_String__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderParameterParserExtensions.html#NanoRoute_RouterBuilderParameterParserExtensions_AddDefaultParsers__1___0_">RouterBuilderParameterParserExtensions.AddDefaultParsers&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>
