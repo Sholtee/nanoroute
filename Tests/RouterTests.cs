@@ -770,7 +770,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldPassDecodedSegmentsToParameterParsers()
         {
-            Mock<ParameterParserDelegate> mockParser = new(MockBehavior.Strict);
+            Mock<SyncParameterParserDelegate> mockParser = new(MockBehavior.Strict);
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
 
             object? parsed = null;
@@ -799,6 +799,42 @@ namespace NanoRoute.Tests
 
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockParser.Verify(p => p.Invoke("a b", out parsed), Times.Once);
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Handle_ShouldPassDecodedSegmentsToParameterParsers_AsyncParser()
+        {
+            Mock<ParameterParserDelegate> mockParser = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
+            Mock<IServiceProvider> mockServices = new(MockBehavior.Strict);
+
+            object? parsed = null;
+            mockParser
+                .Setup(p => p.Invoke("a b", mockServices.Object, out parsed))
+                .Returns((string segment, IServiceProvider services, out object? parsed) =>
+                {
+                    parsed = segment;
+                    return new ValueTask<bool>(true);
+                });
+
+            mockHandler
+                .Setup(h => h.Invoke
+                (
+                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["name"], "a b")),
+                    It.IsAny<Func<Task<HttpResponseMessage>>>()
+                ))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddParameterParser("str", mockParser.Object)
+                .AddHandler("GET", "/files/{name:str}", mockHandler.Object)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
+
+            Assert.That(await router.Handle(_request, mockServices.Object), Is.EqualTo(s_response));
+            mockParser.Verify(p => p.Invoke("a b", mockServices.Object, out parsed), Times.Once);
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 
@@ -852,7 +888,7 @@ namespace NanoRoute.Tests
                 mockIntHandler = new(MockBehavior.Strict),
                 mockStringHandler = new(MockBehavior.Strict);
 
-            Mock<ParameterParserDelegate>
+            Mock<SyncParameterParserDelegate>
                 mockIntParser = new(MockBehavior.Strict),
                 mockStringParser = new(MockBehavior.Strict);
 

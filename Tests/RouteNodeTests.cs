@@ -16,28 +16,20 @@ namespace NanoRoute.Tests
         [Test]
         public void Copy_ShouldCloneTheWholeTree()
         {
-            ParameterParserDelegate parserDelegate = (string segment, out object? parsed) =>
+            ParameterParser parser = new("str", new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object)
             {
-                parsed = segment;
-                return true;
+                ParameterName = "id"
             };
 
-            ParameterParser parser = new("str", parserDelegate) { ParameterName = "id" };
-
-            RequestHandlerDelegate
-                rootHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
-                literalHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
-                parameterizedHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
-
             RouteNode root = new() { Segment = string.Empty };
-            root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(rootHandler, "/")];
+            root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/")];
 
             RouteNode literalChild = new() { Segment = "users" };
-            literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(literalHandler, "/users")];
+            literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/users")];
             root.LiteralChildren.Add("users", literalChild);
 
             RouteNode parameterizedChild = new() { Segment = "{id:str}", ParameterParser = parser };
-            parameterizedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(parameterizedHandler, "/{id:str}")];
+            parameterizedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/{id:str}")];
             root.ParameterizedChildren.Add(parameterizedChild);
 
             RouteNode copy = root.Copy();

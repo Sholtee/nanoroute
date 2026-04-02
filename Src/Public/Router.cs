@@ -37,14 +37,14 @@ namespace NanoRoute
         /// </summary>
         public const string ORIGINAL_REQUEST_NAME = "OriginalRequest";
 
-        private sealed record MatchingContext(RouteNode Node, HttpVerb Verb, StringSegment? Segment, Dictionary<string, object?> Parameters);
+        private sealed record MatchingContext(RouteNode Node, HttpVerb Verb, StringSegment? Segment, IServiceProvider Services, Dictionary<string, object?> Parameters);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly IReadOnlyList<Func<MatchingContext, IEnumerable<HandlerRegistration>>> _findMatchDelegates = null!;
+        private readonly IReadOnlyList<Func<MatchingContext, IAsyncEnumerable<HandlerRegistration>>> _findMatchDelegates = null!;
 
-        private IEnumerable<HandlerRegistration> FindMatches(MatchingContext context)
+        private async IAsyncEnumerable<HandlerRegistration> FindMatches(MatchingContext context)
         {
-            (RouteNode Node, HttpVerb Verb, StringSegment? Segment, Dictionary<string, object?> Parameters) = context;
+            (RouteNode Node, HttpVerb Verb, StringSegment? Segment, _, Dictionary<string, object?> Parameters) = context;
 
             if (Node.HandlerRegistrations.TryGetValue(Verb, out List<HandlerRegistration>? handlerRegistrations))
                 foreach (HandlerRegistration handlerRegistration in handlerRegistrations)
@@ -58,27 +58,27 @@ namespace NanoRoute
             if (Segment?.Value is null)
                 yield break;
 
-            foreach(Func<MatchingContext, IEnumerable<HandlerRegistration>> findMatchesDelegate in _findMatchDelegates)
-                foreach (HandlerRegistration match in findMatchesDelegate(context))
+            foreach (Func<MatchingContext, IAsyncEnumerable<HandlerRegistration>> findMatchesDelegate in _findMatchDelegates)
+                await foreach (HandlerRegistration match in findMatchesDelegate(context))
                     yield return match;
         }
 
-        private IEnumerable<HandlerRegistration> FindLiteralMatches(MatchingContext context)
+        private async IAsyncEnumerable<HandlerRegistration> FindLiteralMatches(MatchingContext context)
         {
-            (RouteNode Node, _, StringSegment? Segment, _) = context;
+            (RouteNode Node, _, StringSegment? Segment, _, _) = context;
 
             Debug.Assert(Segment?.Value is not null, "Invalid segment");
 
             if (!Node.LiteralChildren.TryGetValue(Segment!.Value!, out RouteNode literalChild))
                 yield break;
 
-            foreach (HandlerRegistration match in FindMatches(context with { Node = literalChild, Segment = Segment.Next }))
+            await foreach (HandlerRegistration match in FindMatches(context with { Node = literalChild, Segment = Segment.Next }))
                 yield return match;
         }
 
-        private IEnumerable<HandlerRegistration> FindParameterMatches(MatchingContext context)
+        private async IAsyncEnumerable<HandlerRegistration> FindParameterMatches(MatchingContext context)
         {
-            (RouteNode Node, _, StringSegment? Segment, Dictionary<string, object?> Parameters) = context;
+            (RouteNode Node, _, StringSegment? Segment, IServiceProvider Services, Dictionary<string, object?> Parameters) = context;
 
             Debug.Assert(Segment?.Value is not null, "Invalid segment");
 
@@ -91,7 +91,7 @@ namespace NanoRoute
             {
                 Debug.Assert(parameterizedChild.ParameterParser is not null, "Child node must have parameter parser assigned");
 
-                if (!parameterizedChild.ParameterParser!.TryParse(decodedSegment, out object? parsed))
+                if (!await parameterizedChild.ParameterParser!.TryParse(decodedSegment, Services, out object? parsed))
                     continue;
 
                 Dictionary<string, object?> extended = parameterizedChild.ParameterParser?.ParameterName is { Length: > 0 } parameterName
@@ -101,7 +101,7 @@ namespace NanoRoute
                     }
                     : Parameters;
 
-                foreach (HandlerRegistration match in FindMatches(context with { Node = parameterizedChild, Segment = Segment.Next, Parameters = extended }))
+                await foreach (HandlerRegistration match in FindMatches(context with { Node = parameterizedChild, Segment = Segment.Next, Parameters = extended }))
                     yield return match;
             }
         }
@@ -149,7 +149,7 @@ namespace NanoRoute
         /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
         /// </summary>
         /// <param name="request">The request to process.</param>
-        /// <param name="services">The service provider exposed to handlers through <see cref="RequestContext.Services"/>.</param>
+        /// <param name="services">The service provider exposed to parsers and handlers.</param>
         /// <param name="cancellation">A token that can cancel request processing.</param>
         /// <returns>The <see cref="HttpResponseMessage"/> produced by the matching handlers.</returns>
         /// <remarks>
@@ -183,24 +183,25 @@ namespace NanoRoute
                 Verb = verb
             });
 
-            using IEnumerator<HandlerRegistration> matches = FindMatches
+            await using IAsyncEnumerator<HandlerRegistration> matches = FindMatches
             (
                 new MatchingContext
                 (
                     _root,
                     verb,
                     new StringSegment(requestPath, '/'),
+                    services,
                     new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
                 )
                 
             )
-            .GetEnumerator();
+            .GetAsyncEnumerator();
 
             return await CallNextHandler();
 
             async Task<HttpResponseMessage> CallNextHandler()
             {
-                if (!matches.MoveNext())
+                if (!await matches.MoveNextAsync())
                 {
                     RouterEventSource.Log.Info("NoMatchingHandler", () => new
                     {

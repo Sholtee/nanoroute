@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Threading.Tasks;
 
 namespace NanoRoute
 {
@@ -19,6 +20,24 @@ namespace NanoRoute
     {
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
         {
+            /// <summary>
+            /// Registers a synchronous parser by adapting it to <see cref="ParameterParserDelegate"/>.
+            /// </summary>
+            /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
+            /// <param name="tryParseDelegate">The synchronous parser to adapt.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddParameterParser(string parserName, SyncParameterParserDelegate tryParseDelegate)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(parserName);
+                Ensure.NotNull(tryParseDelegate);
+
+                routeBuilder.AddParameterParser(parserName, (string segment, IServiceProvider _, out object? parsed) =>
+                    new ValueTask<bool>(tryParseDelegate(segment, out parsed)));
+
+                return routeBuilder;
+            }
+
             /// <summary>
             /// Registers the built-in parameter parsers for common scalar route segments.
             /// </summary>

@@ -37,6 +37,7 @@ NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler() -> TBuilder!
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler(System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.ParameterParserDelegate
+NanoRoute.SyncParameterParserDelegate
 NanoRoute.RequestContext
 NanoRoute.RequestContext.Cancellation.get -> System.Threading.CancellationToken
 NanoRoute.RequestContext.Cancellation.init -> void
@@ -72,6 +73,7 @@ NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig.get -> TConfig!
 NanoRoute.RouterBuilder<TRouter, TConfig>.WithBase(string! pattern, System.Action<NanoRoute.RouteBuilder!>! configureRoutes) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.WithConfiguration(System.Action<TConfig!>! updateConfig) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilderParameterParserExtensions
+NanoRoute.RouterBuilderParameterParserExtensions.extension<TBuilder>(TBuilder!).AddParameterParser(string! parserName, NanoRoute.SyncParameterParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.RouterBuilderParameterParserExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.RouterBuilderParameterParserExtensions.extension<TBuilder>(TBuilder!).AddDefaultParsers() -> TBuilder!
 NanoRoute.RouterConfig
