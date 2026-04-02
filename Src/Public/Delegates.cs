@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace NanoRoute
 {
+    using Json;
+
     /// <summary>
     /// Represents a synchronous parameter parser.
     /// </summary>
@@ -26,7 +28,7 @@ namespace NanoRoute
     /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
     /// <example>
     /// <code>
-    /// router.AddParameterParser("int", (string segment, out object? parsed) =&gt;
+    /// builder.AddParameterParser("int", (string segment, out object? parsed) =&gt;
     /// {
     ///     if (int.TryParse(segment, out int value))
     ///     {
@@ -51,14 +53,15 @@ namespace NanoRoute
     /// </returns>
     /// <remarks>
     /// Handlers may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
-    /// <c>AddExceptionHandler()</c>, <c>AddJsonErrorDetails()</c>, or equivalent custom middleware is registered,
-    /// those exceptions can be translated into structured error responses. Throwing other exception types is also
-    /// supported, but they are treated as unexpected failures: the built-in exception middleware converts them into
-    /// internal server error responses, while without such middleware they propagate to the caller unchanged.
+    /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder, bool)"/>, or equivalent custom
+    /// middleware is registered, those exceptions can be translated into structured error responses. Throwing other
+    /// exception types is also supported, but they are treated as unexpected failures:
+    /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> converts them into internal
+    /// server error responses, while without such middleware they propagate to the caller unchanged.
     /// </remarks>
     /// <example>
     /// <code>
-    /// router.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
+    /// builder.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
     /// {
     ///     requestContext.Parameters["User"] = LoadUser((int) requestContext.Parameters["user_id"]!);
     ///     return callNext();
