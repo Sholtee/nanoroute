@@ -243,7 +243,7 @@ namespace NanoRoute.Json
             /// </remarks>
             /// <example>
             /// <code>
-            /// router
+            /// routerBuilder
             ///     .AddJsonErrorDetails()
             ///     .AddHandler("GET", "/items/{id:int}", (context, _) =&gt;
             ///         throw new InvalidOperationException("Unexpected state"));

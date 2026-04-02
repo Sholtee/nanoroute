@@ -28,7 +28,7 @@ namespace NanoRoute
     /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
     /// <example>
     /// <code>
-    /// builder.AddParameterParser("int", (string segment, out object? parsed) =&gt;
+    /// routerBuilder.AddParameterParser("int", (string segment, out object? parsed) =&gt;
     /// {
     ///     if (int.TryParse(segment, out int value))
     ///     {
@@ -61,7 +61,7 @@ namespace NanoRoute
     /// </remarks>
     /// <example>
     /// <code>
-    /// builder.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
+    /// routerBuilder.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
     /// {
     ///     requestContext.Parameters["User"] = LoadUser((int) requestContext.Parameters["user_id"]!);
     ///     return callNext();
