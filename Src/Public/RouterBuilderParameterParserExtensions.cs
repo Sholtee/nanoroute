@@ -32,8 +32,8 @@ namespace NanoRoute
                 Ensure.NotNull(parserName);
                 Ensure.NotNull(tryParseDelegate);
 
-                routeBuilder.AddParameterParser(parserName, (string segment, IServiceProvider _, out object? parsed) =>
-                    new ValueTask<bool>(tryParseDelegate(segment, out parsed)));
+                routeBuilder.AddParameterParser(parserName, (ParameterParserContext context, out object? parsed) =>
+                    new ValueTask<bool>(tryParseDelegate(context.Segment, out parsed)));
 
                 return routeBuilder;
             }

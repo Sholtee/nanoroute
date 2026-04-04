@@ -36,11 +36,21 @@ NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestExce
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler() -> TBuilder!
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler(System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
+NanoRoute.ParameterParserContext
+NanoRoute.ParameterParserContext.Cancellation.get -> System.Threading.CancellationToken
+NanoRoute.ParameterParserContext.Cancellation.init -> void
+NanoRoute.ParameterParserContext.ParameterParserContext() -> void
+NanoRoute.ParameterParserContext.ParameterParserContext(string! Segment, System.IServiceProvider! Services, System.Threading.CancellationToken Cancellation) -> void
+NanoRoute.ParameterParserContext.Segment.get -> string!
+NanoRoute.ParameterParserContext.Segment.init -> void
+NanoRoute.ParameterParserContext.Services.get -> System.IServiceProvider!
+NanoRoute.ParameterParserContext.Services.init -> void
 NanoRoute.ParameterParserDelegate
-NanoRoute.SyncParameterParserDelegate
-NanoRoute.RequestContext
 NanoRoute.RequestContext.Cancellation.get -> System.Threading.CancellationToken
 NanoRoute.RequestContext.Cancellation.init -> void
+NanoRoute.RequestContext.RequestContext(System.Collections.Generic.Dictionary<string!, object?>! Parameters, System.IServiceProvider! Services, System.Net.Http.HttpRequestMessage! Request, System.Threading.CancellationToken Cancellation) -> void
+NanoRoute.SyncParameterParserDelegate
+NanoRoute.RequestContext
 NanoRoute.RequestContext.Parameters.get -> System.Collections.Generic.Dictionary<string!, object?>!
 NanoRoute.RequestContext.Parameters.init -> void
 NanoRoute.RequestContext.Request.get -> System.Net.Http.HttpRequestMessage!

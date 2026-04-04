@@ -22,8 +22,7 @@ namespace NanoRoute
     /// <summary>
     /// Tries to parse a single route segment into a value that can be stored in <see cref="RequestContext.Parameters"/>.
     /// </summary>
-    /// <param name="segment">The raw path segment extracted from the request URI.</param>
-    /// <param name="services">The <see cref="IServiceProvider"/> exposed to parsers.</param>
+    /// <param name="context"></param>
     /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
     /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
     /// <example>
@@ -41,7 +40,7 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate ValueTask<bool> ParameterParserDelegate(string segment, IServiceProvider services, out object? parsed);
+    public delegate ValueTask<bool> ParameterParserDelegate(ParameterParserContext context, out object? parsed);
 
     /// <summary>
     /// Represents a request handler in the router pipeline.

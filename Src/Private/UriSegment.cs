@@ -1,5 +1,5 @@
 /********************************************************************************
-* StringSegment.cs                                                              *
+* UriSegment.cs                                                                 *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -7,20 +7,19 @@ using System.Collections.Generic;
 
 namespace NanoRoute.Internals
 {
-    internal sealed class StringSegment
+    internal sealed class UriSegment
     {
+        public const char SEPARATOR = '/';
+
         public readonly string _original;
 
         private readonly int _next;
 
-        private readonly char _split;
-
-        private StringSegment(string original, int start, char split)
+        private UriSegment(string original, int start)
         {
             _original = original;
-            _split = split;
 
-            while (start < original.Length && original[start] == split)
+            while (start < original.Length && original[start] == SEPARATOR)
                 start++;
 
             if (start >= original.Length)
@@ -30,7 +29,7 @@ namespace NanoRoute.Internals
                 return;
             }
 
-            int i = original.IndexOf(split, start);
+            int i = original.IndexOf(SEPARATOR, start);
             if (i < 0)
             {
                 Value = original.Substring(start);
@@ -43,23 +42,23 @@ namespace NanoRoute.Internals
             }
         }
 
-        public StringSegment(string original, char split) : this(original, 0, split) { }
+        public UriSegment(string original) : this(original, 0) { }
 
         public string? Value { get; }
 
-        public StringSegment? Next
+        public UriSegment? Next
         {
             get
             {
                 if (field is null && _next > 0)
-                    field = new StringSegment(_original, _next, _split);
+                    field = new UriSegment(_original, _next);
                 return field;
             }
         }
 
         public IEnumerable<string> Enumerate()
         {
-            for (StringSegment? current = this; current?.Value is not null; current = current.Next)
+            for (UriSegment? current = this; current?.Value is not null; current = current.Next)
                 yield return current.Value;
         }
     }

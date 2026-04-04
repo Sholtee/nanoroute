@@ -809,12 +809,15 @@ namespace NanoRoute.Tests
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             Mock<IServiceProvider> mockServices = new(MockBehavior.Strict);
 
+            using CancellationTokenSource cts = new();
+            CancellationToken cancellation = cts.Token;
+
             object? parsed = null;
             mockParser
-                .Setup(p => p.Invoke("a b", mockServices.Object, out parsed))
-                .Returns((string segment, IServiceProvider services, out object? parsed) =>
+                .Setup(p => p.Invoke(It.Is<ParameterParserContext>(ctx => ctx.Segment == "a b" && ctx.Cancellation == cancellation), out parsed))
+                .Returns((ParameterParserContext context, out object? parsed) =>
                 {
-                    parsed = segment;
+                    parsed = context.Segment;
                     return new ValueTask<bool>(true);
                 });
 
@@ -833,8 +836,8 @@ namespace NanoRoute.Tests
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
 
-            Assert.That(await router.Handle(_request, mockServices.Object), Is.EqualTo(s_response));
-            mockParser.Verify(p => p.Invoke("a b", mockServices.Object, out parsed), Times.Once);
+            Assert.That(await router.Handle(_request, mockServices.Object, cancellation), Is.EqualTo(s_response));
+            mockParser.Verify(p => p.Invoke(It.Is<ParameterParserContext>(ctx => ctx.Segment == "a b" && ctx.Cancellation == cancellation), out parsed), Times.Once);
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<Func<Task<HttpResponseMessage>>>()), Times.Once);
         }
 

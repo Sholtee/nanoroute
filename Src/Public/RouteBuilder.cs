@@ -51,7 +51,7 @@ namespace NanoRoute
 
             RouteNode target = _root;
 
-            foreach (string segment in new StringSegment(pattern, '/').Enumerate())
+            foreach (string segment in new UriSegment(pattern).Enumerate())
             {
                 if (s_parserDefinition.Match(segment) is { Success: true } parserDefinition)
                 {
