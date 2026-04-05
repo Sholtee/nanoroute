@@ -12,24 +12,14 @@ namespace NanoRoute
     using Json;
 
     /// <summary>
-    /// Represents a synchronous parameter parser.
+    /// Represents a synchronous segment parser.
     /// </summary>
     /// <param name="segment">The raw path segment extracted from the request URI.</param>
     /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
     /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
-    public delegate bool SyncParameterParserDelegate(string segment, out object? parsed);
-
-    /// <summary>
-    /// Tries to parse a single route segment into a value that can be stored in <see cref="RequestContext.Parameters"/>.
-    /// </summary>
-    /// <param name="context">
-    /// The parser context, including the decoded segment, request services, and the linked pipeline cancellation token.
-    /// </param>
-    /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
-    /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
     /// <example>
     /// <code>
-    /// routerBuilder.AddParameterParser("int", (string segment, out object? parsed) =&gt;
+    /// routerBuilder.AddSegmentParser("int", (string segment, out object? parsed) =&gt;
     /// {
     ///     if (int.TryParse(segment, out int value))
     ///     {
@@ -42,7 +32,32 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate ValueTask<bool> ParameterParserDelegate(ParameterParserContext context, out object? parsed);
+    public delegate bool SyncSegmentParserDelegate(string segment, out object? parsed);
+
+    /// <summary>
+    /// Tries to parse a single route segment into a value that can optionally be stored in <see cref="RequestContext.Parameters"/>.
+    /// </summary>
+    /// <param name="context">
+    /// The parser context, including the decoded segment, request services, and the linked pipeline cancellation token.
+    /// </param>
+    /// <returns>A <see cref="SegmentParseResult"/> that describes whether the segment matched and what value it produced.</returns>
+    /// <example>
+    /// <code>
+    /// routerBuilder.AddSegmentParser("user", static async (SegmentParserContext context) =>
+    /// {
+    ///     if (!Guid.TryParse(context.Segment, out Guid userId))
+    ///         return new SegmentParseResult(false, null);
+    ///
+    ///     object? user = await context
+    ///         .Services
+    ///         .GetRequiredService&lt;IUserRepository&gt;()
+    ///         .TryGetAsync(userId, context.Cancellation);
+    ///
+    ///     return new SegmentParseResult(user is not null, user);
+    /// });
+    /// </code>
+    /// </example>
+    public delegate ValueTask<SegmentParseResult> SegmentParserDelegate(SegmentParserContext context);
 
     /// <summary>
     /// Represents a request handler in the router pipeline.

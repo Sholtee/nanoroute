@@ -18,7 +18,7 @@ using NanoRoute.Json;
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .AddParameterParser("int", static (string segment, out object? parsed) =>
+    .AddSegmentParser("int", static (string segment, out object? parsed) =>
     {
         bool success = int.TryParse(segment, out int value);
         parsed = success ? value : null;
@@ -109,7 +109,7 @@ InMemoryRouter router = InMemoryRouter
     .CreateRouter();
 ```
 
-This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, parameter parsing, and handler pipeline.
+This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, segment parsing, and handler pipeline.
 
 ## Matching Rules
 
@@ -124,7 +124,7 @@ This keeps the transport-specific concerns in your own router type while still r
 ## Timeouts And Cancellation
 
 - `RouterConfig.Timeout` defaults to `TimeSpan.FromMinutes(1)`.
-- NanoRoute exposes a linked cancellation token to async parameter parsers and handlers through `ParameterParserContext.Cancellation` and `RequestContext.Cancellation`.
+- NanoRoute exposes a linked cancellation token to async segment parsers and handlers through `SegmentParserContext.Cancellation` and `RequestContext.Cancellation`.
 - That linked token is canceled when either the caller-provided cancellation token is canceled or the router timeout elapses.
 - `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
 - `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
@@ -132,7 +132,7 @@ This keeps the transport-specific concerns in your own router type while still r
 ## Common Building Blocks
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
-- `AddDefaultParsers()` registers the built-in `int`, `guid`, `bool`, and `str` parameter parsers.
+- `AddDefaultParsers()` registers the built-in `int`, `guid`, `bool`, and `str` segment parsers.
 - `WithBase("/prefix/")` creates a scoped child builder for a route subtree.
 - `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
@@ -146,7 +146,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
-- [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html)
+- [SegmentParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.SegmentParserDelegate.html)
 - [RequestHandler](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler.html)
 
 ## Documentation
@@ -154,3 +154,4 @@ This keeps the transport-specific concerns in your own router type while still r
 API documentation is generated from the XML comments in the source and published at:
 
 - <https://sholtee.github.io/nanoroute/docs/NanoRoute/>
+

@@ -16,7 +16,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Copy_ShouldCloneTheWholeTree()
         {
-            ParameterParser parser = new("str", new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object)
+            SegmentParser parser = new("str", new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object)
             {
                 ParameterName = "id"
             };
@@ -28,9 +28,9 @@ namespace NanoRoute.Tests
             literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/users")];
             root.LiteralChildren.Add("users", literalChild);
 
-            RouteNode parameterizedChild = new() { Segment = "{id:str}", ParameterParser = parser };
-            parameterizedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/{id:str}")];
-            root.ParameterizedChildren.Add(parameterizedChild);
+            RouteNode parsedChild = new() { Segment = "{id:str}", SegmentParser = parser };
+            parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/{id:str}")];
+            root.ParsedChildren.Add(parsedChild);
 
             RouteNode copy = root.Copy();
 
@@ -48,12 +48,12 @@ namespace NanoRoute.Tests
                 Assert.That(copy.LiteralChildren["users"].Segment, Is.EqualTo("users"));
                 Assert.That(copy.LiteralChildren["users"].HandlerRegistrations[HttpVerb.Post], Is.EquivalentTo(literalChild.HandlerRegistrations[HttpVerb.Post]));
 
-                Assert.That(copy.ParameterizedChildren, Is.Not.SameAs(root.ParameterizedChildren));
-                Assert.That(copy.ParameterizedChildren, Has.Count.EqualTo(1));
-                Assert.That(copy.ParameterizedChildren[0], Is.Not.SameAs(parameterizedChild));
-                Assert.That(copy.ParameterizedChildren[0].Segment, Is.EqualTo("{id:str}"));
-                Assert.That(copy.ParameterizedChildren[0].ParameterParser, Is.EqualTo(parser));
-                Assert.That(copy.ParameterizedChildren[0].HandlerRegistrations[HttpVerb.Get], Is.EquivalentTo(parameterizedChild.HandlerRegistrations[HttpVerb.Get]));
+                Assert.That(copy.ParsedChildren, Is.Not.SameAs(root.ParsedChildren));
+                Assert.That(copy.ParsedChildren, Has.Count.EqualTo(1));
+                Assert.That(copy.ParsedChildren[0], Is.Not.SameAs(parsedChild));
+                Assert.That(copy.ParsedChildren[0].Segment, Is.EqualTo("{id:str}"));
+                Assert.That(copy.ParsedChildren[0].SegmentParser, Is.EqualTo(parser));
+                Assert.That(copy.ParsedChildren[0].HandlerRegistrations[HttpVerb.Get], Is.EquivalentTo(parsedChild.HandlerRegistrations[HttpVerb.Get]));
             });
         }
     }

@@ -33,7 +33,7 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Registers a parser that can convert a route segment into a typed parameter value.
+        /// Registers a parser that can convert a route segment into a typed value.
         /// </summary>
         /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
@@ -42,9 +42,9 @@ namespace NanoRoute
         /// If a parser is already registered under the same <paramref name="parserName"/>, the new registration
         /// replaces the existing one.
         /// </remarks>
-        public new RouterBuilder<TRouter, TConfig> AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
+        public new RouterBuilder<TRouter, TConfig> AddSegmentParser(string parserName, SegmentParserDelegate tryParseDelegate)
         {
-            base.AddParameterParser(parserName, tryParseDelegate);
+            base.AddSegmentParser(parserName, tryParseDelegate);
             return this;
         }
 
@@ -81,7 +81,7 @@ namespace NanoRoute
         /// <param name="handler">The handler to execute when the route matches.</param>
         /// <returns>The current <see cref="RouterBuilder{TRouter, TConfig}"/> instance.</returns>
         /// <exception cref="ArgumentException">Thrown when some of the <paramref name="verbs"/> represent a not supported HTTP method.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a segment parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
         /// builder.AddHandler(
@@ -111,7 +111,7 @@ namespace NanoRoute
         /// </param>
         /// <returns>The current router instance.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a segment parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
         /// builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
@@ -134,7 +134,7 @@ namespace NanoRoute
         /// <param name="configureRoutes">A callback that configures routes on the child builder.</param>
         /// <returns>The current builder.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> is not a valid route <paramref name="pattern"/> or does not end with <c>/</c>.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a segment parser that has not been registered yet.</exception>
         public new RouterBuilder<TRouter, TConfig> WithBase(string pattern, Action<RouteBuilder> configureRoutes)
         {
             base.WithBase(pattern, configureRoutes);

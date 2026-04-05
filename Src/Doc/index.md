@@ -12,13 +12,14 @@ The API documentation for this package is generated from the XML comments in the
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
-- [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html)
+- [SegmentParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.SegmentParserDelegate.html)
 - [RequestHandler](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler.html)
 
 ## Highlights
 
 - Routes can be exact matches or prefix matches depending on whether the pattern ends with `/`.
-- Parameter parsers turn path segments into typed values stored in `RequestContext.Parameters`.
+- Segment parsers turn path segments into typed values that can be stored in `RequestContext.Parameters`.
 - `WithBase()` creates scoped route subtrees without forcing you to repeat common prefixes.
 - `MatchingBehavior` lets you choose whether literal or parameterized child segments take precedence.
 - `NanoRoute.Json` adds JSON request binding and JSON error/response helpers on top of the core pipeline.
+

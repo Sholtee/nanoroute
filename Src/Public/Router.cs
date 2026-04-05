@@ -22,7 +22,7 @@ namespace NanoRoute
     /// Executes the route matching pipeline built by <see cref="RouteBuilder"/>.
     /// </summary>
     /// <remarks>
-    /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches parsed parameters, and invokes compatible
+    /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
     /// handlers in order until one returns a response without delegating further.
     /// </remarks>
     public abstract class Router: RoutingContext
@@ -90,31 +90,31 @@ namespace NanoRoute
 
             Debug.Assert(Segment?.Value is not null, "Invalid segment");
 
-            if (Node.ParameterizedChildren.Count is 0)
+            if (Node.ParsedChildren.Count is 0)
                 yield break;
 
-            ParameterParserContext parserContext = new
+            SegmentParserContext parserContext = new
             (
                 HttpUtility.UrlDecode(Segment?.Value!),
                 Services,
                 Cancellation
             );
 
-            foreach (RouteNode parameterizedChild in Node.ParameterizedChildren)
+            foreach (RouteNode parsedChild in Node.ParsedChildren)
             {
-                Debug.Assert(parameterizedChild.ParameterParser is not null, "Child node must have parameter parser assigned");
+                Debug.Assert(parsedChild.SegmentParser is not null, "Child node must have segment parser assigned");
 
-                if (!await parameterizedChild.ParameterParser!.TryParse(parserContext, out object? parsed))
+                if (await parsedChild.SegmentParser!.Parse(parserContext) is not { Success: true } parsed)
                     continue;
 
-                Dictionary<string, object?> extended = parameterizedChild.ParameterParser?.ParameterName is { Length: > 0 } parameterName
+                Dictionary<string, object?> extended = parsedChild.SegmentParser?.ParameterName is { Length: > 0 } parameterName
                     ? new(Parameters, StringComparer.OrdinalIgnoreCase)
                     {
-                        [parameterName] = parsed
+                        [parameterName] = parsed.Parsed
                     }
                     : Parameters;
 
-                await foreach (HandlerRegistration match in FindMatches(matchingContext with { Node = parameterizedChild, Segment = Segment!.Next, Parameters = extended }))
+                await foreach (HandlerRegistration match in FindMatches(matchingContext with { Node = parsedChild, Segment = Segment!.Next, Parameters = extended }))
                     yield return match;
             }
         }
@@ -172,7 +172,7 @@ namespace NanoRoute
         /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
         /// </summary>
         /// <param name="request">The request to process.</param>
-        /// <param name="services">The service provider exposed to parsers and handlers.</param>
+        /// <param name="services">The service provider exposed to segment parsers and handlers.</param>
         /// <param name="cancellation">A token that can cancel request processing.</param>
         /// <returns>The <see cref="HttpResponseMessage"/> produced by the matching handlers.</returns>
         /// <remarks>

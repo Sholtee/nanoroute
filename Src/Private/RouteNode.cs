@@ -19,9 +19,9 @@ namespace NanoRoute.Internals
         public Dictionary<HttpVerb, List<HandlerRegistration>> HandlerRegistrations { get; } = [];
 
         /// <summary>
-        /// Gets or sets the parser used by this node when it represents a parameter segment.
+        /// Gets or sets the parser used by this node when it represents a parameterized segment.
         /// </summary>
-        public ParameterParser? ParameterParser { get; init; }
+        public SegmentParser? SegmentParser { get; init; }
 
         /// <summary>
         /// Gets or sets the segment for which this node is created
@@ -34,9 +34,9 @@ namespace NanoRoute.Internals
         public Dictionary<string, RouteNode> LiteralChildren { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Gets parameter-based child nodes evaluated after literal matches.
+        /// Gets parser-based child nodes evaluated after literal matches.
         /// </summary>
-        public List<RouteNode> ParameterizedChildren { get; } = [];
+        public List<RouteNode> ParsedChildren { get; } = [];
 
         /// <summary>
         /// Creates a deep-copy from this node.
@@ -45,11 +45,11 @@ namespace NanoRoute.Internals
         {
             RouteNode result = new()
             {
-                ParameterParser = ParameterParser,
+                SegmentParser = SegmentParser,
                 Segment = Segment
             };
 
-            CopyCollection(ParameterizedChildren, result.ParameterizedChildren, static c => c.Copy());
+            CopyCollection(ParsedChildren,        result.ParsedChildren,        static c => c.Copy());
             CopyCollection(HandlerRegistrations,  result.HandlerRegistrations,  static kvp => new(kvp.Key, [..kvp.Value]));
             CopyCollection(LiteralChildren,       result.LiteralChildren,       static kvp => new(kvp.Key, kvp.Value.Copy()));
 

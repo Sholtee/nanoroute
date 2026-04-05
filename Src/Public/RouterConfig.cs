@@ -22,9 +22,9 @@ namespace NanoRoute
         /// token is canceled.
         /// </summary>
         /// <remarks>
-        /// The default is one minute. Handlers and asynchronous parameter parsers should observe the linked
+        /// The default is one minute. Handlers and asynchronous segment parsers should observe the linked
         /// cancellation token exposed through <see cref="RequestContext.Cancellation"/> and
-        /// <see cref="ParameterParserContext.Cancellation"/> if they want timeout expiration to stop their work
+        /// <see cref="SegmentParserContext.Cancellation"/> if they want timeout expiration to stop their work
         /// promptly.
         /// </remarks>
         public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);

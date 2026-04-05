@@ -153,7 +153,7 @@ namespace NanoRoute
         /// <summary>
         /// Creates a strongly typed builder for configuring an <see cref="HttpListenerRouter"/>.
         /// </summary>
-        /// <returns>A builder that can register handlers, parameter parsers, and router configuration.</returns>
+        /// <returns>A builder that can register handlers, segment parsers, and router configuration.</returns>
         public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static bldr => new HttpListenerRouter(bldr));
     }
 }

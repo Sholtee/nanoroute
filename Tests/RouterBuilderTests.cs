@@ -18,7 +18,6 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
-    using Internals;
     using Json;
     using Properties;
 
@@ -70,12 +69,12 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void WithBase_ShouldInheritTheParentParameterParsers()
+        public void WithBase_ShouldInheritTheParentSegmentParsers()
         {
             RouteBuilder childBuilder = _routerBuilder
-                .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .WithBase("/to/")
-                .AddParameterParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
+                .AddSegmentParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
 
             Assert.DoesNotThrow(() => childBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
@@ -84,20 +83,20 @@ namespace NanoRoute.Tests
         public void WithBase_ShouldCreateAnIndependentParserScope()
         {
             _routerBuilder
-                .AddParameterParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .WithBase("/to/")
-                .AddParameterParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
+                .AddSegmentParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
 
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, "int")));
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, "int")));
         }
 
         [Test]
-        public async Task AddParameterParser_ShouldReplaceExistingParserRegistrations()
+        public async Task AddSegmentParser_ShouldReplaceExistingParserRegistrations()
         {
             TestRouter router = _routerBuilder
-                .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"first:{segment}"; return true; })
-                .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"second:{segment}"; return true; })
+                .AddSegmentParser("value", (string segment, out object? parsed) => { parsed = $"first:{segment}"; return true; })
+                .AddSegmentParser("value", (string segment, out object? parsed) => { parsed = $"second:{segment}"; return true; })
                 .AddHandler("GET", "/items/{id:value}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(context.Parameters["id"]!.ToString()!) })
                 .CreateRouter();
 
@@ -111,9 +110,9 @@ namespace NanoRoute.Tests
         public async Task WithBase_ShouldKeepChildParserOverridesLocal()
         {
             RouteBuilder childBuilder = _routerBuilder
-                .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"parent:{segment}"; return true; })
+                .AddSegmentParser("value", (string segment, out object? parsed) => { parsed = $"parent:{segment}"; return true; })
                 .WithBase("/child/")
-                .AddParameterParser("value", (string segment, out object? parsed) => { parsed = $"child:{segment}"; return true; });
+                .AddSegmentParser("value", (string segment, out object? parsed) => { parsed = $"child:{segment}"; return true; });
 
             RequestHandlerDelegate handler = async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["id"]!.ToString()!) };
 
@@ -137,7 +136,7 @@ namespace NanoRoute.Tests
         public void Patterns_ShouldReflectTheActualBranch()
         {
             _routerBuilder
-                .AddParameterParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler("GET", "/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/somewhere/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/{some_str_1:any}/not-prefix", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
@@ -228,10 +227,10 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void AddHandler_ShouldThrowOnMissingParameterParser([Values("path/to/{missing}", "path/to/{parameter_name:missing}")] string pattern)
+        public void AddHandler_ShouldThrowOnMissingSegmentParser([Values("path/to/{missing}", "path/to/{parameter_name:missing}")] string pattern)
         {
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler(pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, "missing")));
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, "missing")));
         }
 
 
@@ -247,7 +246,7 @@ namespace NanoRoute.Tests
         public void AddHandler_ShouldThrowOnParameterOverride()
         {
             _routerBuilder
-                .AddParameterParser("int", new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object)
+                .AddSegmentParser("int", new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/path/to/{id:int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
 
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", "/path/to/{other_id:int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
@@ -533,12 +532,12 @@ namespace NanoRoute.Tests
         }
        
         [Test]
-        public void AddParameterParser_ShouldBeNullChecked() => Assert.Multiple(() =>
+        public void AddSegmentParser_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddParameterParser(null!, new Mock<ParameterParserDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddSegmentParser(null!, new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("parserName"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddParameterParser("any", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddSegmentParser("any", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
         });
 
@@ -598,3 +597,4 @@ namespace NanoRoute.Tests
         });
     }
 }
+
