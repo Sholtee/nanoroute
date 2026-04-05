@@ -190,6 +190,24 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task Route_ShouldAbortTheResponseAndRethrowWhenTheRouterIsCancelled()
+        {
+            CreateRouter(bldr => bldr
+                .WithConfiguration(config => config.Timeout = TimeSpan.FromMilliseconds(50))
+                .AddHandler("GET", "/welcome", async (context, _) =>
+                {
+                    await Task.Delay(Timeout.InfiniteTimeSpan, context.Cancellation);
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }));
+
+            _client.Timeout = TimeSpan.FromSeconds(2);
+            Task<HttpResponseMessage> responseTask = _client.GetAsync("welcome");
+
+            Assert.That(async () => await HandleRequest(), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await responseTask, Throws.Exception);
+        }
+
+        [Test]
         public async Task Route_ShouldReturnNotFoundForUnknownRoutes()
         {
             CreateRouter(_ => { });
