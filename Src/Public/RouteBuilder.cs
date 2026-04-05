@@ -28,8 +28,8 @@ namespace NanoRoute
         private const string
             // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences
             LITERAL_SEGMENT_DEFINITION = @"(?:(?:[\w.\-~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+)",
-            PARAMETER_SEGMENT_DEFINITION = @"\{(?:\w+:)?\w+\}",
-            SEGMENT_DEFINITION = $@"(?:{LITERAL_SEGMENT_DEFINITION}|{PARAMETER_SEGMENT_DEFINITION})";
+            SEGMENT_PARSER_DEFINITION = @"\{(?:\w+:)?\w+\}",
+            SEGMENT_DEFINITION = $@"(?:{LITERAL_SEGMENT_DEFINITION}|{SEGMENT_PARSER_DEFINITION})";
 
         // avoid using the constructor that accepts RegexOptions, since it is not AOT compatible
         private static readonly Regex
