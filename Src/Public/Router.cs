@@ -133,6 +133,7 @@ namespace NanoRoute
             Ensure.NotNull(config);
 
             MatchingBehavior = config.MatchingBehavior;
+            Timeout = config.Timeout;
         }
 
         /// <summary>
@@ -154,6 +155,15 @@ namespace NanoRoute
         }
 
         /// <summary>
+        /// Gets the maximum time the router allows a request to remain in the matching and handler pipeline.
+        /// </summary>
+        /// <remarks>
+        /// The effective pipeline token is canceled when either the caller-supplied cancellation token is canceled
+        /// or this timeout elapses.
+        /// </remarks>
+        public TimeSpan Timeout { get; private init; }
+
+        /// <summary>
         /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
         /// </summary>
         /// <param name="request">The request to process.</param>
@@ -167,6 +177,10 @@ namespace NanoRoute
         /// </remarks>
         /// <exception cref="HttpRequestException">Thrown when no handler matches the request path.</exception>
         /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
+        /// <exception cref="OperationCanceledException">
+        /// Thrown when the caller cancels the <paramref name="cancellation"/> or when the configured <see cref="Timeout"/>
+        /// elapses.
+        /// </exception>
         #if DEBUG
         internal
         #endif
@@ -191,6 +205,9 @@ namespace NanoRoute
                 Verb = verb
             });
 
+            using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+            linked.CancelAfter(Timeout);
+
             await using IAsyncEnumerator<HandlerRegistration> matches = FindMatches
             (
                 new MatchingContext
@@ -200,16 +217,17 @@ namespace NanoRoute
                     new UriSegment(requestPath),
                     services,
                     new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
-                    cancellation
+                    linked.Token
                 )
-                
             )
-            .GetAsyncEnumerator();
+            .GetAsyncEnumerator(linked.Token);
 
             return await CallNextHandler();
 
             async Task<HttpResponseMessage> CallNextHandler()
             {
+                linked.Token.ThrowIfCancellationRequested();
+
                 if (!await matches.MoveNextAsync())
                 {
                     RouterEventSource.Log.Info("NoMatchingHandler", () => new
@@ -238,7 +256,7 @@ namespace NanoRoute
                     Parameters = match.AttachedParameters!,
                     Request = request,
                     Services = services,
-                    Cancellation = cancellation
+                    Cancellation = linked.Token
                 };
 
                 return await match.Handler(requestContext, CallNextHandler);

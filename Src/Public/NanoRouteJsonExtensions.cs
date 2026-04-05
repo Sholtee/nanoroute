@@ -239,7 +239,8 @@ namespace NanoRoute.Json
             /// <remarks>
             /// This helper wraps <see cref="HttpRequestException"/> values into JSON responses and also installs
             /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> so unexpected
-            /// exceptions are normalized before they reach the client.
+            /// exceptions are normalized before they reach the client. <see cref="OperationCanceledException"/> is
+            /// not translated into JSON and continues to propagate to the caller unchanged.
             /// </remarks>
             /// <example>
             /// <code>

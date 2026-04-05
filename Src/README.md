@@ -121,6 +121,14 @@ This keeps the transport-specific concerns in your own router type while still r
 - When multiple handlers match, NanoRoute evaluates compatible handlers from shorter prefixes toward more specific matches.
 - At the same path depth, literal segments are preferred over parameter matches by default, but `RouterConfig.MatchingBehavior` can change the precedence.
 
+## Timeouts And Cancellation
+
+- `RouterConfig.Timeout` defaults to `TimeSpan.FromMinutes(1)`.
+- NanoRoute exposes a linked cancellation token to async parameter parsers and handlers through `ParameterParserContext.Cancellation` and `RequestContext.Cancellation`.
+- That linked token is canceled when either the caller-provided cancellation token is canceled or the router timeout elapses.
+- `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
+- `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
+
 ## Common Building Blocks
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.

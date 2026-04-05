@@ -49,6 +49,9 @@ NanoRoute.ParameterParserDelegate
 NanoRoute.RequestContext.Cancellation.get -> System.Threading.CancellationToken
 NanoRoute.RequestContext.Cancellation.init -> void
 NanoRoute.RequestContext.RequestContext(System.Collections.Generic.Dictionary<string!, object?>! Parameters, System.IServiceProvider! Services, System.Net.Http.HttpRequestMessage! Request, System.Threading.CancellationToken Cancellation) -> void
+NanoRoute.Router.Timeout.get -> System.TimeSpan
+NanoRoute.RouterConfig.Timeout.get -> System.TimeSpan
+NanoRoute.RouterConfig.Timeout.set -> void
 NanoRoute.SyncParameterParserDelegate
 NanoRoute.RequestContext
 NanoRoute.RequestContext.Parameters.get -> System.Collections.Generic.Dictionary<string!, object?>!

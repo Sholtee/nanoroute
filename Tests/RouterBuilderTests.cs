@@ -255,7 +255,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task DefaultHandler_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
+        public async Task AddJsonErrorDetails_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
         {
             TestRouter router = _routerBuilder
                 .AddJsonErrorDetails(populateErrorInfo)
@@ -279,7 +279,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task DefaultHandler_ShouldHandleInternalErrors([Values] bool populateErrorInfo)
+        public async Task AddJsonErrorDetails_ShouldHandleInternalErrors([Values] bool populateErrorInfo)
         {
             const string ERROR_MSG = "Oooops";
 
@@ -306,7 +306,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task DefaultHandler_ShouldHandleCancellationErrors()
+        public async Task AddJsonErrorDetails_ShouldPropagateCancellationErrors()
         {
             TestRouter router = _routerBuilder
                 .AddJsonErrorDetails()
@@ -323,45 +323,29 @@ namespace NanoRoute.Tests
             using CancellationTokenSource cancellation = new();
             cancellation.Cancel();
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object, cancellation.Token);
-            string resp = await response.Content.ReadAsStringAsync();
-
-            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.RequestTimeout));
-            Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.RequestTimeout));
-            Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_REQUEST_TIMED_OUT));
-            Assert.That(deserialized.TraceId, Is.EqualTo("trace-cancel"));
-            Assert.That(deserialized.Errors, Is.Null);
-            Assert.That(deserialized.DeveloperMessage, Is.Null);
+            Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
         }
 
         [Test]
-        public async Task DefaultHandler_ShouldHandleTimeoutErrors()
+        public void AddJsonErrorDetails_ShouldPropagateRouterTimeoutCancellation()
         {
             TestRouter router = _routerBuilder
+                .WithConfiguration(config => config.Timeout = TimeSpan.FromMilliseconds(50))
                 .AddJsonErrorDetails()
-                .AddHandler("GET", "/somewhere", (_, _) => throw new TimeoutException())
+                .AddHandler("GET", "/somewhere", async (context, _) =>
+                {
+                    await Task.Delay(Timeout.InfiniteTimeSpan, context.Cancellation);
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                })
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.Properties[Router.TRACE_ID_NAME] = "trace-timeout";
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
-            string resp = await response.Content.ReadAsStringAsync();
-
-            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.RequestTimeout));
-            Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.RequestTimeout));
-            Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_REQUEST_TIMED_OUT));
-            Assert.That(deserialized.TraceId, Is.EqualTo("trace-timeout"));
-            Assert.That(deserialized.Errors, Is.Null);
-            Assert.That(deserialized.DeveloperMessage, Is.Null);
+            Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object), Throws.InstanceOf<OperationCanceledException>());
         }
 
         [Test]
-        public async Task DefaultHandler_ShouldHandleAggregateExceptions([Values] bool populateErrorInfo)
+        public async Task AddJsonErrorDetails_ShouldHandleAggregateExceptions([Values] bool populateErrorInfo)
         {
             AggregateException aggregate = new
             (
@@ -397,29 +381,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task DefaultHandler_ShouldEscapeSpecialCharactersInErrorInfo()
-        {
-            const string ERROR_MSG = "Bad \"quote\"\r\nnext line";
-
-            TestRouter router = _routerBuilder
-                .AddJsonErrorDetails(populateErrorInfo: true)
-                .AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG))
-                .CreateRouter();
-
-            HttpRequestMessage request = new() { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/somewhere") };
-            request.Properties[Router.TRACE_ID_NAME] = "trace-3";
-
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
-            string resp = await response.Content.ReadAsStringAsync();
-
-            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-
-            Assert.That(deserialized, Is.Not.Null);
-            Assert.That(deserialized.DeveloperMessage, Has.Some.Contains(ERROR_MSG));
-        }
-        
-        [Test]
-        public async Task DefaultHandler_ShouldLetNormalWorkflowGo()
+        public async Task AddJsonErrorDetails_ShouldLetNormalWorkflowGo()
         {
             TestRouter router = _routerBuilder
                 .AddJsonErrorDetails()

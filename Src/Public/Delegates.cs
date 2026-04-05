@@ -22,7 +22,9 @@ namespace NanoRoute
     /// <summary>
     /// Tries to parse a single route segment into a value that can be stored in <see cref="RequestContext.Parameters"/>.
     /// </summary>
-    /// <param name="context"></param>
+    /// <param name="context">
+    /// The parser context, including the decoded segment, request services, and the linked pipeline cancellation token.
+    /// </param>
     /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
     /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
     /// <example>
@@ -57,6 +59,8 @@ namespace NanoRoute
     /// exception types is also supported, but they are treated as unexpected failures:
     /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> converts them into internal
     /// server error responses, while without such middleware they propagate to the caller unchanged.
+    /// <see cref="OperationCanceledException"/> is left untouched so caller-driven cancellation and router timeouts
+    /// can propagate to the transport layer or hosting code.
     /// </remarks>
     /// <example>
     /// <code>

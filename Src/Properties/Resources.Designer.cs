@@ -149,14 +149,5 @@ namespace NanoRoute.Properties {
                 return ResourceManager.GetString("ERR_PARAMETER_OVERRIDE", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Request timed out..
-        /// </summary>
-        internal static string ERR_REQUEST_TIMED_OUT {
-            get {
-                return ResourceManager.GetString("ERR_REQUEST_TIMED_OUT", resourceCulture);
-            }
-        }
     }
 }

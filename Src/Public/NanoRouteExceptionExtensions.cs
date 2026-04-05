@@ -30,7 +30,8 @@ namespace NanoRoute
             /// <remarks>
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
-            /// values are allowed to flow through unchanged.
+            /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
+            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
             /// </remarks>
             public TBuilder AddExceptionHandler() => routeBuilder.AddExceptionHandler(Enum.GetNames(typeof(HttpVerb)));
 
@@ -42,7 +43,8 @@ namespace NanoRoute
             /// <remarks>
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
-            /// values are allowed to flow through unchanged.
+            /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
+            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
             /// </remarks>
             public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs)
             {
@@ -55,13 +57,10 @@ namespace NanoRoute
                     {
                         return await next();
                     }
-                    catch (Exception ex) when (ex is not HttpRequestException)
+                    catch (Exception ex) when (ex is not (HttpRequestException or OperationCanceledException /*needs to be handled from user code*/))
                     {
                         switch (ex)
                         {
-                            case OperationCanceledException or TimeoutException:
-                                HttpRequestException.Throw(HttpStatusCode.RequestTimeout, Resources.ERR_REQUEST_TIMED_OUT, ex, developerMessage: [ex.StackTrace]);
-                                break;
                             case AggregateException aggregateException:
                                 HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, ex, developerMessage: [..aggregateException.InnerExceptions.Select(static ex => ex.ToString())]);
                                 break;

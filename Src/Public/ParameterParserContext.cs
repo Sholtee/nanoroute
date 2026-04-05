@@ -9,10 +9,12 @@ using System.Threading;
 namespace NanoRoute
 {
     /// <summary>
-    /// 
+    /// Carries the current route segment and request-scoped services into an asynchronous parameter parser.
     /// </summary>
-    /// <param name="Segment"></param>
-    /// <param name="Services"></param>
-    /// <param name="Cancellation"></param>
+    /// <param name="Segment">The percent-decoded route segment currently being parsed.</param>
+    /// <param name="Services">The request-scoped service provider available to the parser.</param>
+    /// <param name="Cancellation">
+    /// A linked token that is canceled when the caller cancels the request or the router timeout elapses.
+    /// </param>
     public readonly record struct ParameterParserContext(string Segment, IServiceProvider Services, CancellationToken Cancellation);
 }

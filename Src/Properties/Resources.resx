@@ -147,7 +147,4 @@
   <data name="ERR_BAD_CONTENT_TYPE" xml:space="preserve">
     <value>Bad content type.</value>
   </data>
-  <data name="ERR_REQUEST_TIMED_OUT" xml:space="preserve">
-    <value>Request timed out.</value>
-  </data>
 </root>

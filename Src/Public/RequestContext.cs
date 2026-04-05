@@ -16,6 +16,7 @@ namespace NanoRoute
     /// <remarks>
     /// The same context instance is passed to each matching handler. Handlers can use
     /// <see cref="Parameters"/> to share values, <see cref="Services"/> to resolve dependencies, and
+    /// <see cref="Cancellation"/> to observe either caller-initiated cancellation or router timeouts.
     /// </remarks>
     public readonly record struct RequestContext(Dictionary<string, object?> Parameters, IServiceProvider Services, HttpRequestMessage Request, CancellationToken Cancellation);
 }
