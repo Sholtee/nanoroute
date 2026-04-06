@@ -17,9 +17,6 @@ namespace NanoRoute
     /// <summary>
     /// Provides convenience methods for registering segment parsers.
     /// </summary>
-    /// <remarks>
-    /// These helpers build on top of <see cref="RouteBuilder.AddSegmentParser(string, SegmentParserDelegate)"/>.
-    /// </remarks>
     public static class RouterBuilderSegmentParserExtensions
     {
         private readonly record struct IntParserArguments(int? Min, int? Max);

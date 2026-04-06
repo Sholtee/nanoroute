@@ -85,7 +85,6 @@ NanoRoute.RouteBuilder
 NanoRoute.RouteBuilder.AddHandler(string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteBuilder!
-NanoRoute.RouteBuilder.AddSegmentParser(string! parserName, NanoRoute.SegmentParserDelegate! tryParseDelegate) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.SegmentParsers.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteBuilder.WithBase(string! pattern) -> NanoRoute.RouteBuilder!
@@ -98,7 +97,6 @@ NanoRoute.RouterBuilder<TRouter, TConfig>
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
-NanoRoute.RouterBuilder<TRouter, TConfig>.AddSegmentParser(string! parserName, NanoRoute.SegmentParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.CreateRouter() -> TRouter!
 NanoRoute.RouterBuilder<TRouter, TConfig>.RouterBuilder(System.Func<NanoRoute.RouterBuilder<TRouter!, TConfig!>!, TRouter!>! routerFactory) -> void
 NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig.get -> TConfig!

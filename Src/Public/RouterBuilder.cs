@@ -33,22 +33,6 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Registers a parser that can convert a route segment into a typed value.
-        /// </summary>
-        /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
-        /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
-        /// <returns>The current <see cref="RouterBuilder{TRouter, TConfig}"/> instance.</returns>
-        /// <remarks>
-        /// If a parser is already registered under the same <paramref name="parserName"/>, the new registration
-        /// replaces the existing one.
-        /// </remarks>
-        public new RouterBuilder<TRouter, TConfig> AddSegmentParser(string parserName, SegmentParserDelegate tryParseDelegate)
-        {
-            base.AddSegmentParser(parserName, tryParseDelegate);
-            return this;
-        }
-
-        /// <summary>
         /// Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.
         /// </summary>
         /// <param name="parserName">The name used in route patterns such as <c>{id:int(min=1)}</c>.</param>
