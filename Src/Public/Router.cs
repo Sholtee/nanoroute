@@ -97,6 +97,7 @@ namespace NanoRoute
             (
                 HttpUtility.UrlDecode(Segment?.Value!),
                 Services,
+                null,
                 Cancellation
             );
 
@@ -104,7 +105,7 @@ namespace NanoRoute
             {
                 Debug.Assert(parsedChild.SegmentParser is not null, "Child node must have segment parser assigned");
 
-                if (await parsedChild.SegmentParser!.Parse(parserContext) is not { Success: true } parsed)
+                if (await parsedChild.SegmentParser!.Parse(parserContext with { Arguments = parsedChild.SegmentParser.Arguments }) is not { Success: true } parsed)
                     continue;
 
                 Dictionary<string, object?> extended = parsedChild.SegmentParser?.ParameterName is { Length: > 0 } parameterName
@@ -202,7 +203,7 @@ namespace NanoRoute
 
             string requestPath = request
                 .RequestUri
-                .AbsolutePath;
+                .AbsolutePath;  // escaped path, not percent decoded
 
             RouterEventSource.Log.Info("RequestProcessingStarted", () => new
             {

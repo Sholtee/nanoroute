@@ -37,10 +37,12 @@ NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler() -> TBuilder!
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler(System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.SegmentParserContext
+NanoRoute.SegmentParserContext.Arguments.get -> object?
+NanoRoute.SegmentParserContext.Arguments.init -> void
 NanoRoute.SegmentParserContext.Cancellation.get -> System.Threading.CancellationToken
 NanoRoute.SegmentParserContext.Cancellation.init -> void
 NanoRoute.SegmentParserContext.SegmentParserContext() -> void
-NanoRoute.SegmentParserContext.SegmentParserContext(string! Segment, System.IServiceProvider! Services, System.Threading.CancellationToken Cancellation) -> void
+NanoRoute.SegmentParserContext.SegmentParserContext(string! Segment, System.IServiceProvider! Services, object? Arguments, System.Threading.CancellationToken Cancellation) -> void
 NanoRoute.SegmentParserContext.Segment.get -> string!
 NanoRoute.SegmentParserContext.Segment.init -> void
 NanoRoute.SegmentParserContext.Services.get -> System.IServiceProvider!
@@ -74,6 +76,7 @@ NanoRoute.RouteBuilder.AddHandler(string! pattern, NanoRoute.RequestHandlerDeleg
 NanoRoute.RouteBuilder.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.AddSegmentParser(string! parserName, NanoRoute.SegmentParserDelegate! tryParseDelegate) -> NanoRoute.RouteBuilder!
+NanoRoute.RouteBuilder.AddSegmentParser(string! parserName, System.Func<System.Collections.Generic.IReadOnlyDictionary<string!, string!>!, object?>! bindArguments, NanoRoute.SegmentParserDelegate! tryParseDelegate) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.SegmentParsers.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteBuilder.WithBase(string! pattern) -> NanoRoute.RouteBuilder!
@@ -87,6 +90,7 @@ NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! pattern, NanoRoute.
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddSegmentParser(string! parserName, NanoRoute.SegmentParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
+NanoRoute.RouterBuilder<TRouter, TConfig>.AddSegmentParser(string! parserName, System.Func<System.Collections.Generic.IReadOnlyDictionary<string!, string!>!, object?>! bindArguments, NanoRoute.SegmentParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.CreateRouter() -> TRouter!
 NanoRoute.RouterBuilder<TRouter, TConfig>.RouterBuilder(System.Func<NanoRoute.RouterBuilder<TRouter!, TConfig!>!, TRouter!>! routerFactory) -> void
 NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig.get -> TConfig!
@@ -94,6 +98,7 @@ NanoRoute.RouterBuilder<TRouter, TConfig>.WithBase(string! pattern, System.Actio
 NanoRoute.RouterBuilder<TRouter, TConfig>.WithConfiguration(System.Action<TConfig!>! updateConfig) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilderSegmentParserExtensions
 NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddSegmentParser(string! parserName, NanoRoute.SyncSegmentParserDelegate! tryParseDelegate) -> TBuilder!
+NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddSegmentParser(string! parserName, System.Func<System.Collections.Generic.IReadOnlyDictionary<string!, string!>!, object?>! bindArguments, NanoRoute.SyncSegmentParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddDefaultParsers() -> TBuilder!
 NanoRoute.RouterConfig
@@ -108,4 +113,3 @@ static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResp
 static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json<T>(T? body) -> System.Net.Http.HttpResponseMessage!
 static NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Throw(System.Net.HttpStatusCode status, string! title, params System.Collections.Generic.IReadOnlyCollection<string!>! errors) -> void
 static NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Throw(System.Net.HttpStatusCode status, string! title, System.Exception? original = null, System.Collections.Generic.IReadOnlyCollection<string!>? errors = null, System.Collections.Generic.IReadOnlyCollection<string!>? developerMessage = null) -> void
-

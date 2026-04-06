@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NanoRoute
@@ -28,11 +29,24 @@ namespace NanoRoute
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             public TBuilder AddSegmentParser(string parserName, SyncSegmentParserDelegate tryParseDelegate)
             {
+                return routeBuilder.AddSegmentParser(parserName, static _ => null, tryParseDelegate);
+            }
+
+            /// <summary>
+            /// Registers a synchronous parser by adapting it to <see cref="SegmentParserDelegate"/> and binding parser arguments once during route registration.
+            /// </summary>
+            /// <param name="parserName">The name used in route patterns such as <c>{id:int(min=1)}</c>.</param>
+            /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
+            /// <param name="tryParseDelegate">The synchronous parser to adapt.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddSegmentParser(string parserName, Func<IReadOnlyDictionary<string, string>, object?> bindArguments, SyncSegmentParserDelegate tryParseDelegate)
+            {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(parserName);
+                Ensure.NotNull(bindArguments);
                 Ensure.NotNull(tryParseDelegate);
 
-                routeBuilder.AddSegmentParser(parserName, context =>
+                routeBuilder.AddSegmentParser(parserName, bindArguments, context =>
                 {
                     bool success = tryParseDelegate(context.Segment, out object? parsed);
                     return new ValueTask<SegmentParseResult>(new SegmentParseResult(success, parsed));

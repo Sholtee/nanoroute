@@ -25,19 +25,15 @@ namespace NanoRoute
     public class RouteBuilder : RoutingContext
     {
         #region Private
-        private const string
-            // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences
-            LITERAL_SEGMENT_DEFINITION = @"(?:(?:[\w.\-~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+)",
-            SEGMENT_PARSER_DEFINITION = @"\{(?:\w+:)?\w+\}",
-            SEGMENT_DEFINITION = $@"(?:{LITERAL_SEGMENT_DEFINITION}|{SEGMENT_PARSER_DEFINITION})";
-
-        // avoid using the constructor that accepts RegexOptions, since it is not AOT compatible
+        // Avoid using the constructor that accepts RegexOptions, It is not AOT compatible
         private static readonly Regex
-            s_parserDefinition = new(@"^\{(?:(?<parametername>\w+):)?(?<name>\w+)\}$"),
-            s_patternValidator = new($@"^(?:/?|/?{SEGMENT_DEFINITION}(?:/{SEGMENT_DEFINITION})*/?)$");
+            // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences.
+            s_literalSegmentValidator = new(@"^(?:(?:[\w.\-~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+)$"),
+            // A parser-backed segment is recognized as a {...} shell here; the full interpretation happens in SegmentParserDefinitionParser.
+            s_segmentParserValidator = new(@"^\{[^/{}]+\}$");
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Dictionary<string, SegmentParser> _segmentParsers;
+        private readonly Dictionary<string, SegmentParserRegistration> _segmentParsers;
 
         private readonly string _basePattern;
 
@@ -46,45 +42,49 @@ namespace NanoRoute
         /// </summary>
         private RouteNode FindNode(string pattern)
         {
-            if (!s_patternValidator.IsMatch(pattern))
-                throw new ArgumentException(Resources.ERR_INVALID_PATTERN, nameof(pattern));
-
             RouteNode target = _root;
 
             foreach (string segment in new UriSegment(pattern).Enumerate())
             {
-                if (s_parserDefinition.Match(segment) is { Success: true } parserDefinition)
+                if (s_segmentParserValidator.IsMatch(segment))
                 {
-                    string
-                        parserName = parserDefinition.Groups["name"].Value,  // cannot be empty
-                        parameterName = parserDefinition.Groups["parametername"].Value;
+                    // does the further validation
+                    SegmentParserDefinition parserDefinition = SegmentParserDefinitionParser.GetSegmentParserDefinition(segment);
 
-                    Debug.Assert(!string.IsNullOrEmpty(parserName), "Parser name could not be extracted");
-
-                    if (!_segmentParsers.TryGetValue(parserName, out SegmentParser parser))
+                    if (!_segmentParsers.TryGetValue(parserDefinition.ParserName, out SegmentParserRegistration parserRegistration))
                         throw new InvalidOperationException
                         (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserName)
+                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserDefinition.ParserName)
                         );
 
-                    if (target.ParsedChildren.SingleOrDefault(cc => cc.SegmentParser!.Name.Equals(parser.Name, StringComparison.OrdinalIgnoreCase)) is not { } parsedChild)
+                    RouteNode? parsedChild = target.ParsedChildren.SingleOrDefault
+                    (
+                        cc => cc.SegmentParser!.Name.Equals(parserDefinition.ParserName, StringComparison.OrdinalIgnoreCase) && HaveSameArguments(cc.SegmentParser.RawArguments, parserDefinition.Arguments)
+                    );
+
+                    if (parsedChild is null)
                     {
-                        if (!string.IsNullOrEmpty(parserName))
-                            parser = parser with { ParameterName = parameterName };
+                        SegmentParser parser = new(parserRegistration.Name, parserRegistration.Parse)
+                        {
+                            RawArguments = parserDefinition.Arguments,
+                            Arguments = parserRegistration.BindArguments(parserDefinition.Arguments),
+                            ParameterName = parserDefinition.ParameterName
+                        };
 
                         parsedChild = new RouteNode
                         {
                             SegmentParser = parser,
                             Segment = segment
                         };
+
                         target.ParsedChildren.Add(parsedChild);
                     }
-                    else if (parsedChild.SegmentParser!.ParameterName?.Equals(parameterName) is false)
+                    else if (parsedChild.SegmentParser!.ParameterName?.Equals(parserDefinition.ParameterName) is false)
                         throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
 
                     target = parsedChild;
                 }
-                else
+                else if (s_literalSegmentValidator.IsMatch(segment))
                 {
                     if (!target.LiteralChildren.TryGetValue(segment, out RouteNode exactChild))
                     {
@@ -97,6 +97,8 @@ namespace NanoRoute
 
                     target = exactChild;
                 }
+                else
+                    throw new ArgumentException(Resources.ERR_INVALID_PATTERN, nameof(pattern));
             }
 
             return target;
@@ -104,15 +106,30 @@ namespace NanoRoute
 
         private static string JoinPattern(string a, string b) => $"{a.TrimEnd('/')}/{b.TrimStart('/')}";
 
+        private static bool HaveSameArguments(IReadOnlyDictionary<string, string> a, IReadOnlyDictionary<string, string> b)
+        {
+            if (ReferenceEquals(a, b))
+                return true;
+
+            if (a.Count != b.Count)
+                return false;
+
+            foreach (KeyValuePair<string, string> pair in a)
+                if (!b.TryGetValue(pair.Key, out string? otherValue) || !string.Equals(pair.Value, otherValue, StringComparison.Ordinal))
+                    return false;
+
+            return true;
+        }
+
         private RouteBuilder(RouteBuilder parent, string baseUrl): base(parent.FindNode(baseUrl))
         {
-            _segmentParsers = new Dictionary<string, SegmentParser>(parent._segmentParsers, StringComparer.OrdinalIgnoreCase);
+            _segmentParsers = new Dictionary<string, SegmentParserRegistration>(parent._segmentParsers, StringComparer.OrdinalIgnoreCase);
             _basePattern = JoinPattern(parent._basePattern, baseUrl);
         }
 
         internal RouteBuilder(): base(new RouteNode { Segment = string.Empty })
         {
-            _segmentParsers = new Dictionary<string, SegmentParser>(StringComparer.OrdinalIgnoreCase);
+            _segmentParsers = new Dictionary<string, SegmentParserRegistration>(StringComparer.OrdinalIgnoreCase);
             _basePattern = string.Empty;
         }
 
@@ -135,10 +152,23 @@ namespace NanoRoute
         /// </remarks>
         public RouteBuilder AddSegmentParser(string parserName, SegmentParserDelegate tryParseDelegate)
         {
+            return AddSegmentParser(parserName, static _ => null, tryParseDelegate);
+        }
+
+        /// <summary>
+        /// Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.
+        /// </summary>
+        /// <param name="parserName">The name used in route patterns such as <c>{id:int(min=1)}</c>.</param>
+        /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
+        /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
+        /// <returns>The current instance.</returns>
+        public RouteBuilder AddSegmentParser(string parserName, Func<IReadOnlyDictionary<string, string>, object?> bindArguments, SegmentParserDelegate tryParseDelegate)
+        {
             Ensure.NotNull(parserName);
+            Ensure.NotNull(bindArguments);
             Ensure.NotNull(tryParseDelegate);
 
-            _segmentParsers[parserName] = new SegmentParser(parserName, tryParseDelegate);
+            _segmentParsers[parserName] = new SegmentParserRegistration(parserName, tryParseDelegate, bindArguments);
 
             return this;
         }
