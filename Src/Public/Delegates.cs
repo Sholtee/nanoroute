@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -12,17 +13,62 @@ namespace NanoRoute
     using Json;
 
     /// <summary>
+    /// Binds raw parser arguments to an opaque object that is cached with the route definition.
+    /// </summary>
+    /// <param name="rawArgs">
+    /// The raw parser arguments as parsed from the route template, keyed case-insensitively.
+    /// </param>
+    /// <returns>
+    /// A parser-specific object that will later be exposed through <see cref="SegmentParserContext.Arguments"/>.
+    /// Return <see langword="null"/> when the parser does not need a bound payload.
+    /// </returns>
+    /// <remarks>
+    /// This delegate runs during route registration, not during request processing. It is the right place to
+    /// validate parser arguments, parse numeric limits, or precompile regular expressions once.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// routerBuilder.AddSegmentParser
+    /// (
+    ///     "int",
+    ///     static rawArgs => (
+    ///         Min: rawArgs.TryGetValue("min", out string? min) ? int.Parse(min) : null,
+    ///         Max: rawArgs.TryGetValue("max", out string? max) ? int.Parse(max) : null
+    ///     ),
+    ///     static context =>
+    ///     {
+    ///         var args = ((int? Min, int? Max)) context.Arguments!;
+    ///         return ValueTask.FromResult(new SegmentParseResult(true, context.Segment));
+    ///     }
+    /// );
+    /// </code>
+    /// </example>
+    public delegate object? BindArgumentsDelegate(IReadOnlyDictionary<string, string> rawArgs);
+
+    /// <summary>
     /// Represents a synchronous segment parser.
     /// </summary>
     /// <param name="segment">The raw path segment extracted from the request URI.</param>
+    /// <param name="arguments">
+    /// The parser-specific argument payload produced by <see cref="BindArgumentsDelegate"/> during route registration,
+    /// or <see langword="null"/> when the parser was registered without arguments.
+    /// </param>
     /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
     /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
     /// <example>
     /// <code>
-    /// routerBuilder.AddSegmentParser("int", (string segment, out object? parsed) =&gt;
+    /// routerBuilder.AddSegmentParser("int", (string segment, object? arguments, out object? parsed) =&gt;
     /// {
+    ///     var limits = ((int? Min, int? Max)) arguments!;
+    ///
     ///     if (int.TryParse(segment, out int value))
     ///     {
+    ///         if (limits.Min.HasValue &amp;&amp; value &lt; limits.Min.Value)
+    ///         {
+    ///             parsed = null;
+    ///             return false;
+    ///         }
+    ///
     ///         parsed = value;
     ///         return true;
     ///     }
@@ -32,7 +78,7 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate bool SyncSegmentParserDelegate(string segment, out object? parsed);
+    public delegate bool SyncSegmentParserDelegate(string segment, object? arguments, out object? parsed);
 
     /// <summary>
     /// Tries to parse a single route segment into a value that can optionally be stored in <see cref="RequestContext.Parameters"/>.

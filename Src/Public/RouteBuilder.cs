@@ -162,7 +162,7 @@ namespace NanoRoute
         /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
         /// <returns>The current instance.</returns>
-        public RouteBuilder AddSegmentParser(string parserName, Func<IReadOnlyDictionary<string, string>, object?> bindArguments, SegmentParserDelegate tryParseDelegate)
+        public RouteBuilder AddSegmentParser(string parserName, BindArgumentsDelegate bindArguments, SegmentParserDelegate tryParseDelegate)
         {
             Ensure.NotNull(parserName);
             Ensure.NotNull(bindArguments);
