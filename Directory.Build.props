@@ -6,9 +6,9 @@
     <Nullable>enable</Nullable>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <BinBase>..\BIN\$(Configuration)\</BinBase>
+    <BinBase>..\..\BIN\$(Configuration)\</BinBase>
     <OutputPath>$(BinBase)$(MSBuildProjectName)\</OutputPath>
-    <ObjBase>..\OBJ\$(MSBuildProjectName)\</ObjBase>
+    <ObjBase>..\..\OBJ\$(MSBuildProjectName)\</ObjBase>
     <BaseIntermediateOutputPath>$(ObjBase)</BaseIntermediateOutputPath>
     <ProjectAssetsFile>$(ObjBase)project.assets.json</ProjectAssetsFile>
     <RestoreOutputPath>$(ObjBase)</RestoreOutputPath>
