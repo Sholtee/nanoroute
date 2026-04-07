@@ -95,6 +95,7 @@ namespace NanoRoute
 
             SegmentParserContext parserContext = new
             (
+                // The segment value is percent encoded. Decode it for the parser
                 HttpUtility.UrlDecode(Segment?.Value!),
                 Services,
                 null,
@@ -177,7 +178,8 @@ namespace NanoRoute
         /// <param name="cancellation">A token that can cancel request processing.</param>
         /// <returns>The <see cref="HttpResponseMessage"/> produced by the matching handlers.</returns>
         /// <remarks>
-        /// Prefix routes can participate in the same pipeline as exact routes. When several handlers match, NanoRoute
+        /// Prefix routes can participate in the same pipeline as exact routes. Consecutive <c>/</c> separators in the
+        /// request path are treated as a single separator during matching. When several handlers match, NanoRoute
         /// evaluates compatible matches from shorter prefixes toward more specific matches and honors
         /// <see cref="MatchingBehavior"/> when both literal and parameterized segments are available at the same depth.
         /// </remarks>
@@ -203,7 +205,8 @@ namespace NanoRoute
 
             string requestPath = request
                 .RequestUri
-                .AbsolutePath;  // escaped path, not percent decoded
+                // Escaped path, not percent decoded. So "/path%2Fto%2Fsomewhere/" will be treated as a single segment
+                .AbsolutePath;
 
             RouterEventSource.Log.Info("RequestProcessingStarted", () => new
             {

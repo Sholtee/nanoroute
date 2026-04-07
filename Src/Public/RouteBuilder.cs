@@ -17,11 +17,12 @@ namespace NanoRoute
     /// <summary>
     /// Builder responsible for route configuration.
     /// </summary>
-    /// <remarks>
-    /// Route patterns support literal segments and parser-backed parameter segments such as
-    /// <c>/users/{id:int}</c>. A trailing <c>/</c> marks the pattern as a prefix match, while patterns without
-    /// a trailing slash must match the full path exactly.
-    /// </remarks>
+        /// <remarks>
+        /// Route patterns support literal segments and parser-backed parameter segments such as
+        /// <c>/users/{id:int}</c>. Consecutive <c>/</c> separators are treated as a single separator. A trailing
+        /// <c>/</c> marks the pattern as a prefix match, while patterns without a trailing slash must match the full
+        /// path exactly.
+        /// </remarks>
     public class RouteBuilder : RoutingContext
     {
         #region Private
@@ -142,8 +143,9 @@ namespace NanoRoute
         /// </summary>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, consecutive <c>/</c> separators are
+        /// treated as a single separator, and a trailing <c>/</c> turns the pattern into a prefix match. Without a
+        /// trailing slash, the pattern matches only the exact path.
         /// </param>
         /// <param name="handler">The handler to execute when the pattern matches.</param>
         /// <returns>The current router instance.</returns>
@@ -174,8 +176,9 @@ namespace NanoRoute
         /// <param name="verbs">The HTTP methods that should use the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, consecutive <c>/</c> separators are
+        /// treated as a single separator, and a trailing <c>/</c> turns the pattern into a prefix match. Without a
+        /// trailing slash, the pattern matches only the exact path.
         /// </param>
         /// <param name="handler">The handler to execute when the route matches.</param>
         /// <returns>The current router instance.</returns>
@@ -205,8 +208,9 @@ namespace NanoRoute
         /// <param name="verb">The HTTP method that activates the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, consecutive <c>/</c> separators are
+        /// treated as a single separator, and a trailing <c>/</c> turns the pattern into a prefix match. Without a
+        /// trailing slash, the pattern matches only the exact path.
         /// </param>
         /// <param name="handler">
         /// The handler to execute. If several handlers match, calling the supplied <c>next</c> delegate continues
