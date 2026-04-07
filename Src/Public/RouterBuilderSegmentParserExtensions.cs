@@ -33,6 +33,26 @@ namespace NanoRoute
             return null;
         }
 
+        private static int ParseIntArgument(string value, string paramName)
+        {
+            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result))
+                throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, paramName);
+
+            return result;
+        }
+
+        private static Regex ParseRegexArgument(string value, string paramName)
+        {
+            try
+            {
+                return new Regex(value);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, paramName, ex);
+            }
+        }
+
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
         {
             /// <summary>
@@ -131,10 +151,10 @@ namespace NanoRoute
                             switch (arg.Key.ToLower())
                             {
                                 case "min":
-                                    min = int.Parse(arg.Value, CultureInfo.InvariantCulture);
+                                    min = ParseIntArgument(arg.Value, nameof(args));
                                     break;
                                 case "max":
-                                    max = int.Parse(arg.Value, CultureInfo.InvariantCulture);
+                                    max = ParseIntArgument(arg.Value, nameof(args));
                                     break;
                                 default:
                                     throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, nameof(args));
@@ -231,13 +251,13 @@ namespace NanoRoute
                             switch (arg.Key.ToLower())
                             {
                                 case "min":
-                                    min = int.Parse(arg.Value, CultureInfo.InvariantCulture);
+                                    min = ParseIntArgument(arg.Value, nameof(args));
                                     break;
                                 case "max":
-                                    max = int.Parse(arg.Value, CultureInfo.InvariantCulture);
+                                    max = ParseIntArgument(arg.Value, nameof(args));
                                     break;
                                 case "pattern":
-                                    pattern = new Regex(arg.Value);
+                                    pattern = ParseRegexArgument(arg.Value, nameof(args));
                                     break;
                                 default:
                                     throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, nameof(args));

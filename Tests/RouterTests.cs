@@ -126,8 +126,9 @@ namespace NanoRoute.Tests
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
         }
 
-        [Test]
-        public async Task Handle_ShouldWorkWithEmptyPaths([Values("", "/")] string path)
+        [TestCase("")]
+        [TestCase("/")]
+        public async Task Handle_ShouldWorkWithEmptyPaths(string path)
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
@@ -187,8 +188,9 @@ namespace NanoRoute.Tests
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Exactly(2));
         }
 
-        [Test]
-        public async Task Handle_ShouldSupportMultipleHandlersAgainstTheSamePattern([Values("/path/to/explicit/something", "/path/to/{some_str:any}/something")] string pattern)
+        [TestCase("/path/to/explicit/something")]
+        [TestCase("/path/to/{some_str:any}/something")]
+        public async Task Handle_ShouldSupportMultipleHandlersAgainstTheSamePattern(string pattern)
         {
             MockSequence seq = new();
 
@@ -218,8 +220,9 @@ namespace NanoRoute.Tests
             mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
-        [Test]
-        public async Task Handle_ShouldRespectConfiguredMatchingBehavior([Values(MatchingBehavior.LiteralFirst, MatchingBehavior.ParameterizedChildrenFirst)] MatchingBehavior matchingBehavior)
+        [TestCase(MatchingBehavior.LiteralFirst)]
+        [TestCase(MatchingBehavior.ParameterizedChildrenFirst)]
+        public async Task Handle_ShouldRespectConfiguredMatchingBehavior(MatchingBehavior matchingBehavior)
         {
             Mock<RequestHandlerDelegate>
                 mockLiteralHandler = new(MockBehavior.Strict),

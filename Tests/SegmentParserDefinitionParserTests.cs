@@ -16,8 +16,10 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class SegmentParserDefinitionParserTests
     {
-        [Test]
-        public void ParseArguments_ShouldReturnEmptyDictionaryForMissingArguments([Values("", " ", "   ")] string args)
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("   ")]
+        public void ParseArguments_ShouldReturnEmptyDictionaryForMissingArguments(string args)
         {
             IReadOnlyDictionary<string, string> result = SegmentParserDefinitionParser.ParseArguments(args);
 

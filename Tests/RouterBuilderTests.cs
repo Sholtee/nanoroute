@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -18,6 +19,7 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
+    using Internals;
     using Json;
     using Properties;
 
@@ -72,9 +74,9 @@ namespace NanoRoute.Tests
         public void WithBase_ShouldInheritTheParentSegmentParsers()
         {
             RouteBuilder childBuilder = _routerBuilder
-                .AddSegmentParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("str", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
                 .WithBase("/to/")
-                .AddSegmentParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
+                .AddSegmentParser("int", (string segment, object? _, out object? parsed) => { parsed = segment; return true; });
 
             Assert.DoesNotThrow(() => childBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
@@ -83,9 +85,9 @@ namespace NanoRoute.Tests
         public void WithBase_ShouldCreateAnIndependentParserScope()
         {
             _routerBuilder
-                .AddSegmentParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("str", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
                 .WithBase("/to/")
-                .AddSegmentParser("int", (string segment, out object? parsed) => { parsed = segment; return true; });
+                .AddSegmentParser("int", (string segment, object? _, out object? parsed) => { parsed = segment; return true; });
 
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, "int")));
@@ -95,8 +97,8 @@ namespace NanoRoute.Tests
         public async Task AddSegmentParser_ShouldReplaceExistingParserRegistrations()
         {
             TestRouter router = _routerBuilder
-                .AddSegmentParser("value", (string segment, out object? parsed) => { parsed = $"first:{segment}"; return true; })
-                .AddSegmentParser("value", (string segment, out object? parsed) => { parsed = $"second:{segment}"; return true; })
+                .AddSegmentParser("value", (string segment, object? _, out object? parsed) => { parsed = $"first:{segment}"; return true; })
+                .AddSegmentParser("value", (string segment, object? _, out object? parsed) => { parsed = $"second:{segment}"; return true; })
                 .AddHandler("GET", "/items/{id:value}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(context.Parameters["id"]!.ToString()!) })
                 .CreateRouter();
 
@@ -110,9 +112,9 @@ namespace NanoRoute.Tests
         public async Task WithBase_ShouldKeepChildParserOverridesLocal()
         {
             RouteBuilder childBuilder = _routerBuilder
-                .AddSegmentParser("value", (string segment, out object? parsed) => { parsed = $"parent:{segment}"; return true; })
+                .AddSegmentParser("value", (string segment, object? _, out object? parsed) => { parsed = $"parent:{segment}"; return true; })
                 .WithBase("/child/")
-                .AddSegmentParser("value", (string segment, out object? parsed) => { parsed = $"child:{segment}"; return true; });
+                .AddSegmentParser("value", (string segment, object? _, out object? parsed) => { parsed = $"child:{segment}"; return true; });
 
             RequestHandlerDelegate handler = async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["id"]!.ToString()!) };
 
@@ -136,7 +138,7 @@ namespace NanoRoute.Tests
         public void Patterns_ShouldReflectTheActualBranch()
         {
             _routerBuilder
-                .AddSegmentParser("any", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("any", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler("GET", "/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/somewhere/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/{some_str_1:any}/not-prefix", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
@@ -181,19 +183,21 @@ namespace NanoRoute.Tests
             }));
         }
 
-        [Test]
-        public void WithBase_ShouldThrowOnNonPrefixPattern([Values("", "/not-prefix", "/some/not-prefix")] string pattern)
+        [TestCase("")]
+        [TestCase("/not-prefix")]
+        [TestCase("/some/not-prefix")]
+        public void WithBase_ShouldThrowOnNonPrefixPattern(string pattern)
         {
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_NOT_PREFIX));
         }
 
-        [Test]
-        public void WithBase_ShouldThrowOnInvalidPattern([Values("//", "/path//to/", "/path/{invalid-segment}/")] string pattern)
+        [TestCase("/path/{invalid-segment}/")]
+        public void WithBase_ShouldThrowOnInvalidPattern(string pattern)
         {
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.ParamName, Is.EqualTo("segment"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
         }
 
@@ -212,27 +216,68 @@ namespace NanoRoute.Tests
             Assert.That(result, Is.SameAs(_routerBuilder));
         }
 
-        [Test]
-        public void AddHandler_ShouldThrowOnInvalidPattern([Values("//", "/path//to", "/path/{invalid-segment}")] string pattern)
+        [TestCase("/path/{invalid-segment}")]
+        public void AddHandler_ShouldThrowOnInvalidPattern(string pattern)
         {
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.ParamName, Is.EqualTo("segment"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
         }
 
-        [Test]
-        public void AddHandler_ShouldAllowUriLiteralCharacters([Values("/users/~denes", "/files/a%20b", "/mail/a%40b")] string pattern)
+        [TestCase("/path/{id:int(=1)}")]
+        [TestCase("/path/{id:int(min='oops)}")]
+        [TestCase("/path/{id:int(min=1,,max=2)}")]
+        public void AddHandler_ShouldThrowOnMalformedParserArgumentSyntax(string pattern)
+        {
+            _routerBuilder.AddSegmentParser("int", args => int.Parse(args["min"], CultureInfo.InvariantCulture), new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object);
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("args"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
+        }
+
+        [TestCase("/users/~denes")]
+        [TestCase("/files/a%20b")]
+        [TestCase("/mail/a%40b")]
+        public void AddHandler_ShouldAllowUriLiteralCharacters(string pattern)
         {
             Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
 
         [Test]
-        public void AddHandler_ShouldThrowOnMissingSegmentParser([Values("path/to/{missing}", "path/to/{parameter_name:missing}")] string pattern)
+        public void AddHandler_ShouldAllowMixedLiteralAndParserSegments()
+        {
+            _routerBuilder.AddSegmentParser("int", new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object);
+
+            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", "/orders/{id:int}/details", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
+        }
+
+        [TestCase("//")]
+        [TestCase("/path//to")]
+        [TestCase("/path//to/")]
+        public void RoutePatterns_ShouldNormalizeRepeatedSeparators(string pattern)
+        {
+            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
+        }
+
+        [TestCase("/ok/bad[segment]")]
+        [TestCase("/ok/{id:int}/bad[segment]")]
+        public void AddHandler_ShouldThrowWhenAnyLiteralSegmentIsInvalid(string pattern)
+        {
+            _routerBuilder.AddSegmentParser("int", new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object);
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
+        }
+
+        [TestCase("path/to/{missing}")]
+        [TestCase("path/to/{parameter_name:missing}")]
+        public void AddHandler_ShouldThrowOnMissingSegmentParser(string pattern)
         {
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler(pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, "missing")));
         }
-
 
         [Test]
         public void AddHandler_ShouldThrowOnInvalidVerb()
@@ -254,7 +299,25 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task AddJsonErrorDetails_ShouldHandleNotFoundEvents([Values] bool populateErrorInfo)
+        public void AddHandler_ShouldReuseParsedNodesWhenBoundArgumentsAreValueEqual()
+        {
+            _routerBuilder.AddIntParser();
+
+            RequestHandlerDelegate handler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
+
+            _routerBuilder
+                .AddHandler("GET", "/items/{id:int(min=1,max=2)}", handler)
+                .AddHandler("POST", "/items/{id:int(max=2,min=1)}", handler);
+
+            RouteNode root = _routerBuilder.GetRoot();
+
+            Assert.That(root.LiteralChildren["items"].ParsedChildren, Has.Count.EqualTo(1));
+            Assert.That(root.LiteralChildren["items"].ParsedChildren[0].SegmentParser!.ParameterName, Is.EqualTo("id"));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task AddJsonErrorDetails_ShouldHandleNotFoundEvents(bool populateErrorInfo)
         {
             TestRouter router = _routerBuilder
                 .AddJsonErrorDetails(populateErrorInfo)
@@ -277,8 +340,9 @@ namespace NanoRoute.Tests
             Assert.That(deserialized.DeveloperMessage, Is.Null);
         }
 
-        [Test]
-        public async Task AddJsonErrorDetails_ShouldHandleInternalErrors([Values] bool populateErrorInfo)
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task AddJsonErrorDetails_ShouldHandleInternalErrors(bool populateErrorInfo)
         {
             const string ERROR_MSG = "Oooops";
 
@@ -343,8 +407,9 @@ namespace NanoRoute.Tests
             Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object), Throws.InstanceOf<OperationCanceledException>());
         }
 
-        [Test]
-        public async Task AddJsonErrorDetails_ShouldHandleAggregateExceptions([Values] bool populateErrorInfo)
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task AddJsonErrorDetails_ShouldHandleAggregateExceptions(bool populateErrorInfo)
         {
             AggregateException aggregate = new
             (
@@ -413,6 +478,64 @@ namespace NanoRoute.Tests
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo(expectedValue.ToString()));
+        }
+
+        [TestCase("/items/{value:int(min=20,max=10)}")]
+        [TestCase("/items/{value:int(foo=10)}")]
+        [TestCase("/items/{value:int(min='oops')}")]
+        [TestCase("/items/{value:int(max=true)}")]
+        [TestCase("/items/{value:str(min=5,max=3)}")]
+        [TestCase("/items/{value:str(min='oops')}")]
+        [TestCase("/items/{value:str(max=false)}")]
+        [TestCase("/items/{value:str(pattern='[')}")]
+        [TestCase("/items/{value:str(foo='bar')}")]
+        public void AddDefaultParsers_ShouldRejectSemanticallyInvalidBuiltInParserArguments(string pattern)
+        {
+            _routerBuilder.AddDefaultParsers();
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("args"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
+        }
+
+        [TestCase("/items/{value:guid(foo='bar')}")]
+        [TestCase("/items/{value:bool(foo='bar')}")]
+        public void BuiltInParsersWithoutParameters_ShouldRejectArguments(string pattern)
+        {
+            _routerBuilder
+                .AddGuidParser()
+                .AddBoolParser();
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("rawArgs"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
+        }
+
+        [TestCase("/items/{value:int(min=10,max=20,foo=1)}")]
+        [TestCase("/items/{value:int(min=10,max=5)}")]
+        [TestCase("/items/{value:int(min='oops')}")]
+        [TestCase("/items/{value:int(max=true)}")]
+        public void AddIntParser_ShouldRejectInvalidArguments(string pattern)
+        {
+            _routerBuilder.AddIntParser();
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("args"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
+        }
+
+        [TestCase("/items/{value:str(min=5,max=3)}")]
+        [TestCase("/items/{value:str(min='oops')}")]
+        [TestCase("/items/{value:str(max=false)}")]
+        [TestCase("/items/{value:str(pattern='[')}")]
+        [TestCase("/items/{value:str(foo='bar')}")]
+        public void AddStringParser_ShouldRejectInvalidArguments(string pattern)
+        {
+            _routerBuilder.AddStringParser();
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("args"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
         }
 
         [Test]
@@ -537,8 +660,17 @@ namespace NanoRoute.Tests
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddSegmentParser(null!, new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("parserName"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddSegmentParser("any", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddSegmentParser("any", null!, new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("bindArguments"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddSegmentParser("any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, (SegmentParserDelegate) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => RouterBuilderSegmentParserExtensions.AddSegmentParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => RouterBuilderSegmentParserExtensions.AddSegmentParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
         });
 
         [Test]
