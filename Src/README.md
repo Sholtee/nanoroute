@@ -18,7 +18,7 @@ using NanoRoute.Json;
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .AddSegmentParser("int", static (string segment, out object? parsed) =>
+    .AddSegmentParser("int", static (string segment, object? _, out object? parsed) =>
     {
         bool success = int.TryParse(segment, out int value);
         parsed = success ? value : null;
@@ -50,7 +50,19 @@ await router.Route(context, new ServiceCollection().BuildServiceProvider());
 
 In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs before the more specific `/api/users/{user_id:int}/details` handler and can populate shared state in `RequestContext.Parameters`. `HttpListenerRouter` converts the incoming `HttpListenerContext` into an `HttpRequestMessage`, executes the NanoRoute pipeline, and copies the produced `HttpResponseMessage` back to the listener response.
 
+## Matching Rules
+
+- A trailing `/` makes a route a prefix match.
+- Without a trailing `/`, the route matches only the exact normalized path.
+- Literal segments are matched case-insensitively.
+- Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
+- The parameter name is optional. Segments like `{int}` still validate the path but do not add an entry to `RequestContext.Parameters`.
+- When multiple handlers match, NanoRoute evaluates compatible handlers from shorter prefixes toward more specific matches.
+- At the same path depth, literal segments are preferred over parameter matches by default, but `RouterConfig.MatchingBehavior` can change the precedence.
+
 ## Advanced Usage
+
+### WithBase()
 
 When several routes share the same prefix, `WithBase()` lets you define that prefix once and register child routes relative to it.
 
@@ -82,7 +94,68 @@ HttpListenerRouter router = builder.CreateRouter();
 
 This produces the same effective routes as registering `/api/users/{user_id:int}/` and `/api/users/{user_id:int}/details` directly, but keeps repeated base patterns out of individual `AddHandler()` calls.
 
-## Custom Routers
+### Segment Parsers
+
+NanoRoute supports both synchronous and asynchronous segment parsers:
+
+- `AddSegmentParser("name", SyncSegmentParserDelegate)` for lightweight synchronous parsing.
+- `AddSegmentParser("name", SegmentParserDelegate)` when parsing needs request services or async work.
+- `AddSegmentParser("name", BindArgumentsDelegate, ...)` when the route template includes parser arguments such as `{id:int(min=1)}`.
+
+`BindArgumentsDelegate` receives the raw parser arguments as a case-insensitive dictionary and can turn them into any cached object. That object is then exposed as `SegmentParserContext.Arguments` for async parsers or as the `arguments` parameter for sync parsers.
+
+```csharp
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
+
+using NanoRoute;
+
+RouteBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
+    .CreateBuilder()
+    .AddSegmentParser
+    (
+        "int",
+        static (IReadOnlyDictionary<string, string> rawArgs) => (
+            Min: rawArgs.TryGetValue("min", out string? min) ? int.Parse(min, CultureInfo.InvariantCulture) : null,
+            Max: rawArgs.TryGetValue("max", out string? max) ? int.Parse(max, CultureInfo.InvariantCulture) : null
+        ),
+        static (string segment, object? arguments, out object? parsed) =>
+        {
+            (int? Min, int? Max) limits = ((int? Min, int? Max)) arguments!;
+            parsed = null;
+
+            if (!int.TryParse(segment, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
+                return false;
+
+            if (limits.Min is int min && value < min)
+                return false;
+
+            if (limits.Max is int max && value > max)
+                return false;
+
+            parsed = value;
+            return true;
+        }
+    )
+    .AddSegmentParser("user", static async (SegmentParserContext context) =>
+    {
+        if (!Guid.TryParse(context.Segment, out Guid userId))
+            return new SegmentParseResult(false, null);
+
+        IUserRepository repository = context.Services.GetRequiredService<IUserRepository>();
+        object? user = await repository.TryGetAsync(userId, context.Cancellation);
+        return new SegmentParseResult(user is not null, user);
+    });
+```
+
+Built-in parsers use the same mechanism:
+
+- `int` supports `min` and `max`.
+- `str` supports `min`, `max`, and `pattern`.
+- `guid` and `bool` do not take arguments.
+
+### Custom Routers
 
 If `HttpListenerRouter` is not the transport you want, you can derive from `Router` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
 
@@ -111,17 +184,7 @@ InMemoryRouter router = InMemoryRouter
 
 This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, segment parsing, and handler pipeline.
 
-## Matching Rules
-
-- A trailing `/` makes a route a prefix match.
-- Without a trailing `/`, the route matches only the exact normalized path.
-- Literal segments are matched case-insensitively.
-- Parameter segments use registered parsers such as `{user_id:int}`.
-- Percent-encoded parameter segments are decoded before the parser runs.
-- When multiple handlers match, NanoRoute evaluates compatible handlers from shorter prefixes toward more specific matches.
-- At the same path depth, literal segments are preferred over parameter matches by default, but `RouterConfig.MatchingBehavior` can change the precedence.
-
-## Timeouts And Cancellation
+### Timeouts And Cancellation
 
 - `RouterConfig.Timeout` defaults to `TimeSpan.FromMinutes(1)`.
 - NanoRoute exposes a linked cancellation token to async segment parsers and handlers through `SegmentParserContext.Cancellation` and `RequestContext.Cancellation`.
