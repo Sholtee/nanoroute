@@ -51,7 +51,7 @@ namespace NanoRoute
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verbs);
 
-                routeBuilder.AddHandler(verbs, "/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+                routeBuilder.AddHandler(verbs, "/", async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
                     try
                     {

@@ -4,6 +4,7 @@ const NanoRoute.NanoRouteExceptionExtensions.STATUS_NAME = "StatusCode" -> strin
 const NanoRoute.Router.ORIGINAL_REQUEST_NAME = "OriginalRequest" -> string!
 const NanoRoute.Router.TRACE_ID_NAME = "TraceId" -> string!
 NanoRoute.BindArgumentsDelegate
+NanoRoute.CallNextHandlerDelegate
 NanoRoute.ErrorDetails
 NanoRoute.ErrorDetails.DeveloperMessage.get -> System.Collections.Generic.IEnumerable<string!>?
 NanoRoute.ErrorDetails.DeveloperMessage.init -> void

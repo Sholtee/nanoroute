@@ -80,7 +80,7 @@ namespace NanoRoute.Json
                 if (verbs.Count is 0)
                     verbs = ["POST", "PUT"];
 
-                routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+                routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
                     context.Cancellation.ThrowIfCancellationRequested();
 
@@ -255,7 +255,7 @@ namespace NanoRoute.Json
                 Ensure.NotNull(routeBuilder);
 
                 routeBuilder
-                    .AddHandler("/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+                    .AddHandler("/", async (RequestContext context, CallNextHandlerDelegate next) =>
                     {
                         try
                         {

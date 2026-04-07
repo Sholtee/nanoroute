@@ -106,10 +106,31 @@ namespace NanoRoute
     public delegate ValueTask<SegmentParseResult> SegmentParserDelegate(SegmentParserContext context);
 
     /// <summary>
+    /// Invokes the next compatible handler in the current routing pipeline.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="HttpResponseMessage"/> produced by the next matching handler.
+    /// </returns>
+    /// <remarks>
+    /// This delegate is passed into <see cref="RequestHandlerDelegate"/> so handlers can opt into middleware-style
+    /// composition. When the current handler does not call it, the pipeline stops at the current handler.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// routerBuilder.AddHandler("GET", "/api/users/{id:int}", async (requestContext, callNext) =>
+    /// {
+    ///     requestContext.Parameters["StartTime"] = DateTimeOffset.UtcNow;
+    ///     return await callNext();
+    /// });
+    /// </code>
+    /// </example>
+    public delegate Task<HttpResponseMessage> CallNextHandlerDelegate();
+
+    /// <summary>
     /// Represents a request handler in the router pipeline.
     /// </summary>
     /// <param name="requestContext">The current request context, including parsed route parameters and services.</param>
-    /// <param name="callNext">Invokes the next compatible handler in the pipeline.</param>
+    /// <param name="callNext">A delegate that invokes the next compatible handler in the pipeline.</param>
     /// <returns>
     /// The response produced by the current handler, or by a later handler when <paramref name="callNext"/> is invoked.
     /// </returns>
@@ -132,5 +153,5 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate Task<HttpResponseMessage> RequestHandlerDelegate(RequestContext requestContext, Func<Task<HttpResponseMessage>> callNext);
+    public delegate Task<HttpResponseMessage> RequestHandlerDelegate(RequestContext requestContext, CallNextHandlerDelegate callNext);
 }
