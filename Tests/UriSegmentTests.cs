@@ -1,5 +1,5 @@
 /********************************************************************************
-* StringSegmentTests.cs                                                         *
+* UriSegmentTests.cs                                                            *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -12,7 +12,7 @@ namespace NanoRoute.Tests
     using Internals;
 
     [TestFixture]
-    internal sealed class StringSegmentTests
+    internal sealed class UriSegmentTests
     {
         [TestCase("")]
         [TestCase("/")]
@@ -24,7 +24,7 @@ namespace NanoRoute.Tests
         [TestCase("//a//b//")]
         public void Enumerate_ShouldReturnTheSplitSegments(string s)
         {
-            Assert.That(new StringSegment(s, '/').Enumerate(), Is.EquivalentTo(s.Split(['/'], StringSplitOptions.RemoveEmptyEntries)));
+            Assert.That(new UriSegment(s).Enumerate(), Is.EquivalentTo(s.Split([UriSegment.SEPARATOR], StringSplitOptions.RemoveEmptyEntries)));
         }
     }
 }

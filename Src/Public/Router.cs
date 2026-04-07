@@ -22,7 +22,7 @@ namespace NanoRoute
     /// Executes the route matching pipeline built by <see cref="RouteBuilder"/>.
     /// </summary>
     /// <remarks>
-    /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches parsed parameters, and invokes compatible
+    /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
     /// handlers in order until one returns a response without delegating further.
     /// </remarks>
     public abstract class Router: RoutingContext
@@ -37,14 +37,22 @@ namespace NanoRoute
         /// </summary>
         public const string ORIGINAL_REQUEST_NAME = "OriginalRequest";
 
-        private sealed record MatchingContext(RouteNode Node, HttpVerb Verb, StringSegment? Segment, Dictionary<string, object?> Parameters);
+        private readonly record struct MatchingContext
+        (
+            RouteNode Node,
+            HttpVerb Verb,
+            UriSegment? Segment,
+            IServiceProvider Services,
+            Dictionary<string, object?> Parameters,
+            CancellationToken Cancellation
+        );
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly IReadOnlyList<Func<MatchingContext, IEnumerable<HandlerRegistration>>> _findMatchDelegates = null!;
+        private readonly IReadOnlyList<Func<MatchingContext, IAsyncEnumerable<HandlerRegistration>>> _findMatchDelegates = null!;
 
-        private IEnumerable<HandlerRegistration> FindMatches(MatchingContext context)
+        private async IAsyncEnumerable<HandlerRegistration> FindMatches(MatchingContext matchingContext)
         {
-            (RouteNode Node, HttpVerb Verb, StringSegment? Segment, Dictionary<string, object?> Parameters) = context;
+            (RouteNode Node, HttpVerb Verb, UriSegment? Segment, _, Dictionary<string, object?> Parameters, _) = matchingContext;
 
             if (Node.HandlerRegistrations.TryGetValue(Verb, out List<HandlerRegistration>? handlerRegistrations))
                 foreach (HandlerRegistration handlerRegistration in handlerRegistrations)
@@ -58,50 +66,57 @@ namespace NanoRoute
             if (Segment?.Value is null)
                 yield break;
 
-            foreach(Func<MatchingContext, IEnumerable<HandlerRegistration>> findMatchesDelegate in _findMatchDelegates)
-                foreach (HandlerRegistration match in findMatchesDelegate(context))
+            foreach (Func<MatchingContext, IAsyncEnumerable<HandlerRegistration>> findMatchesDelegate in _findMatchDelegates)
+                await foreach (HandlerRegistration match in findMatchesDelegate(matchingContext))
                     yield return match;
         }
 
-        private IEnumerable<HandlerRegistration> FindLiteralMatches(MatchingContext context)
+        private async IAsyncEnumerable<HandlerRegistration> FindLiteralMatches(MatchingContext matchingContext)
         {
-            (RouteNode Node, _, StringSegment? Segment, _) = context;
+            (RouteNode Node, _, UriSegment? Segment, _, _, _) = matchingContext;
 
             Debug.Assert(Segment?.Value is not null, "Invalid segment");
 
-            if (!Node.LiteralChildren.TryGetValue(Segment!.Value!, out RouteNode literalChild))
+            if (!Node.LiteralChildren.TryGetValue(Segment?.Value!, out RouteNode literalChild))
                 yield break;
 
-            foreach (HandlerRegistration match in FindMatches(context with { Node = literalChild, Segment = Segment.Next }))
+            await foreach (HandlerRegistration match in FindMatches(matchingContext with { Node = literalChild, Segment = Segment!.Next }))
                 yield return match;
         }
 
-        private IEnumerable<HandlerRegistration> FindParameterMatches(MatchingContext context)
+        private async IAsyncEnumerable<HandlerRegistration> FindParameterMatches(MatchingContext matchingContext)
         {
-            (RouteNode Node, _, StringSegment? Segment, Dictionary<string, object?> Parameters) = context;
+            (RouteNode Node, _, UriSegment? Segment, IServiceProvider Services, Dictionary<string, object?> Parameters, CancellationToken Cancellation) = matchingContext;
 
             Debug.Assert(Segment?.Value is not null, "Invalid segment");
 
-            if (Node.ParameterizedChildren.Count is 0)
+            if (Node.ParsedChildren.Count is 0)
                 yield break;
 
-            string decodedSegment = HttpUtility.UrlDecode(Segment!.Value!);
+            SegmentParserContext parserContext = new
+            (
+                // The segment value is percent encoded. Decode it for the parser
+                HttpUtility.UrlDecode(Segment?.Value!),
+                Services,
+                null,
+                Cancellation
+            );
 
-            foreach (RouteNode parameterizedChild in Node.ParameterizedChildren)
+            foreach (RouteNode parsedChild in Node.ParsedChildren)
             {
-                Debug.Assert(parameterizedChild.ParameterParser is not null, "Child node must have parameter parser assigned");
+                Debug.Assert(parsedChild.SegmentParser is not null, "Child node must have segment parser assigned");
 
-                if (!parameterizedChild.ParameterParser!.TryParse(decodedSegment, out object? parsed))
+                if (await parsedChild.SegmentParser!.Parse(parserContext with { Arguments = parsedChild.SegmentParser.Arguments }) is not { Success: true } parsed)
                     continue;
 
-                Dictionary<string, object?> extended = parameterizedChild.ParameterParser?.ParameterName is { Length: > 0 } parameterName
+                Dictionary<string, object?> extended = parsedChild.SegmentParser?.ParameterName is { Length: > 0 } parameterName
                     ? new(Parameters, StringComparer.OrdinalIgnoreCase)
                     {
-                        [parameterName] = parsed
+                        [parameterName] = parsed.Parsed
                     }
                     : Parameters;
 
-                foreach (HandlerRegistration match in FindMatches(context with { Node = parameterizedChild, Segment = Segment.Next, Parameters = extended }))
+                await foreach (HandlerRegistration match in FindMatches(matchingContext with { Node = parsedChild, Segment = Segment!.Next, Parameters = extended }))
                     yield return match;
             }
         }
@@ -125,6 +140,7 @@ namespace NanoRoute
             Ensure.NotNull(config);
 
             MatchingBehavior = config.MatchingBehavior;
+            Timeout = config.Timeout;
         }
 
         /// <summary>
@@ -146,19 +162,33 @@ namespace NanoRoute
         }
 
         /// <summary>
+        /// Gets the maximum time the router allows a request to remain in the matching and handler pipeline.
+        /// </summary>
+        /// <remarks>
+        /// The effective pipeline token is canceled when either the caller-supplied cancellation token is canceled
+        /// or this timeout elapses.
+        /// </remarks>
+        public TimeSpan Timeout { get; private init; }
+
+        /// <summary>
         /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
         /// </summary>
         /// <param name="request">The request to process.</param>
-        /// <param name="services">The service provider exposed to handlers through <see cref="RequestContext.Services"/>.</param>
+        /// <param name="services">The service provider exposed to segment parsers and handlers.</param>
         /// <param name="cancellation">A token that can cancel request processing.</param>
         /// <returns>The <see cref="HttpResponseMessage"/> produced by the matching handlers.</returns>
         /// <remarks>
-        /// Prefix routes can participate in the same pipeline as exact routes. When several handlers match, NanoRoute
+        /// Prefix routes can participate in the same pipeline as exact routes. Consecutive <c>/</c> separators in the
+        /// request path are treated as a single separator during matching. When several handlers match, NanoRoute
         /// evaluates compatible matches from shorter prefixes toward more specific matches and honors
         /// <see cref="MatchingBehavior"/> when both literal and parameterized segments are available at the same depth.
         /// </remarks>
         /// <exception cref="HttpRequestException">Thrown when no handler matches the request path.</exception>
         /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
+        /// <exception cref="OperationCanceledException">
+        /// Thrown when the caller cancels the <paramref name="cancellation"/> or when the configured <see cref="Timeout"/>
+        /// elapses.
+        /// </exception>
         #if DEBUG
         internal
         #endif
@@ -175,6 +205,7 @@ namespace NanoRoute
 
             string requestPath = request
                 .RequestUri
+                // Escaped path, not percent decoded. So "/path%2Fto%2Fsomewhere/" will be treated as a single segment
                 .AbsolutePath;
 
             RouterEventSource.Log.Info("RequestProcessingStarted", () => new
@@ -183,24 +214,31 @@ namespace NanoRoute
                 Verb = verb
             });
 
-            using IEnumerator<HandlerRegistration> matches = FindMatches
+            using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+            linked.CancelAfter(Timeout);
+            cancellation = linked.Token;
+
+            await using IAsyncEnumerator<HandlerRegistration> matches = FindMatches
             (
                 new MatchingContext
                 (
                     _root,
                     verb,
-                    new StringSegment(requestPath, '/'),
-                    new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
+                    new UriSegment(requestPath),
+                    services,
+                    new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
+                    cancellation
                 )
-                
             )
-            .GetEnumerator();
+            .GetAsyncEnumerator();
 
             return await CallNextHandler();
 
             async Task<HttpResponseMessage> CallNextHandler()
             {
-                if (!matches.MoveNext())
+                cancellation.ThrowIfCancellationRequested();
+
+                if (!await matches.MoveNextAsync())
                 {
                     RouterEventSource.Log.Info("NoMatchingHandler", () => new
                     {
@@ -223,13 +261,13 @@ namespace NanoRoute
                     ParameterCount = match.AttachedParameters!.Count
                 });
 
-                RequestContext requestContext = new()
-                {
-                    Parameters = match.AttachedParameters!,
-                    Request = request,
-                    Services = services,
-                    Cancellation = cancellation
-                };
+                RequestContext requestContext = new
+                (
+                    match.AttachedParameters!,
+                    services,
+                    request,
+                    cancellation
+                );
 
                 return await match.Handler(requestContext, CallNextHandler);
             }

@@ -80,7 +80,7 @@ namespace NanoRoute.Json
                 if (verbs.Count is 0)
                     verbs = ["POST", "PUT"];
 
-                routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+                routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
                     context.Cancellation.ThrowIfCancellationRequested();
 
@@ -239,11 +239,12 @@ namespace NanoRoute.Json
             /// <remarks>
             /// This helper wraps <see cref="HttpRequestException"/> values into JSON responses and also installs
             /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> so unexpected
-            /// exceptions are normalized before they reach the client.
+            /// exceptions are normalized before they reach the client. <see cref="OperationCanceledException"/> is
+            /// not translated into JSON and continues to propagate to the caller unchanged.
             /// </remarks>
             /// <example>
             /// <code>
-            /// router
+            /// routerBuilder
             ///     .AddJsonErrorDetails()
             ///     .AddHandler("GET", "/items/{id:int}", (context, _) =&gt;
             ///         throw new InvalidOperationException("Unexpected state"));
@@ -254,7 +255,7 @@ namespace NanoRoute.Json
                 Ensure.NotNull(routeBuilder);
 
                 routeBuilder
-                    .AddHandler("/", async (RequestContext context, Func<Task<HttpResponseMessage>> next) =>
+                    .AddHandler("/", async (RequestContext context, CallNextHandlerDelegate next) =>
                     {
                         try
                         {

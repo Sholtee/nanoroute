@@ -102,12 +102,17 @@ namespace NanoRoute
         /// <param name="services">The service provider exposed to handlers through <see cref="RequestContext.Services"/>.</param>
         /// <param name="cancellation">A token that can cancel request processing and response streaming.</param>
         /// <returns>A task that completes after the router has finished writing the response.</returns>
+        /// <exception cref="OperationCanceledException">
+        /// Thrown when the caller cancels <paramref name="cancellation"/> or when the configured router timeout
+        /// elapses. In either case the listener response is aborted before the exception is rethrown.
+        /// </exception>
         /// <remarks>
         /// Request and content headers are copied into the intermediate <see cref="HttpRequestMessage"/>.
         /// The original <see cref="HttpListenerRequest"/> is stored in
         /// <see cref="Router.ORIGINAL_REQUEST_NAME"/> on the generated request message.
         /// Response headers are copied back except for reserved <see cref="HttpListenerResponse"/> headers that
-        /// must be managed by <see cref="HttpListener"/> itself.
+        /// must be managed by <see cref="HttpListener"/> itself. Cancellation is not translated into an HTTP error
+        /// response by this adapter.
         /// </remarks>
         /// <example>
         /// <code>
@@ -131,15 +136,24 @@ namespace NanoRoute
             Ensure.NotNull(services);
 
             using HttpRequestMessage request = GetRequest(context.Request);
-            using HttpResponseMessage response = await Handle(request, services, cancellation);
 
-            await HandleResponse(response, context.Response, cancellation);
+            try
+            {
+                using HttpResponseMessage response = await Handle(request, services, cancellation);
+
+                await HandleResponse(response, context.Response, cancellation);
+            }
+            catch (OperationCanceledException)
+            {
+                context.Response.Abort();
+                throw;
+            }
         }
 
         /// <summary>
         /// Creates a strongly typed builder for configuring an <see cref="HttpListenerRouter"/>.
         /// </summary>
-        /// <returns>A builder that can register handlers, parameter parsers, and router configuration.</returns>
+        /// <returns>A builder that can register handlers, segment parsers, and router configuration.</returns>
         public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static bldr => new HttpListenerRouter(bldr));
     }
 }

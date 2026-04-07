@@ -17,27 +17,24 @@ namespace NanoRoute
     /// <summary>
     /// Builder responsible for route configuration.
     /// </summary>
-    /// <remarks>
-    /// Route patterns support literal segments and parser-backed parameter segments such as
-    /// <c>/users/{id:int}</c>. A trailing <c>/</c> marks the pattern as a prefix match, while patterns without
-    /// a trailing slash must match the full path exactly.
-    /// </remarks>
+        /// <remarks>
+        /// Route patterns support literal segments and parser-backed parameter segments such as
+        /// <c>/users/{id:int}</c>. Consecutive <c>/</c> separators are treated as a single separator. A trailing
+        /// <c>/</c> marks the pattern as a prefix match, while patterns without a trailing slash must match the full
+        /// path exactly.
+        /// </remarks>
     public class RouteBuilder : RoutingContext
     {
         #region Private
-        private const string
-            // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences
-            LITERAL_SEGMENT_DEFINITION = @"(?:(?:[\w.\-~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+)",
-            PARAMETER_SEGMENT_DEFINITION = @"\{(?:\w+:)?\w+\}",
-            SEGMENT_DEFINITION = $@"(?:{LITERAL_SEGMENT_DEFINITION}|{PARAMETER_SEGMENT_DEFINITION})";
-
-        // avoid using the constructor that accepts RegexOptions, since it is not AOT compatible
+        // Avoid using the constructor that accepts RegexOptions, It is not AOT compatible
         private static readonly Regex
-            s_parserDefinition = new(@"^\{(?:(?<parametername>\w+):)?(?<name>\w+)\}$"),
-            s_patternValidator = new($@"^(?:/?|/?{SEGMENT_DEFINITION}(?:/{SEGMENT_DEFINITION})*/?)$");
+            // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences.
+            s_literalSegmentValidator = new(@"^(?:(?:[\w.\-~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+)$"),
+            // A parser-backed segment is recognized as a {...} shell here; the full interpretation happens in SegmentParserDefinitionParser.
+            s_segmentParserValidator = new(@"^\{[^/{}]+\}$");
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Dictionary<string, ParameterParser> _parameterParsers;
+        private readonly Dictionary<string, SegmentParserRegistration> _segmentParsers;
 
         private readonly string _basePattern;
 
@@ -46,45 +43,43 @@ namespace NanoRoute
         /// </summary>
         private RouteNode FindNode(string pattern)
         {
-            if (!s_patternValidator.IsMatch(pattern))
-                throw new ArgumentException(Resources.ERR_INVALID_PATTERN, nameof(pattern));
-
             RouteNode target = _root;
 
-            foreach (string segment in new StringSegment(pattern, '/').Enumerate())
+            foreach (string segment in new UriSegment(pattern).Enumerate())
             {
-                if (s_parserDefinition.Match(segment) is { Success: true } parserDefinition)
+                if (s_segmentParserValidator.IsMatch(segment))
                 {
-                    string
-                        parserName = parserDefinition.Groups["name"].Value,  // cannot be empty
-                        parameterName = parserDefinition.Groups["parametername"].Value;
+                    SegmentParserDefinition parserDefinition = SegmentParserDefinitionParser.GetSegmentParserDefinition(segment);
 
-                    Debug.Assert(!string.IsNullOrEmpty(parserName), "Parser name could not be extracted");
-
-                    if (!_parameterParsers.TryGetValue(parserName, out ParameterParser parser))
+                    if (!_segmentParsers.TryGetValue(parserDefinition.ParserName, out SegmentParserRegistration parserRegistration))
                         throw new InvalidOperationException
                         (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARAMETER_PARSER, parserName)
+                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserDefinition.ParserName)
                         );
 
-                    if (target.ParameterizedChildren.SingleOrDefault(cc => cc.ParameterParser!.Name.Equals(parser.Name, StringComparison.OrdinalIgnoreCase)) is not { } parameterizedChild)
-                    {
-                        if (!string.IsNullOrEmpty(parserName))
-                            parser = parser with { ParameterName = parameterName };
+                    object? arguments = parserRegistration.BindArguments(parserDefinition.RawArguments);
 
-                        parameterizedChild = new RouteNode
+                    RouteNode? parsedChild = target.ParsedChildren.SingleOrDefault
+                    (
+                        cc => cc.SegmentParser!.Name.Equals(parserDefinition.ParserName, StringComparison.OrdinalIgnoreCase) && EqualityComparer<object?>.Default.Equals(cc.SegmentParser.Arguments, arguments)
+                    );
+
+                    if (parsedChild is null)
+                    {
+                        parsedChild = new RouteNode
                         {
-                            ParameterParser = parser,
+                            SegmentParser = new SegmentParser(parserRegistration.Name, parserRegistration.Parse, arguments, parserDefinition.ParameterName),
                             Segment = segment
                         };
-                        target.ParameterizedChildren.Add(parameterizedChild);
+
+                        target.ParsedChildren.Add(parsedChild);
                     }
-                    else if (parameterizedChild.ParameterParser!.ParameterName?.Equals(parameterName) is false)
+                    else if (parsedChild.SegmentParser!.ParameterName?.Equals(parserDefinition.ParameterName) is false)
                         throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
 
-                    target = parameterizedChild;
+                    target = parsedChild;
                 }
-                else
+                else if (s_literalSegmentValidator.IsMatch(segment))
                 {
                     if (!target.LiteralChildren.TryGetValue(segment, out RouteNode exactChild))
                     {
@@ -97,6 +92,8 @@ namespace NanoRoute
 
                     target = exactChild;
                 }
+                else
+                    throw new ArgumentException(Resources.ERR_INVALID_PATTERN, nameof(pattern));
             }
 
             return target;
@@ -106,13 +103,13 @@ namespace NanoRoute
 
         private RouteBuilder(RouteBuilder parent, string baseUrl): base(parent.FindNode(baseUrl))
         {
-            _parameterParsers = new Dictionary<string, ParameterParser>(parent._parameterParsers, StringComparer.OrdinalIgnoreCase);
+            _segmentParsers = new Dictionary<string, SegmentParserRegistration>(parent._segmentParsers, StringComparer.OrdinalIgnoreCase);
             _basePattern = JoinPattern(parent._basePattern, baseUrl);
         }
 
         internal RouteBuilder(): base(new RouteNode { Segment = string.Empty })
         {
-            _parameterParsers = new Dictionary<string, ParameterParser>(StringComparer.OrdinalIgnoreCase);
+            _segmentParsers = new Dictionary<string, SegmentParserRegistration>(StringComparer.OrdinalIgnoreCase);
             _basePattern = string.Empty;
         }
 
@@ -124,21 +121,19 @@ namespace NanoRoute
         #endregion
 
         /// <summary>
-        /// Registers a parser that can convert a route segment into a typed parameter value.
+        /// Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.
         /// </summary>
-        /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
+        /// <param name="parserName">The name used in route patterns such as <c>{id:int(min=1)}</c>.</param>
+        /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
         /// <returns>The current instance.</returns>
-        /// <remarks>
-        /// If a parser is already registered under the same <paramref name="parserName"/>, the new registration
-        /// replaces the existing one.
-        /// </remarks>
-        public RouteBuilder AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)
+        public RouteBuilder AddSegmentParser(string parserName, BindArgumentsDelegate bindArguments, SegmentParserDelegate tryParseDelegate)
         {
             Ensure.NotNull(parserName);
+            Ensure.NotNull(bindArguments);
             Ensure.NotNull(tryParseDelegate);
 
-            _parameterParsers[parserName] = new ParameterParser(parserName, tryParseDelegate);
+            _segmentParsers[parserName] = new SegmentParserRegistration(parserName, tryParseDelegate, bindArguments);
 
             return this;
         }
@@ -148,8 +143,9 @@ namespace NanoRoute
         /// </summary>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, consecutive <c>/</c> separators are
+        /// treated as a single separator, and a trailing <c>/</c> turns the pattern into a prefix match. Without a
+        /// trailing slash, the pattern matches only the exact path.
         /// </param>
         /// <param name="handler">The handler to execute when the pattern matches.</param>
         /// <returns>The current router instance.</returns>
@@ -180,8 +176,9 @@ namespace NanoRoute
         /// <param name="verbs">The HTTP methods that should use the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, consecutive <c>/</c> separators are
+        /// treated as a single separator, and a trailing <c>/</c> turns the pattern into a prefix match. Without a
+        /// trailing slash, the pattern matches only the exact path.
         /// </param>
         /// <param name="handler">The handler to execute when the route matches.</param>
         /// <returns>The current router instance.</returns>
@@ -211,8 +208,9 @@ namespace NanoRoute
         /// <param name="verb">The HTTP method that activates the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>, consecutive <c>/</c> separators are
+        /// treated as a single separator, and a trailing <c>/</c> turns the pattern into a prefix match. Without a
+        /// trailing slash, the pattern matches only the exact path.
         /// </param>
         /// <param name="handler">
         /// The handler to execute. If several handlers match, calling the supplied <c>next</c> delegate continues
@@ -221,7 +219,7 @@ namespace NanoRoute
         /// <returns>The current router instance.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>
         /// <exception cref="InvalidOperationException">
-        /// Thrown when the pattern references a parameter parser that has not been registered yet.
+        /// Thrown when the pattern references a segment parser that has not been registered yet.
         /// </exception>
         /// <example>
         /// <code>
@@ -268,11 +266,11 @@ namespace NanoRoute
         /// </param>
         /// <returns>A child builder that shares the current route tree but has its own parser registration scope.</returns>
         /// <remarks>
-        /// Child builders inherit the parent's registered parameter parsers at creation time. Additional parser
+        /// Child builders inherit the parent's registered segment parsers at creation time. Additional parser
         /// registrations or overrides made on the child builder stay local to that branch.
         /// </remarks>
         /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> is not a valid route pattern or does not end with <c>/</c>.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a segment parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
         /// RouteBuilder api = builder.WithBase("/api/");
@@ -299,7 +297,7 @@ namespace NanoRoute
         /// <param name="configureRoutes">A callback that configures routes on the child builder.</param>
         /// <returns>The current builder.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> is not a valid route pattern or does not end with <c>/</c>.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a parameter parser that has not been registered yet.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a segment parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
         /// builder.WithBase("/api/", api =&gt; api
@@ -321,13 +319,13 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Gets the parameter parser names currently registered on this builder instance.
+        /// Gets the segment parser names currently registered on this builder instance.
         /// </summary>
         /// <remarks>
         /// For child builders created with <see cref="WithBase(string)"/>, this sequence reflects the inherited
         /// parsers plus any overrides added to that child scope.
         /// </remarks>
-        public IEnumerable<string> ParameterParsers => _parameterParsers.Keys;
+        public IEnumerable<string> SegmentParsers => _segmentParsers.Keys;
 
         /// <summary>
         /// Gets the distinct route patterns currently visible from this builder branch.
@@ -355,7 +353,7 @@ namespace NanoRoute
                     foreach (RouteNode childNode in node.LiteralChildren.Values)
                         Walk(childNode, patterns);
 
-                    foreach (RouteNode childNode in node.ParameterizedChildren)
+                    foreach (RouteNode childNode in node.ParsedChildren)
                         Walk(childNode, patterns);
                 }
             }

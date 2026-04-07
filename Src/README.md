@@ -2,6 +2,8 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with an optional `HttpListener` adapter and focused helpers for JSON payloads and error handling.
 
+The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+
 ## Quick Start
 
 ```csharp
@@ -16,7 +18,7 @@ using NanoRoute.Json;
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .AddParameterParser("int", static (string segment, out object? parsed) =>
+    .AddSegmentParser("int", static (string segment, out object? parsed) =>
     {
         bool success = int.TryParse(segment, out int value);
         parsed = success ? value : null;
@@ -80,6 +82,35 @@ HttpListenerRouter router = builder.CreateRouter();
 
 This produces the same effective routes as registering `/api/users/{user_id:int}/` and `/api/users/{user_id:int}/details` directly, but keeps repeated base patterns out of individual `AddHandler()` calls.
 
+## Custom Routers
+
+If `HttpListenerRouter` is not the transport you want, you can derive from `Router` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
+
+```csharp
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+using NanoRoute;
+
+public sealed class InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder) : Router(builder, builder.RouterConfig)
+{
+    public static RouterBuilder<InMemoryRouter, RouterConfig> CreateBuilder() =>
+        new(static builder => new InMemoryRouter(builder));
+
+    public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
+        Handle(request, services, cancellation);
+}
+
+InMemoryRouter router = InMemoryRouter
+    .CreateBuilder()
+    .AddHandler("GET", "/health", async (_, _) => new HttpResponseMessage())
+    .CreateRouter();
+```
+
+This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, segment parsing, and handler pipeline.
+
 ## Matching Rules
 
 - A trailing `/` makes a route a prefix match.
@@ -90,10 +121,18 @@ This produces the same effective routes as registering `/api/users/{user_id:int}
 - When multiple handlers match, NanoRoute evaluates compatible handlers from shorter prefixes toward more specific matches.
 - At the same path depth, literal segments are preferred over parameter matches by default, but `RouterConfig.MatchingBehavior` can change the precedence.
 
+## Timeouts And Cancellation
+
+- `RouterConfig.Timeout` defaults to `TimeSpan.FromMinutes(1)`.
+- NanoRoute exposes a linked cancellation token to async segment parsers and handlers through `SegmentParserContext.Cancellation` and `RequestContext.Cancellation`.
+- That linked token is canceled when either the caller-provided cancellation token is canceled or the router timeout elapses.
+- `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
+- `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
+
 ## Common Building Blocks
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
-- `AddDefaultParsers()` registers the built-in `int`, `guid`, `bool`, and `str` parameter parsers.
+- `AddDefaultParsers()` registers the built-in `int`, `guid`, `bool`, and `str` segment parsers.
 - `WithBase("/prefix/")` creates a scoped child builder for a route subtree.
 - `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
@@ -107,7 +146,7 @@ This produces the same effective routes as registering `/api/users/{user_id:int}
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
-- [ParameterParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html)
+- [SegmentParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.SegmentParserDelegate.html)
 - [RequestHandler](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler.html)
 
 ## Documentation
@@ -115,3 +154,4 @@ This produces the same effective routes as registering `/api/users/{user_id:int}
 API documentation is generated from the XML comments in the source and published at:
 
 - <https://sholtee.github.io/nanoroute/docs/NanoRoute/>
+

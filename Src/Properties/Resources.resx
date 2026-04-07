@@ -120,8 +120,8 @@
   <data name="ERR_NOT_FOUND" xml:space="preserve">
     <value>Not found.</value>
   </data>
-  <data name="ERR_NO_SUCH_PARAMETER_PARSER" xml:space="preserve">
-    <value>No such parameter parser: {0}</value>
+  <data name="ERR_NO_SUCH_SEGMENT_PARSER" xml:space="preserve">
+    <value>No such segment parser: {0}</value>
   </data>
   <data name="ERR_PARAMETER_OVERRIDE" xml:space="preserve">
     <value>Conflicting parameter names are not allowed for the same route segment.</value>
@@ -147,7 +147,10 @@
   <data name="ERR_BAD_CONTENT_TYPE" xml:space="preserve">
     <value>Bad content type.</value>
   </data>
-  <data name="ERR_REQUEST_TIMED_OUT" xml:space="preserve">
-    <value>Request timed out.</value>
+  <data name="ERR_INVALID_PARSERS_ARGS" xml:space="preserve">
+    <value>Invalid parser argument list.</value>
+  </data>
+  <data name="ERR_DUPLICATE_PARSER_ARGS" xml:space="preserve">
+    <value>Duplicate parser arguments.</value>
   </data>
 </root>

@@ -79,11 +79,29 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate parser arguments..
+        /// </summary>
+        internal static string ERR_DUPLICATE_PARSER_ARGS {
+            get {
+                return ResourceManager.GetString("ERR_DUPLICATE_PARSER_ARGS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal server error..
         /// </summary>
         internal static string ERR_INERNAL_ERROR {
             get {
                 return ResourceManager.GetString("ERR_INERNAL_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid parser argument list..
+        /// </summary>
+        internal static string ERR_INVALID_PARSERS_ARGS {
+            get {
+                return ResourceManager.GetString("ERR_INVALID_PARSERS_ARGS", resourceCulture);
             }
         }
         
@@ -115,11 +133,11 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No such parameter parser: {0}.
+        ///   Looks up a localized string similar to No such segment parser: {0}.
         /// </summary>
-        internal static string ERR_NO_SUCH_PARAMETER_PARSER {
+        internal static string ERR_NO_SUCH_SEGMENT_PARSER {
             get {
-                return ResourceManager.GetString("ERR_NO_SUCH_PARAMETER_PARSER", resourceCulture);
+                return ResourceManager.GetString("ERR_NO_SUCH_SEGMENT_PARSER", resourceCulture);
             }
         }
         
@@ -147,15 +165,6 @@ namespace NanoRoute.Properties {
         internal static string ERR_PARAMETER_OVERRIDE {
             get {
                 return ResourceManager.GetString("ERR_PARAMETER_OVERRIDE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Request timed out..
-        /// </summary>
-        internal static string ERR_REQUEST_TIMED_OUT {
-            get {
-                return ResourceManager.GetString("ERR_REQUEST_TIMED_OUT", resourceCulture);
             }
         }
     }
