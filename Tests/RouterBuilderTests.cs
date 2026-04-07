@@ -135,6 +135,18 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void SegmentParsers_ShouldReflectTheCurrentScope()
+        {
+            RouteBuilder childBuilder = _routerBuilder
+                .AddSegmentParser("str", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
+                .WithBase("/child/")
+                .AddSegmentParser("int", (string segment, object? _, out object? parsed) => { parsed = segment; return true; });
+
+            Assert.That(_routerBuilder.SegmentParsers, Is.EquivalentTo(new[] { "str" }));
+            Assert.That(childBuilder.SegmentParsers, Is.EquivalentTo(new[] { "str", "int" }));
+        }
+
+        [Test]
         public void Patterns_ShouldReflectTheActualBranch()
         {
             _routerBuilder
@@ -296,6 +308,16 @@ namespace NanoRoute.Tests
 
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", "/path/to/{other_id:int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
+        }
+
+        [Test]
+        public void AddHandler_ShouldAllowReusingUnnamedParsedSegments()
+        {
+            _routerBuilder
+                .AddSegmentParser("int", new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/path/to/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
+
+            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("POST", "/path/to/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
 
         [Test]
