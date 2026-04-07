@@ -26,6 +26,8 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class HttpListenerRouterTests
     {
+        private static readonly JsonSerializerOptions s_caseInsensitiveJson = new() { PropertyNameCaseInsensitive = true };
+
         private HttpListener _listener = null!;
 
         private HttpClient _client = null!;
@@ -77,6 +79,8 @@ namespace NanoRoute.Tests
             return context;
         }
 
+        private static Uri RelativeUri(string value) => new(value, UriKind.Relative);
+
         [TearDown]
         public void TearDown()
         {
@@ -108,7 +112,7 @@ namespace NanoRoute.Tests
         {
             CreateRouter(_ => { });
 
-            Task<HttpResponseMessage> resp = _client.GetAsync("");
+            Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
             HttpListenerContext context = await _listener.GetContextAsync();
 
             ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>(() => _router.Route(context, null!))!;
@@ -139,7 +143,7 @@ namespace NanoRoute.Tests
                 }));
 
             _client.DefaultRequestHeaders.Add("X-Custom-Request-Header", "cica");
-            Task<HttpResponseMessage> resp = _client.PostAsync("welcome", new StringContent(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }), Encoding.UTF8, "application/json"));
+            Task<HttpResponseMessage> resp = _client.PostAsync(RelativeUri("welcome"), new StringContent(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }), Encoding.UTF8, "application/json"));
 
             await HandleRequest();
 
@@ -174,7 +178,7 @@ namespace NanoRoute.Tests
                 }));
 
             _client.DefaultRequestHeaders.Add("X-Custom-Request-Header", "cica");
-            Task<HttpResponseMessage> resp = _client.GetAsync("welcome/Spikey");
+            Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri("welcome/Spikey"));
 
             await HandleRequest();
 
@@ -201,7 +205,7 @@ namespace NanoRoute.Tests
                 }));
 
             _client.Timeout = TimeSpan.FromSeconds(2);
-            Task<HttpResponseMessage> responseTask = _client.GetAsync("welcome");
+            Task<HttpResponseMessage> responseTask = _client.GetAsync(RelativeUri("welcome"));
 
             Assert.That(async () => await HandleRequest(), Throws.InstanceOf<OperationCanceledException>());
             Assert.That(async () => await responseTask, Throws.Exception);
@@ -212,7 +216,7 @@ namespace NanoRoute.Tests
         {
             CreateRouter(_ => { });
 
-            Task <HttpResponseMessage> resp = _client.GetAsync("welcome");
+            Task <HttpResponseMessage> resp = _client.GetAsync(RelativeUri("welcome"));
 
             await HandleRequest();
 
@@ -222,7 +226,7 @@ namespace NanoRoute.Tests
             Assert.That(msg.Content, Is.Not.Null);
             Assert.That(msg.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
 
-            ErrorDetails body = JsonSerializer.Deserialize<ErrorDetails>(await msg.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            ErrorDetails body = JsonSerializer.Deserialize<ErrorDetails>(await msg.Content.ReadAsStringAsync(), s_caseInsensitiveJson)!;
             Assert.That(body.Status, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(body.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(body.TraceId, Is.Not.Empty);
@@ -250,7 +254,7 @@ namespace NanoRoute.Tests
                     };
                 }));
 
-            Task<HttpResponseMessage> resp = _client.PostAsync("welcome", new StringContent(JsonSerializer.Serialize(new HelloRequest{ Name = "Spikey" }), Encoding.UTF8, "application/json"));
+            Task<HttpResponseMessage> resp = _client.PostAsync(RelativeUri("welcome"), new StringContent(JsonSerializer.Serialize(new HelloRequest{ Name = "Spikey" }), Encoding.UTF8, "application/json"));
 
             await HandleRequest();
 
@@ -267,13 +271,13 @@ namespace NanoRoute.Tests
                 .AddSegmentParser("str", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler("GET", "", async (context, _) =>
                 {
-                    Assert.That(context.Request.Properties.TryGetValue(Router.ORIGINAL_REQUEST_NAME, out object? originalRequest), Is.True);
+                    Assert.That(context.Request.TryGetProperty(Router.ORIGINAL_REQUEST_NAME, out object? originalRequest), Is.True);
                     Assert.That(originalRequest, Is.InstanceOf<HttpListenerRequest>());
 
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }));
 
-            Task<HttpResponseMessage> resp = _client.GetAsync("");
+            Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
 
             await HandleRequest();
 
@@ -298,7 +302,7 @@ namespace NanoRoute.Tests
                     return resp;
                 }));
 
-            Task<HttpResponseMessage> resp = _client.GetAsync("");
+            Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
 
             await HandleRequest();
 
@@ -331,7 +335,7 @@ namespace NanoRoute.Tests
                     };
                 }));
 
-            Task<HttpResponseMessage> resp = _client.GetAsync("welcome");
+            Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri("welcome"));
 
             await HandleRequest();
 
@@ -351,7 +355,7 @@ namespace NanoRoute.Tests
             CreateRouter(bldr => bldr
                 .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.NoContent)));
 
-            Task<HttpResponseMessage> resp = _client.GetAsync("");
+            Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
 
             await HandleRequest();
 
@@ -384,7 +388,7 @@ namespace NanoRoute.Tests
                     };
                 }));
 
-            Task<HttpResponseMessage> responseTask = _client.GetAsync("api/users/42/details");
+            Task<HttpResponseMessage> responseTask = _client.GetAsync(RelativeUri("api/users/42/details"));
 
             await HandleRequest();
 
@@ -415,7 +419,7 @@ namespace NanoRoute.Tests
                         });
                     })));
 
-            Task<HttpResponseMessage> responseTask = _client.GetAsync("api/users/42/details");
+            Task<HttpResponseMessage> responseTask = _client.GetAsync(RelativeUri("api/users/42/details"));
 
             await HandleRequest();
 

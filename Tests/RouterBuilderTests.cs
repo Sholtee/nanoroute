@@ -26,6 +26,8 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class RouterBuilderTests
     {
+        private static readonly JsonSerializerOptions s_caseInsensitiveJson = new() { PropertyNameCaseInsensitive = true };
+
         internal sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> routerBuilder) : Router(routerBuilder, routerBuilder.RouterConfig) { } 
 
         private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
@@ -346,14 +348,14 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
-            request.Properties[Router.TRACE_ID_NAME] = "trace-1";
+            request.SetProperty(Router.TRACE_ID_NAME, "trace-1");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
 
             string resp = await response.Content.ReadAsStringAsync();
 
-            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, s_caseInsensitiveJson)!;
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
@@ -374,14 +376,14 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.Properties[Router.TRACE_ID_NAME] = "trace-2";
+            request.SetProperty(Router.TRACE_ID_NAME, "trace-2");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
 
             string resp = await response.Content.ReadAsStringAsync();
 
-            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, s_caseInsensitiveJson)!;
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
@@ -403,7 +405,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.Properties[Router.TRACE_ID_NAME] = "trace-cancel";
+            request.SetProperty(Router.TRACE_ID_NAME, "trace-cancel");
 
             using CancellationTokenSource cancellation = new();
             cancellation.Cancel();
@@ -445,12 +447,12 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.Properties[Router.TRACE_ID_NAME] = "trace-aggregate";
+            request.SetProperty(Router.TRACE_ID_NAME, "trace-aggregate");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             string resp = await response.Content.ReadAsStringAsync();
 
-            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, s_caseInsensitiveJson)!;
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
             Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
