@@ -7,7 +7,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
-namespace Router.Perf
+namespace NanoRoute.Perf
 {
     static class Program
     {

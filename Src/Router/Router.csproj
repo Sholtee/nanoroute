@@ -52,6 +52,9 @@
 	</ItemGroup>
   
   <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>NanoRoute.Perf</_Parameter1>
+    </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute" Condition="'$(Configuration)'=='Debug'">
       <_Parameter1>NanoRoute.Tests</_Parameter1>
     </AssemblyAttribute>

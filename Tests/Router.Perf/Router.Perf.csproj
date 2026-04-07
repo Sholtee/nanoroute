@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <AssemblyName>Router.Perf</AssemblyName>
-    <RootNamespace>Router.Perf</RootNamespace>
+    <AssemblyName>NanoRoute.Perf</AssemblyName>
+    <RootNamespace>NanoRoute.Perf</RootNamespace>
     <Configurations>Debug;Release</Configurations>
     <!--Remove this when the BenchmarkDotNet.Analyzers will be reliable again-->
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
