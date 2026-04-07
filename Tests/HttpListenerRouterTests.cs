@@ -194,6 +194,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        [Platform(Exclude = "Linux", Reason = "HttpListenerResponse.Abort() does not reliably surface as a client-observable failure on Linux, so this transport-specific assertion is not portable there.")]
         public async Task Route_ShouldAbortTheResponseAndRethrowWhenTheRouterIsCancelled()
         {
             CreateRouter(bldr => bldr
