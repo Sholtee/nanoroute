@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Router.Perf</AssemblyName>
+    <RootNamespace>Router.Perf</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
+    <!--Remove this when the BenchmarkDotNet.Analyzers will be reliable again-->
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\Router\Router.csproj" />
+  </ItemGroup>
+
+</Project>
