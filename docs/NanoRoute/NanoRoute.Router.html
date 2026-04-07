@@ -81,7 +81,7 @@
     <pre><code class="lang-csharp hljs">public abstract class Router : RoutingContext</code></pre>
   </div>
   <h5 id="NanoRoute_Router_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>A router is created from a builder snapshot. Matching walks the configured route tree, attaches parsed parameters, and invokes compatible
+  <div class="markdown level0 remarks"><p>A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
 handlers in order until one returns a response without delegating further.</p>
 </div>
   <h3 id="constructors">Constructors
@@ -193,6 +193,34 @@ handlers in order until one returns a response without delegating further.</p>
       </tr>
     </tbody>
   </table>
+  <a id="NanoRoute_Router_Timeout_" data-uid="NanoRoute.Router.Timeout*"></a>
+  <h4 id="NanoRoute_Router_Timeout" data-uid="NanoRoute.Router.Timeout">Timeout</h4>
+  <div class="markdown level1 summary"><p>Gets the maximum time the router allows a request to remain in the matching and handler pipeline.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TimeSpan Timeout { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_Router_Timeout_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The effective pipeline token is canceled when either the caller-supplied cancellation token is canceled
+or this timeout elapses.</p>
+</div>
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_Router_Handle_" data-uid="NanoRoute.Router.Handle*"></a>
@@ -223,7 +251,7 @@ handlers in order until one returns a response without delegating further.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a></td>
         <td><span class="parametername">services</span></td>
-        <td><p>The service provider exposed to handlers through <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Services">Services</a>.</p>
+        <td><p>The service provider exposed to segment parsers and handlers.</p>
 </td>
       </tr>
       <tr>
@@ -251,7 +279,8 @@ handlers in order until one returns a response without delegating further.</p>
     </tbody>
   </table>
   <h5 id="NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Prefix routes can participate in the same pipeline as exact routes. When several handlers match, NanoRoute
+  <div class="markdown level1 remarks"><p>Prefix routes can participate in the same pipeline as exact routes. Consecutive <code>/</code> separators in the
+request path are treated as a single separator during matching. When several handlers match, NanoRoute
 evaluates compatible matches from shorter prefixes toward more specific matches and honors
 <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_MatchingBehavior">MatchingBehavior</a> when both literal and parameterized segments are available at the same depth.</p>
 </div>
@@ -272,6 +301,12 @@ evaluates compatible matches from shorter prefixes toward more specific matches 
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
         <td><p>Thrown when the request uses an unsupported HTTP method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>Thrown when the caller cancels the <code class="paramref">cancellation</code> or when the configured <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_Timeout">Timeout</a>
+elapses.</p>
 </td>
       </tr>
     </tbody>

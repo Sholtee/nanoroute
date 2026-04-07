@@ -7,6 +7,30 @@ references:
   commentId: N:NanoRoute
   fullName: NanoRoute
   nameWithType: NanoRoute
+- uid: NanoRoute.BindArgumentsDelegate
+  name: BindArgumentsDelegate
+  href: NanoRoute.BindArgumentsDelegate.html
+  commentId: T:NanoRoute.BindArgumentsDelegate
+  fullName: NanoRoute.BindArgumentsDelegate
+  nameWithType: BindArgumentsDelegate
+- uid: NanoRoute.CallNextHandlerDelegate
+  name: CallNextHandlerDelegate
+  href: NanoRoute.CallNextHandlerDelegate.html
+  commentId: T:NanoRoute.CallNextHandlerDelegate
+  fullName: NanoRoute.CallNextHandlerDelegate
+  nameWithType: CallNextHandlerDelegate
+- uid: NanoRoute.CallNextHandlerDelegate.Invoke
+  name: Invoke()
+  href: NanoRoute.CallNextHandlerDelegate.html#NanoRoute_CallNextHandlerDelegate_Invoke
+  commentId: M:NanoRoute.CallNextHandlerDelegate.Invoke
+  fullName: NanoRoute.CallNextHandlerDelegate.Invoke()
+  nameWithType: CallNextHandlerDelegate.Invoke()
+- uid: NanoRoute.CallNextHandlerDelegate.Invoke*
+  name: Invoke
+  href: NanoRoute.CallNextHandlerDelegate.html#NanoRoute_CallNextHandlerDelegate_Invoke_
+  commentId: Overload:NanoRoute.CallNextHandlerDelegate.Invoke
+  fullName: NanoRoute.CallNextHandlerDelegate.Invoke
+  nameWithType: CallNextHandlerDelegate.Invoke
 - uid: NanoRoute.ErrorDetails
   name: ErrorDetails
   href: NanoRoute.ErrorDetails.html
@@ -361,27 +385,21 @@ references:
   commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.Throw
   fullName: NanoRoute.NanoRouteExceptionExtensions.Throw
   nameWithType: NanoRouteExceptionExtensions.Throw
-- uid: NanoRoute.ParameterParserDelegate
-  name: ParameterParserDelegate
-  href: NanoRoute.ParameterParserDelegate.html
-  commentId: T:NanoRoute.ParameterParserDelegate
-  fullName: NanoRoute.ParameterParserDelegate
-  nameWithType: ParameterParserDelegate
 - uid: NanoRoute.RequestContext
   name: RequestContext
   href: NanoRoute.RequestContext.html
   commentId: T:NanoRoute.RequestContext
   fullName: NanoRoute.RequestContext
   nameWithType: RequestContext
-- uid: NanoRoute.RequestContext.#ctor
-  name: RequestContext()
-  href: NanoRoute.RequestContext.html#NanoRoute_RequestContext__ctor
-  commentId: M:NanoRoute.RequestContext.#ctor
-  name.vb: New()
-  fullName: NanoRoute.RequestContext.RequestContext()
-  fullName.vb: NanoRoute.RequestContext.New()
-  nameWithType: RequestContext.RequestContext()
-  nameWithType.vb: RequestContext.New()
+- uid: NanoRoute.RequestContext.#ctor(System.Collections.Generic.Dictionary{System.String,System.Object},System.IServiceProvider,System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)
+  name: RequestContext(Dictionary<string, object?>, IServiceProvider, HttpRequestMessage, CancellationToken)
+  href: NanoRoute.RequestContext.html#NanoRoute_RequestContext__ctor_System_Collections_Generic_Dictionary_System_String_System_Object__System_IServiceProvider_System_Net_Http_HttpRequestMessage_System_Threading_CancellationToken_
+  commentId: M:NanoRoute.RequestContext.#ctor(System.Collections.Generic.Dictionary{System.String,System.Object},System.IServiceProvider,System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)
+  name.vb: New(Dictionary(Of String, Object), IServiceProvider, HttpRequestMessage, CancellationToken)
+  fullName: NanoRoute.RequestContext.RequestContext(System.Collections.Generic.Dictionary<string, object?>, System.IServiceProvider, System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken)
+  fullName.vb: NanoRoute.RequestContext.New(System.Collections.Generic.Dictionary(Of String, Object), System.IServiceProvider, System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken)
+  nameWithType: RequestContext.RequestContext(Dictionary<string, object?>, IServiceProvider, HttpRequestMessage, CancellationToken)
+  nameWithType.vb: RequestContext.New(Dictionary(Of String, Object), IServiceProvider, HttpRequestMessage, CancellationToken)
 - uid: NanoRoute.RequestContext.#ctor*
   name: RequestContext
   href: NanoRoute.RequestContext.html#NanoRoute_RequestContext__ctor_
@@ -484,33 +502,21 @@ references:
   commentId: Overload:NanoRoute.RouteBuilder.AddHandler
   fullName: NanoRoute.RouteBuilder.AddHandler
   nameWithType: RouteBuilder.AddHandler
-- uid: NanoRoute.RouteBuilder.AddParameterParser(System.String,NanoRoute.ParameterParserDelegate)
-  name: AddParameterParser(string, ParameterParserDelegate)
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddParameterParser_System_String_NanoRoute_ParameterParserDelegate_
-  commentId: M:NanoRoute.RouteBuilder.AddParameterParser(System.String,NanoRoute.ParameterParserDelegate)
-  name.vb: AddParameterParser(String, ParameterParserDelegate)
-  fullName: NanoRoute.RouteBuilder.AddParameterParser(string, NanoRoute.ParameterParserDelegate)
-  fullName.vb: NanoRoute.RouteBuilder.AddParameterParser(String, NanoRoute.ParameterParserDelegate)
-  nameWithType: RouteBuilder.AddParameterParser(string, ParameterParserDelegate)
-  nameWithType.vb: RouteBuilder.AddParameterParser(String, ParameterParserDelegate)
-- uid: NanoRoute.RouteBuilder.AddParameterParser*
-  name: AddParameterParser
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddParameterParser_
-  commentId: Overload:NanoRoute.RouteBuilder.AddParameterParser
-  fullName: NanoRoute.RouteBuilder.AddParameterParser
-  nameWithType: RouteBuilder.AddParameterParser
-- uid: NanoRoute.RouteBuilder.ParameterParsers
-  name: ParameterParsers
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_ParameterParsers
-  commentId: P:NanoRoute.RouteBuilder.ParameterParsers
-  fullName: NanoRoute.RouteBuilder.ParameterParsers
-  nameWithType: RouteBuilder.ParameterParsers
-- uid: NanoRoute.RouteBuilder.ParameterParsers*
-  name: ParameterParsers
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_ParameterParsers_
-  commentId: Overload:NanoRoute.RouteBuilder.ParameterParsers
-  fullName: NanoRoute.RouteBuilder.ParameterParsers
-  nameWithType: RouteBuilder.ParameterParsers
+- uid: NanoRoute.RouteBuilder.AddSegmentParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)
+  name: AddSegmentParser(string, BindArgumentsDelegate, SegmentParserDelegate)
+  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddSegmentParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SegmentParserDelegate_
+  commentId: M:NanoRoute.RouteBuilder.AddSegmentParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)
+  name.vb: AddSegmentParser(String, BindArgumentsDelegate, SegmentParserDelegate)
+  fullName: NanoRoute.RouteBuilder.AddSegmentParser(string, NanoRoute.BindArgumentsDelegate, NanoRoute.SegmentParserDelegate)
+  fullName.vb: NanoRoute.RouteBuilder.AddSegmentParser(String, NanoRoute.BindArgumentsDelegate, NanoRoute.SegmentParserDelegate)
+  nameWithType: RouteBuilder.AddSegmentParser(string, BindArgumentsDelegate, SegmentParserDelegate)
+  nameWithType.vb: RouteBuilder.AddSegmentParser(String, BindArgumentsDelegate, SegmentParserDelegate)
+- uid: NanoRoute.RouteBuilder.AddSegmentParser*
+  name: AddSegmentParser
+  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddSegmentParser_
+  commentId: Overload:NanoRoute.RouteBuilder.AddSegmentParser
+  fullName: NanoRoute.RouteBuilder.AddSegmentParser
+  nameWithType: RouteBuilder.AddSegmentParser
 - uid: NanoRoute.RouteBuilder.Patterns
   name: Patterns
   href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Patterns
@@ -523,6 +529,18 @@ references:
   commentId: Overload:NanoRoute.RouteBuilder.Patterns
   fullName: NanoRoute.RouteBuilder.Patterns
   nameWithType: RouteBuilder.Patterns
+- uid: NanoRoute.RouteBuilder.SegmentParsers
+  name: SegmentParsers
+  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_SegmentParsers
+  commentId: P:NanoRoute.RouteBuilder.SegmentParsers
+  fullName: NanoRoute.RouteBuilder.SegmentParsers
+  nameWithType: RouteBuilder.SegmentParsers
+- uid: NanoRoute.RouteBuilder.SegmentParsers*
+  name: SegmentParsers
+  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_SegmentParsers_
+  commentId: Overload:NanoRoute.RouteBuilder.SegmentParsers
+  fullName: NanoRoute.RouteBuilder.SegmentParsers
+  nameWithType: RouteBuilder.SegmentParsers
 - uid: NanoRoute.RouteBuilder.WithBase(System.String)
   name: WithBase(string)
   href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_System_String_
@@ -607,27 +625,141 @@ references:
   commentId: F:NanoRoute.Router.TRACE_ID_NAME
   fullName: NanoRoute.Router.TRACE_ID_NAME
   nameWithType: Router.TRACE_ID_NAME
-- uid: NanoRoute.RouterBuilderParameterParserExtensions
-  name: RouterBuilderParameterParserExtensions
-  href: NanoRoute.RouterBuilderParameterParserExtensions.html
-  commentId: T:NanoRoute.RouterBuilderParameterParserExtensions
-  fullName: NanoRoute.RouterBuilderParameterParserExtensions
-  nameWithType: RouterBuilderParameterParserExtensions
-- uid: NanoRoute.RouterBuilderParameterParserExtensions.AddDefaultParsers*
+- uid: NanoRoute.Router.Timeout
+  name: Timeout
+  href: NanoRoute.Router.html#NanoRoute_Router_Timeout
+  commentId: P:NanoRoute.Router.Timeout
+  fullName: NanoRoute.Router.Timeout
+  nameWithType: Router.Timeout
+- uid: NanoRoute.Router.Timeout*
+  name: Timeout
+  href: NanoRoute.Router.html#NanoRoute_Router_Timeout_
+  commentId: Overload:NanoRoute.Router.Timeout
+  fullName: NanoRoute.Router.Timeout
+  nameWithType: Router.Timeout
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions
+  name: RouterBuilderSegmentParserExtensions
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html
+  commentId: T:NanoRoute.RouterBuilderSegmentParserExtensions
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions
+  nameWithType: RouterBuilderSegmentParserExtensions
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser*
+  name: AddBoolParser
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddBoolParser_
+  commentId: Overload:NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser
+  nameWithType: RouterBuilderSegmentParserExtensions.AddBoolParser
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser``1(``0)
+  name: AddBoolParser<TBuilder>(TBuilder)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddBoolParser__1___0_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser``1(``0)
+  name.vb: AddBoolParser(Of TBuilder)(TBuilder)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser<TBuilder>(TBuilder)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser(Of TBuilder)(TBuilder)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddBoolParser<TBuilder>(TBuilder)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddBoolParser(Of TBuilder)(TBuilder)
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers*
   name: AddDefaultParsers
-  href: NanoRoute.RouterBuilderParameterParserExtensions.html#NanoRoute_RouterBuilderParameterParserExtensions_AddDefaultParsers_
-  commentId: Overload:NanoRoute.RouterBuilderParameterParserExtensions.AddDefaultParsers
-  fullName: NanoRoute.RouterBuilderParameterParserExtensions.AddDefaultParsers
-  nameWithType: RouterBuilderParameterParserExtensions.AddDefaultParsers
-- uid: NanoRoute.RouterBuilderParameterParserExtensions.AddDefaultParsers``1(``0)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddDefaultParsers_
+  commentId: Overload:NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers
+  nameWithType: RouterBuilderSegmentParserExtensions.AddDefaultParsers
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers``1(``0)
   name: AddDefaultParsers<TBuilder>(TBuilder)
-  href: NanoRoute.RouterBuilderParameterParserExtensions.html#NanoRoute_RouterBuilderParameterParserExtensions_AddDefaultParsers__1___0_
-  commentId: M:NanoRoute.RouterBuilderParameterParserExtensions.AddDefaultParsers``1(``0)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddDefaultParsers__1___0_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers``1(``0)
   name.vb: AddDefaultParsers(Of TBuilder)(TBuilder)
-  fullName: NanoRoute.RouterBuilderParameterParserExtensions.AddDefaultParsers<TBuilder>(TBuilder)
-  fullName.vb: NanoRoute.RouterBuilderParameterParserExtensions.AddDefaultParsers(Of TBuilder)(TBuilder)
-  nameWithType: RouterBuilderParameterParserExtensions.AddDefaultParsers<TBuilder>(TBuilder)
-  nameWithType.vb: RouterBuilderParameterParserExtensions.AddDefaultParsers(Of TBuilder)(TBuilder)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers<TBuilder>(TBuilder)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers(Of TBuilder)(TBuilder)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddDefaultParsers<TBuilder>(TBuilder)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddDefaultParsers(Of TBuilder)(TBuilder)
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser*
+  name: AddGuidParser
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddGuidParser_
+  commentId: Overload:NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser
+  nameWithType: RouterBuilderSegmentParserExtensions.AddGuidParser
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser``1(``0)
+  name: AddGuidParser<TBuilder>(TBuilder)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddGuidParser__1___0_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser``1(``0)
+  name.vb: AddGuidParser(Of TBuilder)(TBuilder)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser<TBuilder>(TBuilder)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser(Of TBuilder)(TBuilder)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddGuidParser<TBuilder>(TBuilder)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddGuidParser(Of TBuilder)(TBuilder)
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser*
+  name: AddIntParser
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddIntParser_
+  commentId: Overload:NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser
+  nameWithType: RouterBuilderSegmentParserExtensions.AddIntParser
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser``1(``0)
+  name: AddIntParser<TBuilder>(TBuilder)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddIntParser__1___0_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser``1(``0)
+  name.vb: AddIntParser(Of TBuilder)(TBuilder)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser<TBuilder>(TBuilder)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser(Of TBuilder)(TBuilder)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddIntParser<TBuilder>(TBuilder)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddIntParser(Of TBuilder)(TBuilder)
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser*
+  name: AddSegmentParser
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser_
+  commentId: Overload:NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser
+  nameWithType: RouterBuilderSegmentParserExtensions.AddSegmentParser
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)
+  name: AddSegmentParser<TBuilder>(TBuilder, string, BindArgumentsDelegate, SegmentParserDelegate)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SegmentParserDelegate_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)
+  name.vb: AddSegmentParser(Of TBuilder)(TBuilder, String, BindArgumentsDelegate, SegmentParserDelegate)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser<TBuilder>(TBuilder, string, NanoRoute.BindArgumentsDelegate, NanoRoute.SegmentParserDelegate)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser(Of TBuilder)(TBuilder, String, NanoRoute.BindArgumentsDelegate, NanoRoute.SegmentParserDelegate)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddSegmentParser<TBuilder>(TBuilder, string, BindArgumentsDelegate, SegmentParserDelegate)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddSegmentParser(Of TBuilder)(TBuilder, String, BindArgumentsDelegate, SegmentParserDelegate)
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SyncSegmentParserDelegate)
+  name: AddSegmentParser<TBuilder>(TBuilder, string, BindArgumentsDelegate, SyncSegmentParserDelegate)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncSegmentParserDelegate_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SyncSegmentParserDelegate)
+  name.vb: AddSegmentParser(Of TBuilder)(TBuilder, String, BindArgumentsDelegate, SyncSegmentParserDelegate)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser<TBuilder>(TBuilder, string, NanoRoute.BindArgumentsDelegate, NanoRoute.SyncSegmentParserDelegate)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser(Of TBuilder)(TBuilder, String, NanoRoute.BindArgumentsDelegate, NanoRoute.SyncSegmentParserDelegate)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddSegmentParser<TBuilder>(TBuilder, string, BindArgumentsDelegate, SyncSegmentParserDelegate)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddSegmentParser(Of TBuilder)(TBuilder, String, BindArgumentsDelegate, SyncSegmentParserDelegate)
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.SegmentParserDelegate)
+  name: AddSegmentParser<TBuilder>(TBuilder, string, SegmentParserDelegate)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_SegmentParserDelegate_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.SegmentParserDelegate)
+  name.vb: AddSegmentParser(Of TBuilder)(TBuilder, String, SegmentParserDelegate)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser<TBuilder>(TBuilder, string, NanoRoute.SegmentParserDelegate)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser(Of TBuilder)(TBuilder, String, NanoRoute.SegmentParserDelegate)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddSegmentParser<TBuilder>(TBuilder, string, SegmentParserDelegate)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddSegmentParser(Of TBuilder)(TBuilder, String, SegmentParserDelegate)
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.SyncSegmentParserDelegate)
+  name: AddSegmentParser<TBuilder>(TBuilder, string, SyncSegmentParserDelegate)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_SyncSegmentParserDelegate_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.SyncSegmentParserDelegate)
+  name.vb: AddSegmentParser(Of TBuilder)(TBuilder, String, SyncSegmentParserDelegate)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser<TBuilder>(TBuilder, string, NanoRoute.SyncSegmentParserDelegate)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser(Of TBuilder)(TBuilder, String, NanoRoute.SyncSegmentParserDelegate)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddSegmentParser<TBuilder>(TBuilder, string, SyncSegmentParserDelegate)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddSegmentParser(Of TBuilder)(TBuilder, String, SyncSegmentParserDelegate)
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser*
+  name: AddStringParser
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddStringParser_
+  commentId: Overload:NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser
+  nameWithType: RouterBuilderSegmentParserExtensions.AddStringParser
+- uid: NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser``1(``0)
+  name: AddStringParser<TBuilder>(TBuilder)
+  href: NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddStringParser__1___0_
+  commentId: M:NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser``1(``0)
+  name.vb: AddStringParser(Of TBuilder)(TBuilder)
+  fullName: NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser<TBuilder>(TBuilder)
+  fullName.vb: NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser(Of TBuilder)(TBuilder)
+  nameWithType: RouterBuilderSegmentParserExtensions.AddStringParser<TBuilder>(TBuilder)
+  nameWithType.vb: RouterBuilderSegmentParserExtensions.AddStringParser(Of TBuilder)(TBuilder)
 - uid: NanoRoute.RouterBuilder`2
   name: RouterBuilder<TRouter, TConfig>
   href: NanoRoute.RouterBuilder-2.html
@@ -690,23 +822,23 @@ references:
   fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddHandler
   nameWithType: RouterBuilder<TRouter, TConfig>.AddHandler
   nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddHandler
-- uid: NanoRoute.RouterBuilder`2.AddParameterParser(System.String,NanoRoute.ParameterParserDelegate)
-  name: AddParameterParser(string, ParameterParserDelegate)
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_AddParameterParser_System_String_NanoRoute_ParameterParserDelegate_
-  commentId: M:NanoRoute.RouterBuilder`2.AddParameterParser(System.String,NanoRoute.ParameterParserDelegate)
-  name.vb: AddParameterParser(String, ParameterParserDelegate)
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.AddParameterParser(string, NanoRoute.ParameterParserDelegate)
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddParameterParser(String, NanoRoute.ParameterParserDelegate)
-  nameWithType: RouterBuilder<TRouter, TConfig>.AddParameterParser(string, ParameterParserDelegate)
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddParameterParser(String, ParameterParserDelegate)
-- uid: NanoRoute.RouterBuilder`2.AddParameterParser*
-  name: AddParameterParser
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_AddParameterParser_
-  commentId: Overload:NanoRoute.RouterBuilder`2.AddParameterParser
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.AddParameterParser
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddParameterParser
-  nameWithType: RouterBuilder<TRouter, TConfig>.AddParameterParser
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddParameterParser
+- uid: NanoRoute.RouterBuilder`2.AddSegmentParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)
+  name: AddSegmentParser(string, BindArgumentsDelegate, SegmentParserDelegate)
+  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_AddSegmentParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SegmentParserDelegate_
+  commentId: M:NanoRoute.RouterBuilder`2.AddSegmentParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)
+  name.vb: AddSegmentParser(String, BindArgumentsDelegate, SegmentParserDelegate)
+  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.AddSegmentParser(string, NanoRoute.BindArgumentsDelegate, NanoRoute.SegmentParserDelegate)
+  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddSegmentParser(String, NanoRoute.BindArgumentsDelegate, NanoRoute.SegmentParserDelegate)
+  nameWithType: RouterBuilder<TRouter, TConfig>.AddSegmentParser(string, BindArgumentsDelegate, SegmentParserDelegate)
+  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddSegmentParser(String, BindArgumentsDelegate, SegmentParserDelegate)
+- uid: NanoRoute.RouterBuilder`2.AddSegmentParser*
+  name: AddSegmentParser
+  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_AddSegmentParser_
+  commentId: Overload:NanoRoute.RouterBuilder`2.AddSegmentParser
+  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.AddSegmentParser
+  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddSegmentParser
+  nameWithType: RouterBuilder<TRouter, TConfig>.AddSegmentParser
+  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddSegmentParser
 - uid: NanoRoute.RouterBuilder`2.CreateRouter
   name: CreateRouter()
   href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter
@@ -809,9 +941,153 @@ references:
   commentId: Overload:NanoRoute.RouterConfig.MatchingBehavior
   fullName: NanoRoute.RouterConfig.MatchingBehavior
   nameWithType: RouterConfig.MatchingBehavior
+- uid: NanoRoute.RouterConfig.Timeout
+  name: Timeout
+  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_Timeout
+  commentId: P:NanoRoute.RouterConfig.Timeout
+  fullName: NanoRoute.RouterConfig.Timeout
+  nameWithType: RouterConfig.Timeout
+- uid: NanoRoute.RouterConfig.Timeout*
+  name: Timeout
+  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_Timeout_
+  commentId: Overload:NanoRoute.RouterConfig.Timeout
+  fullName: NanoRoute.RouterConfig.Timeout
+  nameWithType: RouterConfig.Timeout
 - uid: NanoRoute.RoutingContext
   name: RoutingContext
   href: NanoRoute.RoutingContext.html
   commentId: T:NanoRoute.RoutingContext
   fullName: NanoRoute.RoutingContext
   nameWithType: RoutingContext
+- uid: NanoRoute.SegmentParseResult
+  name: SegmentParseResult
+  href: NanoRoute.SegmentParseResult.html
+  commentId: T:NanoRoute.SegmentParseResult
+  fullName: NanoRoute.SegmentParseResult
+  nameWithType: SegmentParseResult
+- uid: NanoRoute.SegmentParseResult.#ctor(System.Boolean,System.Object)
+  name: SegmentParseResult(bool, object?)
+  href: NanoRoute.SegmentParseResult.html#NanoRoute_SegmentParseResult__ctor_System_Boolean_System_Object_
+  commentId: M:NanoRoute.SegmentParseResult.#ctor(System.Boolean,System.Object)
+  name.vb: New(Boolean, Object)
+  fullName: NanoRoute.SegmentParseResult.SegmentParseResult(bool, object?)
+  fullName.vb: NanoRoute.SegmentParseResult.New(Boolean, Object)
+  nameWithType: SegmentParseResult.SegmentParseResult(bool, object?)
+  nameWithType.vb: SegmentParseResult.New(Boolean, Object)
+- uid: NanoRoute.SegmentParseResult.#ctor*
+  name: SegmentParseResult
+  href: NanoRoute.SegmentParseResult.html#NanoRoute_SegmentParseResult__ctor_
+  commentId: Overload:NanoRoute.SegmentParseResult.#ctor
+  name.vb: New
+  fullName: NanoRoute.SegmentParseResult.SegmentParseResult
+  fullName.vb: NanoRoute.SegmentParseResult.New
+  nameWithType: SegmentParseResult.SegmentParseResult
+  nameWithType.vb: SegmentParseResult.New
+- uid: NanoRoute.SegmentParseResult.Parsed
+  name: Parsed
+  href: NanoRoute.SegmentParseResult.html#NanoRoute_SegmentParseResult_Parsed
+  commentId: P:NanoRoute.SegmentParseResult.Parsed
+  fullName: NanoRoute.SegmentParseResult.Parsed
+  nameWithType: SegmentParseResult.Parsed
+- uid: NanoRoute.SegmentParseResult.Parsed*
+  name: Parsed
+  href: NanoRoute.SegmentParseResult.html#NanoRoute_SegmentParseResult_Parsed_
+  commentId: Overload:NanoRoute.SegmentParseResult.Parsed
+  fullName: NanoRoute.SegmentParseResult.Parsed
+  nameWithType: SegmentParseResult.Parsed
+- uid: NanoRoute.SegmentParseResult.Success
+  name: Success
+  href: NanoRoute.SegmentParseResult.html#NanoRoute_SegmentParseResult_Success
+  commentId: P:NanoRoute.SegmentParseResult.Success
+  fullName: NanoRoute.SegmentParseResult.Success
+  nameWithType: SegmentParseResult.Success
+- uid: NanoRoute.SegmentParseResult.Success*
+  name: Success
+  href: NanoRoute.SegmentParseResult.html#NanoRoute_SegmentParseResult_Success_
+  commentId: Overload:NanoRoute.SegmentParseResult.Success
+  fullName: NanoRoute.SegmentParseResult.Success
+  nameWithType: SegmentParseResult.Success
+- uid: NanoRoute.SegmentParserContext
+  name: SegmentParserContext
+  href: NanoRoute.SegmentParserContext.html
+  commentId: T:NanoRoute.SegmentParserContext
+  fullName: NanoRoute.SegmentParserContext
+  nameWithType: SegmentParserContext
+- uid: NanoRoute.SegmentParserContext.#ctor(System.String,System.IServiceProvider,System.Object,System.Threading.CancellationToken)
+  name: SegmentParserContext(string, IServiceProvider, object?, CancellationToken)
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext__ctor_System_String_System_IServiceProvider_System_Object_System_Threading_CancellationToken_
+  commentId: M:NanoRoute.SegmentParserContext.#ctor(System.String,System.IServiceProvider,System.Object,System.Threading.CancellationToken)
+  name.vb: New(String, IServiceProvider, Object, CancellationToken)
+  fullName: NanoRoute.SegmentParserContext.SegmentParserContext(string, System.IServiceProvider, object?, System.Threading.CancellationToken)
+  fullName.vb: NanoRoute.SegmentParserContext.New(String, System.IServiceProvider, Object, System.Threading.CancellationToken)
+  nameWithType: SegmentParserContext.SegmentParserContext(string, IServiceProvider, object?, CancellationToken)
+  nameWithType.vb: SegmentParserContext.New(String, IServiceProvider, Object, CancellationToken)
+- uid: NanoRoute.SegmentParserContext.#ctor*
+  name: SegmentParserContext
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext__ctor_
+  commentId: Overload:NanoRoute.SegmentParserContext.#ctor
+  name.vb: New
+  fullName: NanoRoute.SegmentParserContext.SegmentParserContext
+  fullName.vb: NanoRoute.SegmentParserContext.New
+  nameWithType: SegmentParserContext.SegmentParserContext
+  nameWithType.vb: SegmentParserContext.New
+- uid: NanoRoute.SegmentParserContext.Arguments
+  name: Arguments
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Arguments
+  commentId: P:NanoRoute.SegmentParserContext.Arguments
+  fullName: NanoRoute.SegmentParserContext.Arguments
+  nameWithType: SegmentParserContext.Arguments
+- uid: NanoRoute.SegmentParserContext.Arguments*
+  name: Arguments
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Arguments_
+  commentId: Overload:NanoRoute.SegmentParserContext.Arguments
+  fullName: NanoRoute.SegmentParserContext.Arguments
+  nameWithType: SegmentParserContext.Arguments
+- uid: NanoRoute.SegmentParserContext.Cancellation
+  name: Cancellation
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Cancellation
+  commentId: P:NanoRoute.SegmentParserContext.Cancellation
+  fullName: NanoRoute.SegmentParserContext.Cancellation
+  nameWithType: SegmentParserContext.Cancellation
+- uid: NanoRoute.SegmentParserContext.Cancellation*
+  name: Cancellation
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Cancellation_
+  commentId: Overload:NanoRoute.SegmentParserContext.Cancellation
+  fullName: NanoRoute.SegmentParserContext.Cancellation
+  nameWithType: SegmentParserContext.Cancellation
+- uid: NanoRoute.SegmentParserContext.Segment
+  name: Segment
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Segment
+  commentId: P:NanoRoute.SegmentParserContext.Segment
+  fullName: NanoRoute.SegmentParserContext.Segment
+  nameWithType: SegmentParserContext.Segment
+- uid: NanoRoute.SegmentParserContext.Segment*
+  name: Segment
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Segment_
+  commentId: Overload:NanoRoute.SegmentParserContext.Segment
+  fullName: NanoRoute.SegmentParserContext.Segment
+  nameWithType: SegmentParserContext.Segment
+- uid: NanoRoute.SegmentParserContext.Services
+  name: Services
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Services
+  commentId: P:NanoRoute.SegmentParserContext.Services
+  fullName: NanoRoute.SegmentParserContext.Services
+  nameWithType: SegmentParserContext.Services
+- uid: NanoRoute.SegmentParserContext.Services*
+  name: Services
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Services_
+  commentId: Overload:NanoRoute.SegmentParserContext.Services
+  fullName: NanoRoute.SegmentParserContext.Services
+  nameWithType: SegmentParserContext.Services
+- uid: NanoRoute.SegmentParserDelegate
+  name: SegmentParserDelegate
+  href: NanoRoute.SegmentParserDelegate.html
+  commentId: T:NanoRoute.SegmentParserDelegate
+  fullName: NanoRoute.SegmentParserDelegate
+  nameWithType: SegmentParserDelegate
+- uid: NanoRoute.SyncSegmentParserDelegate
+  name: SyncSegmentParserDelegate
+  href: NanoRoute.SyncSegmentParserDelegate.html
+  commentId: T:NanoRoute.SyncSegmentParserDelegate
+  fullName: NanoRoute.SyncSegmentParserDelegate
+  nameWithType: SyncSegmentParserDelegate

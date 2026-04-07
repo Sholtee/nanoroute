@@ -65,6 +65,9 @@
       <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_MatchingBehavior">Router.MatchingBehavior</a>
     </div>
     <div>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_Timeout">Router.Timeout</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
@@ -118,7 +121,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;<a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>, <a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a>&gt;</td>
-        <td><p>A builder that can register handlers, parameter parsers, and router configuration.</p>
+        <td><p>A builder that can register handlers, segment parsers, and router configuration.</p>
 </td>
       </tr>
     </tbody>
@@ -183,7 +186,8 @@
 The original <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerrequest">HttpListenerRequest</a> is stored in
 <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_ORIGINAL_REQUEST_NAME">ORIGINAL_REQUEST_NAME</a> on the generated request message.
 Response headers are copied back except for reserved <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerresponse">HttpListenerResponse</a> headers that
-must be managed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> itself.</p>
+must be managed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> itself. Cancellation is not translated into an HTTP error
+response by this adapter.</p>
 </div>
   <h5 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_System_Threading_CancellationToken__examples">Examples</h5>
   <pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
@@ -199,6 +203,23 @@ must be managed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/
 
 await router.Route(listenerContext, services, cancellationToken);</code></pre>
 
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>Thrown when the caller cancels <code class="paramref">cancellation</code> or when the configured router timeout
+elapses. In either case the listener response is aborted before the exception is rethrown.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
 </article>
           </div>

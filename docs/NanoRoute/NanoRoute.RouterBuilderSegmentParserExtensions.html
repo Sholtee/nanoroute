@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class RouterBuilderSegmentParserExtensions | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class RouterBuilderSegmentParserExtensions | NanoRoute ">
+    
+    <meta name="description" content="Provides convenience methods for registering segment parsers.">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions">
+
+
+
+  <h1 id="NanoRoute_RouterBuilderSegmentParserExtensions" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions" class="text-break">Class RouterBuilderSegmentParserExtensions</h1>
+  <div class="markdown level0 summary"><p>Provides convenience methods for registering segment parsers.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">RouterBuilderSegmentParserExtensions</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_RouterBuilderSegmentParserExtensions_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class RouterBuilderSegmentParserExtensions</code></pre>
+  </div>
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddBoolParser_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddBoolParser__1___0_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddBoolParser``1(``0)">AddBoolParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <div class="markdown level1 summary"><p>Registers the built-in <code>bool</code> segment parser.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddBoolParser&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddBoolParser__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This parser does not support any arguments.</p>
+</div>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddDefaultParsers_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddDefaultParsers__1___0_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddDefaultParsers``1(``0)">AddDefaultParsers&lt;TBuilder&gt;(TBuilder)</h4>
+  <div class="markdown level1 summary"><p>Registers the built-in segment parsers for common scalar route segments.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddDefaultParsers&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddDefaultParsers__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This convenience method registers parsers named <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code>.
+Existing registrations with the same names are overwritten.</p>
+</div>
+  <h5 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddDefaultParsers__1___0__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder
+    .AddDefaultParsers()
+    .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddGuidParser_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddGuidParser__1___0_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddGuidParser``1(``0)">AddGuidParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <div class="markdown level1 summary"><p>Registers the built-in <code>guid</code> segment parser.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddGuidParser&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddGuidParser__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This parser does not support any arguments.</p>
+</div>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddIntParser_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddIntParser__1___0_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddIntParser``1(``0)">AddIntParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <div class="markdown level1 summary"><p>Registers the built-in <code>int</code> segment parser.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddIntParser&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddIntParser__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Supported arguments:
+<code>min</code>, <code>max</code>.</p>
+</div>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SegmentParserDelegate_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)">AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SegmentParserDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers an asynchronous parser and binds parser arguments once during route registration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddSegmentParser&lt;TBuilder&gt;(this TBuilder routeBuilder, string parserName, BindArgumentsDelegate bindArguments, SegmentParserDelegate tryParseDelegate) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">parserName</span></td>
+        <td><p>The name used in route patterns such as <code>{id:user(scope='admins')}</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.BindArgumentsDelegate.html">BindArgumentsDelegate</a></td>
+        <td><span class="parametername">bindArguments</span></td>
+        <td><p>Converts raw parser arguments into a parser-specific payload.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.SegmentParserDelegate.html">SegmentParserDelegate</a></td>
+        <td><span class="parametername">tryParseDelegate</span></td>
+        <td><p>The asynchronous parser to register.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncSegmentParserDelegate_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SyncSegmentParserDelegate)">AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SyncSegmentParserDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers a synchronous parser by adapting it to <a class="xref" href="NanoRoute.SegmentParserDelegate.html">SegmentParserDelegate</a> and binding parser arguments once during route registration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddSegmentParser&lt;TBuilder&gt;(this TBuilder routeBuilder, string parserName, BindArgumentsDelegate bindArguments, SyncSegmentParserDelegate tryParseDelegate) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">parserName</span></td>
+        <td><p>The name used in route patterns such as <code>{id:int(min=1)}</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.BindArgumentsDelegate.html">BindArgumentsDelegate</a></td>
+        <td><span class="parametername">bindArguments</span></td>
+        <td><p>Converts raw parser arguments into typed values once per route-template branch.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.SyncSegmentParserDelegate.html">SyncSegmentParserDelegate</a></td>
+        <td><span class="parametername">tryParseDelegate</span></td>
+        <td><p>The synchronous parser to adapt.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_SegmentParserDelegate_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.SegmentParserDelegate)">AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, SegmentParserDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers an asynchronous parser without route-template arguments.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddSegmentParser&lt;TBuilder&gt;(this TBuilder routeBuilder, string parserName, SegmentParserDelegate tryParseDelegate) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">parserName</span></td>
+        <td><p>The name used in route patterns such as <code>{id:user}</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.SegmentParserDelegate.html">SegmentParserDelegate</a></td>
+        <td><span class="parametername">tryParseDelegate</span></td>
+        <td><p>The asynchronous parser to register.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_SyncSegmentParserDelegate_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddSegmentParser``1(``0,System.String,NanoRoute.SyncSegmentParserDelegate)">AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, SyncSegmentParserDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers a synchronous parser by adapting it to <a class="xref" href="NanoRoute.SegmentParserDelegate.html">SegmentParserDelegate</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddSegmentParser&lt;TBuilder&gt;(this TBuilder routeBuilder, string parserName, SyncSegmentParserDelegate tryParseDelegate) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">parserName</span></td>
+        <td><p>The name used in route patterns such as <code>{id:int}</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.SyncSegmentParserDelegate.html">SyncSegmentParserDelegate</a></td>
+        <td><span class="parametername">tryParseDelegate</span></td>
+        <td><p>The synchronous parser to adapt.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_RouterBuilderSegmentParserExtensions_AddStringParser_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser*"></a>
+  <h4 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddStringParser__1___0_" data-uid="NanoRoute.RouterBuilderSegmentParserExtensions.AddStringParser``1(``0)">AddStringParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <div class="markdown level1 summary"><p>Registers the built-in <code>str</code> segment parser.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddStringParser&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouterBuilderSegmentParserExtensions_AddStringParser__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Supported arguments:
+<code>min</code>, <code>max</code>, <code>pattern</code>.</p>
+</div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

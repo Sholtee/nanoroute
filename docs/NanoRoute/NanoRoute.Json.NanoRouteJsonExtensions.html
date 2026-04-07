@@ -530,10 +530,11 @@ underlying exception; otherwise <a href="https://learn.microsoft.com/dotnet/csha
   <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This helper wraps <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> values into JSON responses and also installs
 <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a> so unexpected
-exceptions are normalized before they reach the client.</p>
+exceptions are normalized before they reach the client. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is
+not translated into JSON and continues to propagate to the caller unchanged.</p>
 </div>
   <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean__examples">Examples</h5>
-  <pre><code class="lang-csharp">router
+  <pre><code class="lang-csharp">routerBuilder
     .AddJsonErrorDetails()
     .AddHandler("GET", "/items/{id:int}", (context, _) =&gt;
         throw new InvalidOperationException("Unexpected state"));</code></pre>

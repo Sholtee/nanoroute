@@ -56,7 +56,7 @@
       <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_System_String_">RouteBuilder.WithBase(string)</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_ParameterParsers">RouteBuilder.ParameterParsers</a>
+      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_SegmentParsers">RouteBuilder.SegmentParsers</a>
     </div>
     <div>
       <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Patterns">RouteBuilder.Patterns</a>
@@ -243,7 +243,7 @@ pattern into a prefix match. Without a trailing slash, the pattern matches only 
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when the <code class="paramref">pattern</code> references a parameter parser that has not been registered yet.</p>
+        <td><p>Thrown when the <code class="paramref">pattern</code> references a segment parser that has not been registered yet.</p>
 </td>
       </tr>
     </tbody>
@@ -383,19 +383,19 @@ the pipeline with the next compatible handler.</p>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when the <code class="paramref">pattern</code> references a parameter parser that has not been registered yet.</p>
+        <td><p>Thrown when the <code class="paramref">pattern</code> references a segment parser that has not been registered yet.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouterBuilder_2_AddParameterParser_" data-uid="NanoRoute.RouterBuilder`2.AddParameterParser*"></a>
-  <h4 id="NanoRoute_RouterBuilder_2_AddParameterParser_System_String_NanoRoute_ParameterParserDelegate_" data-uid="NanoRoute.RouterBuilder`2.AddParameterParser(System.String,NanoRoute.ParameterParserDelegate)">AddParameterParser(string, ParameterParserDelegate)</h4>
-  <div class="markdown level1 summary"><p>Registers a parser that can convert a route segment into a typed parameter value.</p>
+  <a id="NanoRoute_RouterBuilder_2_AddSegmentParser_" data-uid="NanoRoute.RouterBuilder`2.AddSegmentParser*"></a>
+  <h4 id="NanoRoute_RouterBuilder_2_AddSegmentParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SegmentParserDelegate_" data-uid="NanoRoute.RouterBuilder`2.AddSegmentParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)">AddSegmentParser(string, BindArgumentsDelegate, SegmentParserDelegate)</h4>
+  <div class="markdown level1 summary"><p>Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouterBuilder&lt;TRouter, TConfig&gt; AddParameterParser(string parserName, ParameterParserDelegate tryParseDelegate)</code></pre>
+    <pre><code class="lang-csharp hljs">public RouterBuilder&lt;TRouter, TConfig&gt; AddSegmentParser(string parserName, BindArgumentsDelegate bindArguments, SegmentParserDelegate tryParseDelegate)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -410,11 +410,17 @@ the pipeline with the next compatible handler.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><span class="parametername">parserName</span></td>
-        <td><p>The name used in route patterns such as <code>{id:int}</code>.</p>
+        <td><p>The name used in route patterns such as <code>{id:int(min=1)}</code>.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="NanoRoute.ParameterParserDelegate.html">ParameterParserDelegate</a></td>
+        <td><a class="xref" href="NanoRoute.BindArgumentsDelegate.html">BindArgumentsDelegate</a></td>
+        <td><span class="parametername">bindArguments</span></td>
+        <td><p>Converts raw parser arguments into typed values once per route-template branch.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.SegmentParserDelegate.html">SegmentParserDelegate</a></td>
         <td><span class="parametername">tryParseDelegate</span></td>
         <td><p>The delegate that validates and parses a single path segment.</p>
 </td>
@@ -437,10 +443,6 @@ the pipeline with the next compatible handler.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouterBuilder_2_AddParameterParser_System_String_NanoRoute_ParameterParserDelegate__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>If a parser is already registered under the same <code class="paramref">parserName</code>, the new registration
-replaces the existing one.</p>
-</div>
   <a id="NanoRoute_RouterBuilder_2_CreateRouter_" data-uid="NanoRoute.RouterBuilder`2.CreateRouter*"></a>
   <h4 id="NanoRoute_RouterBuilder_2_CreateRouter" data-uid="NanoRoute.RouterBuilder`2.CreateRouter">CreateRouter()</h4>
   <div class="markdown level1 summary"><p>Creates a router from the builder's current routes, parser registrations, and configuration.</p>
@@ -535,7 +537,7 @@ affect routers that have already been created.</p>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when the <code class="paramref">pattern</code> references a parameter parser that has not been registered yet.</p>
+        <td><p>Thrown when the <code class="paramref">pattern</code> references a segment parser that has not been registered yet.</p>
 </td>
       </tr>
     </tbody>
@@ -606,7 +608,31 @@ affect routers that have already been created.</p>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IReadOnlyCollection_System_String__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderParameterParserExtensions.html#NanoRoute_RouterBuilderParameterParserExtensions_AddDefaultParsers__1___0_">RouterBuilderParameterParserExtensions.AddDefaultParsers&lt;TBuilder&gt;(TBuilder)</a>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddBoolParser__1___0_">RouterBuilderSegmentParserExtensions.AddBoolParser&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddDefaultParsers__1___0_">RouterBuilderSegmentParserExtensions.AddDefaultParsers&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddGuidParser__1___0_">RouterBuilderSegmentParserExtensions.AddGuidParser&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddIntParser__1___0_">RouterBuilderSegmentParserExtensions.AddIntParser&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SegmentParserDelegate_">RouterBuilderSegmentParserExtensions.AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SegmentParserDelegate)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncSegmentParserDelegate_">RouterBuilderSegmentParserExtensions.AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SyncSegmentParserDelegate)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_SegmentParserDelegate_">RouterBuilderSegmentParserExtensions.AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, SegmentParserDelegate)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_SyncSegmentParserDelegate_">RouterBuilderSegmentParserExtensions.AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, SyncSegmentParserDelegate)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddStringParser__1___0_">RouterBuilderSegmentParserExtensions.AddStringParser&lt;TBuilder&gt;(TBuilder)</a>
   </div>
 
 </article>

@@ -47,7 +47,7 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_RequestHandlerDelegate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate Task&lt;HttpResponseMessage&gt; RequestHandlerDelegate(RequestContext requestContext, Func&lt;Task&lt;HttpResponseMessage&gt;&gt; callNext)</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate Task&lt;HttpResponseMessage&gt; RequestHandlerDelegate(RequestContext requestContext, CallNextHandlerDelegate callNext)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -66,9 +66,9 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><a class="xref" href="NanoRoute.CallNextHandlerDelegate.html">CallNextHandlerDelegate</a></td>
         <td><span class="parametername">callNext</span></td>
-        <td><p>Invokes the next compatible handler in the pipeline.</p>
+        <td><p>A delegate that invokes the next compatible handler in the pipeline.</p>
 </td>
       </tr>
     </tbody>
@@ -91,13 +91,16 @@
   </table>
   <h5 id="NanoRoute_RequestHandlerDelegate_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Handlers may signal HTTP failures by calling <code>HttpRequestException.Throw(...)</code>. When
-<code>AddExceptionHandler()</code>, <code>AddJsonErrorDetails()</code>, or equivalent custom middleware is registered,
-those exceptions can be translated into structured error responses. Throwing other exception types is also
-supported, but they are treated as unexpected failures: the built-in exception middleware converts them into
-internal server error responses, while without such middleware they propagate to the caller unchanged.</p>
+<a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, bool)</a>, or equivalent custom
+middleware is registered, those exceptions can be translated into structured error responses. Throwing other
+exception types is also supported, but they are treated as unexpected failures:
+<a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a> converts them into internal
+server error responses, while without such middleware they propagate to the caller unchanged.
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is left untouched so caller-driven cancellation and router timeouts
+can propagate to the transport layer or hosting code.</p>
 </div>
   <h5 id="NanoRoute_RequestHandlerDelegate_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">router.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
+  <pre><code class="lang-csharp">routerBuilder.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
 {
     requestContext.Parameters["User"] = LoadUser((int) requestContext.Parameters["user_id"]!);
     return callNext();

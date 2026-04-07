@@ -48,13 +48,13 @@
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html">RequestContext</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html">ErrorDetails</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ParameterParserDelegate.html">ParameterParserDelegate</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.SegmentParserDelegate.html">SegmentParserDelegate</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandler.html">RequestHandler</a></li>
 </ul>
 <h2 id="highlights">Highlights</h2>
 <ul>
 <li>Routes can be exact matches or prefix matches depending on whether the pattern ends with <code>/</code>.</li>
-<li>Parameter parsers turn path segments into typed values stored in <code>RequestContext.Parameters</code>.</li>
+<li>Segment parsers turn path segments into typed values that can be stored in <code>RequestContext.Parameters</code>.</li>
 <li><code>WithBase()</code> creates scoped route subtrees without forcing you to repeat common prefixes.</li>
 <li><code>MatchingBehavior</code> lets you choose whether literal or parameterized child segments take precedence.</li>
 <li><code>NanoRoute.Json</code> adds JSON request binding and JSON error/response helpers on top of the core pipeline.</li>

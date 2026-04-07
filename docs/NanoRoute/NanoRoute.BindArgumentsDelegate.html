@@ -5,11 +5,11 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Delegate ParameterParserDelegate | NanoRoute </title>
+      <title>Delegate BindArgumentsDelegate | NanoRoute </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Delegate ParameterParserDelegate | NanoRoute ">
+      <meta name="title" content="Delegate BindArgumentsDelegate | NanoRoute ">
     
-    <meta name="description" content="Tries to parse a single route segment into a value that can be stored in .">
+    <meta name="description" content="Binds raw parser arguments to an opaque object that is cached with the route definition.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -35,19 +35,19 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.ParameterParserDelegate">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.BindArgumentsDelegate">
 
 
 
-  <h1 id="NanoRoute_ParameterParserDelegate" data-uid="NanoRoute.ParameterParserDelegate" class="text-break">Delegate ParameterParserDelegate</h1>
-  <div class="markdown level0 summary"><p>Tries to parse a single route segment into a value that can be stored in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
+  <h1 id="NanoRoute_BindArgumentsDelegate" data-uid="NanoRoute.BindArgumentsDelegate" class="text-break">Delegate BindArgumentsDelegate</h1>
+  <div class="markdown level0 summary"><p>Binds raw parser arguments to an opaque object that is cached with the route definition.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_ParameterParserDelegate_syntax">Syntax</h5>
+  <h5 id="NanoRoute_BindArgumentsDelegate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate bool ParameterParserDelegate(string segment, out object? parsed)</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate object? BindArgumentsDelegate(IReadOnlyDictionary&lt;string, string&gt; rawArgs)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -60,15 +60,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">segment</span></td>
-        <td><p>The raw path segment extracted from the request URI.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><span class="parametername">parsed</span></td>
-        <td><p>The parsed value when the delegate returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>; otherwise <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">rawArgs</span></td>
+        <td><p>The raw parser arguments as parsed from the route template, keyed case-insensitively.</p>
 </td>
       </tr>
     </tbody>
@@ -83,24 +77,31 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> when the segment is accepted by the parser; otherwise <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><p>A parser-specific object that will later be exposed through <a class="xref" href="NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Arguments">Arguments</a>.
+Return <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> when the parser does not need a bound payload.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_ParameterParserDelegate_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">router.AddParameterParser("int", (string segment, out object? parsed) =&gt;
-{
-    if (int.TryParse(segment, out int value))
+  <h5 id="NanoRoute_BindArgumentsDelegate_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This delegate runs during route registration, not during request processing. It is the right place to
+validate parser arguments, parse numeric limits, or precompile regular expressions once.</p>
+</div>
+  <h5 id="NanoRoute_BindArgumentsDelegate_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">routerBuilder.AddSegmentParser
+(
+    "int",
+    static rawArgs =&gt; (
+        Min: rawArgs.TryGetValue("min", out string? min) ? int.Parse(min) : null,
+        Max: rawArgs.TryGetValue("max", out string? max) ? int.Parse(max) : null
+    ),
+    static context =&gt;
     {
-        parsed = value;
-        return true;
+        var args = ((int? Min, int? Max)) context.Arguments!;
+        return ValueTask.FromResult(new SegmentParseResult(true, context.Segment));
     }
-
-    parsed = null;
-    return false;
-});</code></pre>
+);</code></pre>
 
 
 </article>
