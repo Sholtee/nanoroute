@@ -219,84 +219,6 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task ExactMatch_ShouldHaveThePriority([Values] bool explicitFirst)
-        {
-            MockSequence seq = new();
-
-            Mock<RequestHandlerDelegate>
-                mockHandler_1 = new(MockBehavior.Strict),
-                mockHandler_2 = new(MockBehavior.Strict);
-
-            mockHandler_1
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .Returns<RequestContext, CallNextHandlerDelegate>(async (_, next) => await next());
-
-            mockHandler_2
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .ReturnsAsync(s_response);
-
-            _routerBuilder.AddSegmentParser("any", (string segment, object? _, out object? parsed) => { parsed = segment; return true; });
-
-            if (explicitFirst)
-                _routerBuilder
-                    .AddHandler("GET", "/path/to/explicit/something", mockHandler_1.Object)
-                    .AddHandler("GET", "/path/to/{some_str:any}/something", mockHandler_2.Object);
-            else
-                _routerBuilder
-                    .AddHandler("GET", "/path/to/{some_str:any}/something", mockHandler_2.Object)
-                    .AddHandler("GET", "/path/to/explicit/something", mockHandler_1.Object);
-
-            TestRouter router = _routerBuilder.CreateRouter();
-
-            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
-            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
-            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
-        }
-
-        [Test]
-        public async Task ExactMatch_ShouldHaveThePriority_BasePrefix([Values] bool explicitFirst)
-        {
-            MockSequence seq = new();
-
-            Mock<RequestHandlerDelegate>
-                mockHandler_1 = new(MockBehavior.Strict),
-                mockHandler_2 = new(MockBehavior.Strict);
-
-            mockHandler_1
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .Returns<RequestContext, CallNextHandlerDelegate>(async (_, next) => await next());
-
-            mockHandler_2
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .ReturnsAsync(s_response);
-
-            RouteBuilder pathTo = _routerBuilder
-                .AddSegmentParser("any", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
-                .WithBase("/path/to/");
-
-            if (explicitFirst)
-                pathTo
-                    .AddHandler("GET", "explicit/something", mockHandler_1.Object)
-                    .AddHandler("GET", "{some_str:any}/something", mockHandler_2.Object);
-            else
-                pathTo
-                    .AddHandler("GET", "{some_str:any}/something", mockHandler_2.Object)
-                    .AddHandler("GET", "explicit/something", mockHandler_1.Object);
-
-            TestRouter router = _routerBuilder.CreateRouter();
-
-            _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something");
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
-            mockHandler_1.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
-            mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
-        }
-
-        [Test]
         public async Task Handle_ShouldRespectConfiguredMatchingBehavior([Values(MatchingBehavior.LiteralFirst, MatchingBehavior.ParameterizedChildrenFirst)] MatchingBehavior matchingBehavior)
         {
             Mock<RequestHandlerDelegate>
@@ -351,15 +273,16 @@ namespace NanoRoute.Tests
                 mockGetUser = new(MockBehavior.Strict),
                 mockDoSomethingWithUser = new(MockBehavior.Strict);
 
+            object userObj = new();
+
             mockGetUser
                 .InSequence(seq)
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (cntx, next) =>
                 {
-                    Assert.That(cntx.Parameters, Does.ContainKey("user_id"));
-                    Assert.That(cntx.Parameters["user_id"], Is.EqualTo(1986));
+                    Assert.That(cntx.Parameters, Does.ContainKey("user_id").WithValue(1986));
 
-                    cntx.Parameters["User"] = new object();  // user object
+                    cntx.Parameters["User"] = userObj;
                     return await next();
                 });
 
@@ -368,8 +291,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (cntx, next) =>
                 {
-                    Assert.That(cntx.Parameters, Does.ContainKey("User"));
-                    Assert.That(cntx.Parameters["User"], Is.InstanceOf<object>());
+                    Assert.That(cntx.Parameters, Does.ContainKey("User").WithValue(userObj));
 
                     return s_response;
                 });
@@ -405,15 +327,16 @@ namespace NanoRoute.Tests
                 mockGetUser = new(MockBehavior.Strict),
                 mockDoSomethingWithUser = new(MockBehavior.Strict);
 
+            object userObj = new();
+
             mockGetUser
                 .InSequence(seq)
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (cntx, next) =>
                 {
-                    Assert.That(cntx.Parameters, Does.ContainKey("user_id"));
-                    Assert.That(cntx.Parameters["user_id"], Is.EqualTo(1986));
+                    Assert.That(cntx.Parameters, Does.ContainKey("user_id").WithValue(1986));
 
-                    cntx.Parameters["User"] = new object();  // user object
+                    cntx.Parameters["User"] = userObj;
                     return await next();
                 });
 
@@ -422,8 +345,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (cntx, next) =>
                 {
-                    Assert.That(cntx.Parameters, Does.ContainKey("User"));
-                    Assert.That(cntx.Parameters["User"], Is.InstanceOf<object>());
+                    Assert.That(cntx.Parameters, Does.ContainKey("User").WithValue(userObj));
 
                     return s_response;
                 });
@@ -497,7 +419,6 @@ namespace NanoRoute.Tests
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
             _request.Method = HttpMethod.Get;
-
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
