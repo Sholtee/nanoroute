@@ -48,7 +48,6 @@ namespace NanoRoute
             {
                 if (s_segmentParserValidator.IsMatch(segment))
                 {
-                    // does the further validation
                     SegmentParserDefinition parserDefinition = SegmentParserDefinitionParser.GetSegmentParserDefinition(segment);
 
                     if (!_segmentParsers.TryGetValue(parserDefinition.ParserName, out SegmentParserRegistration parserRegistration))
@@ -57,23 +56,18 @@ namespace NanoRoute
                             string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserDefinition.ParserName)
                         );
 
+                    object? arguments = parserRegistration.BindArguments(parserDefinition.RawArguments);
+
                     RouteNode? parsedChild = target.ParsedChildren.SingleOrDefault
                     (
-                        cc => cc.SegmentParser!.Name.Equals(parserDefinition.ParserName, StringComparison.OrdinalIgnoreCase) && HaveSameArguments(cc.SegmentParser.RawArguments, parserDefinition.Arguments)
+                        cc => cc.SegmentParser!.Name.Equals(parserDefinition.ParserName, StringComparison.OrdinalIgnoreCase) && EqualityComparer<object?>.Default.Equals(cc.SegmentParser.Arguments, arguments)
                     );
 
                     if (parsedChild is null)
                     {
-                        SegmentParser parser = new(parserRegistration.Name, parserRegistration.Parse)
-                        {
-                            RawArguments = parserDefinition.Arguments,
-                            Arguments = parserRegistration.BindArguments(parserDefinition.Arguments),
-                            ParameterName = parserDefinition.ParameterName
-                        };
-
                         parsedChild = new RouteNode
                         {
-                            SegmentParser = parser,
+                            SegmentParser = new SegmentParser(parserRegistration.Name, parserRegistration.Parse, arguments, parserDefinition.ParameterName),
                             Segment = segment
                         };
 
@@ -105,21 +99,6 @@ namespace NanoRoute
         }
 
         private static string JoinPattern(string a, string b) => $"{a.TrimEnd('/')}/{b.TrimStart('/')}";
-
-        private static bool HaveSameArguments(IReadOnlyDictionary<string, string> a, IReadOnlyDictionary<string, string> b)
-        {
-            if (ReferenceEquals(a, b))
-                return true;
-
-            if (a.Count != b.Count)
-                return false;
-
-            foreach (KeyValuePair<string, string> pair in a)
-                if (!b.TryGetValue(pair.Key, out string? otherValue) || !string.Equals(pair.Value, otherValue, StringComparison.Ordinal))
-                    return false;
-
-            return true;
-        }
 
         private RouteBuilder(RouteBuilder parent, string baseUrl): base(parent.FindNode(baseUrl))
         {
