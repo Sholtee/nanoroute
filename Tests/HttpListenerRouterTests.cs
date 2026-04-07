@@ -158,7 +158,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldHandleGetRequests()
         {
             CreateRouter(bldr => bldr
-                .AddSegmentParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("str", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler("Get", "/welcome/{name:str}", async (context, _) =>
                 {
                     Assert.That(context.Request.Headers.TryGetValues("X-Custom-Request-Header", out IEnumerable<string>? values), Is.True);
@@ -264,7 +264,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldExposeOriginalHttpListenerRequest()
         {
             CreateRouter(bldr => bldr
-                .AddSegmentParser("str", (string segment, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("str", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
                 .AddHandler("GET", "", async (context, _) =>
                 {
                     Assert.That(context.Request.Properties.TryGetValue(Router.ORIGINAL_REQUEST_NAME, out object? originalRequest), Is.True);
@@ -365,7 +365,7 @@ namespace NanoRoute.Tests
         public async Task ReadmeQuickStartExample_ShouldRouteRequests()
         {
             CreateRouter(bldr => bldr
-                .AddSegmentParser("int", static (string segment, out object? parsed) =>
+                .AddSegmentParser("int", static (string segment, object? _, out object? parsed) =>
                 {
                     bool success = int.TryParse(segment, out int value);
                     parsed = success ? value : null;

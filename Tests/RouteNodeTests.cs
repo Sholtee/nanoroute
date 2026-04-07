@@ -16,10 +16,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Copy_ShouldCloneTheWholeTree()
         {
-            SegmentParser parser = new("str", new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object)
-            {
-                ParameterName = "id"
-            };
+            SegmentParser parser = new("str", new Mock<SegmentParserDelegate>(MockBehavior.Strict).Object, Arguments: null, ParameterName: "id");
 
             RouteNode root = new() { Segment = string.Empty };
             root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/")];
