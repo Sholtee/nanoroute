@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Router\Router.csproj" />
+    <ProjectReference Include="..\..\Src\NanoRoute\NanoRoute.csproj" />
   </ItemGroup>
 
   <ItemGroup>
