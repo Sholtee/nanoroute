@@ -11,6 +11,6 @@ namespace NanoRoute
     /// <summary>
     /// Carries the current route segment and request-scoped services into an asynchronous segment parser.
     /// </summary>
-    public readonly record struct SegmentParserContext(string Segment, IServiceProvider Services, object? Arguments, CancellationToken Cancellation);
+    public readonly record struct SegmentParserContext(ReadOnlyMemory<char> Segment, IServiceProvider Services, object? Arguments, CancellationToken Cancellation);
 }
 

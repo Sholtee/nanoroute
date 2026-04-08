@@ -770,8 +770,8 @@ namespace NanoRoute.Tests
             Mock<IServiceProvider> mockServices = new(MockBehavior.Strict);
 
             mockParser
-                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment == "a b" && ctx.Services == mockServices.Object)))
-                .Returns((SegmentParserContext context) => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.Segment)));
+                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.Span.SequenceEqual("a b".AsSpan()) && ctx.Services == mockServices.Object)))
+                .Returns((SegmentParserContext context) => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.Segment.ToString())));
 
             mockHandler
                 .Setup(h => h.Invoke
@@ -789,7 +789,7 @@ namespace NanoRoute.Tests
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
 
             Assert.That(await router.Handle(_request, mockServices.Object), Is.EqualTo(s_response));
-            mockParser.Verify(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment == "a b" && ctx.Services == mockServices.Object)), Times.Once);
+            mockParser.Verify(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.Span.SequenceEqual("a b".AsSpan()) && ctx.Services == mockServices.Object)), Times.Once);
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
@@ -809,8 +809,8 @@ namespace NanoRoute.Tests
                 .Returns(boundArguments);
 
             mockParser
-                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment == "abcd" && Equals(ctx.Arguments, boundArguments))))
-                .Returns((SegmentParserContext ctx) => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, ctx.Segment)));
+                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.Span.SequenceEqual("abcd".AsSpan()) && Equals(ctx.Arguments, boundArguments))))
+                .Returns((SegmentParserContext ctx) => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, ctx.Segment.ToString())));
 
             TestRouter router = _routerBuilder
                 .AddSegmentParser

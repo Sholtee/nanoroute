@@ -3,63 +3,51 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
-using System.Collections.Generic;
+using System;
 
 namespace NanoRoute.Internals
 {
-    internal sealed class UriSegment
+    internal sealed class UriSegment(string original)
     {
         public const char SEPARATOR = '/';
 
-        public readonly string _original;
+        private int _next;
 
-        private readonly int _next;
-
-        private UriSegment(string original, int start)
+        public bool MoveNext()
         {
-            _original = original;
-
-            while (start < original.Length && original[start] == SEPARATOR)
-                start++;
-
-            if (start >= original.Length)
+            if (_next < 0)
             {
-                Value = null;
-                _next = -1;
-                return;
+                Current = default;
+                return false;
             }
 
-            int i = original.IndexOf(SEPARATOR, start);
+            while (_next < original.Length && original[_next] == SEPARATOR)
+                _next++;
+
+            if (_next >= original.Length)
+            {
+                Current = default;
+                _next = -1;
+                return false;
+            }
+
+            int i = original.IndexOf(SEPARATOR, _next);
             if (i < 0)
             {
-                Value = original.Substring(start);
+                Current = original.AsMemory(_next);
                 _next = -1;
             }
             else
             {
-                Value = original.Substring(start, i - start);
+                Current = original.AsMemory(_next, i - _next);
                 _next = i + 1;
             }
+
+            return true;
         }
 
-        public UriSegment(string original) : this(original, 0) { }
+        public ReadOnlyMemory<char> Current { get; private set; }
 
-        public string? Value { get; }
-
-        public UriSegment? Next
-        {
-            get
-            {
-                if (field is null && _next > 0)
-                    field = new UriSegment(_original, _next);
-                return field;
-            }
-        }
-
-        public IEnumerable<string> Enumerate()
-        {
-            for (UriSegment? current = this; current?.Value is not null; current = current.Next)
-                yield return current.Value;
-        }
+        public bool HasValue => !Current.Equals(default);
     }
 }

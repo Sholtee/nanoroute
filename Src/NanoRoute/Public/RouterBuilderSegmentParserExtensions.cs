@@ -166,12 +166,12 @@ namespace NanoRoute
 
                         return new IntParserArguments(min, max);
                     },
-                    tryParseDelegate: static (string segment, object? arguments, out object? parsed) =>
+                    tryParseDelegate: static (ReadOnlyMemory<char> segment, object? arguments, out object? parsed) =>
                     {
                         IntParserArguments args = (IntParserArguments) arguments!;
                         parsed = null;
 
-                        if (!int.TryParse(segment, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
+                        if (!int.TryParse(segment.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
                             return false;
 
                         if (value < args.Min)
@@ -198,9 +198,9 @@ namespace NanoRoute
             public TBuilder AddGuidParser() => routeBuilder.AddSegmentParser
             (
                 "guid",
-                static (string segment, object? _, out object? parsed) =>
+                static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    bool success = Guid.TryParse(segment, out Guid value);
+                    bool success = Guid.TryParse(segment.ToString(), out Guid value);
                     parsed = success ? value : null;
                     return success;
                 }
@@ -216,9 +216,9 @@ namespace NanoRoute
             public TBuilder AddBoolParser() => routeBuilder.AddSegmentParser
             (
                 "bool",
-                static (string segment, object? _, out object? parsed) =>
+                static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    bool success = bool.TryParse(segment, out bool value);
+                    bool success = bool.TryParse(segment.ToString(), out bool value);
                     parsed = success ? value : null;
                     return success;
                 }
@@ -269,7 +269,7 @@ namespace NanoRoute
 
                         return new StringParserArguments(min, max, pattern);
                     },
-                    tryParseDelegate: static (string segment, object? arguments, out object? parsed) =>
+                    tryParseDelegate: static (ReadOnlyMemory<char> segment, object? arguments, out object? parsed) =>
                     {
                         StringParserArguments args = (StringParserArguments) arguments!;
                         parsed = null;
@@ -280,7 +280,7 @@ namespace NanoRoute
                         if (segment.Length > args.Max)
                             return false;
 
-                        if (args.Pattern?.IsMatch(segment) is false)
+                        if (args.Pattern?.IsMatch(segment.ToString()) is false)
                             return false;
 
                         parsed = segment;

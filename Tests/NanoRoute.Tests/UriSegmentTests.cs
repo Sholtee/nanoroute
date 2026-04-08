@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -24,7 +25,19 @@ namespace NanoRoute.Tests
         [TestCase("//a//b//")]
         public void Enumerate_ShouldReturnTheSplitSegments(string s)
         {
-            Assert.That(new UriSegment(s).Enumerate(), Is.EquivalentTo(s.Split([UriSegment.SEPARATOR], StringSplitOptions.RemoveEmptyEntries)));
+            UriSegment segment = new(s);
+
+            Assert.That(ReadSegments(segment), Is.EquivalentTo(s.Split([UriSegment.SEPARATOR], StringSplitOptions.RemoveEmptyEntries)));
+
+            static string[] ReadSegments(UriSegment segment)
+            {
+                System.Collections.Generic.List<string> result = [];
+
+                while (segment.MoveNext())
+                    result.Add(segment.Current.ToString());
+
+                return [..result];
+            }
         }
     }
 }

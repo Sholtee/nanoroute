@@ -26,12 +26,12 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Gets or sets the segment for which this node is created
         /// </summary>
-        public required string Segment { get; init; }
+        public required ReadOnlyMemory<char> Segment { get; init; }
 
         /// <summary>
         /// Gets literal child nodes keyed by case-insensitive segment value.
         /// </summary>
-        public Dictionary<string, RouteNode> LiteralChildren { get; } = new(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<ReadOnlyMemory<char>, RouteNode> LiteralChildren { get; } = new(ReadOnlyMemoryCharComparer.Instance);
 
         /// <summary>
         /// Gets parser-based child nodes evaluated after literal matches.

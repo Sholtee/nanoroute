@@ -22,8 +22,8 @@ namespace NanoRoute.Perf
         {
             int total = 0;
 
-            for (UriSegment? current = new UriSegment(Path); current?.Value is not null; current = current.Next)
-                total += current.Value.Length;
+            for (UriSegment current = new(Path); current.MoveNext();)
+                total += current.Current.Length;
 
             return total;
         }

@@ -78,7 +78,7 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate bool SyncSegmentParserDelegate(string segment, object? arguments, out object? parsed);
+    public delegate bool SyncSegmentParserDelegate(ReadOnlyMemory<char> segment, object? arguments, out object? parsed);
 
     /// <summary>
     /// Tries to parse a single route segment into a value that can optionally be stored in <see cref="RequestContext.Parameters"/>.

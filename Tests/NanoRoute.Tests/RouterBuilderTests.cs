@@ -335,8 +335,8 @@ namespace NanoRoute.Tests
 
             RouteNode root = _routerBuilder.GetRoot();
 
-            Assert.That(root.LiteralChildren["items"].ParsedChildren, Has.Count.EqualTo(1));
-            Assert.That(root.LiteralChildren["items"].ParsedChildren[0].SegmentParser!.ParameterName, Is.EqualTo("id"));
+            Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren, Has.Count.EqualTo(1));
+            Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren[0].SegmentParser!.ParameterName, Is.EqualTo("id"));
         }
 
         [TestCase(false)]

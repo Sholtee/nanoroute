@@ -45,8 +45,10 @@ namespace NanoRoute
         {
             RouteNode target = _root;
 
-            foreach (string segment in new UriSegment(pattern).Enumerate())
+            for(UriSegment uriSegment = new(pattern); uriSegment.MoveNext();)
             {
+                string segment = uriSegment.Current.ToString();
+
                 if (s_segmentParserValidator.IsMatch(segment))
                 {
                     SegmentParserDefinition parserDefinition = SegmentParserDefinitionParser.GetSegmentParserDefinition(segment);
@@ -69,7 +71,7 @@ namespace NanoRoute
                         parsedChild = new RouteNode
                         {
                             SegmentParser = new SegmentParser(parserRegistration.Name, parserRegistration.Parse, arguments, parserDefinition.ParameterName),
-                            Segment = segment
+                            Segment = uriSegment.Current
                         };
 
                         target.ParsedChildren.Add(parsedChild);
@@ -81,13 +83,13 @@ namespace NanoRoute
                 }
                 else if (s_literalSegmentValidator.IsMatch(segment))
                 {
-                    if (!target.LiteralChildren.TryGetValue(segment, out RouteNode exactChild))
+                    if (!target.LiteralChildren.TryGetValue(uriSegment.Current, out RouteNode exactChild))
                     {
                         exactChild = new RouteNode
                         {
-                            Segment = segment
+                            Segment = uriSegment.Current
                         };
-                        target.LiteralChildren.Add(segment, exactChild);
+                        target.LiteralChildren.Add(uriSegment.Current, exactChild);
                     }
 
                     target = exactChild;
@@ -107,7 +109,7 @@ namespace NanoRoute
             _basePattern = JoinPattern(parent._basePattern, baseUrl);
         }
 
-        internal RouteBuilder(): base(new RouteNode { Segment = string.Empty })
+        internal RouteBuilder(): base(new RouteNode { Segment = default })
         {
             _segmentParsers = new Dictionary<string, SegmentParserRegistration>(StringComparer.OrdinalIgnoreCase);
             _basePattern = string.Empty;
