@@ -48,6 +48,6 @@ namespace NanoRoute.Internals
 
         public ReadOnlyMemory<char> Current { get; private set; }
 
-        public bool HasValue => !Current.Equals(default);
+        public readonly bool HasValue => !Current.Equals(default);
     }
 }
