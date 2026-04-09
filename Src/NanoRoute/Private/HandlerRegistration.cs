@@ -10,7 +10,7 @@ namespace NanoRoute.Internals
     /// <summary>
     /// Represents a request <paramref cref="Handler"/> registration.
     /// </summary>
-    internal record struct HandlerRegistration(RequestHandlerDelegate Handler, string Pattern, Dictionary<string, object?>? AttachedParameters = null)
+    internal sealed record HandlerRegistration(RequestHandlerDelegate Handler, string Pattern, Dictionary<string, object?>? AttachedParameters = null)
     {
         /// <summary>
         /// Returns true if the registration should match as a prefix.
