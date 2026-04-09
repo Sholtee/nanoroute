@@ -23,8 +23,6 @@ namespace NanoRoute
 
         private readonly record struct StringParserArguments(int? Min, int? Max, Regex? Pattern);
 
-        private static readonly SegmentParseResult s_parseFailed = new(false, null);
-
         private static object? NoArgs(IReadOnlyDictionary<string, string> rawArgs)
         {
             if (rawArgs.Count > 0)
@@ -280,10 +278,12 @@ namespace NanoRoute
                         if (segment.Length > args.Max)
                             return false;
 
-                        if (args.Pattern?.IsMatch(segment.ToString()) is false)
+                        string segmentStr = segment.ToString();
+
+                        if (args.Pattern?.IsMatch(segmentStr) is false)
                             return false;
 
-                        parsed = segment;
+                        parsed = segmentStr;
                         return true;
                     }
                 );

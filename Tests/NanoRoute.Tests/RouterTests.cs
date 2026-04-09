@@ -75,7 +75,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("any", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("any", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("GET", "/path/to/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
                 .AddHandler("GET", "/path/to/explicit/something/", mockHandler_2.Object)  // should match 2nd
                 .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
@@ -116,7 +116,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
                 .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .WithBase("/path/to/", routerBuilder => routerBuilder
-                    .AddSegmentParser("any", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
+                    .AddSegmentParser("any", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                     .AddHandler("GET", "/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
                     .AddHandler("GET", "/explicit/something/", mockHandler_2.Object))  // should match 2nd
                 .CreateRouter();
@@ -209,7 +209,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("any", (string segment, object? _, out object? parsed) => { parsed = segment; return true; })
+                .AddSegmentParser("any", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("GET", pattern, mockHandler_1.Object)
                 .AddHandler("GET", pattern, mockHandler_2.Object)
                 .CreateRouter();
@@ -241,9 +241,9 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("str", (string segment, object? _, out object? parsed) =>
+                .AddSegmentParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    parsed = segment;
+                    parsed = segment.ToString();
                     return true;
                 })
                 .WithConfiguration(config => config.MatchingBehavior = matchingBehavior)
@@ -300,9 +300,9 @@ namespace NanoRoute.Tests
                 });
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("int", (string segment, object? _, out object? parsed) =>
+                .AddSegmentParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    if (int.TryParse(segment, out int userId))
+                    if (int.TryParse(segment.ToString(), out int userId))
                     {
                         parsed = userId;
                         return true;
@@ -354,9 +354,9 @@ namespace NanoRoute.Tests
                 });
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("int", (string segment, object? _, out object? parsed) =>
+                .AddSegmentParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    if (int.TryParse(segment, out int userId))
+                    if (int.TryParse(segment.ToString(), out int userId))
                     {
                         parsed = userId;
                         return true;
@@ -379,21 +379,20 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldSupportParsedSegmentsWithoutBindingTheirValueToParameters()
         {
-            Mock<SyncSegmentParserDelegate> mockParser = new(MockBehavior.Strict);
             Dictionary<string, object?> paramz = null!;
+            int parserCalls = 0;
 
-            object? parsed = null;
-            mockParser
-                .Setup(p => p.Invoke("any_string", null, out parsed))
-                .Returns((string segment, object? _, out object? parsed) =>
-                {
-                    parsed = segment;
-                    return true;
-                });
+            bool ParseSlug(ReadOnlyMemory<char> segment, object? _, out object? parsed)
+            {
+                parserCalls++;
+                Assert.That(segment.ToString(), Is.EqualTo("any_string"));
+                parsed = segment.ToString();
+                return true;
+            }
 
             TestRouter router = _routerBuilder
                 .AddDefaultParsers()
-                .AddSegmentParser("slug", mockParser.Object)
+                .AddSegmentParser("slug", (SyncSegmentParserDelegate) ParseSlug)
                 .AddHandler("GET", "users/{user_id:int}/{slug}/cica", async (context, next) =>
                 {
                     paramz = context.Parameters;
@@ -404,7 +403,7 @@ namespace NanoRoute.Tests
             _request.RequestUri = new Uri("https://www.exmaple.com/users/1986/any_string/cica");
 
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
-            mockParser.Verify(p => p.Invoke("any_string", null, out parsed), Times.Once);
+            Assert.That(parserCalls, Is.EqualTo(1));
             Assert.That(paramz, Has.Count.EqualTo(1));
             Assert.That(paramz, Does.ContainKey("user_id").WithValue(1986));
             Assert.That(paramz, Does.Not.ContainKey("slug"));
@@ -598,9 +597,9 @@ namespace NanoRoute.Tests
                 });
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("int", (string segment, object? _, out object? parsed) =>
+                .AddSegmentParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    if (int.TryParse(segment, out int userId))
+                    if (int.TryParse(segment.ToString(), out int userId))
                     {
                         parsed = userId;
                         return true;
@@ -608,9 +607,9 @@ namespace NanoRoute.Tests
                     parsed = null;
                     return false;
                 })
-                .AddSegmentParser("str", (string segment, object? _, out object? parsed) =>
+                .AddSegmentParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    parsed = segment;
+                    parsed = segment.ToString();
                     return true;
                 })
                 .WithBase("/api/users/", bldr => bldr
@@ -654,9 +653,9 @@ namespace NanoRoute.Tests
                 });
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("int", (string segment, object? _, out object? parsed) =>
+                .AddSegmentParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    if (int.TryParse(segment, out int userId))
+                    if (int.TryParse(segment.ToString(), out int userId))
                     {
                         parsed = userId;
                         return true;
@@ -730,17 +729,16 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Handle_ShouldPassDecodedSegmentsToSegmentParsers()
         {
-            Mock<SyncSegmentParserDelegate> mockParser = new(MockBehavior.Strict);
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
+            int parserCalls = 0;
 
-            object? parsed = null;
-            mockParser
-                .Setup(p => p.Invoke("a b", null, out parsed))
-                .Returns((string segment, object? _, out object? parsed) =>
-                {
-                    parsed = segment;
-                    return true;
-                });
+            bool ParseSegment(ReadOnlyMemory<char> segment, object? _, out object? parsed)
+            {
+                parserCalls++;
+                Assert.That(segment.ToString(), Is.EqualTo("a b"));
+                parsed = segment.ToString();
+                return true;
+            }
 
             mockHandler
                 .Setup(h => h.Invoke
@@ -751,14 +749,14 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("str", mockParser.Object)
+                .AddSegmentParser("str", (SyncSegmentParserDelegate) ParseSegment)
                 .AddHandler("GET", "/files/{name:str}", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
 
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
-            mockParser.Verify(p => p.Invoke("a b", null, out parsed), Times.Once);
+            Assert.That(parserCalls, Is.EqualTo(1));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
@@ -770,7 +768,7 @@ namespace NanoRoute.Tests
             Mock<IServiceProvider> mockServices = new(MockBehavior.Strict);
 
             mockParser
-                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.Span.SequenceEqual("a b".AsSpan()) && ctx.Services == mockServices.Object)))
+                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.ToString() == "a b" && ctx.Services == mockServices.Object)))
                 .Returns((SegmentParserContext context) => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.Segment.ToString())));
 
             mockHandler
@@ -789,7 +787,7 @@ namespace NanoRoute.Tests
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
 
             Assert.That(await router.Handle(_request, mockServices.Object), Is.EqualTo(s_response));
-            mockParser.Verify(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.Span.SequenceEqual("a b".AsSpan()) && ctx.Services == mockServices.Object)), Times.Once);
+            mockParser.Verify(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.ToString() == "a b" && ctx.Services == mockServices.Object)), Times.Once);
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
@@ -809,7 +807,7 @@ namespace NanoRoute.Tests
                 .Returns(boundArguments);
 
             mockParser
-                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.Span.SequenceEqual("abcd".AsSpan()) && Equals(ctx.Arguments, boundArguments))))
+                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.ToString() == "abcd" && Equals(ctx.Arguments, boundArguments))))
                 .Returns((SegmentParserContext ctx) => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, ctx.Segment.ToString())));
 
             TestRouter router = _routerBuilder
@@ -840,7 +838,7 @@ namespace NanoRoute.Tests
             (int Min, string Text) boundArguments = (3, "it's okay");
 
             Mock<BindArgumentsDelegate> mockBindArguments = new(MockBehavior.Strict);
-            Mock<SyncSegmentParserDelegate> mockParser = new(MockBehavior.Strict);
+            int parserCalls = 0;
 
             mockBindArguments
                 .Setup(b => b.Invoke(It.Is<IReadOnlyDictionary<string, string>>(args =>
@@ -849,20 +847,21 @@ namespace NanoRoute.Tests
                     args["text"] == "it's okay")))
                 .Returns(boundArguments);
 
-            mockParser
-                .Setup(p => p.Invoke("abcd", boundArguments, out It.Ref<object?>.IsAny))
-                .Returns((string segment, object? _, out object? value) =>
-                {
-                    value = segment;
-                    return true;
-                });
+            bool ParseBounded(ReadOnlyMemory<char> segment, object? args, out object? value)
+            {
+                parserCalls++;
+                Assert.That(segment.ToString(), Is.EqualTo("abcd"));
+                Assert.That(args, Is.EqualTo(boundArguments));
+                value = segment.ToString();
+                return true;
+            }
 
             TestRouter router = _routerBuilder
                 .AddSegmentParser
                 (
                     "bounded",
                     mockBindArguments.Object,
-                    mockParser.Object
+                    (SyncSegmentParserDelegate) ParseBounded
                 )
                 .AddHandler("GET", "/files/{name:bounded(min=3,text='it\\'s okay')}", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["name"]!) })
                 .CreateRouter();
@@ -876,7 +875,7 @@ namespace NanoRoute.Tests
             Assert.That(await response1.Content.ReadAsStringAsync(), Is.EqualTo("abcd"));
             Assert.That(await response2.Content.ReadAsStringAsync(), Is.EqualTo("abcd"));
             mockBindArguments.Verify(b => b.Invoke(It.IsAny<IReadOnlyDictionary<string, string>>()), Times.Once);
-            mockParser.Verify(p => p.Invoke("abcd", boundArguments, out It.Ref<object?>.IsAny), Times.Exactly(2));
+            Assert.That(parserCalls, Is.EqualTo(2));
         }
 
         [Test]
@@ -1064,30 +1063,23 @@ namespace NanoRoute.Tests
                 mockIntHandler = new(MockBehavior.Strict),
                 mockStringHandler = new(MockBehavior.Strict);
 
-            Mock<SyncSegmentParserDelegate>
-                mockIntParser = new(MockBehavior.Strict),
-                mockStringParser = new(MockBehavior.Strict);
+            int intParserCalls = 0, stringParserCalls = 0;
 
-            MockSequence seq = new();
+            bool ParseInt(ReadOnlyMemory<char> segment, object? _, out object? parsed)
+            {
+                intParserCalls++;
+                Assert.That(segment.ToString(), Is.EqualTo("abc"));
+                parsed = null;
+                return false;
+            }
 
-            object? parsed = null;
-            mockIntParser
-                .InSequence(seq)
-                .Setup(p => p.Invoke("abc", null, out parsed))
-                .Returns((string _, object? _, out object? parsed) =>
-                {
-                    parsed = null;
-                    return false;
-                });
-
-            mockStringParser
-                .InSequence(seq)
-                .Setup(p => p.Invoke("abc", null, out parsed))
-                .Returns((string segment, object? _, out object? parsed) =>
-                {
-                    parsed = segment;
-                    return true;
-                });
+            bool ParseString(ReadOnlyMemory<char> segment, object? _, out object? parsed)
+            {
+                stringParserCalls++;
+                Assert.That(segment.ToString(), Is.EqualTo("abc"));
+                parsed = segment.ToString();
+                return true;
+            }
 
             mockStringHandler
                 .Setup(h => h.Invoke
@@ -1098,8 +1090,8 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("int", mockIntParser.Object)
-                .AddSegmentParser("str", mockStringParser.Object)
+                .AddSegmentParser("int", (SyncSegmentParserDelegate) ParseInt)
+                .AddSegmentParser("str", (SyncSegmentParserDelegate) ParseString)
                 .WithBase("/api/", bldr => bldr
                     .AddHandler("GET", "/{id:int}/details", mockIntHandler.Object)
                     .AddHandler("GET", "/{slug:str}/details", mockStringHandler.Object))
@@ -1110,8 +1102,8 @@ namespace NanoRoute.Tests
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockIntHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Never);
             mockStringHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
-            mockIntParser.Verify(p => p.Invoke("abc", null, out parsed), Times.Once);
-            mockStringParser.Verify(p => p.Invoke("abc", null, out parsed), Times.Once);
+            Assert.That(intParserCalls, Is.EqualTo(1));
+            Assert.That(stringParserCalls, Is.EqualTo(1));
         }
 
         [Test]

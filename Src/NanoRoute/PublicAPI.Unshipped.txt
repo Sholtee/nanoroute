@@ -40,6 +40,7 @@ NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExcepti
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler(System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.RouteBuilder.AddSegmentParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.SegmentParserDelegate! tryParseDelegate) -> NanoRoute.RouteBuilder!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddSegmentParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.SegmentParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
+NanoRoute.RouterBuilderSegmentParserExtensions
 NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddBoolParser() -> TBuilder!
 NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddGuidParser() -> TBuilder!
 NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddIntParser() -> TBuilder!
@@ -103,9 +104,8 @@ NanoRoute.RouterBuilder<TRouter, TConfig>.RouterBuilder(System.Func<NanoRoute.Ro
 NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig.get -> TConfig!
 NanoRoute.RouterBuilder<TRouter, TConfig>.WithBase(string! pattern, System.Action<NanoRoute.RouteBuilder!>! configureRoutes) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.WithConfiguration(System.Action<TConfig!>! updateConfig) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
-NanoRoute.RouterBuilderSegmentParserExtensions
-NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddSegmentParser(string! parserName, NanoRoute.SyncSegmentParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!)
+NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddSegmentParser(string! parserName, NanoRoute.SyncSegmentParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.RouterBuilderSegmentParserExtensions.extension<TBuilder>(TBuilder!).AddDefaultParsers() -> TBuilder!
 NanoRoute.RouterConfig
 NanoRoute.RouterConfig.MatchingBehavior.get -> NanoRoute.MatchingBehavior

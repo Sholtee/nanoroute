@@ -16,7 +16,7 @@ namespace NanoRoute.Internals
 
         public int GetHashCode(ReadOnlyMemory<char> obj)
         {
-            var span = obj.Span;
+            ReadOnlySpan<char> span = obj.Span;
 
             unchecked
             {

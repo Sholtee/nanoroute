@@ -82,7 +82,7 @@ namespace NanoRoute
 
             Segment.MoveNext();
 
-            await foreach (HandlerRegistration match in FindMatches(matchingContext with { Node = literalChild }))
+            await foreach (HandlerRegistration match in FindMatches(matchingContext with { Node = literalChild, Segment = Segment }))
                 yield return match;
         }
 
@@ -122,7 +122,7 @@ namespace NanoRoute
                     }
                     : Parameters;
 
-                await foreach (HandlerRegistration match in FindMatches(matchingContext with { Node = parsedChild, Parameters = extended }))
+                await foreach (HandlerRegistration match in FindMatches(matchingContext with { Node = parsedChild, Segment = Segment, Parameters = extended }))
                     yield return match;
             }
         }

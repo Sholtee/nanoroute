@@ -7,7 +7,7 @@ using System;
 
 namespace NanoRoute.Internals
 {
-    internal sealed class UriSegment(string original)
+    internal struct UriSegment(string original)
     {
         public const char SEPARATOR = '/';
 
