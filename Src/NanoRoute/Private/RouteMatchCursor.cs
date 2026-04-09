@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -44,6 +45,37 @@ namespace NanoRoute.Internals
         private ref Frame TopFrame => ref _stack[_stackLength - 1];
 
         public HandlerRegistration Current { get; private set; } = null!;
+
+        public override string ToString()
+        {
+            StringBuilder builder = new();
+
+            builder
+                .Append(nameof(RouteMatchCursor))
+                .Append(" { Stack = [");
+
+            for (int i = 0; i < _stackLength; i++)
+            {
+                if (i > 0)
+                    builder.Append(", ");
+
+                Frame frame = _stack[i];
+
+                builder.AppendFormat
+                (
+                    "{0}: {{ Phase = {1}, Segment = '{2}', HandlerIndex = {3}, ParsedChildIndex = {4} }}",
+                    i,
+                    frame.Phase,
+                    frame.Segment.Current,
+                    frame.HandlerIndex,
+                    frame.ParsedChildIndex
+                );
+            }
+
+            return builder
+                .Append("] }")
+                .ToString();
+        }
 
         public async ValueTask<bool> MoveNextAsync()
         {
