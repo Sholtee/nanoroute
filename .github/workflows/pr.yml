@@ -40,5 +40,5 @@ jobs:
         shell: pwsh
         run: |
           dotnet build-server shutdown
-          dotnet test Router.slnx
+          dotnet test NanoRoute.slnx
           if (!$?) { throw "Test session failed" }
