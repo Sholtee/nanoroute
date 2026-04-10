@@ -150,10 +150,7 @@ namespace NanoRoute.Internals
             _stack[_stackLength++] = frame;
         }
 
-        private void PopFrame()
-        {
-            _stack[--_stackLength] = default;
-        }
+        private void PopFrame() => _stack[--_stackLength] = default;
 
         private bool TryEmitHandler(out HandlerRegistration match)
         {
