@@ -1,0 +1,100 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+    <AssemblyName>NanoRoute</AssemblyName>
+    <RootNamespace>NanoRoute</RootNamespace>
+    <Version>0.0.0</Version>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <Configurations>Debug;Release</Configurations>
+    <IsPackable>true</IsPackable>
+    <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<Optimize>false</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+
+	<ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.*" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.*">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+	  <PackageReference Include="PolySharp" Version="1.15.*">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="System.Memory" Version="4.6.*" />
+	  <PackageReference Include="System.Text.Json" Version="10.0.*" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\Icon.png" Pack="true" PackagePath="" />
+    <None Include=".\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+  
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>NanoRoute.Perf</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute" Condition="'$(Configuration)'=='Debug'">
+      <_Parameter1>NanoRoute.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute" Condition="'$(Configuration)'=='Debug'">
+      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PolySharpIncludeGeneratedTypes>
+      System.Index;
+      System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
+      System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
+      System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute;
+      System.Diagnostics.CodeAnalysis.NotNullWhenAttribute;
+      System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute;
+      System.Runtime.CompilerServices.CallerArgumentExpressionAttribute;
+      System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute;
+      System.Runtime.CompilerServices.IsExternalInit;
+      System.Runtime.CompilerServices.RequiredMemberAttribute;
+    </PolySharpIncludeGeneratedTypes>
+    <PolySharpUsePublicAccessibilityForGeneratedTypes>false</PolySharpUsePublicAccessibilityForGeneratedTypes>
+    <PolySharpExcludeTypeForwardedToDeclarations>true</PolySharpExcludeTypeForwardedToDeclarations>
+    <!--
+      For some reason PolySharp defines UnconditionalSuppressMessageAttribute as conditional :D
+      Provide this condition.
+    -->
+    <DefineConstants>$(DefineConstants);MULTI_TARGETING_SUPPORT_ATTRIBUTES</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>A minimalistic router that turns requests into composable pipelines.</Description>
+    <PackageId>NanoRoute</PackageId>
+    <CreateNupkg>true</CreateNupkg>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Product>NanoRoute</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageTags>Router;Routing;</PackageTags>
+  </PropertyGroup>
+  
+</Project>

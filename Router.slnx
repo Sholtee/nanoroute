@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="Tests/Router.Tests.csproj">
-    <Build Solution="Release|*" Project="false" />
-  </Project>
-  <Project Path="Src/Router.csproj" />
-</Solution>

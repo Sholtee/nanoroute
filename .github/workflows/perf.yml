@@ -1,0 +1,63 @@
+#############################################################################
+#                                                                           #
+# perf.yml                                                                  #
+#                                                                           #
+# Author: Denes Solti                                                       #
+#                                                                           #
+#############################################################################
+name: Performance test
+
+on:
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: "Filter"
+        required: true
+        default: "*"
+      publish-artifacts:
+        description: "Publish artifacts?"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write 
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  POWERSHELL_TELEMETRY_OPTOUT: true
+
+jobs:
+  perf-tests:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run tests
+        shell: pwsh
+        run: ./Scripts/Run-PerfTests.ps1 "${{ inputs.filter }}"
+
+      - name: Upload artifacts to gh-pages
+        shell: pwsh
+        if: ${{ inputs.publish-artifacts }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    
+          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sholtee/nanoroute.git gh-pages
+
+          Remove-Item -Path ./gh-pages/Benchmarks -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+          New-Item -Path ./gh-pages/Benchmarks -ItemType Directory -Force | Out-Null
+          Copy-Item ./Artifacts/BenchmarkDotNet/results/*.html ./gh-pages/Benchmarks/ -Force
+
+          Set-Location gh-pages
+          git add .
+          git commit -m "[bot] update artifacts" || Write-Host "Nothing to commit"
+          git push origin gh-pages

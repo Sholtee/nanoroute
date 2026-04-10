@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Tests.Build.props" />
+  
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>NanoRoute.Perf</AssemblyName>
+    <RootNamespace>NanoRoute.Perf</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
+    <!--Remove this when the BenchmarkDotNet.Analyzers will be reliable again-->
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <NoWarn>CA1515;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\NanoRoute\NanoRoute.csproj" />
+  </ItemGroup>
+
+</Project>
