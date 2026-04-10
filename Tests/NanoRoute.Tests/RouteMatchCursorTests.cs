@@ -81,10 +81,9 @@ namespace NanoRoute.Tests
                     Segment = "{id:str}".AsMemory(),
                     SegmentParser = new SegmentParser
                     (
-                        "str",
+                        SegmentParserDefinition.Create("{id:str}"),
                         static context => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.Segment.ToString())),
-                        null,
-                        "id"
+                        null
                     )
                 };
 
@@ -140,10 +139,9 @@ namespace NanoRoute.Tests
                     Segment = "{id:int}".AsMemory(),
                     SegmentParser = new SegmentParser
                     (
-                        "int",
+                        SegmentParserDefinition.Create("{id:int}"),
                         mockIntParser.Object,
-                        null,
-                        "id"
+                        null
                     )
                 },
                 stringNode = new()
@@ -151,10 +149,9 @@ namespace NanoRoute.Tests
                     Segment = "{slug:str}".AsMemory(),
                     SegmentParser = new SegmentParser
                     (
-                        "str",
+                        SegmentParserDefinition.Create("{slug:str}"),
                         mockStringParser.Object,
-                        null,
-                        "slug"
+                        null
                     )
                 },
                 details = new() { Segment = "details".AsMemory() };
@@ -198,10 +195,9 @@ namespace NanoRoute.Tests
                     Segment = "{id:int}".AsMemory(),
                     SegmentParser = new SegmentParser
                     (
-                        "int",
+                        SegmentParserDefinition.Create("{id:int}"),
                         mockIntParser.Object,
-                        null,
-                        "id"
+                        null
                     )
                 },
                 stringNode = new()
@@ -209,10 +205,9 @@ namespace NanoRoute.Tests
                     Segment = "{slug:str}".AsMemory(),
                     SegmentParser = new SegmentParser
                     (
-                        "str",
+                        SegmentParserDefinition.Create("{slug:str}"),
                         mockStringParser.Object,
-                        null,
-                        "slug"
+                        null
                     )
                 },
                 details = new() { Segment = "details".AsMemory() };

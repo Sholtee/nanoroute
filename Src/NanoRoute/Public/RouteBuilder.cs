@@ -50,32 +50,30 @@ namespace NanoRoute
 
                 if (s_segmentParserValidator.IsMatch(segment))
                 {
-                    SegmentParserDefinition parserDefinition = SegmentParserDefinitionParser.GetSegmentParserDefinition(segment);
+                    SegmentParserDefinition parserDefinition = SegmentParserDefinition.Create(segment);
 
-                    if (!_segmentParsers.TryGetValue(parserDefinition.ParserName, out SegmentParserRegistration parserRegistration))
+                    if (!_segmentParsers.TryGetValue(parserDefinition.Name, out SegmentParserRegistration parserRegistration))
                         throw new InvalidOperationException
                         (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserDefinition.ParserName)
+                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserDefinition.Name)
                         );
 
-                    object? arguments = parserRegistration.BindArguments(parserDefinition.RawArguments);
-
-                    RouteNode? parsedChild = target.ParsedChildren.SingleOrDefault
-                    (
-                        cc => cc.SegmentParser!.Name.Equals(parserDefinition.ParserName, StringComparison.OrdinalIgnoreCase) && EqualityComparer<object?>.Default.Equals(cc.SegmentParser.Arguments, arguments)
-                    );
-
-                    if (parsedChild is null)
+                    if (target.ParsedChildren.SingleOrDefault(cc => cc.SegmentParser!.Definition.Equals(parserDefinition)) is not { } parsedChild)
                     {
                         parsedChild = new RouteNode
                         {
-                            SegmentParser = new SegmentParser(parserRegistration.Name, parserRegistration.Parse, arguments, parserDefinition.ParameterName),
+                            SegmentParser = new SegmentParser
+                            (
+                                parserDefinition,
+                                parserRegistration.Parse,
+                                parserRegistration.BindArguments(parserDefinition.RawArguments)
+                            ),
                             Segment = uriSegment.Current
                         };
 
                         target.ParsedChildren.Add(parsedChild);
                     }
-                    else if (parsedChild.SegmentParser!.ParameterName?.Equals(parserDefinition.ParameterName) is false)
+                    else if (parsedChild.SegmentParser!.Definition.ParameterName?.Equals(parserDefinition.ParameterName) is false)
                         throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
 
                     target = parsedChild;

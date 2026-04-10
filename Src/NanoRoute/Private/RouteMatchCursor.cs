@@ -233,7 +233,7 @@ namespace NanoRoute.Internals
                 if (!parsed.Success)
                     continue;
 
-                Dictionary<string, object?> extended = parsedChild.SegmentParser.ParameterName is { Length: > 0 } parameterName
+                Dictionary<string, object?> extended = parsedChild.SegmentParser.Definition.ParameterName is { Length: > 0 } parameterName
                     ? new(frame.Parameters, StringComparer.OrdinalIgnoreCase)
                     {
                         [parameterName] = parsed.Parsed

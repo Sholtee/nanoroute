@@ -211,7 +211,7 @@ namespace NanoRoute.Tests
         public void WithBase_ShouldThrowOnInvalidPattern(string pattern)
         {
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
-            Assert.That(ex.ParamName, Is.EqualTo("segment"));
+            Assert.That(ex.ParamName, Is.EqualTo("definition"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
         }
 
@@ -234,7 +234,7 @@ namespace NanoRoute.Tests
         public void AddHandler_ShouldThrowOnInvalidPattern(string pattern)
         {
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("segment"));
+            Assert.That(ex.ParamName, Is.EqualTo("definition"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
         }
 
@@ -336,7 +336,7 @@ namespace NanoRoute.Tests
             RouteNode root = _routerBuilder.GetRoot();
 
             Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren, Has.Count.EqualTo(1));
-            Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren[0].SegmentParser!.ParameterName, Is.EqualTo("id"));
+            Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren[0].SegmentParser!.Definition.ParameterName, Is.EqualTo("id"));
         }
 
         [TestCase(false)]
