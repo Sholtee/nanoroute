@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace NanoRoute.Internals
 {
@@ -216,10 +215,6 @@ namespace NanoRoute.Internals
 
             UriSegment nextSegment = NextSegment(frame.Segment);
 
-            ReadOnlyMemory<char> decodedSegment = frame.Segment.Current.Span.IndexOf('%') >= 0
-                ? HttpUtility.UrlDecode(frame.Segment.Current.ToString()).AsMemory()
-                : frame.Segment.Current;
-
             while (TopFrame.ParsedChildIndex < frame.Node.ParsedChildren.Count)
             {
                 RouteNode parsedChild = frame.Node.ParsedChildren[TopFrame.ParsedChildIndex++];
@@ -228,7 +223,7 @@ namespace NanoRoute.Internals
                 (
                     new SegmentParserContext
                     {
-                        Segment = decodedSegment,
+                        Segment = frame.Segment.Current,
                         Services = services,
                         Arguments = parsedChild.SegmentParser.Arguments,
                         Cancellation = cancellation

@@ -681,7 +681,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Handle_ShouldPassDecodedSegmentsToSegmentParsers()
+        public async Task Handle_ShouldPassRawSegmentsToSyncSegmentParsers()
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             int parserCalls = 0;
@@ -689,7 +689,7 @@ namespace NanoRoute.Tests
             bool ParseSegment(ReadOnlyMemory<char> segment, object? _, out object? parsed)
             {
                 parserCalls++;
-                Assert.That(segment.ToString(), Is.EqualTo("a b"));
+                Assert.That(segment.ToString(), Is.EqualTo("a%20b"));
                 parsed = segment.ToString();
                 return true;
             }
@@ -697,7 +697,7 @@ namespace NanoRoute.Tests
             mockHandler
                 .Setup(h => h.Invoke
                 (
-                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["name"], "a b")),
+                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["name"], "a%20b")),
                     It.IsAny<CallNextHandlerDelegate>()
                 ))
                 .ReturnsAsync(s_response);
@@ -715,15 +715,19 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Handle_ShouldPassDecodedSegmentsToSegmentParsers_AsyncParser()
+        public async Task Handle_ShouldPassDecodedSegmentsToAsyncSegmentParsers()
         {
             Mock<SegmentParserDelegate> mockParser = new(MockBehavior.Strict);
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             Mock<IServiceProvider> mockServices = new(MockBehavior.Strict);
 
             mockParser
-                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.ToString() == "a b" && ctx.Services == mockServices.Object)))
-                .Returns((SegmentParserContext context) => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.Segment.ToString())));
+                .Setup(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.ToString() == "a%20b" && ctx.Services == mockServices.Object)))
+                .Returns((SegmentParserContext context) =>
+                {
+                    Assert.That(context.DecodedSegment.ToString(), Is.EqualTo("a b"));
+                    return new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.DecodedSegment.ToString()));
+                });
 
             mockHandler
                 .Setup(h => h.Invoke
@@ -741,7 +745,7 @@ namespace NanoRoute.Tests
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
 
             Assert.That(await router.Handle(_request, mockServices.Object), Is.EqualTo(s_response));
-            mockParser.Verify(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.ToString() == "a b" && ctx.Services == mockServices.Object)), Times.Once);
+            mockParser.Verify(p => p.Invoke(It.Is<SegmentParserContext>(ctx => ctx.Segment.ToString() == "a%20b" && ctx.Services == mockServices.Object)), Times.Once);
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 

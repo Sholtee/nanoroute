@@ -84,7 +84,8 @@ namespace NanoRoute
     /// Tries to parse a single route segment into a value that can optionally be stored in <see cref="RequestContext.Parameters"/>.
     /// </summary>
     /// <param name="context">
-    /// The parser context, including the decoded segment, request services, and the linked pipeline cancellation token.
+    /// The parser context, including the raw route segment, request services, and the linked pipeline cancellation token.
+    /// Parsers that need percent-decoded text can use <see cref="SegmentParserContext.DecodedSegment"/>.
     /// </param>
     /// <returns>A <see cref="SegmentParseResult"/> that describes whether the segment matched and what value it produced.</returns>
     /// <example>

@@ -53,10 +53,10 @@ NanoRoute.SegmentParserContext.Arguments.get -> object?
 NanoRoute.SegmentParserContext.Arguments.init -> void
 NanoRoute.SegmentParserContext.Cancellation.get -> System.Threading.CancellationToken
 NanoRoute.SegmentParserContext.Cancellation.init -> void
+NanoRoute.SegmentParserContext.DecodedSegment.get -> System.ReadOnlyMemory<char>
 NanoRoute.SegmentParserContext.Segment.get -> System.ReadOnlyMemory<char>
-NanoRoute.SegmentParserContext.SegmentParserContext() -> void
 NanoRoute.SegmentParserContext.Segment.init -> void
-NanoRoute.SegmentParserContext.SegmentParserContext(System.ReadOnlyMemory<char> Segment, System.IServiceProvider! Services, object? Arguments, System.Threading.CancellationToken Cancellation) -> void
+NanoRoute.SegmentParserContext.SegmentParserContext() -> void
 NanoRoute.SegmentParserContext.Services.get -> System.IServiceProvider!
 NanoRoute.SegmentParserContext.Services.init -> void
 NanoRoute.SegmentParseResult

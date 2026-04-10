@@ -23,6 +23,8 @@ namespace NanoRoute
 
         private readonly record struct StringParserArguments(int? Min, int? Max, Regex? Pattern);
 
+        private static readonly ValueTask<SegmentParseResult> s_false = new(new SegmentParseResult(false, null));
+
         private static object? NoArgs(IReadOnlyDictionary<string, string> rawArgs)
         {
             if (rawArgs.Count > 0)
@@ -267,24 +269,24 @@ namespace NanoRoute
 
                         return new StringParserArguments(min, max, pattern);
                     },
-                    tryParseDelegate: static (ReadOnlyMemory<char> segment, object? arguments, out object? parsed) =>
+                    tryParseDelegate: static (SegmentParserContext context) =>
                     {
-                        StringParserArguments args = (StringParserArguments) arguments!;
-                        parsed = null;
+                        ReadOnlyMemory<char> decodedSegment = context.DecodedSegment;
 
-                        if (segment.Length < args.Min)
-                            return false;
+                        StringParserArguments args = (StringParserArguments) context.Arguments!;
 
-                        if (segment.Length > args.Max)
-                            return false;
+                        if (decodedSegment.Length < args.Min)
+                            return s_false;
 
-                        string segmentStr = segment.ToString();
+                        if (decodedSegment.Length > args.Max)
+                            return s_false;
+
+                        string segmentStr = decodedSegment.ToString();
 
                         if (args.Pattern?.IsMatch(segmentStr) is false)
-                            return false;
+                            return s_false;
 
-                        parsed = segmentStr;
-                        return true;
+                        return new ValueTask<SegmentParseResult>(new SegmentParseResult(true, segmentStr));
                     }
                 );
 
