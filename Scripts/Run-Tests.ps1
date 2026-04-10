@@ -33,9 +33,9 @@ function Run-Tests([Parameter(Position=0, Mandatory=$true)][string] $csproj, [Pa
   if ($LASTEXITCODE -ne 0) { throw "Test session failed" }
 }
 
-Run-Tests 'Router.Tests.csproj' 'Regular tests (with coverage)'
+Run-Tests 'NanoRoute.Tests.csproj' 'Regular tests (with coverage)'
 
 dotnet tool run reportgenerator `
-  -reports:(Join-Path $ARTIFACTS 'Router.*.Coverage.xml') `
+  -reports:(Join-Path $ARTIFACTS 'NanoRoute.*.Coverage.xml') `
   -targetdir:(Join-Path $ARTIFACTS 'CoverageReport') `
   -reporttypes:Html_Dark
