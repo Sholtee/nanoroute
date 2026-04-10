@@ -1081,12 +1081,12 @@ namespace NanoRoute.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(requestStarted.Level, Is.EqualTo(EventLevel.Informational));
-                Assert.That(requestStarted.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb" }));
-                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "/path/to/somewhere", HttpVerb.Get }));
+                Assert.That(requestStarted.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb" }));
+                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/somewhere", HttpVerb.Get }));
 
                 Assert.That(matchingHandler.Level, Is.EqualTo(EventLevel.Informational));
-                Assert.That(matchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb", "Pattern", "ParameterCount" }));
-                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "/path/to/somewhere", HttpVerb.Get, "/path/to/somewhere", 0 }));
+                Assert.That(matchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb", "Pattern", "ParameterCount" }));
+                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/somewhere", HttpVerb.Get, "/path/to/somewhere", 0 }));
             });
         }
 
@@ -1110,12 +1110,12 @@ namespace NanoRoute.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(requestStarted.Level, Is.EqualTo(EventLevel.Informational));
-                Assert.That(requestStarted.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb" }));
-                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "/path/to/nowhere", HttpVerb.Get }));
+                Assert.That(requestStarted.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb" }));
+                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/nowhere", HttpVerb.Get }));
 
                 Assert.That(noMatchingHandler.Level, Is.EqualTo(EventLevel.Informational));
-                Assert.That(noMatchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestPath", "Verb" }));
-                Assert.That(noMatchingHandler.Payload, Is.EquivalentTo(new object?[] { "/path/to/nowhere", HttpVerb.Get }));
+                Assert.That(noMatchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb" }));
+                Assert.That(noMatchingHandler.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/nowhere", HttpVerb.Get }));
             });
         }
     }

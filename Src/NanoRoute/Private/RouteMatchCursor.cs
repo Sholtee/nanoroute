@@ -12,7 +12,7 @@ using System.Web;
 
 namespace NanoRoute.Internals
 {
-    internal sealed class RouteMatchCursor(RouteNode root, HttpVerb verb, UriSegment segment, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation)
+    internal sealed class RouteMatchCursor(RouteNode root, HttpVerb verb, Uri uri, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation)
     {
         private readonly BranchOrder _branchOrder = matchingBehavior switch
         {
@@ -27,7 +27,11 @@ namespace NanoRoute.Internals
             {
                 Node = root,
                 Verb = verb,
-                Segment = NextSegment(segment),
+                Segment = NextSegment
+                (
+                    // Escaped path, not percent decoded -> "/path%2Fto%2Fsomewhere/" will be treated as a single segment
+                    new UriSegment(uri.AbsolutePath)
+                ),
                 Parameters = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
                 Phase = MatchPhase.EmitHandlers
             },

@@ -115,14 +115,9 @@ namespace NanoRoute
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(request)
                 );
 
-            string requestPath = request
-                .RequestUri
-                // Escaped path, not percent decoded. So "/path%2Fto%2Fsomewhere/" will be treated as a single segment
-                .AbsolutePath;
-
             RouterEventSource.Log.Info("RequestProcessingStarted", () => new
             {
-                RequestPath = requestPath,
+                RequestUri = request.RequestUri.OriginalString,
                 Verb = verb
             });
 
@@ -134,7 +129,7 @@ namespace NanoRoute
             (
                 _root,
                 verb,
-                new UriSegment(requestPath),
+                request.RequestUri,
                 services,
                 MatchingBehavior,
                 cancellation
@@ -148,7 +143,7 @@ namespace NanoRoute
                 {
                     RouterEventSource.Log.Info("NoMatchingHandler", () => new
                     {
-                        RequestPath = requestPath,
+                        RequestUri = request.RequestUri.OriginalString,
                         Verb = verb
                     });
 
@@ -161,7 +156,7 @@ namespace NanoRoute
 
                 RouterEventSource.Log.Info("MatchingHandler", () => new
                 {
-                    RequestPath = requestPath,
+                    RequestUri = request.RequestUri.OriginalString,
                     Verb = verb,
                     match.Pattern,
                     ParameterCount = match.AttachedParameters!.Count

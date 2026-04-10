@@ -24,7 +24,7 @@ namespace NanoRoute.Tests
         (
             root,
             HttpVerb.Get,
-            new UriSegment(path),
+            new Uri($"https://www.example.com{path}", UriKind.Absolute),
             new Mock<IServiceProvider>(MockBehavior.Strict).Object,
             matchingBehavior,
             CancellationToken.None
