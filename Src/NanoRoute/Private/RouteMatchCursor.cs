@@ -12,7 +12,7 @@ using System.Web;
 
 namespace NanoRoute.Internals
 {
-    internal sealed class RouteMatchCursor(RouteNode root, HttpVerb verb, UriSegment segment, IServiceProvider services, Dictionary<string, object?> parameters, MatchingBehavior matchingBehavior, CancellationToken cancellation)
+    internal sealed class RouteMatchCursor(RouteNode root, HttpVerb verb, UriSegment segment, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation)
     {
         private readonly BranchOrder _branchOrder = matchingBehavior switch
         {
@@ -27,8 +27,8 @@ namespace NanoRoute.Internals
             {
                 Node = root,
                 Verb = verb,
-                Segment = segment,
-                Parameters = parameters,
+                Segment = NextSegment(segment),
+                Parameters = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
                 Phase = MatchPhase.EmitHandlers
             },
             default,
@@ -43,6 +43,12 @@ namespace NanoRoute.Internals
         private int _stackLength = 1;
 
         private ref Frame TopFrame => ref _stack[_stackLength - 1];
+
+        private static UriSegment NextSegment(UriSegment segment)
+        {
+            segment.MoveNext();
+            return segment;
+        }
 
         public HandlerRegistration Current { get; private set; } = null!;
 
@@ -182,8 +188,7 @@ namespace NanoRoute.Internals
             if (!frame.Node.LiteralChildren.TryGetValue(frame.Segment.Current, out RouteNode literalChild))
                 return false;
 
-            UriSegment nextSegment = frame.Segment;
-            nextSegment.MoveNext();
+            UriSegment nextSegment = NextSegment(frame.Segment);
 
             PushFrame
             (
@@ -208,8 +213,7 @@ namespace NanoRoute.Internals
             if (!frame.Segment.HasValue)
                 return false;
 
-            UriSegment nextSegment = frame.Segment;
-            nextSegment.MoveNext();
+            UriSegment nextSegment = NextSegment(frame.Segment);
 
             ReadOnlyMemory<char> decodedSegment = frame.Segment.Current.Span.IndexOf('%') >= 0
                 ? HttpUtility.UrlDecode(frame.Segment.Current.ToString()).AsMemory()

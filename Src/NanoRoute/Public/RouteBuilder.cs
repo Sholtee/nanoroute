@@ -17,15 +17,14 @@ namespace NanoRoute
     /// <summary>
     /// Builder responsible for route configuration.
     /// </summary>
-        /// <remarks>
-        /// Route patterns support literal segments and parser-backed parameter segments such as
-        /// <c>/users/{id:int}</c>. Consecutive <c>/</c> separators are treated as a single separator. A trailing
-        /// <c>/</c> marks the pattern as a prefix match, while patterns without a trailing slash must match the full
-        /// path exactly.
-        /// </remarks>
+    /// <remarks>
+    /// Route patterns support literal segments and parser-backed parameter segments such as
+    /// <c>/users/{id:int}</c>. Consecutive <c>/</c> separators are treated as a single separator. A trailing
+    /// <c>/</c> marks the pattern as a prefix match, while patterns without a trailing slash must match the full
+    /// path exactly.
+    /// </remarks>
     public class RouteBuilder : RoutingContext
     {
-        #region Private
         // Avoid using the constructor that accepts RegexOptions, It is not AOT compatible
         private static readonly Regex
             // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences.
@@ -120,7 +119,6 @@ namespace NanoRoute
         /// </summary>
         /// <returns>A copy of the configured root node.</returns>
         internal RouteNode GetRoot() => _root.Copy();
-        #endregion
 
         /// <summary>
         /// Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.
@@ -216,7 +214,7 @@ namespace NanoRoute
         /// </param>
         /// <param name="handler">
         /// The handler to execute. If several handlers match, calling the supplied <c>next</c> delegate continues
-        /// the pipeline with the next compatible handler.
+        /// the pipeline with the next compatible handler from the already selected route branch.
         /// </param>
         /// <returns>The current router instance.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>

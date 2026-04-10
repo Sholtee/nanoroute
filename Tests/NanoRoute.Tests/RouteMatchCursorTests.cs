@@ -4,7 +4,6 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,20 +20,12 @@ namespace NanoRoute.Tests
     {
         private static readonly RequestHandlerDelegate s_handler = static (_, _) => Task.FromResult(new HttpResponseMessage());
 
-        private static UriSegment CreateSegment(string path)
-        {
-            UriSegment segment = new(path);
-            segment.MoveNext();
-            return segment;
-        }
-
         private static RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingBehavior matchingBehavior = MatchingBehavior.LiteralFirst) => new
         (
             root,
             HttpVerb.Get,
-            CreateSegment(path),
+            new UriSegment(path),
             new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-            new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
             matchingBehavior,
             CancellationToken.None
         );
@@ -184,6 +175,65 @@ namespace NanoRoute.Tests
 
             mockIntParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "abc")), Times.Once);
             mockStringParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "abc")), Times.Once);
+        }
+
+        [Test]
+        public async Task MoveNextAsync_ShouldNotContinueWithSiblingParsedBranchesAfterABranchWasSelected()
+        {
+            Mock<SegmentParserDelegate>
+                mockIntParser = new(MockBehavior.Strict),
+                mockStringParser = new(MockBehavior.Strict);
+
+            mockIntParser
+                .Setup(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "1986")))
+                .Returns(new ValueTask<SegmentParseResult>(new SegmentParseResult(true, 1986)));
+
+            HandlerRegistration handler = new(s_handler, "/api/{id:int}/details");
+
+            RouteNode
+                root = new() { Segment = default },
+                api = new() { Segment = "api".AsMemory() },
+                intNode = new()
+                {
+                    Segment = "{id:int}".AsMemory(),
+                    SegmentParser = new SegmentParser
+                    (
+                        "int",
+                        mockIntParser.Object,
+                        null,
+                        "id"
+                    )
+                },
+                stringNode = new()
+                {
+                    Segment = "{slug:str}".AsMemory(),
+                    SegmentParser = new SegmentParser
+                    (
+                        "str",
+                        mockStringParser.Object,
+                        null,
+                        "slug"
+                    )
+                },
+                details = new() { Segment = "details".AsMemory() };
+
+            details.HandlerRegistrations[HttpVerb.Get] = [handler];
+            intNode.LiteralChildren.Add("details".AsMemory(), details);
+            stringNode.LiteralChildren.Add("details".AsMemory(), new RouteNode { Segment = "details".AsMemory() });
+            api.ParsedChildren.Add(intNode);
+            api.ParsedChildren.Add(stringNode);
+            root.LiteralChildren.Add("api".AsMemory(), api);
+
+            RouteMatchCursor cursor = CreateCursor(root, "/api/1986/details");
+
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.Current.Pattern, Is.EqualTo(handler.Pattern));
+            Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue(1986));
+
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+
+            mockIntParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "1986")), Times.Once);
+            mockStringParser.Verify(parser => parser.Invoke(It.IsAny<SegmentParserContext>()), Times.Never);
         }
     }
 }

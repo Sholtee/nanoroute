@@ -104,7 +104,7 @@ namespace NanoRoute
         /// </param>
         /// <param name="handler">
         /// The handler to execute. If several handlers match, calling the supplied <c>next</c> delegate continues
-        /// the pipeline with the next compatible handler.
+        /// the pipeline with the next compatible handler from the already selected route branch.
         /// </param>
         /// <returns>The current router instance.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>

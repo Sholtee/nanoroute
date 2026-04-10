@@ -113,7 +113,8 @@ namespace NanoRoute
     /// </returns>
     /// <remarks>
     /// This delegate is passed into <see cref="RequestHandlerDelegate"/> so handlers can opt into middleware-style
-    /// composition. When the current handler does not call it, the pipeline stops at the current handler.
+    /// composition. When the current handler does not call it, the pipeline stops at the current handler. Matching
+    /// continues only within the route branch already selected for the request; sibling branches are not revisited.
     /// </remarks>
     /// <example>
     /// <code>

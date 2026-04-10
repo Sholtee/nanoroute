@@ -570,15 +570,27 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Handle_ShouldNotLeakTheParameters_1()
+        public async Task Handle_ShouldStayOnTheSelectedParameterizedBranch()
         {
             Mock<RequestHandlerDelegate>
                 mockHandler_1 = new(MockBehavior.Strict),
                 mockHandler_2 = new(MockBehavior.Strict);
 
+            Mock<SegmentParserDelegate>
+                mockIntParser = new(MockBehavior.Strict),
+                mockStringParser = new(MockBehavior.Strict);
+
             Dictionary<string, object?>
                 paramz_1 = null!,
                 paramz_2 = null!;
+
+            mockIntParser
+                .Setup(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "1986")))
+                .Returns(new ValueTask<SegmentParseResult>(new SegmentParseResult(true, 1986)));
+
+            mockStringParser
+                .Setup(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "whatev")))
+                .Returns((SegmentParserContext context) => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.Segment.ToString())));
 
             mockHandler_1
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
@@ -597,21 +609,8 @@ namespace NanoRoute.Tests
                 });
 
             TestRouter router = _routerBuilder
-                .AddSegmentParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
-                {
-                    if (int.TryParse(segment.ToString(), out int userId))
-                    {
-                        parsed = userId;
-                        return true;
-                    }
-                    parsed = null;
-                    return false;
-                })
-                .AddSegmentParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
-                {
-                    parsed = segment.ToString();
-                    return true;
-                })
+                .AddSegmentParser("int", mockIntParser.Object)
+                .AddSegmentParser("str", mockStringParser.Object)
                 .WithBase("/api/users/", bldr => bldr
                     .AddHandler("GET", "/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
                     .AddHandler("GET", "/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object))
@@ -619,62 +618,17 @@ namespace NanoRoute.Tests
 
             _request.RequestUri = new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething");
 
-            await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>
+            (
+                () => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object)
+            )!;
 
+            Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
-            Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id_str"] = "1986" }));
-        }
-
-        [Test]
-        public async Task Handle_ShouldNotLeakTheParameters_2()
-        {
-            Mock<RequestHandlerDelegate>
-                mockHandler_1 = new(MockBehavior.Strict),
-                mockHandler_2 = new(MockBehavior.Strict);
-
-            Dictionary<string, object?>
-                paramz_1 = null!,
-                paramz_2 = null!;
-
-            mockHandler_1
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .Returns<RequestContext, CallNextHandlerDelegate>(async (cntx, next) =>
-                {
-                    paramz_1 = cntx.Parameters;
-                    return await next();
-                });
-
-            mockHandler_2
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .Returns<RequestContext, CallNextHandlerDelegate>(async (cntx, next) =>
-                {
-                    paramz_2 = cntx.Parameters;
-                    return s_response;
-                });
-
-            TestRouter router = _routerBuilder
-                .AddSegmentParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
-                {
-                    if (int.TryParse(segment.ToString(), out int userId))
-                    {
-                        parsed = userId;
-                        return true;
-                    }
-                    parsed = null;
-                    return false;
-                })
-                .WithConfiguration(config => config.MatchingBehavior = MatchingBehavior.ParameterizedChildrenFirst)
-                .WithBase("/api/users/", bldr => bldr
-                    .AddHandler("GET", "/{user_id:int}/dosomething", mockHandler_1.Object)
-                    .AddHandler("GET", "/1986/dosomething", mockHandler_2.Object))
-                .CreateRouter();
-
-            _request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
-
-            await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
-
-            Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["user_id"] = 1986 }));
-            Assert.That(paramz_2, Is.EqualTo(new Dictionary<string, object>(0)));
+            Assert.That(paramz_2, Is.Null);
+            mockIntParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "1986")), Times.Once);
+            mockStringParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "whatev")), Times.Once);
+            mockStringParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "1986")), Times.Never);
         }
 
         [Test]
