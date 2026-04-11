@@ -1,5 +1,5 @@
 /********************************************************************************
-* UriSegment.cs                                                                 *
+* DelimitedSegment.cs                                                           *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -7,10 +7,8 @@ using System;
 
 namespace NanoRoute.Internals
 {
-    internal struct UriSegment(string original)
+    internal struct DelimitedSegment(string original, char separator)
     {
-        public const char SEPARATOR = '/';
-
         private int _next;
 
         public bool MoveNext()
@@ -21,7 +19,7 @@ namespace NanoRoute.Internals
                 return false;
             }
 
-            while (_next < original.Length && original[_next] == SEPARATOR)
+            while (_next < original.Length && original[_next] == separator)
                 _next++;
 
             if (_next >= original.Length)
@@ -31,7 +29,7 @@ namespace NanoRoute.Internals
                 return false;
             }
 
-            int i = original.IndexOf(SEPARATOR, _next);
+            int i = original.IndexOf(separator, _next);
             if (i < 0)
             {
                 Current = original.AsMemory(_next);
