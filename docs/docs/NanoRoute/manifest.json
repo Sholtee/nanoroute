@@ -1,10 +1,10 @@
 {
-  "source_base_path": "D:/a/nanoroute/nanoroute/Src/Doc",
+  "source_base_path": "D:/a/nanoroute/nanoroute/Src/NanoRoute/Doc",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.BindArgumentsDelegate.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.BindArgumentsDelegate.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.BindArgumentsDelegate.html"
@@ -14,11 +14,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.BindArgumentsDelegate",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.BindArgumentsDelegate.yml\" sourcestartlinenumber=\"1\">Binds raw parser arguments to an opaque object that is cached with the route definition.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.BindArgumentsDelegate.yml\" sourcestartlinenumber=\"1\">Binds raw parser arguments to an opaque object that is cached with the route definition.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.CallNextHandlerDelegate.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.CallNextHandlerDelegate.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.CallNextHandlerDelegate.html"
@@ -28,11 +28,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.CallNextHandlerDelegate",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.CallNextHandlerDelegate.yml\" sourcestartlinenumber=\"1\">Invokes the next compatible handler in the current routing pipeline.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.CallNextHandlerDelegate.yml\" sourcestartlinenumber=\"1\">Invokes the next compatible handler in the current routing pipeline.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.ErrorDetails.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ErrorDetails.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.ErrorDetails.html"
@@ -42,11 +42,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.ErrorDetails",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.ErrorDetails.yml\" sourcestartlinenumber=\"1\">Describes an HTTP error in a structured, serializer-agnostic format.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ErrorDetails.yml\" sourcestartlinenumber=\"1\">Describes an HTTP error in a structured, serializer-agnostic format.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.HttpListenerRouter.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.HttpListenerRouter.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.HttpListenerRouter.html"
@@ -56,11 +56,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.HttpListenerRouter",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.HttpListenerRouter.yml\" sourcestartlinenumber=\"1\">Routes <xref href=\"System.Net.HttpListenerContext\" data-throw-if-not-resolved=\"false\"></xref> instances through a NanoRoute pipeline.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HttpListenerRouter.yml\" sourcestartlinenumber=\"1\">Routes <xref href=\"System.Net.HttpListenerContext\" data-throw-if-not-resolved=\"false\"></xref> instances through a NanoRoute pipeline.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.HttpListenerRouterConfig.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.HttpListenerRouterConfig.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.HttpListenerRouterConfig.html"
@@ -70,11 +70,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.HttpListenerRouterConfig",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.HttpListenerRouterConfig.yml\" sourcestartlinenumber=\"1\">Configuration settings for <xref href=\"NanoRoute.HttpListenerRouter\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HttpListenerRouterConfig.yml\" sourcestartlinenumber=\"1\">Configuration settings for <xref href=\"NanoRoute.HttpListenerRouter\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.Json.NanoRouteJsonExtensions.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.Json.NanoRouteJsonExtensions.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.Json.NanoRouteJsonExtensions.html"
@@ -84,11 +84,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.Json.NanoRouteJsonExtensions",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.Json.NanoRouteJsonExtensions.yml\" sourcestartlinenumber=\"1\">Adds JSON-focused helpers for request body binding, structured error responses, and JSON responses.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Json.NanoRouteJsonExtensions.yml\" sourcestartlinenumber=\"1\">Adds JSON-focused helpers for request body binding, structured error responses, and JSON responses.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.Json.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.Json.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.Json.html"
@@ -102,7 +102,7 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.MatchingBehavior.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.MatchingBehavior.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.MatchingBehavior.html"
@@ -112,11 +112,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.MatchingBehavior",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.MatchingBehavior.yml\" sourcestartlinenumber=\"1\">Controls how the router prioritizes literal and parameterized child segments during matching.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.MatchingBehavior.yml\" sourcestartlinenumber=\"1\">Controls how the router selects between literal and parameterized child segments during matching.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.NanoRouteExceptionExtensions.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteExceptionExtensions.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.NanoRouteExceptionExtensions.html"
@@ -126,11 +126,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.NanoRouteExceptionExtensions",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.NanoRouteExceptionExtensions.yml\" sourcestartlinenumber=\"1\">Adds helpers for normalizing exceptions and extracting structured error details.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteExceptionExtensions.yml\" sourcestartlinenumber=\"1\">Adds helpers for normalizing exceptions and extracting structured error details.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.RequestContext.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RequestContext.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.RequestContext.html"
@@ -140,11 +140,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RequestContext",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RequestContext.yml\" sourcestartlinenumber=\"1\">Carries request-specific data through the NanoRoute handler pipeline.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RequestContext.yml\" sourcestartlinenumber=\"1\">Carries request-specific data through the NanoRoute handler pipeline.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.RequestHandlerDelegate.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RequestHandlerDelegate.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.RequestHandlerDelegate.html"
@@ -154,11 +154,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RequestHandlerDelegate",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RequestHandlerDelegate.yml\" sourcestartlinenumber=\"1\">Represents a request handler in the router pipeline.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RequestHandlerDelegate.yml\" sourcestartlinenumber=\"1\">Represents a request handler in the router pipeline.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.RouteBuilder.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouteBuilder.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.RouteBuilder.html"
@@ -168,11 +168,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RouteBuilder",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RouteBuilder.yml\" sourcestartlinenumber=\"1\">Builder responsible for route configuration.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouteBuilder.yml\" sourcestartlinenumber=\"1\">Builder responsible for route configuration.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.Router.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.Router.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.Router.html"
@@ -182,11 +182,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.Router",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.Router.yml\" sourcestartlinenumber=\"1\">Executes the route matching pipeline built by <xref href=\"NanoRoute.RouteBuilder\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Router.yml\" sourcestartlinenumber=\"1\">Executes the route matching pipeline built by <xref href=\"NanoRoute.RouteBuilder\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.RouterBuilder-2.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouterBuilder-2.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.RouterBuilder-2.html"
@@ -196,11 +196,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RouterBuilder<TRouter, TConfig>",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RouterBuilder-2.yml\" sourcestartlinenumber=\"1\">Builds a concrete <xref href=\"NanoRoute.Router\" data-throw-if-not-resolved=\"false\"></xref> type together with its strongly typed configuration object.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBuilder-2.yml\" sourcestartlinenumber=\"1\">Builds a concrete <xref href=\"NanoRoute.Router\" data-throw-if-not-resolved=\"false\"></xref> type together with its strongly typed configuration object.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.RouterBuilderSegmentParserExtensions.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouterBuilderSegmentParserExtensions.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.RouterBuilderSegmentParserExtensions.html"
@@ -210,11 +210,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RouterBuilderSegmentParserExtensions",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RouterBuilderSegmentParserExtensions.yml\" sourcestartlinenumber=\"1\">Provides convenience methods for registering segment parsers.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBuilderSegmentParserExtensions.yml\" sourcestartlinenumber=\"1\">Provides convenience methods for registering segment parsers.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.RouterConfig.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouterConfig.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.RouterConfig.html"
@@ -224,11 +224,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RouterConfig",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RouterConfig.yml\" sourcestartlinenumber=\"1\">Configures runtime behavior of <xref href=\"NanoRoute.Router\" data-throw-if-not-resolved=\"false\"></xref> instances.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterConfig.yml\" sourcestartlinenumber=\"1\">Configures runtime behavior of <xref href=\"NanoRoute.Router\" data-throw-if-not-resolved=\"false\"></xref> instances.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.RoutingContext.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RoutingContext.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.RoutingContext.html"
@@ -238,11 +238,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RoutingContext",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.RoutingContext.yml\" sourcestartlinenumber=\"1\">Provides shared access to the route tree used during building and routing.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RoutingContext.yml\" sourcestartlinenumber=\"1\">Provides shared access to the route tree used during building and routing.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.SegmentParseResult.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.SegmentParseResult.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.SegmentParseResult.html"
@@ -252,11 +252,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.SegmentParseResult",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.SegmentParseResult.yml\" sourcestartlinenumber=\"1\">Represents the outcome of a segment parser.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SegmentParseResult.yml\" sourcestartlinenumber=\"1\">Represents the outcome of a segment parser.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.SegmentParserContext.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.SegmentParserContext.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.SegmentParserContext.html"
@@ -266,11 +266,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.SegmentParserContext",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.SegmentParserContext.yml\" sourcestartlinenumber=\"1\">Carries the current route segment and request-scoped services into an asynchronous segment parser.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SegmentParserContext.yml\" sourcestartlinenumber=\"1\">Carries the current route segment and request-scoped services into an asynchronous segment parser.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.SegmentParserDelegate.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.SegmentParserDelegate.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.SegmentParserDelegate.html"
@@ -280,11 +280,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.SegmentParserDelegate",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.SegmentParserDelegate.yml\" sourcestartlinenumber=\"1\">Tries to parse a single route segment into a value that can optionally be stored in <xref href=\"NanoRoute.RequestContext.Parameters\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SegmentParserDelegate.yml\" sourcestartlinenumber=\"1\">Tries to parse a single route segment into a value that can optionally be stored in <xref href=\"NanoRoute.RequestContext.Parameters\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.SyncSegmentParserDelegate.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.SyncSegmentParserDelegate.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.SyncSegmentParserDelegate.html"
@@ -294,11 +294,11 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.SyncSegmentParserDelegate",
-      "Summary": "<p sourcefile=\"../../BIN/DOC/NanoRoute.SyncSegmentParserDelegate.yml\" sourcestartlinenumber=\"1\">Represents a synchronous segment parser.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SyncSegmentParserDelegate.yml\" sourcestartlinenumber=\"1\">Represents a synchronous segment parser.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../BIN/DOC/NanoRoute.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.yml",
       "output": {
         ".html": {
           "relative_path": "NanoRoute.html"
@@ -312,7 +312,7 @@
     },
     {
       "type": "Toc",
-      "source_relative_path": "../../BIN/DOC/toc.yml",
+      "source_relative_path": "../../../BIN/DOC/toc.yml",
       "output": {
         ".html": {
           "relative_path": "toc.html"

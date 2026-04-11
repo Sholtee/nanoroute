@@ -57,7 +57,8 @@
 <li>Segment parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as <code>{id:int(min=1)}</code> once during registration.</li>
 <li>Parser-backed segments support optional parameter names. <code>{id:int}</code> stores the parsed value in <code>RequestContext.Parameters</code>, while <code>{int}</code> only validates the segment.</li>
 <li><code>WithBase()</code> creates scoped route subtrees without forcing you to repeat common prefixes.</li>
-<li><code>MatchingBehavior</code> lets you choose whether literal or parameterized child segments take precedence.</li>
+<li><code>MatchingBehavior</code> lets you choose whether literal or parameterized child segments are selected first.</li>
+<li>Once a child branch has been selected for a request, NanoRoute continues only within that branch.</li>
 <li><code>NanoRoute.Json</code> adds JSON request binding and JSON error/response helpers on top of the core pipeline.</li>
 </ul>
 <h2 id="segment-parser-syntax">Segment Parser Syntax</h2>

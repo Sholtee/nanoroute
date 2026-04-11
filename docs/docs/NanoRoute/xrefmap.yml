@@ -1013,24 +1013,6 @@ references:
   commentId: T:NanoRoute.SegmentParserContext
   fullName: NanoRoute.SegmentParserContext
   nameWithType: SegmentParserContext
-- uid: NanoRoute.SegmentParserContext.#ctor(System.String,System.IServiceProvider,System.Object,System.Threading.CancellationToken)
-  name: SegmentParserContext(string, IServiceProvider, object?, CancellationToken)
-  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext__ctor_System_String_System_IServiceProvider_System_Object_System_Threading_CancellationToken_
-  commentId: M:NanoRoute.SegmentParserContext.#ctor(System.String,System.IServiceProvider,System.Object,System.Threading.CancellationToken)
-  name.vb: New(String, IServiceProvider, Object, CancellationToken)
-  fullName: NanoRoute.SegmentParserContext.SegmentParserContext(string, System.IServiceProvider, object?, System.Threading.CancellationToken)
-  fullName.vb: NanoRoute.SegmentParserContext.New(String, System.IServiceProvider, Object, System.Threading.CancellationToken)
-  nameWithType: SegmentParserContext.SegmentParserContext(string, IServiceProvider, object?, CancellationToken)
-  nameWithType.vb: SegmentParserContext.New(String, IServiceProvider, Object, CancellationToken)
-- uid: NanoRoute.SegmentParserContext.#ctor*
-  name: SegmentParserContext
-  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext__ctor_
-  commentId: Overload:NanoRoute.SegmentParserContext.#ctor
-  name.vb: New
-  fullName: NanoRoute.SegmentParserContext.SegmentParserContext
-  fullName.vb: NanoRoute.SegmentParserContext.New
-  nameWithType: SegmentParserContext.SegmentParserContext
-  nameWithType.vb: SegmentParserContext.New
 - uid: NanoRoute.SegmentParserContext.Arguments
   name: Arguments
   href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Arguments
@@ -1055,6 +1037,18 @@ references:
   commentId: Overload:NanoRoute.SegmentParserContext.Cancellation
   fullName: NanoRoute.SegmentParserContext.Cancellation
   nameWithType: SegmentParserContext.Cancellation
+- uid: NanoRoute.SegmentParserContext.DecodedSegment
+  name: DecodedSegment
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_DecodedSegment
+  commentId: P:NanoRoute.SegmentParserContext.DecodedSegment
+  fullName: NanoRoute.SegmentParserContext.DecodedSegment
+  nameWithType: SegmentParserContext.DecodedSegment
+- uid: NanoRoute.SegmentParserContext.DecodedSegment*
+  name: DecodedSegment
+  href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_DecodedSegment_
+  commentId: Overload:NanoRoute.SegmentParserContext.DecodedSegment
+  fullName: NanoRoute.SegmentParserContext.DecodedSegment
+  nameWithType: SegmentParserContext.DecodedSegment
 - uid: NanoRoute.SegmentParserContext.Segment
   name: Segment
   href: NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Segment

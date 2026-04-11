@@ -282,7 +282,8 @@ or this timeout elapses.</p>
   <div class="markdown level1 remarks"><p>Prefix routes can participate in the same pipeline as exact routes. Consecutive <code>/</code> separators in the
 request path are treated as a single separator during matching. When several handlers match, NanoRoute
 evaluates compatible matches from shorter prefixes toward more specific matches and honors
-<a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_MatchingBehavior">MatchingBehavior</a> when both literal and parameterized segments are available at the same depth.</p>
+<a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_MatchingBehavior">MatchingBehavior</a> when both literal and parameterized segments are available at the same depth.
+Once a branch is selected at a given depth, NanoRoute does not return to sibling branches later in the pipeline.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">

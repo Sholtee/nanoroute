@@ -67,7 +67,8 @@
   </table>
   <h5 id="NanoRoute_CallNextHandlerDelegate_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This delegate is passed into <a class="xref" href="NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a> so handlers can opt into middleware-style
-composition. When the current handler does not call it, the pipeline stops at the current handler.</p>
+composition. When the current handler does not call it, the pipeline stops at the current handler. Matching
+continues only within the route branch already selected for the request; sibling branches are not revisited.</p>
 </div>
   <h5 id="NanoRoute_CallNextHandlerDelegate_examples"><strong>Examples</strong></h5>
   <pre><code class="lang-csharp">routerBuilder.AddHandler("GET", "/api/users/{id:int}", async (requestContext, callNext) =&gt;

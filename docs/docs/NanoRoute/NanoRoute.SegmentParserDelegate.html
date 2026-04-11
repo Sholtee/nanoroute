@@ -62,7 +62,8 @@
       <tr>
         <td><a class="xref" href="NanoRoute.SegmentParserContext.html">SegmentParserContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The parser context, including the decoded segment, request services, and the linked pipeline cancellation token.</p>
+        <td><p>The parser context, including the raw route segment, request services, and the linked pipeline cancellation token.
+Parsers that need percent-decoded text can use <a class="xref" href="NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_DecodedSegment">DecodedSegment</a>.</p>
 </td>
       </tr>
     </tbody>

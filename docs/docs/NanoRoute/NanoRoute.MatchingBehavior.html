@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width">
       <meta name="title" content="Enum MatchingBehavior | NanoRoute ">
     
-    <meta name="description" content="Controls how the router prioritizes literal and parameterized child segments during matching.">
+    <meta name="description" content="Controls how the router selects between literal and parameterized child segments during matching.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -41,7 +41,7 @@
 
 
   <h1 id="NanoRoute_MatchingBehavior" data-uid="NanoRoute.MatchingBehavior" class="text-break">Enum MatchingBehavior</h1>
-  <div class="markdown level0 summary"><p>Controls how the router prioritizes literal and parameterized child segments during matching.</p>
+  <div class="markdown level0 summary"><p>Controls how the router selects between literal and parameterized child segments during matching.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
@@ -62,12 +62,12 @@
     </thead></thead><tbody>
       <tr>
         <td id="NanoRoute_MatchingBehavior_LiteralFirst">LiteralFirst</td>
-        <td><p>Instructs the system to try literal child segments before parameterized child segments.</p>
+        <td><p>Instructs the router to select literal child segments before parameterized child segments.</p>
 </td>
       </tr>
       <tr>
         <td id="NanoRoute_MatchingBehavior_ParameterizedChildrenFirst">ParameterizedChildrenFirst</td>
-        <td><p>Instructs the system to try parameterized child segments before literal child segments.</p>
+        <td><p>Instructs the router to select parameterized child segments before literal child segments.</p>
 </td>
       </tr>
     </tbody>

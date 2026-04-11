@@ -47,7 +47,7 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_SyncSegmentParserDelegate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate bool SyncSegmentParserDelegate(string segment, object? arguments, out object? parsed)</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate bool SyncSegmentParserDelegate(ReadOnlyMemory&lt;char&gt; segment, object? arguments, out object? parsed)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -60,7 +60,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
         <td><span class="parametername">segment</span></td>
         <td><p>The raw path segment extracted from the request URI.</p>
 </td>
