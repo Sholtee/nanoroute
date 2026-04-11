@@ -132,10 +132,10 @@ jobs:
           }
 
           Remove-Item -Path ./gh-pages/CoverageReport -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item ./Artifacts/test-results/CoverageReport ./gh-pages -Force -Recurse
+          Move-Item ./Artifacts/test-results/CoverageReport ./gh-pages/
 
           Remove-Item -Path ./gh-pages/docs -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item ./Artifacts/docs/docs ./gh-pages -Force -Recurse
+          Move-Item ./Artifacts/docs ./gh-pages/
 
           Set-Location gh-pages
           git add .
