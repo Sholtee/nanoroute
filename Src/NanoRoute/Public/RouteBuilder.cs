@@ -29,7 +29,7 @@ namespace NanoRoute
         private static readonly Regex
             // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences.
             s_literalSegmentValidator = new(@"^(?:(?:[\w.\-~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+)$"),
-            // A parser-backed segment is recognized as a {...} shell here; the full interpretation happens in SegmentParserDefinitionParser.
+            // A parser-backed segment is recognized as a {...} shell here; the full interpretation happens in SegmentParserDefinition.
             s_segmentParserValidator = new(@"^\{[^/{}]+\}$");
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -52,13 +52,13 @@ namespace NanoRoute
                 {
                     SegmentParserDefinition parserDefinition = SegmentParserDefinition.Create(segment);
 
-                    if (!_segmentParsers.TryGetValue(parserDefinition.Name, out SegmentParserRegistration parserRegistration))
+                    if (!_segmentParsers.TryGetValue(parserDefinition.ValueParser.Name, out SegmentParserRegistration parserRegistration))
                         throw new InvalidOperationException
                         (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserDefinition.Name)
+                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserDefinition.ValueParser.Name)
                         );
 
-                    if (target.ParsedChildren.SingleOrDefault(cc => cc.SegmentParser!.Definition.Equals(parserDefinition)) is not { } parsedChild)
+                    if (target.ParsedChildren.SingleOrDefault(cc => cc.SegmentParser!.Definition.ValueParser.Equals(parserDefinition.ValueParser)) is not { } parsedChild)
                     {
                         parsedChild = new RouteNode
                         {
@@ -66,14 +66,14 @@ namespace NanoRoute
                             (
                                 parserDefinition,
                                 parserRegistration.Parse,
-                                parserRegistration.BindArguments(parserDefinition.RawArguments)
+                                parserRegistration.BindArguments(parserDefinition.ValueParser.RawArguments)
                             ),
                             Segment = uriSegment.Current
                         };
 
                         target.ParsedChildren.Add(parsedChild);
                     }
-                    else if (parsedChild.SegmentParser!.Definition.ParameterName?.Equals(parserDefinition.ParameterName) is false)
+                    else if (!StringComparer.OrdinalIgnoreCase.Equals(parsedChild.SegmentParser!.Definition.ParameterName, parserDefinition.ParameterName))
                         throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
 
                     target = parsedChild;
