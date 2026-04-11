@@ -38,7 +38,7 @@ jobs:
 
       - name: Create badges directory
         shell: pwsh
-        run: New-Item -ItemType Directory -Path ./Artifacts/badges -Force
+        run: New-Item -ItemType Directory -Path ./Artifacts/badges -Force | Out-Null
 
       - name: Parse test results
         id: tests
@@ -102,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: docs
-          path: ./Artifacts
+          path: ./Artifacts/docs
 
   upload-artifacts:
     needs:
