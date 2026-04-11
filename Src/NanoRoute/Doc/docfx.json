@@ -4,20 +4,20 @@
       "src": "%PUBLISH_DIR%",
       "files": ["Nanoroute.dll"]
     }],
-    "dest": "../../BIN/DOC",
+    "dest": "../../../BIN/DOC",
     "filter": "docfxFilters.yml"
   }],
   "build": {
     "content": [
       {
         "files": ["*.yml"],
-        "src": "../../BIN/DOC"
+        "src": "../../../BIN/DOC"
       },
       {
         "files": ["index.md"]
       }
     ],
-    "dest": "../../Artifacts/docs/NanoRoute",
+    "dest": "../../../Artifacts/docs/NanoRoute",
     "resource": [{
       "files": ["Icon.png"],
       "src": "../"
