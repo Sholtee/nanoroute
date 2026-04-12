@@ -29,7 +29,7 @@ namespace NanoRoute.Internals
                 Segment = NextSegment
                 (
                     // Escaped path, not percent decoded -> "/path%2Fto%2Fsomewhere/" will be treated as a single segment
-                    new DelimitedSegment(uri.AbsolutePath, '/')
+                    new DelimitedSegment(uri.AbsolutePath.AsMemory(), '/')
                 ),
                 Parameters = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
                 Phase = MatchPhase.EmitHandlers

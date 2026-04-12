@@ -167,5 +167,32 @@ namespace NanoRoute.Properties {
                 return ResourceManager.GetString("ERR_PARAMETER_OVERRIDE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate query parameter: {0}.
+        /// </summary>
+        internal static string ERR_QUERY_DUPLICATE_PARAMTER {
+            get {
+                return ResourceManager.GetString("ERR_QUERY_DUPLICATE_PARAMTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid query parameter: {0}.
+        /// </summary>
+        internal static string ERR_QUERY_INVALID_PARAMETER {
+            get {
+                return ResourceManager.GetString("ERR_QUERY_INVALID_PARAMETER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing query parameters: {0}.
+        /// </summary>
+        internal static string ERR_QUERY_MISSING_PARAMETER {
+            get {
+                return ResourceManager.GetString("ERR_QUERY_MISSING_PARAMETER", resourceCulture);
+            }
+        }
     }
 }

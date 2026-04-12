@@ -31,7 +31,7 @@ namespace NanoRoute.Tests
         [TestCase("//a//b//")]
         public void Enumerate_ShouldReturnTheSplitSegments(string s)
         {
-            DelimitedSegment segment = new(s, '/');
+            DelimitedSegment segment = new(s.AsMemory(), '/');
 
             Assert.That(ReadSegments(segment), Is.EquivalentTo(s.Split(['/'], StringSplitOptions.RemoveEmptyEntries)));
         }
@@ -41,7 +41,7 @@ namespace NanoRoute.Tests
         [TestCase("a=b=c", '=', new[] { "a", "b", "c" })]
         public void Enumerate_ShouldRespectCustomSeparator(string input, char separator, string[] expected)
         {
-            DelimitedSegment segment = new(input, separator);
+            DelimitedSegment segment = new(input.AsMemory(), separator);
 
             Assert.That(ReadSegments(segment), Is.EquivalentTo(expected));
         }

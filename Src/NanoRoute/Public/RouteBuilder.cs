@@ -44,7 +44,7 @@ namespace NanoRoute
         {
             RouteNode target = _root;
 
-            for(DelimitedSegment uriSegment = new(pattern, '/'); uriSegment.MoveNext();)
+            for(DelimitedSegment uriSegment = new(pattern.AsMemory(), '/'); uriSegment.MoveNext();)
             {
                 string segment = uriSegment.Current.ToString();
 

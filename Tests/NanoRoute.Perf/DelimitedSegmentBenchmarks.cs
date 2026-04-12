@@ -22,7 +22,7 @@ namespace NanoRoute.Perf
         {
             int total = 0;
 
-            for (DelimitedSegment current = new(Path, '/'); current.MoveNext();)
+            for (DelimitedSegment current = new(Path.AsMemory(), '/'); current.MoveNext();)
                 total += current.Current.Length;
 
             return total;

@@ -153,4 +153,13 @@
   <data name="ERR_DUPLICATE_PARSER_ARGS" xml:space="preserve">
     <value>Duplicate parser arguments.</value>
   </data>
+  <data name="ERR_QUERY_DUPLICATE_PARAMTER" xml:space="preserve">
+    <value>Duplicate query parameter: {0}</value>
+  </data>
+  <data name="ERR_QUERY_INVALID_PARAMETER" xml:space="preserve">
+    <value>Invalid query parameter: {0}</value>
+  </data>
+  <data name="ERR_QUERY_MISSING_PARAMETER" xml:space="preserve">
+    <value>Missing query parameters: {0}</value>
+  </data>
 </root>
