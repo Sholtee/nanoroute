@@ -219,9 +219,9 @@ namespace NanoRoute.Internals
             {
                 RouteNode parsedChild = frame.Node.ParsedChildren[TopFrame.ParsedChildIndex++];
 
-                SegmentParseResult parsed = await parsedChild.SegmentParser!.Parse
+                ValueParseResult parsed = await parsedChild.SegmentParser!.Parse
                 (
-                    new SegmentParserContext
+                    new ValueParserContext
                     {
                         Segment = frame.Segment.Current,
                         Services = services,

@@ -1,12 +1,12 @@
 /********************************************************************************
-* SegmentParser.cs                                                              *
+* ValueParser.cs                                                                *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 namespace NanoRoute.Internals
 {
     /// <summary>
-    /// Stores a parser bound to a route segment definition.
+    /// Stores a named route-value parser and its bound arguments.
     /// </summary>
-    internal sealed record SegmentParser(SegmentParserDefinition Definition, ValueParserDelegate Parse, object? Arguments);
+    internal sealed record ValueParser(ValueParserDefinition Definition, ValueParserDelegate Parse, object? Arguments);
 }

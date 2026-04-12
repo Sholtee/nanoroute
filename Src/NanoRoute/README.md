@@ -18,9 +18,9 @@ using NanoRoute.Json;
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .AddSegmentParser("int", static (string segment, object? _, out object? parsed) =>
+    .AddValueParser("int", static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
     {
-        bool success = int.TryParse(segment, out int value);
+        bool success = int.TryParse(segment.Span, out int value);
         parsed = success ? value : null;
         return success;
     })
@@ -71,7 +71,7 @@ When several routes share the same prefix, `WithBase()` lets you define that pre
 RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
     .CreateBuilder()
     // Register the built-in int/guid/bool/str route parsers.
-    .AddDefaultParsers()
+    .AddDefaultValueParsers()
     // Convert routing exceptions into JSON error responses.
     .AddJsonErrorDetails();
 
@@ -95,15 +95,15 @@ HttpListenerRouter router = builder.CreateRouter();
 
 This produces the same effective routes as registering `/api/users/{user_id:int}/` and `/api/users/{user_id:int}/details` directly, but keeps repeated base patterns out of individual `AddHandler()` calls.
 
-### Segment Parsers
+### Value Parsers
 
-NanoRoute supports both synchronous and asynchronous segment parsers:
+NanoRoute supports both synchronous and asynchronous value parsers:
 
-- `AddSegmentParser("name", SyncSegmentParserDelegate)` for lightweight synchronous parsing.
-- `AddSegmentParser("name", SegmentParserDelegate)` when parsing needs request services or async work.
-- `AddSegmentParser("name", BindArgumentsDelegate, ...)` when the route template includes parser arguments such as `{id:int(min=1)}`.
+- `AddValueParser("name", SyncValueParserDelegate)` for lightweight synchronous parsing.
+- `AddValueParser("name", ValueParserDelegate)` when parsing needs request services or async work.
+- `AddValueParser("name", BindArgumentsDelegate, ...)` when the route template includes parser arguments such as `{id:int(min=1)}`.
 
-`BindArgumentsDelegate` receives the raw parser arguments as a case-insensitive dictionary and can turn them into any cached object. That object is then exposed as `SegmentParserContext.Arguments` for async parsers or as the `arguments` parameter for sync parsers.
+`BindArgumentsDelegate` receives the raw parser arguments as a case-insensitive dictionary and can turn them into any cached object. That object is then exposed as `ValueParserContext.Arguments` for async parsers or as the `arguments` parameter for sync parsers.
 
 ```csharp
 using System.Collections.Generic;
@@ -114,19 +114,19 @@ using NanoRoute;
 
 RouteBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
     .CreateBuilder()
-    .AddSegmentParser
+    .AddValueParser
     (
         "int",
         static (IReadOnlyDictionary<string, string> rawArgs) => (
             Min: rawArgs.TryGetValue("min", out string? min) ? int.Parse(min, CultureInfo.InvariantCulture) : null,
             Max: rawArgs.TryGetValue("max", out string? max) ? int.Parse(max, CultureInfo.InvariantCulture) : null
         ),
-        static (string segment, object? arguments, out object? parsed) =>
+        static (ReadOnlyMemory<char> segment, object? arguments, out object? parsed) =>
         {
             (int? Min, int? Max) limits = ((int? Min, int? Max)) arguments!;
             parsed = null;
 
-            if (!int.TryParse(segment, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
+            if (!int.TryParse(segment.Span, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
                 return false;
 
             if (limits.Min is int min && value < min)
@@ -139,14 +139,14 @@ RouteBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListene
             return true;
         }
     )
-    .AddSegmentParser("user", static async (SegmentParserContext context) =>
+    .AddValueParser("user", static async (ValueParserContext context) =>
     {
-        if (!Guid.TryParse(context.Segment, out Guid userId))
-            return new SegmentParseResult(false, null);
+        if (!Guid.TryParse(context.Segment.Span, out Guid userId))
+            return new ValueParseResult(false, null);
 
         IUserRepository repository = context.Services.GetRequiredService<IUserRepository>();
         object? user = await repository.TryGetAsync(userId, context.Cancellation);
-        return new SegmentParseResult(user is not null, user);
+        return new ValueParseResult(user is not null, user);
     });
 ```
 
@@ -183,12 +183,12 @@ InMemoryRouter router = InMemoryRouter
     .CreateRouter();
 ```
 
-This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, segment parsing, and handler pipeline.
+This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline.
 
 ### Timeouts And Cancellation
 
 - `RouterConfig.Timeout` defaults to `TimeSpan.FromMinutes(1)`.
-- NanoRoute exposes a linked cancellation token to async segment parsers and handlers through `SegmentParserContext.Cancellation` and `RequestContext.Cancellation`.
+- NanoRoute exposes a linked cancellation token to async value parsers and handlers through `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
 - That linked token is canceled when either the caller-provided cancellation token is canceled or the router timeout elapses.
 - `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
 - `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
@@ -196,7 +196,7 @@ This keeps the transport-specific concerns in your own router type while still r
 ## Common Building Blocks
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
-- `AddDefaultParsers()` registers the built-in `int`, `guid`, `bool`, and `str` segment parsers.
+- `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `WithBase("/prefix/")` creates a scoped child builder for a route subtree.
 - `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
@@ -210,7 +210,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
-- [SegmentParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.SegmentParserDelegate.html)
+- [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
 
 ## Documentation

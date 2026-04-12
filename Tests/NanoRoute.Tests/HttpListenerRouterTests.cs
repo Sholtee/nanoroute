@@ -162,7 +162,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldHandleGetRequests()
         {
             CreateRouter(bldr => bldr
-                .AddSegmentParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
+                .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("Get", "/welcome/{name:str}", async (context, _) =>
                 {
                     Assert.That(context.Request.Headers.TryGetValues("X-Custom-Request-Header", out IEnumerable<string>? values), Is.True);
@@ -269,7 +269,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldExposeOriginalHttpListenerRequest()
         {
             CreateRouter(bldr => bldr
-                .AddSegmentParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
+                .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("GET", "", async (context, _) =>
                 {
                     Assert.That(context.Request.TryGetProperty(Router.ORIGINAL_REQUEST_NAME, out object? originalRequest), Is.True);
@@ -370,7 +370,7 @@ namespace NanoRoute.Tests
         public async Task ReadmeQuickStartExample_ShouldRouteRequests()
         {
             CreateRouter(bldr => bldr
-                .AddSegmentParser("int", static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
+                .AddValueParser("int", static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
                     bool success = int.TryParse(segment.ToString(), out int value);
                     parsed = success ? value : null;
@@ -404,7 +404,7 @@ namespace NanoRoute.Tests
         public async Task ReadmeAdvancedUsageExample_ShouldSupportWithBase()
         {
             CreateRouter(bldr => bldr
-                .AddDefaultParsers()
+                .AddDefaultValueParsers()
                 .WithBase("/api/users/{user_id:int}/", users => users
                     .AddHandler("GET", "/", async (context, next) =>
                     {
@@ -436,3 +436,4 @@ namespace NanoRoute.Tests
         }
     }
 }
+

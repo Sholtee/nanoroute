@@ -20,10 +20,10 @@ namespace NanoRoute.Perf
     {
         private static readonly IServiceProvider s_services = new NoopServiceProvider();
 
-        private static readonly SegmentParser s_parser = new
+        private static readonly ValueParser s_parser = new
         (
-            SegmentParserDefinition.Create("{value:str}"),
-            static context => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.DecodedSegment.ToString())),
+            ValueParserDefinition.Create("str"),
+            static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.DecodedSegment.ToString())),
             Arguments: null
         );
 
@@ -94,3 +94,4 @@ namespace NanoRoute.Perf
         }
     }
 }
+

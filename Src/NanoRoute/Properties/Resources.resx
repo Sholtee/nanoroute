@@ -121,7 +121,7 @@
     <value>Not found.</value>
   </data>
   <data name="ERR_NO_SUCH_SEGMENT_PARSER" xml:space="preserve">
-    <value>No such segment parser: {0}</value>
+    <value>No such value parser: {0}</value>
   </data>
   <data name="ERR_PARAMETER_OVERRIDE" xml:space="preserve">
     <value>Conflicting parameter names are not allowed for the same route segment.</value>

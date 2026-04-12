@@ -82,7 +82,7 @@ namespace NanoRoute.Tests
                     SegmentParser = new SegmentParser
                     (
                         SegmentParserDefinition.Create("{id:str}"),
-                        static context => new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.Segment.ToString())),
+                        static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())),
                         null
                     )
                 };
@@ -105,7 +105,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task MoveNextAsync_ShouldContinueWhenAParserReturnsFalse()
         {
-            Mock<SegmentParserDelegate>
+            Mock<ValueParserDelegate>
                 mockIntParser = new(MockBehavior.Strict),
                 mockStringParser = new(MockBehavior.Strict);
 
@@ -113,20 +113,20 @@ namespace NanoRoute.Tests
 
             mockIntParser
                 .InSequence(sequence)
-                .Setup(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "abc")))
-                .Returns((SegmentParserContext context) =>
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")))
+                .Returns((ValueParserContext context) =>
                 {
                     Assert.That(context.Arguments, Is.Null);
-                    return new ValueTask<SegmentParseResult>(new SegmentParseResult(false, null));
+                    return new ValueTask<ValueParseResult>(new ValueParseResult(false, null));
                 });
 
             mockStringParser
                 .InSequence(sequence)
-                .Setup(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "abc")))
-                .Returns((SegmentParserContext context) =>
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")))
+                .Returns((ValueParserContext context) =>
                 {
                     Assert.That(context.Arguments, Is.Null);
-                    return new ValueTask<SegmentParseResult>(new SegmentParseResult(true, context.Segment.ToString()));
+                    return new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString()));
                 });
 
             HandlerRegistration handler = new(s_handler, "/api/{slug:str}/details");
@@ -170,20 +170,20 @@ namespace NanoRoute.Tests
             Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("slug").WithValue("abc"));
             Assert.That(cursor.Current.AttachedParameters, Does.Not.ContainKey("id"));
 
-            mockIntParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "abc")), Times.Once);
-            mockStringParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "abc")), Times.Once);
+            mockIntParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")), Times.Once);
+            mockStringParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")), Times.Once);
         }
 
         [Test]
         public async Task MoveNextAsync_ShouldNotContinueWithSiblingParsedBranchesAfterABranchWasSelected()
         {
-            Mock<SegmentParserDelegate>
+            Mock<ValueParserDelegate>
                 mockIntParser = new(MockBehavior.Strict),
                 mockStringParser = new(MockBehavior.Strict);
 
             mockIntParser
-                .Setup(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "1986")))
-                .Returns(new ValueTask<SegmentParseResult>(new SegmentParseResult(true, 1986)));
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")))
+                .Returns(new ValueTask<ValueParseResult>(new ValueParseResult(true, 1986)));
 
             HandlerRegistration handler = new(s_handler, "/api/{id:int}/details");
 
@@ -227,8 +227,9 @@ namespace NanoRoute.Tests
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
 
-            mockIntParser.Verify(parser => parser.Invoke(It.Is<SegmentParserContext>(context => context.Segment.ToString() == "1986")), Times.Once);
-            mockStringParser.Verify(parser => parser.Invoke(It.IsAny<SegmentParserContext>()), Times.Never);
+            mockIntParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")), Times.Once);
+            mockStringParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Never);
         }
     }
 }
+

@@ -39,9 +39,9 @@ namespace NanoRoute.Internals
                 if (result.ContainsKey(expectedParameter.Name))
                     ThrowBadRequest(Resources.ERR_QUERY_DUPLICATE_PARAMTER, expectedParameter.Name);
 
-                SegmentParseResult parsed = await expectedParameter.Parser.Parse
+                ValueParseResult parsed = await expectedParameter.Parser.Parse
                 (
-                    new SegmentParserContext
+                    new ValueParserContext
                     {
                         Segment = separatorIndex >= 0
                             ? parameter.Current.Slice(separatorIndex + 1)
@@ -75,3 +75,4 @@ namespace NanoRoute.Internals
         );
     }
 }
+
