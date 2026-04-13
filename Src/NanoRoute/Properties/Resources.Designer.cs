@@ -113,6 +113,15 @@ namespace NanoRoute.Properties {
                 return ResourceManager.GetString("ERR_INVALID_PATTERN", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid query bindings..
+        /// </summary>
+        internal static string ERR_INVALID_QUERY_BINDINGS {
+            get {
+                return ResourceManager.GetString("ERR_INVALID_QUERY_BINDINGS", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid verb: {0}.
@@ -133,11 +142,11 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No such segment parser: {0}.
+        ///   Looks up a localized string similar to No such value parser: {0}.
         /// </summary>
-        internal static string ERR_NO_SUCH_SEGMENT_PARSER {
+        internal static string ERR_NO_SUCH_PARSER {
             get {
-                return ResourceManager.GetString("ERR_NO_SUCH_SEGMENT_PARSER", resourceCulture);
+                return ResourceManager.GetString("ERR_NO_SUCH_PARSER", resourceCulture);
             }
         }
         
@@ -165,6 +174,33 @@ namespace NanoRoute.Properties {
         internal static string ERR_PARAMETER_OVERRIDE {
             get {
                 return ResourceManager.GetString("ERR_PARAMETER_OVERRIDE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate query parameter: {0}.
+        /// </summary>
+        internal static string ERR_QUERY_DUPLICATE_PARAMTER {
+            get {
+                return ResourceManager.GetString("ERR_QUERY_DUPLICATE_PARAMTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid query parameter: {0}.
+        /// </summary>
+        internal static string ERR_QUERY_INVALID_PARAMETER {
+            get {
+                return ResourceManager.GetString("ERR_QUERY_INVALID_PARAMETER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing query parameters: {0}.
+        /// </summary>
+        internal static string ERR_QUERY_MISSING_PARAMETER {
+            get {
+                return ResourceManager.GetString("ERR_QUERY_MISSING_PARAMETER", resourceCulture);
             }
         }
     }

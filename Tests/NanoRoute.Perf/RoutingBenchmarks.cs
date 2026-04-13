@@ -54,7 +54,7 @@ namespace NanoRoute.Perf
 
                 case "complex-parsed":
                     builder
-                        .AddDefaultParsers()
+                        .AddDefaultValueParsers()
                         .AddHandler("GET", "/api/v1/users/{userId:int}/orders/{orderId:int}/items/{itemId:int}/details", static (_, _) => Task.FromResult(s_response));
                     _request = CreateRequest("/api/v1/users/42/orders/7/items/3/details");
                     break;
@@ -82,3 +82,4 @@ namespace NanoRoute.Perf
         }
     }
 }
+

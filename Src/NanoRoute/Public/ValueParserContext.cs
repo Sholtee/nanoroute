@@ -1,5 +1,5 @@
 /********************************************************************************
-* SegmentParserContext.cs                                                       *
+* ValueParserContext.cs                                                         *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -10,9 +10,9 @@ using System.Web;
 namespace NanoRoute
 {
     /// <summary>
-    /// Carries the current route segment and request-scoped services into an asynchronous segment parser.
+    /// Carries the current route segment and request-scoped services into an asynchronous value parser.
     /// </summary>
-    public record struct SegmentParserContext
+    public record struct ValueParserContext
     {
         /// <summary>
         /// Gets the raw route segment exactly as it appeared in the request URI path.
@@ -52,4 +52,5 @@ namespace NanoRoute
         }
     }
 }
+
 

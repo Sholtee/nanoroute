@@ -36,9 +36,12 @@ namespace NanoRoute
             public TBuilder AddExceptionHandler() => routeBuilder.AddExceptionHandler(Enum.GetNames(typeof(HttpVerb)));
 
             /// <summary>
-            /// Adds an exception-handling middleware for the selected HTTP methods.
+            /// Adds an exception-handling middleware for all supported HTTP methods.
             /// </summary>
-            /// <param name="verbs">The HTTP methods that should use the exception-handling middleware.</param>
+            /// <param name="pattern">
+            /// The route pattern where the exception-handling middleware should be inserted. Use <c>/</c> to apply it
+            /// to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.
+            /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
@@ -46,12 +49,36 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
             /// </remarks>
-            public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs)
+            public TBuilder AddExceptionHandler(string pattern)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(pattern);
+
+                return routeBuilder.AddExceptionHandler(Enum.GetNames(typeof(HttpVerb)), pattern);
+            }
+
+            /// <summary>
+            /// Adds an exception-handling middleware for the selected HTTP methods.
+            /// </summary>
+            /// <param name="verbs">The HTTP methods that should use the exception-handling middleware.</param>
+            /// <param name="pattern">
+            /// The route pattern where the exception-handling middleware should be inserted. Use <c>/</c> to apply it
+            /// to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.
+            /// </param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
+            /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
+            /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
+            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
+            /// </remarks>
+            public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verbs);
+                Ensure.NotNull(pattern);
 
-                routeBuilder.AddHandler(verbs, "/", async (RequestContext context, CallNextHandlerDelegate next) =>
+                routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
                     try
                     {
@@ -72,6 +99,49 @@ namespace NanoRoute
                 });
 
                 return routeBuilder;
+            }
+
+            /// <summary>
+            /// Adds an exception-handling middleware for a single HTTP method.
+            /// </summary>
+            /// <param name="verb">The HTTP method that should use the exception-handling middleware.</param>
+            /// <param name="pattern">
+            /// The route pattern where the exception-handling middleware should be inserted. Use <c>/</c> to apply it
+            /// to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.
+            /// </param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
+            /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
+            /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
+            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
+            /// </remarks>
+            public TBuilder AddExceptionHandler(string verb, string pattern)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(verb);
+                Ensure.NotNull(pattern);
+
+                return routeBuilder.AddExceptionHandler([verb], pattern);
+            }
+
+            /// <summary>
+            /// Adds an exception-handling middleware for the selected HTTP methods.
+            /// </summary>
+            /// <param name="verbs">The HTTP methods that should use the exception-handling middleware.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
+            /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
+            /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
+            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
+            /// </remarks>
+            public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(verbs);
+
+                return routeBuilder.AddExceptionHandler(verbs, "/");
             }
         }
 

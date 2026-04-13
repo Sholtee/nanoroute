@@ -9,7 +9,7 @@
     <Configurations>Debug;Release</Configurations>
     <!--Remove this when the BenchmarkDotNet.Analyzers will be reliable again-->
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
-    <NoWarn>CA1515;</NoWarn>
+    <NoWarn>CA1515;CA1707;CA1822;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

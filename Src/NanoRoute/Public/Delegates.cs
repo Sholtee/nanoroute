@@ -19,7 +19,7 @@ namespace NanoRoute
     /// The raw parser arguments as parsed from the route template, keyed case-insensitively.
     /// </param>
     /// <returns>
-    /// A parser-specific object that will later be exposed through <see cref="SegmentParserContext.Arguments"/>.
+    /// A parser-specific object that will later be exposed through <see cref="ValueParserContext.Arguments"/>.
     /// Return <see langword="null"/> when the parser does not need a bound payload.
     /// </returns>
     /// <remarks>
@@ -28,7 +28,7 @@ namespace NanoRoute
     /// </remarks>
     /// <example>
     /// <code>
-    /// routerBuilder.AddSegmentParser
+    /// routerBuilder.AddValueParser
     /// (
     ///     "int",
     ///     static rawArgs => (
@@ -38,7 +38,7 @@ namespace NanoRoute
     ///     static context =>
     ///     {
     ///         var args = ((int? Min, int? Max)) context.Arguments!;
-    ///         return ValueTask.FromResult(new SegmentParseResult(true, context.Segment));
+    ///         return ValueTask.FromResult(new ValueParseResult(true, context.Segment));
     ///     }
     /// );
     /// </code>
@@ -46,7 +46,7 @@ namespace NanoRoute
     public delegate object? BindArgumentsDelegate(IReadOnlyDictionary<string, string> rawArgs);
 
     /// <summary>
-    /// Represents a synchronous segment parser.
+    /// Represents a synchronous value parser.
     /// </summary>
     /// <param name="segment">The raw path segment extracted from the request URI.</param>
     /// <param name="arguments">
@@ -57,7 +57,7 @@ namespace NanoRoute
     /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
     /// <example>
     /// <code>
-    /// routerBuilder.AddSegmentParser("int", (string segment, object? arguments, out object? parsed) =&gt;
+    /// routerBuilder.AddValueParser("int", (string segment, object? arguments, out object? parsed) =&gt;
     /// {
     ///     var limits = ((int? Min, int? Max)) arguments!;
     ///
@@ -78,33 +78,33 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate bool SyncSegmentParserDelegate(ReadOnlyMemory<char> segment, object? arguments, out object? parsed);
+    public delegate bool SyncValueParserDelegate(ReadOnlyMemory<char> segment, object? arguments, out object? parsed);
 
     /// <summary>
     /// Tries to parse a single route segment into a value that can optionally be stored in <see cref="RequestContext.Parameters"/>.
     /// </summary>
     /// <param name="context">
     /// The parser context, including the raw route segment, request services, and the linked pipeline cancellation token.
-    /// Parsers that need percent-decoded text can use <see cref="SegmentParserContext.DecodedSegment"/>.
+    /// Parsers that need percent-decoded text can use <see cref="ValueParserContext.DecodedSegment"/>.
     /// </param>
-    /// <returns>A <see cref="SegmentParseResult"/> that describes whether the segment matched and what value it produced.</returns>
+    /// <returns>A <see cref="ValueParseResult"/> that describes whether the segment matched and what value it produced.</returns>
     /// <example>
     /// <code>
-    /// routerBuilder.AddSegmentParser("user", static async (SegmentParserContext context) =>
+    /// routerBuilder.AddValueParser("user", static async (ValueParserContext context) =>
     /// {
     ///     if (!Guid.TryParse(context.Segment, out Guid userId))
-    ///         return new SegmentParseResult(false, null);
+    ///         return new ValueParseResult(false, null);
     ///
     ///     object? user = await context
     ///         .Services
     ///         .GetRequiredService&lt;IUserRepository&gt;()
     ///         .TryGetAsync(userId, context.Cancellation);
     ///
-    ///     return new SegmentParseResult(user is not null, user);
+    ///     return new ValueParseResult(user is not null, user);
     /// });
     /// </code>
     /// </example>
-    public delegate ValueTask<SegmentParseResult> SegmentParserDelegate(SegmentParserContext context);
+    public delegate ValueTask<ValueParseResult> ValueParserDelegate(ValueParserContext context);
 
     /// <summary>
     /// Invokes the next compatible handler in the current routing pipeline.
@@ -157,3 +157,4 @@ namespace NanoRoute
     /// </example>
     public delegate Task<HttpResponseMessage> RequestHandlerDelegate(RequestContext requestContext, CallNextHandlerDelegate callNext);
 }
+

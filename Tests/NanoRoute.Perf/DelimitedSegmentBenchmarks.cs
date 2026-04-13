@@ -1,5 +1,5 @@
 /********************************************************************************
-* UriSegmentBenchmarks.cs                                                       *
+* DelimitedSegmentBenchmarks.cs                                                 *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -12,7 +12,7 @@ namespace NanoRoute.Perf
     using Internals;
 
     [MemoryDiagnoser]
-    public class UriSegmentBenchmarks
+    public class DelimitedSegmentBenchmarks
     {
         [Params("/api/users/42/orders/7")]
         public string Path { get; set; } = string.Empty;
@@ -22,7 +22,7 @@ namespace NanoRoute.Perf
         {
             int total = 0;
 
-            for (UriSegment current = new(Path); current.MoveNext();)
+            for (DelimitedSegment current = new(Path.AsMemory(), '/'); current.MoveNext();)
                 total += current.Current.Length;
 
             return total;
@@ -33,7 +33,7 @@ namespace NanoRoute.Perf
         {
             int total = 0;
 
-            foreach (string segment in Path.Split([UriSegment.SEPARATOR], StringSplitOptions.RemoveEmptyEntries))
+            foreach (string segment in Path.Split(['/'], StringSplitOptions.RemoveEmptyEntries))
                 total += segment.Length;
 
             return total;

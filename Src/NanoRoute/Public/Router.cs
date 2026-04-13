@@ -85,7 +85,7 @@ namespace NanoRoute
         /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
         /// </summary>
         /// <param name="request">The request to process.</param>
-        /// <param name="services">The service provider exposed to segment parsers and handlers.</param>
+        /// <param name="services">The service provider exposed to value parsers and handlers.</param>
         /// <param name="cancellation">A token that can cancel request processing.</param>
         /// <returns>The <see cref="HttpResponseMessage"/> produced by the matching handlers.</returns>
         /// <remarks>
@@ -175,3 +175,4 @@ namespace NanoRoute
         }
     }
 }
+

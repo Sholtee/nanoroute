@@ -1,12 +1,13 @@
 /********************************************************************************
-* SegmentParserRegistration.cs                                                  *
+* ValueParserRegistration.cs                                                    *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
-namespace NanoRoute.Internals
+namespace NanoRoute
 {
     /// <summary>
-    /// Stores a named route-segment parser together with its argument binder.
+    /// Stores a named value parser together with its argument binder.
     /// </summary>
-    internal sealed record SegmentParserRegistration(string Name, SegmentParserDelegate Parse, BindArgumentsDelegate BindArguments);
+    public sealed record ValueParserRegistration(string Name, ValueParserDelegate Parse, BindArgumentsDelegate BindArguments);
 }
+

@@ -29,7 +29,7 @@ namespace NanoRoute.Internals
                 Segment = NextSegment
                 (
                     // Escaped path, not percent decoded -> "/path%2Fto%2Fsomewhere/" will be treated as a single segment
-                    new UriSegment(uri.AbsolutePath)
+                    new DelimitedSegment(uri.AbsolutePath.AsMemory(), '/')
                 ),
                 Parameters = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
                 Phase = MatchPhase.EmitHandlers
@@ -47,7 +47,7 @@ namespace NanoRoute.Internals
 
         private ref Frame TopFrame => ref _stack[_stackLength - 1];
 
-        private static UriSegment NextSegment(UriSegment segment)
+        private static DelimitedSegment NextSegment(DelimitedSegment segment)
         {
             segment.MoveNext();
             return segment;
@@ -188,7 +188,7 @@ namespace NanoRoute.Internals
             if (!frame.Node.LiteralChildren.TryGetValue(frame.Segment.Current, out RouteNode literalChild))
                 return false;
 
-            UriSegment nextSegment = NextSegment(frame.Segment);
+            DelimitedSegment nextSegment = NextSegment(frame.Segment);
 
             PushFrame
             (
@@ -213,15 +213,15 @@ namespace NanoRoute.Internals
             if (!frame.Segment.HasValue)
                 return false;
 
-            UriSegment nextSegment = NextSegment(frame.Segment);
+            DelimitedSegment nextSegment = NextSegment(frame.Segment);
 
             while (TopFrame.ParsedChildIndex < frame.Node.ParsedChildren.Count)
             {
                 RouteNode parsedChild = frame.Node.ParsedChildren[TopFrame.ParsedChildIndex++];
 
-                SegmentParseResult parsed = await parsedChild.SegmentParser!.Parse
+                ValueParseResult parsed = await parsedChild.SegmentParser!.Parse
                 (
-                    new SegmentParserContext
+                    new ValueParserContext
                     {
                         Segment = frame.Segment.Current,
                         Services = services,
@@ -295,7 +295,7 @@ namespace NanoRoute.Internals
 
             public HttpVerb Verb;
 
-            public UriSegment Segment;
+            public DelimitedSegment Segment;
 
             public Dictionary<string, object?> Parameters;
 
