@@ -121,7 +121,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;<a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>, <a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a>&gt;</td>
-        <td><p>A builder that can register handlers, segment parsers, and router configuration.</p>
+        <td><p>A builder that can register handlers, value parsers, and router configuration.</p>
 </td>
       </tr>
     </tbody>
@@ -193,7 +193,7 @@ response by this adapter.</p>
   <pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddJsonErrorDetails()
-    .AddDefaultParsers()
+    .AddDefaultValueParsers()
     .AddHandler("GET", "/hello/{name:str}", (context, _) =&gt;
         Task.FromResult(HttpResponseMessage.Json(new
         {

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class NanoRouteQueryExtensions | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class NanoRouteQueryExtensions | NanoRoute ">
+    
+    <meta name="description" content="Adds query-parameter binding helpers to NanoRoute.">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.NanoRouteQueryExtensions">
+
+
+
+  <h1 id="NanoRoute_NanoRouteQueryExtensions" data-uid="NanoRoute.NanoRouteQueryExtensions" class="text-break">Class NanoRouteQueryExtensions</h1>
+  <div class="markdown level0 summary"><p>Adds query-parameter binding helpers to NanoRoute.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">NanoRouteQueryExtensions</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class NanoRouteQueryExtensions</code></pre>
+  </div>
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IReadOnlyDictionary{System.String,System.String})">AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, IReadOnlyDictionary&lt;string, string&gt;)</h4>
+  <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, IReadOnlyDictionary&lt;string, string&gt; bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that activate the query-binding middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">bindings</span></td>
+        <td><p>A case-insensitive map where the key is the target parameter name and the value is a value-parser
+specification. Prefix the parser specification with <code>?</code> to mark the query parameter as optional.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_Collections_Generic_IReadOnlyDictionary_System_String_System_String___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
+already contains the same key because of route binding, JSON binding, or earlier middleware, the
+query binding overwrites the existing value.</p>
+</div>
+  <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String})">AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, IReadOnlyDictionary&lt;string, string&gt;)</h4>
+  <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, IReadOnlyDictionary&lt;string, string&gt; bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that activate the query-binding middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the query-binding middleware should be inserted. Use <code>/</code> to apply it to
+the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">bindings</span></td>
+        <td><p>A case-insensitive map where the key is the target parameter name and the value is a value-parser
+specification. Prefix the parser specification with <code>?</code> to mark the query parameter as optional.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
+already contains the same key because of route binding, JSON binding, or earlier middleware, the
+query binding overwrites the existing value.</p>
+</div>
+  <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String})">AddQueryBindings&lt;TBuilder&gt;(TBuilder, IReadOnlyDictionary&lt;string, string&gt;)</h4>
+  <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, IReadOnlyDictionary&lt;string, string&gt; bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">bindings</span></td>
+        <td><p>A case-insensitive map where the key is the target parameter name and the value is a value-parser
+specification. Prefix the parser specification with <code>?</code> to mark the query parameter as optional.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
+already contains the same key because of route binding, JSON binding, or earlier middleware, the
+query binding overwrites the existing value.</p>
+</div>
+  <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String})">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, IReadOnlyDictionary&lt;string, string&gt;)</h4>
+  <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, string pattern, IReadOnlyDictionary&lt;string, string&gt; bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the query-binding middleware should be inserted. Use <code>/</code> to apply it to
+the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">bindings</span></td>
+        <td><p>A case-insensitive map where the key is the target parameter name and the value is a value-parser
+specification. Prefix the parser specification with <code>?</code> to mark the query parameter as optional.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
+already contains the same key because of route binding, JSON binding, or earlier middleware, the
+query binding overwrites the existing value.</p>
+</div>
+  <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String})">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string, IReadOnlyDictionary&lt;string, string&gt;)</h4>
+  <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, string verb, string pattern, IReadOnlyDictionary&lt;string, string&gt; bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">verb</span></td>
+        <td><p>The HTTP method that activates the query-binding middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the query-binding middleware should be inserted. Use <code>/</code> to apply it to
+the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">bindings</span></td>
+        <td><p>A case-insensitive map where the key is the target parameter name and the value is a value-parser
+specification. Prefix the parser specification with <code>?</code> to mark the query parameter as optional.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
+already contains the same key because of route binding, JSON binding, or earlier middleware, the
+query binding overwrites the existing value.</p>
+</div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

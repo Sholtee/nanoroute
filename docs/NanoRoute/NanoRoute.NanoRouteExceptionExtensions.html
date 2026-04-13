@@ -295,6 +295,228 @@ with normalized status codes and diagnostic payloads. Existing <a class="xref" h
 values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
 not normalized so caller-driven cancellation and router timeouts can propagate unchanged.</p>
 </div>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String)">AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;, string)</h4>
+  <div class="markdown level1 summary"><p>Adds an exception-handling middleware for the selected HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, IReadOnlyCollection&lt;string&gt; verbs, string pattern) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that should use the exception-handling middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the exception-handling middleware should be inserted. Use <code>/</code> to apply it
+to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The inserted middleware converts unexpected exceptions into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> values
+with normalized status codes and diagnostic payloads. Existing <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
+values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
+not normalized so caller-driven cancellation and router timeouts can propagate unchanged.</p>
+</div>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String)">AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string)</h4>
+  <div class="markdown level1 summary"><p>Adds an exception-handling middleware for all supported HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, string pattern) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the exception-handling middleware should be inserted. Use <code>/</code> to apply it
+to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The inserted middleware converts unexpected exceptions into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> values
+with normalized status codes and diagnostic payloads. Existing <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
+values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
+not normalized so caller-driven cancellation and router timeouts can propagate unchanged.</p>
+</div>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String,System.String)">AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string, string)</h4>
+  <div class="markdown level1 summary"><p>Adds an exception-handling middleware for a single HTTP method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, string verb, string pattern) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">verb</span></td>
+        <td><p>The HTTP method that should use the exception-handling middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the exception-handling middleware should be inserted. Use <code>/</code> to apply it
+to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The inserted middleware converts unexpected exceptions into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> values
+with normalized status codes and diagnostic payloads. Existing <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
+values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
+not normalized so caller-driven cancellation and router timeouts can propagate unchanged.</p>
+</div>
   <a id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_" data-uid="NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails(System.Net.Http.HttpRequestException,System.Boolean,System.String)">GetErrorDetails(HttpRequestException, bool, string?)</h4>
   <div class="markdown level1 summary"><p>Converts an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> into an <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> payload.</p>

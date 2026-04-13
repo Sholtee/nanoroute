@@ -116,14 +116,14 @@ path exactly.</p>
   <div class="markdown level1 remarks"><p>Each entry is formatted as <code>[Verb] Pattern</code>. Child builders list only the routes reachable from
 their base path, while the root builder lists the whole configured tree.</p>
 </div>
-  <a id="NanoRoute_RouteBuilder_SegmentParsers_" data-uid="NanoRoute.RouteBuilder.SegmentParsers*"></a>
-  <h4 id="NanoRoute_RouteBuilder_SegmentParsers" data-uid="NanoRoute.RouteBuilder.SegmentParsers">SegmentParsers</h4>
-  <div class="markdown level1 summary"><p>Gets the segment parser names currently registered on this builder instance.</p>
+  <a id="NanoRoute_RouteBuilder_ValueParsers_" data-uid="NanoRoute.RouteBuilder.ValueParsers*"></a>
+  <h4 id="NanoRoute_RouteBuilder_ValueParsers" data-uid="NanoRoute.RouteBuilder.ValueParsers">ValueParsers</h4>
+  <div class="markdown level1 summary"><p>Gets the value parser registrations currently visible from this builder instance.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IEnumerable&lt;string&gt; SegmentParsers { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IReadOnlyDictionary&lt;string, ValueParserRegistration&gt; ValueParsers { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -135,14 +135,14 @@ their base path, while the root builder lists the whole configured tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="NanoRoute.ValueParserRegistration.html">ValueParserRegistration</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouteBuilder_SegmentParsers_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>For child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_System_String_">WithBase(string)</a>, this sequence reflects the inherited
-parsers plus any overrides added to that child scope.</p>
+  <h5 id="NanoRoute_RouteBuilder_ValueParsers_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>For child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_System_String_">WithBase(string)</a>, this dictionary reflects the inherited
+registrations plus any overrides added to that child scope.</p>
 </div>
   <h3 id="methods">Methods
 </h3>
@@ -347,19 +347,19 @@ the pipeline with the next compatible handler from the already selected route br
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when the pattern references a segment parser that has not been registered yet.</p>
+        <td><p>Thrown when the pattern references a value parser that has not been registered yet.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouteBuilder_AddSegmentParser_" data-uid="NanoRoute.RouteBuilder.AddSegmentParser*"></a>
-  <h4 id="NanoRoute_RouteBuilder_AddSegmentParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SegmentParserDelegate_" data-uid="NanoRoute.RouteBuilder.AddSegmentParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SegmentParserDelegate)">AddSegmentParser(string, BindArgumentsDelegate, SegmentParserDelegate)</h4>
+  <a id="NanoRoute_RouteBuilder_AddValueParser_" data-uid="NanoRoute.RouteBuilder.AddValueParser*"></a>
+  <h4 id="NanoRoute_RouteBuilder_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.RouteBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)">AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouteBuilder AddSegmentParser(string parserName, BindArgumentsDelegate bindArguments, SegmentParserDelegate tryParseDelegate)</code></pre>
+    <pre><code class="lang-csharp hljs">public RouteBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -384,7 +384,7 @@ the pipeline with the next compatible handler from the already selected route br
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="NanoRoute.SegmentParserDelegate.html">SegmentParserDelegate</a></td>
+        <td><a class="xref" href="NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a></td>
         <td><span class="parametername">tryParseDelegate</span></td>
         <td><p>The delegate that validates and parses a single path segment.</p>
 </td>
@@ -451,7 +451,7 @@ the pipeline with the next compatible handler from the already selected route br
     </tbody>
   </table>
   <h5 id="NanoRoute_RouteBuilder_WithBase_System_String__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Child builders inherit the parent's registered segment parsers at creation time. Additional parser
+  <div class="markdown level1 remarks"><p>Child builders inherit the parent's registered value parsers at creation time. Additional parser
 registrations or overrides made on the child builder stay local to that branch.</p>
 </div>
   <h5 id="NanoRoute_RouteBuilder_WithBase_System_String__examples">Examples</h5>
@@ -475,7 +475,7 @@ api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());</code></pre>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when the <code class="paramref">pattern</code> references a segment parser that has not been registered yet.</p>
+        <td><p>Thrown when the <code class="paramref">pattern</code> references a value parser that has not been registered yet.</p>
 </td>
       </tr>
     </tbody>
@@ -550,7 +550,7 @@ api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());</code></pre>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when the <code class="paramref">pattern</code> references a segment parser that has not been registered yet.</p>
+        <td><p>Thrown when the <code class="paramref">pattern</code> references a value parser that has not been registered yet.</p>
 </td>
       </tr>
     </tbody>
@@ -578,31 +578,55 @@ api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());</code></pre>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IReadOnlyCollection_System_String__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddBoolParser__1___0_">RouterBuilderSegmentParserExtensions.AddBoolParser&lt;TBuilder&gt;(TBuilder)</a>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddDefaultParsers__1___0_">RouterBuilderSegmentParserExtensions.AddDefaultParsers&lt;TBuilder&gt;(TBuilder)</a>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddGuidParser__1___0_">RouterBuilderSegmentParserExtensions.AddGuidParser&lt;TBuilder&gt;(TBuilder)</a>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddIntParser__1___0_">RouterBuilderSegmentParserExtensions.AddIntParser&lt;TBuilder&gt;(TBuilder)</a>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, IReadOnlyDictionary&lt;string, string&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SegmentParserDelegate_">RouterBuilderSegmentParserExtensions.AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SegmentParserDelegate)</a>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, IReadOnlyDictionary&lt;string, string&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncSegmentParserDelegate_">RouterBuilderSegmentParserExtensions.AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SyncSegmentParserDelegate)</a>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IReadOnlyDictionary&lt;string, string&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_SegmentParserDelegate_">RouterBuilderSegmentParserExtensions.AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, SegmentParserDelegate)</a>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, IReadOnlyDictionary&lt;string, string&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddSegmentParser__1___0_System_String_NanoRoute_SyncSegmentParserDelegate_">RouterBuilderSegmentParserExtensions.AddSegmentParser&lt;TBuilder&gt;(TBuilder, string, SyncSegmentParserDelegate)</a>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string, IReadOnlyDictionary&lt;string, string&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.RouterBuilderSegmentParserExtensions.html#NanoRoute_RouterBuilderSegmentParserExtensions_AddStringParser__1___0_">RouterBuilderSegmentParserExtensions.AddStringParser&lt;TBuilder&gt;(TBuilder)</a>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddBoolParser__1___0_">RouterBuilderValueParserExtensions.AddBoolParser&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddDefaultValueParsers__1___0_">RouterBuilderValueParserExtensions.AddDefaultValueParsers&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddGuidParser__1___0_">RouterBuilderValueParserExtensions.AddGuidParser&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddIntParser__1___0_">RouterBuilderValueParserExtensions.AddIntParser&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddStringParser__1___0_">RouterBuilderValueParserExtensions.AddStringParser&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncValueParserDelegate_">RouterBuilderValueParserExtensions.AddValueParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SyncValueParserDelegate)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_">RouterBuilderValueParserExtensions.AddValueParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, ValueParserDelegate)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_SyncValueParserDelegate_">RouterBuilderValueParserExtensions.AddValueParser&lt;TBuilder&gt;(TBuilder, string, SyncValueParserDelegate)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_ValueParserDelegate_">RouterBuilderValueParserExtensions.AddValueParser&lt;TBuilder&gt;(TBuilder, string, ValueParserDelegate)</a>
   </div>
 
 </article>

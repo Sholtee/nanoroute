@@ -5,11 +5,11 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Delegate SyncSegmentParserDelegate | NanoRoute </title>
+      <title>Delegate SyncValueParserDelegate | NanoRoute </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Delegate SyncSegmentParserDelegate | NanoRoute ">
+      <meta name="title" content="Delegate SyncValueParserDelegate | NanoRoute ">
     
-    <meta name="description" content="Represents a synchronous segment parser.">
+    <meta name="description" content="Represents a synchronous value parser.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -35,19 +35,19 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.SyncSegmentParserDelegate">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.SyncValueParserDelegate">
 
 
 
-  <h1 id="NanoRoute_SyncSegmentParserDelegate" data-uid="NanoRoute.SyncSegmentParserDelegate" class="text-break">Delegate SyncSegmentParserDelegate</h1>
-  <div class="markdown level0 summary"><p>Represents a synchronous segment parser.</p>
+  <h1 id="NanoRoute_SyncValueParserDelegate" data-uid="NanoRoute.SyncValueParserDelegate" class="text-break">Delegate SyncValueParserDelegate</h1>
+  <div class="markdown level0 summary"><p>Represents a synchronous value parser.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_SyncSegmentParserDelegate_syntax">Syntax</h5>
+  <h5 id="NanoRoute_SyncValueParserDelegate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate bool SyncSegmentParserDelegate(ReadOnlyMemory&lt;char&gt; segment, object? arguments, out object? parsed)</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate bool SyncValueParserDelegate(ReadOnlyMemory&lt;char&gt; segment, object? arguments, out object? parsed)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -96,8 +96,8 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_SyncSegmentParserDelegate_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">routerBuilder.AddSegmentParser("int", (string segment, object? arguments, out object? parsed) =&gt;
+  <h5 id="NanoRoute_SyncValueParserDelegate_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">routerBuilder.AddValueParser("int", (string segment, object? arguments, out object? parsed) =&gt;
 {
     var limits = ((int? Min, int? Max)) arguments!;
 

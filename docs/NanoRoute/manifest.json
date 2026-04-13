@@ -130,6 +130,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteQueryExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.NanoRouteQueryExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.NanoRouteQueryExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteQueryExtensions.yml\" sourcestartlinenumber=\"1\">Adds query-parameter binding helpers to NanoRoute.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.RequestContext.yml",
       "output": {
         ".html": {
@@ -200,17 +214,17 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouterBuilderSegmentParserExtensions.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouterBuilderValueParserExtensions.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.RouterBuilderSegmentParserExtensions.html"
+          "relative_path": "NanoRoute.RouterBuilderValueParserExtensions.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.RouterBuilderSegmentParserExtensions",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBuilderSegmentParserExtensions.yml\" sourcestartlinenumber=\"1\">Provides convenience methods for registering segment parsers.</p>\n"
+      "Title": "NanoRoute.RouterBuilderValueParserExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBuilderValueParserExtensions.yml\" sourcestartlinenumber=\"1\">Provides convenience methods for registering value parsers.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -242,59 +256,73 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.SegmentParseResult.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.SyncValueParserDelegate.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.SegmentParseResult.html"
+          "relative_path": "NanoRoute.SyncValueParserDelegate.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.SegmentParseResult",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SegmentParseResult.yml\" sourcestartlinenumber=\"1\">Represents the outcome of a segment parser.</p>\n"
+      "Title": "NanoRoute.SyncValueParserDelegate",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SyncValueParserDelegate.yml\" sourcestartlinenumber=\"1\">Represents a synchronous value parser.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.SegmentParserContext.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ValueParseResult.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.SegmentParserContext.html"
+          "relative_path": "NanoRoute.ValueParseResult.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.SegmentParserContext",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SegmentParserContext.yml\" sourcestartlinenumber=\"1\">Carries the current route segment and request-scoped services into an asynchronous segment parser.</p>\n"
+      "Title": "NanoRoute.ValueParseResult",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ValueParseResult.yml\" sourcestartlinenumber=\"1\">Represents the outcome of a value parser.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.SegmentParserDelegate.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ValueParserContext.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.SegmentParserDelegate.html"
+          "relative_path": "NanoRoute.ValueParserContext.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.SegmentParserDelegate",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SegmentParserDelegate.yml\" sourcestartlinenumber=\"1\">Tries to parse a single route segment into a value that can optionally be stored in <xref href=\"NanoRoute.RequestContext.Parameters\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+      "Title": "NanoRoute.ValueParserContext",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ValueParserContext.yml\" sourcestartlinenumber=\"1\">Carries the current route segment and request-scoped services into an asynchronous value parser.</p>\n"
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.SyncSegmentParserDelegate.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ValueParserDelegate.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.SyncSegmentParserDelegate.html"
+          "relative_path": "NanoRoute.ValueParserDelegate.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.SyncSegmentParserDelegate",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SyncSegmentParserDelegate.yml\" sourcestartlinenumber=\"1\">Represents a synchronous segment parser.</p>\n"
+      "Title": "NanoRoute.ValueParserDelegate",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ValueParserDelegate.yml\" sourcestartlinenumber=\"1\">Tries to parse a single route segment into a value that can optionally be stored in <xref href=\"NanoRoute.RequestContext.Parameters\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ValueParserRegistration.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.ValueParserRegistration.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.ValueParserRegistration",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ValueParserRegistration.yml\" sourcestartlinenumber=\"1\">Stores a named value parser together with its argument binder.</p>\n"
     },
     {
       "type": "ManagedReference",

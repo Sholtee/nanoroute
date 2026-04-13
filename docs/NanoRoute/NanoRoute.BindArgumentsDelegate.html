@@ -78,7 +78,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><p>A parser-specific object that will later be exposed through <a class="xref" href="NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_Arguments">Arguments</a>.
+        <td><p>A parser-specific object that will later be exposed through <a class="xref" href="NanoRoute.ValueParserContext.html#NanoRoute_ValueParserContext_Arguments">Arguments</a>.
 Return <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> when the parser does not need a bound payload.</p>
 </td>
       </tr>
@@ -89,7 +89,7 @@ Return <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/key
 validate parser arguments, parse numeric limits, or precompile regular expressions once.</p>
 </div>
   <h5 id="NanoRoute_BindArgumentsDelegate_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">routerBuilder.AddSegmentParser
+  <pre><code class="lang-csharp">routerBuilder.AddValueParser
 (
     "int",
     static rawArgs =&gt; (
@@ -99,7 +99,7 @@ validate parser arguments, parse numeric limits, or precompile regular expressio
     static context =&gt;
     {
         var args = ((int? Min, int? Max)) context.Arguments!;
-        return ValueTask.FromResult(new SegmentParseResult(true, context.Segment));
+        return ValueTask.FromResult(new ValueParseResult(true, context.Segment));
     }
 );</code></pre>
 

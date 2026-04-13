@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Delegate SegmentParserDelegate | NanoRoute </title>
+      <title>Delegate ValueParserDelegate | NanoRoute </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Delegate SegmentParserDelegate | NanoRoute ">
+      <meta name="title" content="Delegate ValueParserDelegate | NanoRoute ">
     
     <meta name="description" content="Tries to parse a single route segment into a value that can optionally be stored in .">
       <link rel="shortcut icon" href="Icon.png">
@@ -35,19 +35,19 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.SegmentParserDelegate">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.ValueParserDelegate">
 
 
 
-  <h1 id="NanoRoute_SegmentParserDelegate" data-uid="NanoRoute.SegmentParserDelegate" class="text-break">Delegate SegmentParserDelegate</h1>
+  <h1 id="NanoRoute_ValueParserDelegate" data-uid="NanoRoute.ValueParserDelegate" class="text-break">Delegate ValueParserDelegate</h1>
   <div class="markdown level0 summary"><p>Tries to parse a single route segment into a value that can optionally be stored in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_SegmentParserDelegate_syntax">Syntax</h5>
+  <h5 id="NanoRoute_ValueParserDelegate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate ValueTask&lt;SegmentParseResult&gt; SegmentParserDelegate(SegmentParserContext context)</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate ValueTask&lt;ValueParseResult&gt; ValueParserDelegate(ValueParserContext context)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -60,10 +60,10 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.SegmentParserContext.html">SegmentParserContext</a></td>
+        <td><a class="xref" href="NanoRoute.ValueParserContext.html">ValueParserContext</a></td>
         <td><span class="parametername">context</span></td>
         <td><p>The parser context, including the raw route segment, request services, and the linked pipeline cancellation token.
-Parsers that need percent-decoded text can use <a class="xref" href="NanoRoute.SegmentParserContext.html#NanoRoute_SegmentParserContext_DecodedSegment">DecodedSegment</a>.</p>
+Parsers that need percent-decoded text can use <a class="xref" href="NanoRoute.ValueParserContext.html#NanoRoute_ValueParserContext_DecodedSegment">DecodedSegment</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -78,24 +78,24 @@ Parsers that need percent-decoded text can use <a class="xref" href="NanoRoute.S
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="NanoRoute.SegmentParseResult.html">SegmentParseResult</a>&gt;</td>
-        <td><p>A <a class="xref" href="NanoRoute.SegmentParseResult.html">SegmentParseResult</a> that describes whether the segment matched and what value it produced.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="NanoRoute.ValueParseResult.html">ValueParseResult</a>&gt;</td>
+        <td><p>A <a class="xref" href="NanoRoute.ValueParseResult.html">ValueParseResult</a> that describes whether the segment matched and what value it produced.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_SegmentParserDelegate_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">routerBuilder.AddSegmentParser("user", static async (SegmentParserContext context) =&gt;
+  <h5 id="NanoRoute_ValueParserDelegate_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">routerBuilder.AddValueParser("user", static async (ValueParserContext context) =&gt;
 {
     if (!Guid.TryParse(context.Segment, out Guid userId))
-        return new SegmentParseResult(false, null);
+        return new ValueParseResult(false, null);
 
     object? user = await context
         .Services
         .GetRequiredService&lt;IUserRepository&gt;()
         .TryGetAsync(userId, context.Cancellation);
 
-    return new SegmentParseResult(user is not null, user);
+    return new ValueParseResult(user is not null, user);
 });</code></pre>
 
 

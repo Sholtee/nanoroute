@@ -166,7 +166,8 @@ you want to scope binding to a specific prefix or route. Requests without conten
 non-JSON content type, and requests with invalid JSON throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
 instead of producing responses on their own. Add <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, bool)</a> if you want those
 exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-exceptions and must be handled by the caller or by custom middleware.</p>
+exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
+into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>, and an existing value with the same key is overwritten.</p>
 </div>
   <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_System_Collections_Generic_IReadOnlyCollection_System_String___examples">Examples</h5>
   <pre><code class="lang-csharp">routerBuilder
@@ -267,7 +268,8 @@ their own. Instead, this middleware throws <a class="xref" href="https://learn.m
 routing metadata attached.
 Add <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, bool)</a> if you want those exceptions to be translated into structured
 HTTP error responses; otherwise they continue as regular exceptions and must be handled by the caller
-or by custom middleware.</p>
+or by custom middleware. The deserialized body is written into
+<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>, and an existing value with the same key is overwritten.</p>
 </div>
   <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_System_String_System_Collections_Generic_IReadOnlyCollection_System_String___examples">Examples</h5>
   <pre><code class="lang-csharp">routerBuilder
@@ -360,7 +362,8 @@ route for the selected HTTP methods. Requests without content, requests with a
 non-JSON content type, and requests with invalid JSON throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
 instead of producing responses on their own. Add <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, bool)</a> if you want those
 exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-exceptions and must be handled by the caller or by custom middleware.</p>
+exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
+into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>, and an existing value with the same key is overwritten.</p>
 </div>
   <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Type_System_String_System_Collections_Generic_IReadOnlyCollection_System_String___examples">Examples</h5>
   <pre><code class="lang-csharp">routerBuilder
@@ -451,7 +454,8 @@ route for the selected HTTP methods. Requests without content, requests with a
 non-JSON content type, and requests with invalid JSON throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
 instead of producing responses on their own. Add <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, bool)</a> if you want those
 exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-exceptions and must be handled by the caller or by custom middleware.</p>
+exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
+into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>, and an existing value with the same key is overwritten.</p>
 </div>
   <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__2___0_System_String_System_Collections_Generic_IReadOnlyCollection_System_String___examples">Examples</h5>
   <pre><code class="lang-csharp">routerBuilder
