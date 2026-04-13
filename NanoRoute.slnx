@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Src/NanoRoute/NanoRoute.csproj" />
+  <Project Path="Tests/NanoRoute.NativeAot/NanoRoute.NativeAot.csproj" />
   <Project Path="Tests/NanoRoute.Perf/NanoRoute.Perf.csproj" />
   <Project Path="Tests/NanoRoute.Tests/NanoRoute.Tests.csproj">
     <Build Solution="Release|*" Project="false" />
