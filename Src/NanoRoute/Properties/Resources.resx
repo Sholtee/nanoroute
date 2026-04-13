@@ -120,7 +120,7 @@
   <data name="ERR_NOT_FOUND" xml:space="preserve">
     <value>Not found.</value>
   </data>
-  <data name="ERR_NO_SUCH_SEGMENT_PARSER" xml:space="preserve">
+  <data name="ERR_NO_SUCH_PARSER" xml:space="preserve">
     <value>No such value parser: {0}</value>
   </data>
   <data name="ERR_PARAMETER_OVERRIDE" xml:space="preserve">
@@ -134,13 +134,16 @@
   </data>
   <data name="ERR_NOT_PREFIX" xml:space="preserve">
     <value>Only prefix patterns are allowed.</value>
-  </data>
-  <data name="ERR_INVALID_PATTERN" xml:space="preserve">
-    <value>Invalid pattern.</value>
-  </data>
-  <data name="ERR_METHOD_NOT_ALLOWED" xml:space="preserve">
-    <value>Method not allowed.</value>
-  </data>
+    </data>
+    <data name="ERR_INVALID_PATTERN" xml:space="preserve">
+      <value>Invalid pattern.</value>
+    </data>
+    <data name="ERR_INVALID_QUERY_BINDINGS" xml:space="preserve">
+      <value>Invalid query bindings.</value>
+    </data>
+    <data name="ERR_METHOD_NOT_ALLOWED" xml:space="preserve">
+      <value>Method not allowed.</value>
+    </data>
   <data name="ERR_BAD_REQUEST" xml:space="preserve">
     <value>Bad request.</value>
   </data>

@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -18,11 +17,13 @@ namespace NanoRoute.Internals
 
     internal static class QueryStringParser
     {
-        public static async ValueTask<Dictionary<string, object?>> Parse(Uri uri, IReadOnlyDictionary<string, QueryParameterDefinition> expectedParameters, IServiceProvider services, CancellationToken cancellation = default)
+        public static async ValueTask Parse(RequestContext context, IReadOnlyDictionary<string, QueryParameterDefinition> expectedParameters)
         {
-            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
+            // Track only query parameters seen during this parse so required checks and duplicate detection
+            // will not be confused by values that were already present in context.Parameters.
+            bool[] visited = new bool[expectedParameters.Count];
 
-            for (DelimitedSegment parameter = new(uri.Query.AsMemory(uri.Query.AsSpan().IndexOf('?') == 0 ? 1 : 0), '&'); parameter.MoveNext();)
+            for (DelimitedSegment parameter = new(context.Request.RequestUri.Query.AsMemory(context.Request.RequestUri.Query.AsSpan().IndexOf('?') == 0 ? 1 : 0), '&'); parameter.MoveNext();)
             {
                 int separatorIndex = parameter.Current.Span.IndexOf('=');
 
@@ -36,8 +37,10 @@ namespace NanoRoute.Internals
                 if (!expectedParameters.TryGetValue(HttpUtility.UrlDecode(rawName.ToString()), out QueryParameterDefinition? expectedParameter))
                     continue;
 
-                if (result.ContainsKey(expectedParameter.Name))
+                if (visited[expectedParameter.Index])
                     ThrowBadRequest(Resources.ERR_QUERY_DUPLICATE_PARAMTER, expectedParameter.Name);
+                
+                visited[expectedParameter.Index] = true;
 
                 ValueParseResult parsed = await expectedParameter.Parser.Parse
                 (
@@ -46,24 +49,21 @@ namespace NanoRoute.Internals
                         Segment = separatorIndex >= 0
                             ? parameter.Current.Slice(separatorIndex + 1)
                             : ReadOnlyMemory<char>.Empty,
-                        Services = services,
+                        Services = context.Services,
                         Arguments = expectedParameter.Parser.Arguments,
-                        Cancellation = cancellation
+                        Cancellation = context.Cancellation
                     }
                 );
 
                 if (!parsed.Success)
                     ThrowBadRequest(Resources.ERR_QUERY_INVALID_PARAMETER, expectedParameter.Name);
 
-                result[expectedParameter.Name] = parsed.Parsed;
+                context.Parameters[expectedParameter.Name] = parsed.Parsed;
             }
 
-            if (result.Count != expectedParameters.Count)
-                foreach (QueryParameterDefinition expectedParameter in expectedParameters.Values)
-                    if (!expectedParameter.Optional && !result.ContainsKey(expectedParameter.Name))
-                        ThrowBadRequest(Resources.ERR_QUERY_MISSING_PARAMETER, expectedParameter.Name);
-
-            return result;
+            foreach (QueryParameterDefinition expectedParameter in expectedParameters.Values)
+                if (!expectedParameter.Optional && !visited[expectedParameter.Index])
+                    ThrowBadRequest(Resources.ERR_QUERY_MISSING_PARAMETER, expectedParameter.Name);
         }
 
         [DoesNotReturn]

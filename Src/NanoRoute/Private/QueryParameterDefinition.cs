@@ -5,6 +5,6 @@
 ********************************************************************************/
 namespace NanoRoute.Internals
 {
-    internal sealed record QueryParameterDefinition(string Name, bool Optional, ValueParser Parser);
+    internal sealed record QueryParameterDefinition(string Name, int Index, bool Optional, ValueParser Parser);
 }
 

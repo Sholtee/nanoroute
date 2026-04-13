@@ -3,11 +3,11 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
-namespace NanoRoute.Internals
+namespace NanoRoute
 {
     /// <summary>
-    /// Stores a named route-value parser together with its argument binder.
+    /// Stores a named value parser together with its argument binder.
     /// </summary>
-    internal sealed record ValueParserRegistration(string Name, ValueParserDelegate Parse, BindArgumentsDelegate BindArguments);
+    public sealed record ValueParserRegistration(string Name, ValueParserDelegate Parse, BindArgumentsDelegate BindArguments);
 }
 

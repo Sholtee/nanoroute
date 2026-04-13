@@ -56,7 +56,8 @@ namespace NanoRoute.Json
             /// routing metadata attached.
             /// Add <see cref="AddJsonErrorDetails"/> if you want those exceptions to be translated into structured
             /// HTTP error responses; otherwise they continue as regular exceptions and must be handled by the caller
-            /// or by custom middleware.
+            /// or by custom middleware. The deserialized body is written into
+            /// <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
             /// </remarks>
             /// <example>
             /// <code>
@@ -114,6 +115,7 @@ namespace NanoRoute.Json
                 return routeBuilder;
             }
 
+
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for the selected HTTP methods.
             /// </summary>
@@ -130,7 +132,8 @@ namespace NanoRoute.Json
             /// non-JSON content type, and requests with invalid JSON throw <see cref="HttpRequestException"/>
             /// instead of producing responses on their own. Add <see cref="AddJsonErrorDetails"/> if you want those
             /// exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-            /// exceptions and must be handled by the caller or by custom middleware.
+            /// exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
+            /// into <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
             /// </remarks>
             /// <example>
             /// <code>
@@ -169,7 +172,8 @@ namespace NanoRoute.Json
             /// non-JSON content type, and requests with invalid JSON throw <see cref="HttpRequestException"/>
             /// instead of producing responses on their own. Add <see cref="AddJsonErrorDetails"/> if you want those
             /// exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-            /// exceptions and must be handled by the caller or by custom middleware.
+            /// exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
+            /// into <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
             /// </remarks>
             /// <example>
             /// <code>
@@ -198,6 +202,7 @@ namespace NanoRoute.Json
                 );
             }
 
+
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter using <typeparamref name="TBody"/>.
             /// </summary>
@@ -212,7 +217,8 @@ namespace NanoRoute.Json
             /// non-JSON content type, and requests with invalid JSON throw <see cref="HttpRequestException"/>
             /// instead of producing responses on their own. Add <see cref="AddJsonErrorDetails"/> if you want those
             /// exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-            /// exceptions and must be handled by the caller or by custom middleware.
+            /// exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
+            /// into <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
             /// </remarks>
             /// <example>
             /// <code>
@@ -227,6 +233,7 @@ namespace NanoRoute.Json
             /// </code>
             /// </example>
             public TBuilder AddJsonBody<TBody>(string paramName, params IReadOnlyCollection<string> verbs) => routeBuilder.AddJsonBody(typeof(TBody), paramName, verbs);
+
 
             /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses.

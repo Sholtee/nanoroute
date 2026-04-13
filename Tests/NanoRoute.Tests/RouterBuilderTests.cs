@@ -92,7 +92,7 @@ namespace NanoRoute.Tests
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
 
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, "int")));
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, "int")));
         }
 
         [Test]
@@ -144,8 +144,167 @@ namespace NanoRoute.Tests
                 .WithBase("/child/")
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
 
-            Assert.That(_routerBuilder.ValueParsers, Is.EquivalentTo(new[] { "str" }));
-            Assert.That(childBuilder.ValueParsers, Is.EquivalentTo(new[] { "str", "int" }));
+            Assert.That(_routerBuilder.ValueParsers.Keys, Is.EquivalentTo(new[] { "str" }));
+            Assert.That(childBuilder.ValueParsers.Keys, Is.EquivalentTo(new[] { "str", "int" }));
+            Assert.That(_routerBuilder.ValueParsers["str"].Name, Is.EqualTo("str"));
+            Assert.That(childBuilder.ValueParsers["int"].Name, Is.EqualTo("int"));
+        }
+
+        [Test]
+        public async Task AddQueryBindings_ShouldParseConfiguredParametersIntoTheRequestContext()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .WithBase("/items/", items => items
+                    .AddQueryBindings("GET", "", new Dictionary<string, string>
+                    {
+                        ["filter"] = "str(min=3)",
+                        ["page"] = "?int(min=1)"
+                    })
+                    .AddHandler("GET", "", async (context, _) => new HttpResponseMessage
+                    {
+                        Content = new StringContent($"{context.Parameters["filter"]}:{context.Parameters["page"]}")
+                    }))
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("https://test.test/items?filter=spikey&page=2")
+                },
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey:2"));
+        }
+
+        [Test]
+        public async Task AddQueryBindings_ShouldSkipMissingOptionalParameters()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddQueryBindings(new Dictionary<string, string>
+                {
+                    ["filter"] = "?str(min=3)"
+                })
+                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                {
+                    Content = new StringContent(context.Parameters.ContainsKey("filter") ? "present" : "missing")
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("https://test.test/items")
+                },
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("missing"));
+        }
+
+        [Test]
+        public void AddQueryBindings_ShouldRejectMissingRequiredParameters()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .WithBase("/items/", items => items
+                    .AddQueryBindings("GET", "", new Dictionary<string, string>
+                    {
+                        ["filter"] = "str(min=3)"
+                    })
+                    .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
+                .CreateRouter();
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("https://test.test/items")
+                },
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            ))!;
+
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_MISSING_PARAMETER, "filter") }));
+        }
+
+        [Test]
+        public void AddQueryBindings_ShouldThrowOnInvalidParameterNames()
+        {
+            _routerBuilder.AddDefaultValueParsers();
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddQueryBindings
+            (
+                new Dictionary<string, string>
+                {
+                    ["filter-value"] = "str"
+                }
+            ))!;
+
+            Assert.That(ex.ParamName, Is.EqualTo("bindings"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_QUERY_BINDINGS));
+        }
+
+        [Test]
+        public void AddQueryBindings_ShouldThrowOnMissingValueParsers()
+        {
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddQueryBindings
+            (
+                new Dictionary<string, string>
+                {
+                    ["filter"] = "missing"
+                }
+            ))!;
+
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, "missing")));
+        }
+
+        [Test]
+        public async Task AddQueryBindings_ShouldHonorConfiguredVerbs()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddQueryBindings("GET", "/items", new Dictionary<string, string>
+                {
+                    ["filter"] = "str(min=3)"
+                })
+                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .CreateRouter();
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("https://test.test/items")
+                },
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            ))!;
+
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri("https://test.test/items")
+                },
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test]
@@ -290,7 +449,7 @@ namespace NanoRoute.Tests
         public void AddHandler_ShouldThrowOnMissingValueParser(string pattern)
         {
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler(pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, "missing")));
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, "missing")));
         }
 
         [Test]
@@ -723,6 +882,37 @@ namespace NanoRoute.Tests
         });
 
         [Test]
+        public void QueryHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
+        {
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddQueryBindings(new Dictionary<string, string>()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IReadOnlyDictionary<string, string>) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("bindings"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!, new Dictionary<string, string>()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("/", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("bindings"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IEnumerable<string>) null!, new Dictionary<string, string>()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IEnumerable<string>) null!, "/", new Dictionary<string, string>()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!, "/", new Dictionary<string, string>()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("verb"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", null!, new Dictionary<string, string>()))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", "/", (IReadOnlyDictionary<string, string>) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("bindings"));
+        });
+
+        [Test]
         public void AddHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             RequestHandlerDelegate requestHandler = async (_, _) => new HttpResponseMessage();
@@ -750,6 +940,31 @@ namespace NanoRoute.Tests
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "path", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
+        });
+
+        [Test]
+        public void ExceptionHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
+        {
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddExceptionHandler())!;
+            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((string) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((IReadOnlyCollection<string>) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((IReadOnlyCollection<string>) null!, "/"))!;
+            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler(["GET"], null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((string) null!, "/"))!;
+            Assert.That(ex.ParamName, Is.EqualTo("verb"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler("GET", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
         });
     }
 }

@@ -24,21 +24,28 @@ namespace NanoRoute.Tests
         private static ValueParser CreateParser(ValueParserDelegate parse, object? arguments = null) =>
             new(ValueParserDefinition.Create("str"), parse, arguments);
 
-        private static Dictionary<string, QueryParameterDefinition> CreateExpectedParameters(params QueryParameterDefinition[] parameters)
+        private static Dictionary<string, QueryParameterDefinition> CreateExpectedParameters(params (string Name, bool Optional, ValueParser Parser)[] parameters)
         {
             Dictionary<string, QueryParameterDefinition> result = new(StringComparer.OrdinalIgnoreCase);
 
-            foreach (QueryParameterDefinition parameter in parameters)
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                QueryParameterDefinition parameter = new(parameters[i].Name, i, parameters[i].Optional, parameters[i].Parser);
                 result.Add(parameter.Name, parameter);
+            }
 
             return result;
         }
+
+        private static RequestContext CreateContext(Dictionary<string, object?> parameters, Uri uri, IServiceProvider services, CancellationToken cancellation = default) =>
+            new(parameters, services, new HttpRequestMessage(HttpMethod.Get, uri), cancellation);
 
         [Test]
         public async Task Parse_ShouldParseExpectedQueryParameters()
         {
             Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
             Mock<IServiceProvider> mockServices = new(MockBehavior.Strict);
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
 
             mockParser
                 .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context =>
@@ -48,12 +55,10 @@ namespace NanoRoute.Tests
                     context.Cancellation == CancellationToken.None)))
                 .Returns((ValueParserContext context) => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.DecodedSegment.ToString())));
 
-            Dictionary<string, object?> result = await QueryStringParser.Parse
+            await QueryStringParser.Parse
             (
-                new Uri("https://test.test/items?filter=a%20b&ignored=x"),
-                CreateExpectedParameters(new QueryParameterDefinition("filter", Optional: false, CreateParser(mockParser.Object, "args"))),
-                mockServices.Object,
-                CancellationToken.None
+                CreateContext(result, new Uri("https://test.test/items?filter=a%20b&ignored=x"), mockServices.Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(mockParser.Object, "args")))
             );
 
             Assert.That(result, Has.Count.EqualTo(1));
@@ -72,10 +77,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => QueryStringParser.Parse
             (
-                new Uri("https://test.test/items?filter=foo&filter=bar"),
-                CreateExpectedParameters(new QueryParameterDefinition("filter", Optional: false, CreateParser(mockParser.Object))),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                CancellationToken.None
+                CreateContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase), new Uri("https://test.test/items?filter=foo&filter=bar"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(mockParser.Object)))
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
@@ -91,10 +94,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => QueryStringParser.Parse
             (
-                new Uri("https://test.test/items?ignored=bar"),
-                CreateExpectedParameters(new QueryParameterDefinition("filter", Optional: false, CreateParser(mockParser.Object))),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                CancellationToken.None
+                CreateContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase), new Uri("https://test.test/items?ignored=bar"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(mockParser.Object)))
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
@@ -107,17 +108,16 @@ namespace NanoRoute.Tests
         public async Task Parse_ShouldTreatEmptyValuesAsEmptyStrings()
         {
             Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
 
             mockParser
                 .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == string.Empty)))
                 .Returns(new ValueTask<ValueParseResult>(new ValueParseResult(true, string.Empty)));
 
-            Dictionary<string, object?> result = await QueryStringParser.Parse
+            await QueryStringParser.Parse
             (
-                new Uri("https://test.test/items?filter="),
-                CreateExpectedParameters(new QueryParameterDefinition("filter", Optional: false, CreateParser(mockParser.Object))),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                CancellationToken.None
+                CreateContext(result, new Uri("https://test.test/items?filter="), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(mockParser.Object)))
             );
 
             Assert.That(result, Has.Count.EqualTo(1));
@@ -128,13 +128,12 @@ namespace NanoRoute.Tests
         public async Task Parse_ShouldSkipMissingOptionalParameters()
         {
             Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
 
-            Dictionary<string, object?> result = await QueryStringParser.Parse
+            await QueryStringParser.Parse
             (
-                new Uri("https://test.test/items"),
-                CreateExpectedParameters(new QueryParameterDefinition("optional", Optional: true, CreateParser(mockParser.Object))),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                CancellationToken.None
+                CreateContext(result, new Uri("https://test.test/items"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("optional", true, CreateParser(mockParser.Object)))
             );
 
             Assert.That(result, Is.Empty);
@@ -148,10 +147,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => QueryStringParser.Parse
             (
-                new Uri("https://test.test/items?=abc"),
-                CreateExpectedParameters(new QueryParameterDefinition("filter", Optional: true, CreateParser(mockParser.Object))),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                CancellationToken.None
+                CreateContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase), new Uri("https://test.test/items?=abc"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", true, CreateParser(mockParser.Object)))
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
@@ -165,10 +162,8 @@ namespace NanoRoute.Tests
         {
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => QueryStringParser.Parse
             (
-                new Uri("https://test.test/items?filter=abc"),
-                CreateExpectedParameters(new QueryParameterDefinition("filter", Optional: false, CreateParser(static _ => new ValueTask<ValueParseResult>(new ValueParseResult(false, null))))),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                CancellationToken.None
+                CreateContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase), new Uri("https://test.test/items?filter=abc"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(static _ => new ValueTask<ValueParseResult>(new ValueParseResult(false, null)))))
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));

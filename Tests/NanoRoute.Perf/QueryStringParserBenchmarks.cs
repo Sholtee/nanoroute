@@ -27,24 +27,23 @@ namespace NanoRoute.Perf
             Arguments: null
         );
 
-        private static readonly Dictionary<string, QueryParameterDefinition> s_allExpected = CreateExpectedParameters
-        (
-            new QueryParameterDefinition("filter", Optional: false, s_parser),
-            new QueryParameterDefinition("page", Optional: false, s_parser),
-            new QueryParameterDefinition("optional", Optional: true, s_parser)
-        );
-
-        private static readonly Dictionary<string, QueryParameterDefinition> s_optionalExpected = CreateExpectedParameters
-        (
-            new QueryParameterDefinition("filter", Optional: false, s_parser),
-            new QueryParameterDefinition("optional", Optional: true, s_parser)
-        );
-
-        private static readonly Dictionary<string, QueryParameterDefinition> s_missingRequiredExpected = CreateExpectedParameters
-        (
-            new QueryParameterDefinition("filter", Optional: false, s_parser),
-            new QueryParameterDefinition("page", Optional: false, s_parser)
-        );
+        private static readonly IReadOnlyDictionary<string, QueryParameterDefinition>
+            s_allExpected = CreateExpectedParameters
+            (
+                ("filter", false),
+                ("page", false),
+                ("optional", true)
+            ),
+            s_optionalExpected = CreateExpectedParameters
+            (
+                ("filter", false),
+                ("optional", true)
+            ),
+            s_missingRequiredExpected = CreateExpectedParameters
+            (
+                ("filter", false),
+                ("page", false)
+            );
 
         private static readonly Uri
             s_allParametersUri = new("https://www.example.com/items?filter=active&page=2&optional=extra", UriKind.Absolute),
@@ -53,23 +52,23 @@ namespace NanoRoute.Perf
             s_missingRequiredUri = new("https://www.example.com/items?filter=active", UriKind.Absolute);
 
         [Benchmark(Baseline = true)]
-        public ValueTask<Dictionary<string, object?>> Parse_AllParametersProvided() =>
-            QueryStringParser.Parse(s_allParametersUri, s_allExpected, s_services, CancellationToken.None);
+        public ValueTask Parse_AllParametersProvided() =>
+            QueryStringParser.Parse(CreateContext(s_allParametersUri), s_allExpected);
 
         [Benchmark]
-        public ValueTask<Dictionary<string, object?>> Parse_OptionalParameterMissing() =>
-            QueryStringParser.Parse(s_optionalMissingUri, s_optionalExpected, s_services, CancellationToken.None);
+        public ValueTask Parse_OptionalParameterMissing() =>
+            QueryStringParser.Parse(CreateContext(s_optionalMissingUri), s_optionalExpected);
 
         [Benchmark]
-        public ValueTask<Dictionary<string, object?>> Parse_UndeclaredParametersPresent() =>
-            QueryStringParser.Parse(s_undeclaredPresentUri, s_optionalExpected, s_services, CancellationToken.None);
+        public ValueTask Parse_UndeclaredParametersPresent() =>
+            QueryStringParser.Parse(CreateContext(s_undeclaredPresentUri), s_optionalExpected);
 
         [Benchmark]
-        public async Task<bool> Parse_RequiredParameterMissing()
+        public async ValueTask<bool> Parse_RequiredParameterMissing()
         {
             try
             {
-                await QueryStringParser.Parse(s_missingRequiredUri, s_missingRequiredExpected, s_services, CancellationToken.None).ConfigureAwait(false);
+                await QueryStringParser.Parse(CreateContext(s_missingRequiredUri), s_missingRequiredExpected).ConfigureAwait(false);
                 return false;
             }
             catch (HttpRequestException)
@@ -78,15 +77,26 @@ namespace NanoRoute.Perf
             }
         }
 
-        private static Dictionary<string, QueryParameterDefinition> CreateExpectedParameters(params QueryParameterDefinition[] parameters)
+        private static Dictionary<string, QueryParameterDefinition> CreateExpectedParameters(params (string Name, bool Optional)[] parameters)
         {
             Dictionary<string, QueryParameterDefinition> result = new(StringComparer.OrdinalIgnoreCase);
 
-            foreach (QueryParameterDefinition parameter in parameters)
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                QueryParameterDefinition parameter = new(parameters[i].Name, i, parameters[i].Optional, s_parser);
                 result.Add(parameter.Name, parameter);
+            }
 
             return result;
         }
+
+        private static RequestContext CreateContext(Uri uri) => new
+        (
+            new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
+            s_services,
+            new HttpRequestMessage(HttpMethod.Get, uri),
+            CancellationToken.None
+        );
 
         private sealed class NoopServiceProvider : IServiceProvider
         {

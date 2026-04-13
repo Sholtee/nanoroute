@@ -55,7 +55,7 @@ namespace NanoRoute
                     if (!_valueParsers.TryGetValue(parserDefinition.ValueParser.Name, out ValueParserRegistration parserRegistration))
                         throw new InvalidOperationException
                         (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_SEGMENT_PARSER, parserDefinition.ValueParser.Name)
+                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parserDefinition.ValueParser.Name)
                         );
 
                     if (target.ParsedChildren.SingleOrDefault(cc => cc.SegmentParser!.Definition.ValueParser.Equals(parserDefinition.ValueParser)) is not { } parsedChild)
@@ -317,13 +317,13 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Gets the value parser names currently registered on this builder instance.
+        /// Gets the value parser registrations currently visible from this builder instance.
         /// </summary>
         /// <remarks>
-        /// For child builders created with <see cref="WithBase(string)"/>, this sequence reflects the inherited
-        /// parsers plus any overrides added to that child scope.
+        /// For child builders created with <see cref="WithBase(string)"/>, this dictionary reflects the inherited
+        /// registrations plus any overrides added to that child scope.
         /// </remarks>
-        public IEnumerable<string> ValueParsers => _valueParsers.Keys;
+        public IReadOnlyDictionary<string, ValueParserRegistration> ValueParsers => _valueParsers;
 
         /// <summary>
         /// Gets the distinct route patterns currently visible from this builder branch.

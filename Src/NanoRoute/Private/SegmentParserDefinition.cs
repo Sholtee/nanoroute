@@ -21,6 +21,9 @@ namespace NanoRoute.Internals
         private static readonly Regex
             s_parserDefinitionParser = new(PARSER_DEFINITION_PATTERN);
 
+        public static bool IsValidParameterName(string parameterName) =>
+            !string.IsNullOrEmpty(parameterName) && Regex.IsMatch(parameterName, $"^{IDENTIFIER}$");
+
         public static SegmentParserDefinition Create(string definition)
         {
             if (s_parserDefinitionParser.Match(definition) is not { Success: true } parsed)
