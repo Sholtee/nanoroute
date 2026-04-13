@@ -40,6 +40,24 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task ToString_ShouldSeparateMultipleFrames()
+        {
+            RouteNode
+                root = new() { Segment = default },
+                api = new() { Segment = "api".AsMemory() },
+                users = new() { Segment = "users".AsMemory() };
+
+            users.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(s_handler, "/api/users")];
+            api.LiteralChildren.Add("users".AsMemory(), users);
+            root.LiteralChildren.Add("api".AsMemory(), api);
+
+            RouteMatchCursor cursor = CreateCursor(root, "/api/users");
+
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.ToString(), Is.EqualTo("RouteMatchCursor { Stack = [0: { Phase = SecondBranch, Segment = 'api', HandlerIndex = 0, ParsedChildIndex = 0 }, 1: { Phase = SecondBranch, Segment = 'users', HandlerIndex = 0, ParsedChildIndex = 0 }, 2: { Phase = EmitHandlers, Segment = '', HandlerIndex = 1, ParsedChildIndex = 0 }] }"));
+        }
+
+        [Test]
         public async Task MoveNextAsync_ShouldMatchLiteralBranches()
         {
             HandlerRegistration handler = new(s_handler, "/api/users");
@@ -175,6 +193,38 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task MoveNextAsync_ShouldNotAttachParametersWhenTheParsedSegmentHasNoParameterName()
+        {
+            HandlerRegistration handler = new(s_handler, "/api/{str}/details");
+
+            RouteNode
+                root = new() { Segment = default },
+                api = new() { Segment = "api".AsMemory() },
+                parsed = new()
+                {
+                    Segment = "{str}".AsMemory(),
+                    SegmentParser = new SegmentParser
+                    (
+                        SegmentParserDefinition.Create("{str}"),
+                        static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())),
+                        null
+                    )
+                },
+                details = new() { Segment = "details".AsMemory() };
+
+            details.HandlerRegistrations[HttpVerb.Get] = [handler];
+            parsed.LiteralChildren.Add("details".AsMemory(), details);
+            api.ParsedChildren.Add(parsed);
+            root.LiteralChildren.Add("api".AsMemory(), api);
+
+            RouteMatchCursor cursor = CreateCursor(root, "/api/value/details");
+
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.Current.Pattern, Is.EqualTo(handler.Pattern));
+            Assert.That(cursor.Current.AttachedParameters, Is.Empty);
+        }
+
+        [Test]
         public async Task MoveNextAsync_ShouldNotContinueWithSiblingParsedBranchesAfterABranchWasSelected()
         {
             Mock<ValueParserDelegate>
@@ -229,6 +279,16 @@ namespace NanoRoute.Tests
 
             mockIntParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")), Times.Once);
             mockStringParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Never);
+        }
+
+        [Test]
+        public void Ctor_ShouldThrowOnUnknownMatchingBehavior()
+        {
+            RouteNode root = new() { Segment = default };
+
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => CreateCursor(root, "/api", (MatchingBehavior) 99))!;
+
+            Assert.That(ex.ParamName, Is.EqualTo("matchingBehavior"));
         }
     }
 }

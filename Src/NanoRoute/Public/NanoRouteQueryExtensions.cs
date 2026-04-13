@@ -159,6 +159,8 @@ namespace NanoRoute
                     if (!SegmentParserDefinition.IsValidParameterName(binding.Key))
                         throw new ArgumentException(Resources.ERR_INVALID_QUERY_BINDINGS, nameof(bindings));
 
+                    Ensure.NotNull(binding.Value, $"{nameof(binding)}.{nameof(binding.Value)}");
+
                     bool optional = binding.Value.StartsWith("?", StringComparison.Ordinal);
 
                     ValueParserDefinition valueParserDefinition = ValueParserDefinition.Create(optional ? binding.Value.Substring(1) : binding.Value);

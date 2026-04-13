@@ -256,6 +256,22 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void AddQueryBindings_ShouldThrowOnNullBindingValues()
+        {
+            _routerBuilder.AddDefaultValueParsers();
+
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings
+            (
+                new Dictionary<string, string?>
+                {
+                    ["filter"] = null
+                }!
+            ))!;
+
+            Assert.That(ex.ParamName, Is.EqualTo("binding.Value"));
+        }
+
+        [Test]
         public void AddQueryBindings_ShouldThrowOnMissingValueParsers()
         {
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddQueryBindings
@@ -305,6 +321,54 @@ namespace NanoRoute.Tests
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test]
+        public async Task AddExceptionHandler_ShouldHonorConfiguredPattern()
+        {
+            TestRouter router = _routerBuilder
+                .AddExceptionHandler("/items")
+                .AddHandler("GET", "/items", (_, _) => throw new InvalidOperationException("boom"))
+                .AddHandler("GET", "/other", (_, _) => throw new InvalidOperationException("boom"))
+                .CreateRouter();
+
+            HttpRequestException handled = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            ))!;
+
+            Assert.That(handled.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.InternalServerError));
+
+            Assert.That(async () => await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/other"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            ), Throws.InstanceOf<InvalidOperationException>());
+        }
+
+        [Test]
+        public async Task AddExceptionHandler_ShouldHonorConfiguredVerbAndPattern()
+        {
+            TestRouter router = _routerBuilder
+                .AddExceptionHandler("GET", "/items")
+                .AddHandler("GET", "/items", (_, _) => throw new InvalidOperationException("boom"))
+                .AddHandler("POST", "/items", (_, _) => throw new InvalidOperationException("boom"))
+                .CreateRouter();
+
+            HttpRequestException handled = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            ))!;
+
+            Assert.That(handled.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.InternalServerError));
+
+            Assert.That(async () => await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            ), Throws.InstanceOf<InvalidOperationException>());
         }
 
         [Test]
