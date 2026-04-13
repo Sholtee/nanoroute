@@ -42,3 +42,50 @@ jobs:
           dotnet build-server shutdown
           dotnet test NanoRoute.slnx
           if (!$?) { throw "Test session failed" }
+
+  run-aot-smoke-tests:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            runtime: linux-x64
+            executable: NanoRoute.NativeAot
+          - os: windows-latest
+            runtime: win-x64
+            executable: NanoRoute.NativeAot.exe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install missing packages
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang zlib1g-dev build-essential
+
+      - name: Run tests
+        shell: pwsh
+        run: |
+          dotnet build-server shutdown
+
+          $publishDir = Join-Path $PWD "BIN/Published/NanoRoute.NativeAot/${{ matrix.runtime }}"
+
+          dotnet publish (Join-Path $PWD "Tests/NanoRoute.NativeAot/NanoRoute.NativeAot.csproj") `
+            --configuration Release `
+            --runtime ${{ matrix.runtime }} `
+            --output $publishDir
+
+          if (!$?) { throw "Native AOT publish failed" }
+
+          $binary = Join-Path $publishDir "${{ matrix.executable }}"
+          & $binary
+
+          if (!$?) { throw "Native AOT smoke tests failed" }

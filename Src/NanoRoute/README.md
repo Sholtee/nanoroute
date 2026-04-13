@@ -156,6 +156,38 @@ Built-in parsers use the same mechanism:
 - `str` supports `min`, `max`, and `pattern`.
 - `guid` and `bool` do not take arguments.
 
+### Query Bindings
+
+`AddQueryBindings()` lets you validate and parse selected query-string values with the same registered value parsers used by route segments.
+
+```csharp
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .AddDefaultValueParsers()
+    .WithBase("/items/", items => items
+        .AddQueryBindings("GET", "", new Dictionary<string, string>
+        {
+            ["filter"] = "str(min=3)",
+            ["page"] = "?int(min=1)"
+        })
+        .AddHandler("GET", "", async (context, _) =>
+        {
+            return HttpResponseMessage.Json(new
+            {
+                filter = context.Parameters["filter"],
+                page = context.Parameters.TryGetValue("page", out object? page) ? page : null
+            });
+        }))
+    .CreateRouter();
+```
+
+- Prefix the parser specification with `?` to make a query parameter optional.
+- Query parameter names use the same identifier rules as route parameter names.
+- Parsed values are stored in `RequestContext.Parameters` under the configured key.
+- Query keys are matched case-insensitively after percent-decoding.
+- Repeated declared query parameters are rejected with `400 Bad Request`.
+- As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
+
 ### Custom Routers
 
 If `HttpListenerRouter` is not the transport you want, you can derive from `Router` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
@@ -198,6 +230,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `WithBase("/prefix/")` creates a scoped child builder for a route subtree.
+- `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
