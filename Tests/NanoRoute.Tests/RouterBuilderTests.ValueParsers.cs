@@ -25,7 +25,7 @@ namespace NanoRoute.Tests
         {
             RouteBuilder childBuilder = _routerBuilder
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .WithBase("/to/")
+                .CreatePrefix("/to/")
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
 
             Assert.DoesNotThrow(() => childBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
@@ -36,7 +36,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .WithBase("/to/")
+                .CreatePrefix("/to/")
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
 
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("/{str}/{int}", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
@@ -63,7 +63,7 @@ namespace NanoRoute.Tests
         {
             RouteBuilder childBuilder = _routerBuilder
                 .AddValueParser("value", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = $"parent:{segment}"; return true; })
-                .WithBase("/child/")
+                .CreatePrefix("/child/")
                 .AddValueParser("value", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = $"child:{segment}"; return true; });
 
             RequestHandlerDelegate handler = async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["id"]!.ToString()!) };
@@ -89,7 +89,7 @@ namespace NanoRoute.Tests
         {
             RouteBuilder childBuilder = _routerBuilder
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .WithBase("/child/")
+                .CreatePrefix("/child/")
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
 
             Assert.That(_routerBuilder.ValueParsers.Keys, Is.EquivalentTo(new[] { "str" }));

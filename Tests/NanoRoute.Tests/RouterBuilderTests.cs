@@ -75,7 +75,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/somewhere/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/{some_str_1:any}/not-prefix", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
 
-            RouteBuilder childBuilder = _routerBuilder.WithBase("/path/to/")
+            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/")
                 .AddHandler("GET", "", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/{some_str_2:any}/something/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/explicit/something/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
@@ -118,32 +118,32 @@ namespace NanoRoute.Tests
         [TestCase("")]
         [TestCase("/not-prefix")]
         [TestCase("/some/not-prefix")]
-        public void WithBase_ShouldThrowOnNonPrefixPattern(string pattern)
+        public void CreatePrefix_ShouldThrowOnNonPrefixPattern(string pattern)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.CreatePrefix(pattern))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_NOT_PREFIX));
         }
 
         [TestCase("/path/{invalid-segment}/")]
-        public void WithBase_ShouldThrowOnInvalidPattern(string pattern)
+        public void CreatePrefix_ShouldThrowOnInvalidPattern(string pattern)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.WithBase(pattern))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.CreatePrefix(pattern))!;
             Assert.That(ex.ParamName, Is.EqualTo("definition"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
         }
 
         [Test]
-        public void WithBase_WithConfigureRoutes_ShouldBeNullChecked()
+        public void AddPrefix_ShouldBeNullChecked()
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.WithBase("/base/", null!))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddPrefix("/base/", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("configureRoutes"));
         }
 
         [Test]
-        public void WithBase_WithConfigureRoutes_ShouldReturnTheOriginalBuilder()
+        public void AddPrefix_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.WithBase("/base/", _ => { });
+            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.AddPrefix("/base/", _ => { });
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }

@@ -271,12 +271,12 @@ namespace NanoRoute
         /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a value parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
-        /// RouteBuilder api = builder.WithBase("/api/");
+        /// RouteBuilder api = builder.CreatePrefix("/api/");
         ///
         /// api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());
         /// </code>
         /// </example>
-        public RouteBuilder WithBase(string pattern)
+        public RouteBuilder CreatePrefix(string pattern)
         {
             Ensure.NotNull(pattern);
 
@@ -298,19 +298,19 @@ namespace NanoRoute
         /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a value parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
-        /// builder.WithBase("/api/", api =&gt; api
+        /// builder.AddPrefix("/api/", api =&gt; api
         ///     .AddHandler("GET", "/health", (context, _) =&gt; Results.Ok())
         ///     .AddHandler("GET", "/users", (context, _) =&gt; Results.Ok()));
         /// </code>
         /// </example>
-        public RouteBuilder WithBase(string pattern, Action<RouteBuilder> configureRoutes)
+        public RouteBuilder AddPrefix(string pattern, Action<RouteBuilder> configureRoutes)
         {
             Ensure.NotNull(pattern);
             Ensure.NotNull(configureRoutes);
 
             configureRoutes
             (
-                WithBase(pattern)
+                CreatePrefix(pattern)
             );
 
             return this;
@@ -320,7 +320,7 @@ namespace NanoRoute
         /// Gets the value parser registrations currently visible from this builder instance.
         /// </summary>
         /// <remarks>
-        /// For child builders created with <see cref="WithBase(string)"/>, this dictionary reflects the inherited
+        /// For child builders created with <see cref="CreatePrefix(string)"/>, this dictionary reflects the inherited
         /// registrations plus any overrides added to that child scope.
         /// </remarks>
         public IReadOnlyDictionary<string, ValueParserRegistration> ValueParsers => _valueParsers;

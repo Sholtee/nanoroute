@@ -132,9 +132,9 @@ namespace NanoRoute
         /// <returns>The current builder.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> is not a valid route <paramref name="pattern"/> or does not end with <c>/</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a value parser that has not been registered yet.</exception>
-        public new RouterBuilder<TRouter, TConfig> WithBase(string pattern, Action<RouteBuilder> configureRoutes)
+        public new RouterBuilder<TRouter, TConfig> AddPrefix(string pattern, Action<RouteBuilder> configureRoutes)
         {
-            base.WithBase(pattern, configureRoutes);
+            base.AddPrefix(pattern, configureRoutes);
             return this;
         }
 

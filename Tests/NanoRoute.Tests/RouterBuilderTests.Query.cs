@@ -23,7 +23,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .WithBase("/items/", items => items
+                .AddPrefix("/items/", items => items
                     .AddQueryBindings("GET", "", new Dictionary<string, string>
                     {
                         ["filter"] = "str(min=3)",
@@ -83,7 +83,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .WithBase("/items/", items => items
+                .AddPrefix("/items/", items => items
                     .AddQueryBindings("GET", "", new Dictionary<string, string>
                     {
                         ["filter"] = "str(min=3)"
