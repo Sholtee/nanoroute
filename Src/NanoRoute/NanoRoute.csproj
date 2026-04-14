@@ -87,7 +87,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>A minimalistic router that turns requests into composable pipelines.</Description>
+    <Description>A minimalistic, dependency-light routing library for `HttpRequestMessage` pipelines.</Description>
     <PackageId>NanoRoute</PackageId>
     <CreateNupkg>true</CreateNupkg>
     <PackageReadmeFile>README.md</PackageReadmeFile>

@@ -4,6 +4,8 @@ NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines
 
 The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
+> Note: NanoRoute is compatible with Native AOT scenarios.
+
 ## Quick Start
 
 ```csharp
