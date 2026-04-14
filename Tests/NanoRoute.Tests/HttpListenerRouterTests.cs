@@ -405,7 +405,7 @@ namespace NanoRoute.Tests
         {
             CreateRouter(bldr => bldr
                 .AddDefaultValueParsers()
-                .WithBase("/api/users/{user_id:int}/", users => users
+                .AddPrefix("/api/users/{user_id:int}/", users => users
                     .AddHandler("GET", "/", async (context, next) =>
                     {
                         context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";

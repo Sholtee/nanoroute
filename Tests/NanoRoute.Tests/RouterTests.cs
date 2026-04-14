@@ -115,7 +115,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
                 .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .WithBase("/path/to/", routerBuilder => routerBuilder
+                .AddPrefix("/path/to/", routerBuilder => routerBuilder
                     .AddValueParser("any", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                     .AddHandler("GET", "/{some_str:any}/something/", mockHandler_3.Object) // should match 3rd
                     .AddHandler("GET", "/explicit/something/", mockHandler_2.Object))  // should match 2nd
@@ -364,7 +364,7 @@ namespace NanoRoute.Tests
                     parsed = null;
                     return false;
                 })
-                .WithBase("api/users/{user_id:int}/", routerBuilder => routerBuilder
+                .AddPrefix("api/users/{user_id:int}/", routerBuilder => routerBuilder
                     .AddHandler("GET", "/", mockGetUser.Object)
                     .AddHandler("GET", "/dosomething", mockDoSomethingWithUser.Object))
                 .CreateRouter();
@@ -611,7 +611,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddValueParser("int", mockIntParser.Object)
                 .AddValueParser("str", mockStringParser.Object)
-                .WithBase("/api/users/", bldr => bldr
+                .AddPrefix("/api/users/", bldr => bldr
                     .AddHandler("GET", "/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
                     .AddHandler("GET", "/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object))
                 .CreateRouter();
@@ -1050,7 +1050,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddValueParser("int", (SyncValueParserDelegate) ParseInt)
                 .AddValueParser("str", (SyncValueParserDelegate) ParseString)
-                .WithBase("/api/", bldr => bldr
+                .AddPrefix("/api/", bldr => bldr
                     .AddHandler("GET", "/{id:int}/details", mockIntHandler.Object)
                     .AddHandler("GET", "/{slug:str}/details", mockStringHandler.Object))
                 .CreateRouter();

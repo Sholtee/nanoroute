@@ -4,6 +4,8 @@ NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines
 
 The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
+> Note: NanoRoute is compatible with Native AOT scenarios.
+
 ## Quick Start
 
 ```csharp
@@ -63,9 +65,9 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 
 ## Advanced Usage
 
-### WithBase()
+### AddPrefix() and CreatePrefix()
 
-When several routes share the same prefix, `WithBase()` lets you define that prefix once and register child routes relative to it.
+When several routes share the same prefix, `AddPrefix()` lets you define that prefix once and register child routes relative to it. If you want to hold onto a scoped child builder and add routes incrementally, use `CreatePrefix()`.
 
 ```csharp
 RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
@@ -75,7 +77,7 @@ RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListen
     // Convert routing exceptions into JSON error responses.
     .AddJsonErrorDetails();
 
-builder.WithBase("/api/users/{user_id:int}/", users => users
+builder.AddPrefix("/api/users/{user_id:int}/", users => users
     .AddHandler("GET", "/", async (context, next) =>
     {
         context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
@@ -164,7 +166,7 @@ Built-in parsers use the same mechanism:
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
-    .WithBase("/items/", items => items
+    .AddPrefix("/items/", items => items
         .AddQueryBindings("GET", "", new Dictionary<string, string>
         {
             ["filter"] = "str(min=3)",
@@ -229,7 +231,8 @@ This keeps the transport-specific concerns in your own router type while still r
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
-- `WithBase("/prefix/")` creates a scoped child builder for a route subtree.
+- `AddPrefix("/prefix/", ...)` configures a scoped route subtree and returns the current builder.
+- `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
