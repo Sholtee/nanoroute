@@ -141,7 +141,7 @@ their base path, while the root builder lists the whole configured tree.</p>
     </tbody>
   </table>
   <h5 id="NanoRoute_RouteBuilder_ValueParsers_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>For child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_System_String_">WithBase(string)</a>, this dictionary reflects the inherited
+  <div class="markdown level1 remarks"><p>For child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a>, this dictionary reflects the inherited
 registrations plus any overrides added to that child scope.</p>
 </div>
   <h3 id="methods">Methods
@@ -352,6 +352,81 @@ the pipeline with the next compatible handler from the already selected route br
       </tr>
     </tbody>
   </table>
+  <a id="NanoRoute_RouteBuilder_AddPrefix_" data-uid="NanoRoute.RouteBuilder.AddPrefix*"></a>
+  <h4 id="NanoRoute_RouteBuilder_AddPrefix_System_String_System_Action_NanoRoute_RouteBuilder__" data-uid="NanoRoute.RouteBuilder.AddPrefix(System.String,System.Action{NanoRoute.RouteBuilder})">AddPrefix(string, Action&lt;RouteBuilder&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a child builder for the given prefix, invokes a configuration callback, and returns the current builder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RouteBuilder AddPrefix(string pattern, Action&lt;RouteBuilder&gt; configureRoutes)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The base prefix. It must be a valid route pattern ending in <code>/</code> so child routes can be appended to it.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>&gt;</td>
+        <td><span class="parametername">configureRoutes</span></td>
+        <td><p>A callback that configures routes on the child builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><p>The current builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_AddPrefix_System_String_System_Action_NanoRoute_RouteBuilder___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddPrefix("/api/", api =&gt; api
+    .AddHandler("GET", "/health", (context, _) =&gt; Results.Ok())
+    .AddHandler("GET", "/users", (context, _) =&gt; Results.Ok()));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> is not a valid route pattern or does not end with <code>/</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when the <code class="paramref">pattern</code> references a value parser that has not been registered yet.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_RouteBuilder_AddValueParser_" data-uid="NanoRoute.RouteBuilder.AddValueParser*"></a>
   <h4 id="NanoRoute_RouteBuilder_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.RouteBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)">AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.</p>
@@ -407,14 +482,14 @@ the pipeline with the next compatible handler from the already selected route br
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouteBuilder_WithBase_" data-uid="NanoRoute.RouteBuilder.WithBase*"></a>
-  <h4 id="NanoRoute_RouteBuilder_WithBase_System_String_" data-uid="NanoRoute.RouteBuilder.WithBase(System.String)">WithBase(string)</h4>
+  <a id="NanoRoute_RouteBuilder_CreatePrefix_" data-uid="NanoRoute.RouteBuilder.CreatePrefix*"></a>
+  <h4 id="NanoRoute_RouteBuilder_CreatePrefix_System_String_" data-uid="NanoRoute.RouteBuilder.CreatePrefix(System.String)">CreatePrefix(string)</h4>
   <div class="markdown level1 summary"><p>Creates a child builder whose routes are rooted under the given prefix.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouteBuilder WithBase(string pattern)</code></pre>
+    <pre><code class="lang-csharp hljs">public RouteBuilder CreatePrefix(string pattern)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -450,89 +525,14 @@ the pipeline with the next compatible handler from the already selected route br
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouteBuilder_WithBase_System_String__remarks">Remarks</h5>
+  <h5 id="NanoRoute_RouteBuilder_CreatePrefix_System_String__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Child builders inherit the parent's registered value parsers at creation time. Additional parser
 registrations or overrides made on the child builder stay local to that branch.</p>
 </div>
-  <h5 id="NanoRoute_RouteBuilder_WithBase_System_String__examples">Examples</h5>
-  <pre><code class="lang-csharp">RouteBuilder api = builder.WithBase("/api/");
+  <h5 id="NanoRoute_RouteBuilder_CreatePrefix_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">RouteBuilder api = builder.CreatePrefix("/api/");
 
 api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());</code></pre>
-
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>Thrown when <code class="paramref">pattern</code> is not a valid route pattern or does not end with <code>/</code>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when the <code class="paramref">pattern</code> references a value parser that has not been registered yet.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <a id="NanoRoute_RouteBuilder_WithBase_" data-uid="NanoRoute.RouteBuilder.WithBase*"></a>
-  <h4 id="NanoRoute_RouteBuilder_WithBase_System_String_System_Action_NanoRoute_RouteBuilder__" data-uid="NanoRoute.RouteBuilder.WithBase(System.String,System.Action{NanoRoute.RouteBuilder})">WithBase(string, Action&lt;RouteBuilder&gt;)</h4>
-  <div class="markdown level1 summary"><p>Creates a child builder for the given prefix, invokes a configuration callback, and returns the current builder.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouteBuilder WithBase(string pattern, Action&lt;RouteBuilder&gt; configureRoutes)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">pattern</span></td>
-        <td><p>The base prefix. It must be a valid route pattern ending in <code>/</code> so child routes can be appended to it.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>&gt;</td>
-        <td><span class="parametername">configureRoutes</span></td>
-        <td><p>A callback that configures routes on the child builder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
-        <td><p>The current builder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="NanoRoute_RouteBuilder_WithBase_System_String_System_Action_NanoRoute_RouteBuilder___examples">Examples</h5>
-  <pre><code class="lang-csharp">builder.WithBase("/api/", api =&gt; api
-    .AddHandler("GET", "/health", (context, _) =&gt; Results.Ok())
-    .AddHandler("GET", "/users", (context, _) =&gt; Results.Ok()));</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">

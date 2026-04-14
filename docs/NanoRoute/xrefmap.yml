@@ -586,6 +586,21 @@ references:
   commentId: Overload:NanoRoute.RouteBuilder.AddHandler
   fullName: NanoRoute.RouteBuilder.AddHandler
   nameWithType: RouteBuilder.AddHandler
+- uid: NanoRoute.RouteBuilder.AddPrefix(System.String,System.Action{NanoRoute.RouteBuilder})
+  name: AddPrefix(string, Action<RouteBuilder>)
+  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddPrefix_System_String_System_Action_NanoRoute_RouteBuilder__
+  commentId: M:NanoRoute.RouteBuilder.AddPrefix(System.String,System.Action{NanoRoute.RouteBuilder})
+  name.vb: AddPrefix(String, Action(Of RouteBuilder))
+  fullName: NanoRoute.RouteBuilder.AddPrefix(string, System.Action<NanoRoute.RouteBuilder>)
+  fullName.vb: NanoRoute.RouteBuilder.AddPrefix(String, System.Action(Of NanoRoute.RouteBuilder))
+  nameWithType: RouteBuilder.AddPrefix(string, Action<RouteBuilder>)
+  nameWithType.vb: RouteBuilder.AddPrefix(String, Action(Of RouteBuilder))
+- uid: NanoRoute.RouteBuilder.AddPrefix*
+  name: AddPrefix
+  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddPrefix_
+  commentId: Overload:NanoRoute.RouteBuilder.AddPrefix
+  fullName: NanoRoute.RouteBuilder.AddPrefix
+  nameWithType: RouteBuilder.AddPrefix
 - uid: NanoRoute.RouteBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)
   name: AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)
   href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_
@@ -601,6 +616,21 @@ references:
   commentId: Overload:NanoRoute.RouteBuilder.AddValueParser
   fullName: NanoRoute.RouteBuilder.AddValueParser
   nameWithType: RouteBuilder.AddValueParser
+- uid: NanoRoute.RouteBuilder.CreatePrefix(System.String)
+  name: CreatePrefix(string)
+  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_
+  commentId: M:NanoRoute.RouteBuilder.CreatePrefix(System.String)
+  name.vb: CreatePrefix(String)
+  fullName: NanoRoute.RouteBuilder.CreatePrefix(string)
+  fullName.vb: NanoRoute.RouteBuilder.CreatePrefix(String)
+  nameWithType: RouteBuilder.CreatePrefix(string)
+  nameWithType.vb: RouteBuilder.CreatePrefix(String)
+- uid: NanoRoute.RouteBuilder.CreatePrefix*
+  name: CreatePrefix
+  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_
+  commentId: Overload:NanoRoute.RouteBuilder.CreatePrefix
+  fullName: NanoRoute.RouteBuilder.CreatePrefix
+  nameWithType: RouteBuilder.CreatePrefix
 - uid: NanoRoute.RouteBuilder.Patterns
   name: Patterns
   href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Patterns
@@ -625,30 +655,6 @@ references:
   commentId: Overload:NanoRoute.RouteBuilder.ValueParsers
   fullName: NanoRoute.RouteBuilder.ValueParsers
   nameWithType: RouteBuilder.ValueParsers
-- uid: NanoRoute.RouteBuilder.WithBase(System.String)
-  name: WithBase(string)
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_System_String_
-  commentId: M:NanoRoute.RouteBuilder.WithBase(System.String)
-  name.vb: WithBase(String)
-  fullName: NanoRoute.RouteBuilder.WithBase(string)
-  fullName.vb: NanoRoute.RouteBuilder.WithBase(String)
-  nameWithType: RouteBuilder.WithBase(string)
-  nameWithType.vb: RouteBuilder.WithBase(String)
-- uid: NanoRoute.RouteBuilder.WithBase(System.String,System.Action{NanoRoute.RouteBuilder})
-  name: WithBase(string, Action<RouteBuilder>)
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_System_String_System_Action_NanoRoute_RouteBuilder__
-  commentId: M:NanoRoute.RouteBuilder.WithBase(System.String,System.Action{NanoRoute.RouteBuilder})
-  name.vb: WithBase(String, Action(Of RouteBuilder))
-  fullName: NanoRoute.RouteBuilder.WithBase(string, System.Action<NanoRoute.RouteBuilder>)
-  fullName.vb: NanoRoute.RouteBuilder.WithBase(String, System.Action(Of NanoRoute.RouteBuilder))
-  nameWithType: RouteBuilder.WithBase(string, Action<RouteBuilder>)
-  nameWithType.vb: RouteBuilder.WithBase(String, Action(Of RouteBuilder))
-- uid: NanoRoute.RouteBuilder.WithBase*
-  name: WithBase
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_WithBase_
-  commentId: Overload:NanoRoute.RouteBuilder.WithBase
-  fullName: NanoRoute.RouteBuilder.WithBase
-  nameWithType: RouteBuilder.WithBase
 - uid: NanoRoute.Router
   name: Router
   href: NanoRoute.Router.html
@@ -906,6 +912,23 @@ references:
   fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddHandler
   nameWithType: RouterBuilder<TRouter, TConfig>.AddHandler
   nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddHandler
+- uid: NanoRoute.RouterBuilder`2.AddPrefix(System.String,System.Action{NanoRoute.RouteBuilder})
+  name: AddPrefix(string, Action<RouteBuilder>)
+  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_AddPrefix_System_String_System_Action_NanoRoute_RouteBuilder__
+  commentId: M:NanoRoute.RouterBuilder`2.AddPrefix(System.String,System.Action{NanoRoute.RouteBuilder})
+  name.vb: AddPrefix(String, Action(Of RouteBuilder))
+  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.AddPrefix(string, System.Action<NanoRoute.RouteBuilder>)
+  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddPrefix(String, System.Action(Of NanoRoute.RouteBuilder))
+  nameWithType: RouterBuilder<TRouter, TConfig>.AddPrefix(string, Action<RouteBuilder>)
+  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddPrefix(String, Action(Of RouteBuilder))
+- uid: NanoRoute.RouterBuilder`2.AddPrefix*
+  name: AddPrefix
+  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_AddPrefix_
+  commentId: Overload:NanoRoute.RouterBuilder`2.AddPrefix
+  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.AddPrefix
+  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddPrefix
+  nameWithType: RouterBuilder<TRouter, TConfig>.AddPrefix
+  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddPrefix
 - uid: NanoRoute.RouterBuilder`2.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)
   name: AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)
   href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_
@@ -955,23 +978,6 @@ references:
   fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).RouterConfig
   nameWithType: RouterBuilder<TRouter, TConfig>.RouterConfig
   nameWithType.vb: RouterBuilder(Of TRouter, TConfig).RouterConfig
-- uid: NanoRoute.RouterBuilder`2.WithBase(System.String,System.Action{NanoRoute.RouteBuilder})
-  name: WithBase(string, Action<RouteBuilder>)
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_WithBase_System_String_System_Action_NanoRoute_RouteBuilder__
-  commentId: M:NanoRoute.RouterBuilder`2.WithBase(System.String,System.Action{NanoRoute.RouteBuilder})
-  name.vb: WithBase(String, Action(Of RouteBuilder))
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.WithBase(string, System.Action<NanoRoute.RouteBuilder>)
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).WithBase(String, System.Action(Of NanoRoute.RouteBuilder))
-  nameWithType: RouterBuilder<TRouter, TConfig>.WithBase(string, Action<RouteBuilder>)
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).WithBase(String, Action(Of RouteBuilder))
-- uid: NanoRoute.RouterBuilder`2.WithBase*
-  name: WithBase
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_WithBase_
-  commentId: Overload:NanoRoute.RouterBuilder`2.WithBase
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.WithBase
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).WithBase
-  nameWithType: RouterBuilder<TRouter, TConfig>.WithBase
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).WithBase
 - uid: NanoRoute.RouterBuilder`2.WithConfiguration(System.Action{`1})
   name: WithConfiguration(Action<TConfig>)
   href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_WithConfiguration_System_Action__1__
