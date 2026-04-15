@@ -190,6 +190,83 @@ HttpListenerRouter router = HttpListenerRouter
 - Repeated declared query parameters are rejected with `400 Bad Request`.
 - As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
 
+### Typed Handlers
+
+Typed handlers let you describe the data a route needs as a request object instead of reading everything manually from `RequestContext.Parameters`.
+
+```csharp
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+using NanoRoute;
+using NanoRoute.HandlerExtensions;
+
+public sealed class GetItemRequest
+{
+    public int Id { get; set; }
+
+    [ArgumentSource(ArgumentSource.Context, Name = "query_filter")]
+    public string Filter { get; set; } = null!;
+
+    [ArgumentSource(ArgumentSource.ServiceLocator)]
+    public IItemService Items { get; set; } = null!;
+
+    public CancellationToken Cancellation { get; set; }
+}
+
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .AddDefaultValueParsers()
+    .AddHandler
+    (
+        ["GET"],
+        "/items/{id:int}",
+        new Dictionary<string, string>
+        {
+            ["query_filter"] = "str(min=3)"
+        },
+        async (GetItemRequest request) =>
+        {
+            Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(item.Name)
+            };
+        }
+    )
+    .CreateRouter();
+```
+
+Binding rules:
+
+- Writable public properties are bound from `RequestContext.Parameters` by default, using the property name as the key.
+- `RequestContext` properties receive the current request context automatically.
+- `CancellationToken` properties receive the active request token automatically.
+- `[ArgumentSource(ArgumentSource.Context, Name = "...")]` binds from a different parameter or query-binding name.
+- `[ArgumentSource(ArgumentSource.ServiceLocator)]` resolves a service from `RequestContext.Services`.
+- `[ArgumentSource(ArgumentSource.ServiceLocator, Name = "...")]` resolves a keyed service.
+- Read-only properties are ignored.
+- Missing required values or services fail fast with `InvalidOperationException`.
+
+Typed handlers also have middleware-style overloads that receive `CallNextHandlerDelegate`:
+
+```csharp
+.AddHandler
+(
+    ["GET"],
+    "/items/{id:int}",
+    async (GetItemRequest request, CallNextHandlerDelegate next) =>
+    {
+        HttpResponseMessage response = await next();
+        response.Headers.Add("X-Filter", request.Filter);
+        return response;
+    }
+)
+```
+
 ### Custom Routers
 
 If `HttpListenerRouter` is not the transport you want, you can derive from `Router` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
@@ -234,6 +311,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `AddPrefix("/prefix/", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
+- `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
 - `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
@@ -248,6 +326,8 @@ This keeps the transport-specific concerns in your own router type while still r
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
+- [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html)
+- [ArgumentSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html)
 
 ## Documentation
 
