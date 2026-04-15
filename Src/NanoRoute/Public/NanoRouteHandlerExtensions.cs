@@ -60,7 +60,7 @@ namespace NanoRoute.HandlerExtensions
     {
         private static readonly IReadOnlyDictionary<string, string> s_EmptyDict = new Dictionary<string, string>(0);
 
-        private static Func<RequestContext, TRequestContext> CreateContextDelegate<TRequestContext>() where TRequestContext : new()
+        private static Func<RequestContext, TRequestContext> CreateContextDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>() where TRequestContext : new()
         {
             ParameterExpression
                 source = Expression.Parameter(typeof(RequestContext), nameof(source)),
@@ -126,7 +126,7 @@ namespace NanoRoute.HandlerExtensions
                 (
                     Expression.Assign
                     (
-                        Expression.Property(result, prop.Name),
+                        Expression.Property(result, prop),
                         Expression.Convert(value, prop.PropertyType)
                     )
                 );
@@ -151,7 +151,7 @@ namespace NanoRoute.HandlerExtensions
             );
         }
 
-        private static TBuilder AddHandlerCore<TBuilder, TRequestContext>(TBuilder routeBuilder, IReadOnlyCollection<string> verbs, string pattern, IReadOnlyDictionary<string, string> queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
+        private static TBuilder AddHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IReadOnlyCollection<string> verbs, string pattern, IReadOnlyDictionary<string, string> queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
         {
             Ensure.NotNull(routeBuilder);
             Ensure.NotNull(verbs);
