@@ -143,7 +143,7 @@ namespace NanoRoute.HandlerExtensions
             propSetters.Add(result);  // return result;
 
             // In native AOT context this will be interpreted rather than compiled
-            return Expression.Lambda<Func<RequestContext, TRequestContext>>(Expression.Block(propSetters), source).Compile
+            return Expression.Lambda<Func<RequestContext, TRequestContext>>(Expression.Block([result], propSetters), source).Compile
             (
                 // https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/RuntimeFeature.NonNativeAot.cs#L16C13-L16C17
                 preferInterpretation: AppContext.TryGetSwitch("System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported", out bool isDynamicCodeSupported) && !isDynamicCodeSupported
