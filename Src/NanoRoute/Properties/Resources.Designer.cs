@@ -113,7 +113,7 @@ namespace NanoRoute.Properties {
                 return ResourceManager.GetString("ERR_INVALID_PATTERN", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Invalid query bindings..
         /// </summary>
@@ -138,6 +138,15 @@ namespace NanoRoute.Properties {
         internal static string ERR_METHOD_NOT_ALLOWED {
             get {
                 return ResourceManager.GetString("ERR_METHOD_NOT_ALLOWED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing required parameter: {0}.
+        /// </summary>
+        internal static string ERR_MISSING_REQUIRED_PARAMETER {
+            get {
+                return ResourceManager.GetString("ERR_MISSING_REQUIRED_PARAMETER", resourceCulture);
             }
         }
         

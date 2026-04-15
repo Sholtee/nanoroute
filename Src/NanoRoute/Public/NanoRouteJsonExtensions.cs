@@ -12,7 +12,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using System.Threading.Tasks;
 
 namespace NanoRoute.Json
 {
@@ -115,7 +114,6 @@ namespace NanoRoute.Json
                 return routeBuilder;
             }
 
-
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for the selected HTTP methods.
             /// </summary>
@@ -202,7 +200,6 @@ namespace NanoRoute.Json
                 );
             }
 
-
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter using <typeparamref name="TBody"/>.
             /// </summary>
@@ -233,7 +230,6 @@ namespace NanoRoute.Json
             /// </code>
             /// </example>
             public TBuilder AddJsonBody<TBody>(string paramName, params IReadOnlyCollection<string> verbs) => routeBuilder.AddJsonBody(typeof(TBody), paramName, verbs);
-
 
             /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses.

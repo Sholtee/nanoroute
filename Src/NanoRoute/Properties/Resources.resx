@@ -134,16 +134,16 @@
   </data>
   <data name="ERR_NOT_PREFIX" xml:space="preserve">
     <value>Only prefix patterns are allowed.</value>
-    </data>
-    <data name="ERR_INVALID_PATTERN" xml:space="preserve">
-      <value>Invalid pattern.</value>
-    </data>
-    <data name="ERR_INVALID_QUERY_BINDINGS" xml:space="preserve">
-      <value>Invalid query bindings.</value>
-    </data>
-    <data name="ERR_METHOD_NOT_ALLOWED" xml:space="preserve">
-      <value>Method not allowed.</value>
-    </data>
+  </data>
+  <data name="ERR_INVALID_PATTERN" xml:space="preserve">
+    <value>Invalid pattern.</value>
+  </data>
+  <data name="ERR_INVALID_QUERY_BINDINGS" xml:space="preserve">
+    <value>Invalid query bindings.</value>
+  </data>
+  <data name="ERR_METHOD_NOT_ALLOWED" xml:space="preserve">
+    <value>Method not allowed.</value>
+  </data>
   <data name="ERR_BAD_REQUEST" xml:space="preserve">
     <value>Bad request.</value>
   </data>
@@ -164,5 +164,8 @@
   </data>
   <data name="ERR_QUERY_MISSING_PARAMETER" xml:space="preserve">
     <value>Missing query parameters: {0}</value>
+  </data>
+  <data name="ERR_MISSING_REQUIRED_PARAMETER" xml:space="preserve">
+    <value>Missing required parameter: {0}</value>
   </data>
 </root>
