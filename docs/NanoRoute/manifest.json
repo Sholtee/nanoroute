@@ -46,6 +46,62 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.HandlerExtensions.ArgumentSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.HandlerExtensions.ArgumentSource.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.HandlerExtensions.ArgumentSource",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HandlerExtensions.ArgumentSource.yml\" sourcestartlinenumber=\"1\">Describes how a typed handler property is populated.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.HandlerExtensions.ArgumentSourceAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.HandlerExtensions.ArgumentSourceAttribute",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HandlerExtensions.ArgumentSourceAttribute.yml\" sourcestartlinenumber=\"1\">Overrides the default binding behavior for a typed handler request property.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.yml\" sourcestartlinenumber=\"1\">Adds typed handler overloads that project a <xref href=\"NanoRoute.RequestContext\" data-throw-if-not-resolved=\"false\"></xref> into a request object.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.HandlerExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.HandlerExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.HandlerExtensions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.HttpListenerRouter.yml",
       "output": {
         ".html": {

@@ -115,6 +115,126 @@ references:
   commentId: Overload:NanoRoute.ErrorDetails.TraceId
   fullName: NanoRoute.ErrorDetails.TraceId
   nameWithType: ErrorDetails.TraceId
+- uid: NanoRoute.HandlerExtensions
+  name: NanoRoute.HandlerExtensions
+  href: NanoRoute.HandlerExtensions.html
+  commentId: N:NanoRoute.HandlerExtensions
+  fullName: NanoRoute.HandlerExtensions
+  nameWithType: NanoRoute.HandlerExtensions
+- uid: NanoRoute.HandlerExtensions.ArgumentSource
+  name: ArgumentSource
+  href: NanoRoute.HandlerExtensions.ArgumentSource.html
+  commentId: T:NanoRoute.HandlerExtensions.ArgumentSource
+  fullName: NanoRoute.HandlerExtensions.ArgumentSource
+  nameWithType: ArgumentSource
+- uid: NanoRoute.HandlerExtensions.ArgumentSource.Context
+  name: Context
+  href: NanoRoute.HandlerExtensions.ArgumentSource.html#NanoRoute_HandlerExtensions_ArgumentSource_Context
+  commentId: F:NanoRoute.HandlerExtensions.ArgumentSource.Context
+  fullName: NanoRoute.HandlerExtensions.ArgumentSource.Context
+  nameWithType: ArgumentSource.Context
+- uid: NanoRoute.HandlerExtensions.ArgumentSource.ServiceLocator
+  name: ServiceLocator
+  href: NanoRoute.HandlerExtensions.ArgumentSource.html#NanoRoute_HandlerExtensions_ArgumentSource_ServiceLocator
+  commentId: F:NanoRoute.HandlerExtensions.ArgumentSource.ServiceLocator
+  fullName: NanoRoute.HandlerExtensions.ArgumentSource.ServiceLocator
+  nameWithType: ArgumentSource.ServiceLocator
+- uid: NanoRoute.HandlerExtensions.ArgumentSourceAttribute
+  name: ArgumentSourceAttribute
+  href: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html
+  commentId: T:NanoRoute.HandlerExtensions.ArgumentSourceAttribute
+  fullName: NanoRoute.HandlerExtensions.ArgumentSourceAttribute
+  nameWithType: ArgumentSourceAttribute
+- uid: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.#ctor(NanoRoute.HandlerExtensions.ArgumentSource)
+  name: ArgumentSourceAttribute(ArgumentSource)
+  href: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html#NanoRoute_HandlerExtensions_ArgumentSourceAttribute__ctor_NanoRoute_HandlerExtensions_ArgumentSource_
+  commentId: M:NanoRoute.HandlerExtensions.ArgumentSourceAttribute.#ctor(NanoRoute.HandlerExtensions.ArgumentSource)
+  name.vb: New(ArgumentSource)
+  fullName: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.ArgumentSourceAttribute(NanoRoute.HandlerExtensions.ArgumentSource)
+  fullName.vb: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.New(NanoRoute.HandlerExtensions.ArgumentSource)
+  nameWithType: ArgumentSourceAttribute.ArgumentSourceAttribute(ArgumentSource)
+  nameWithType.vb: ArgumentSourceAttribute.New(ArgumentSource)
+- uid: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.#ctor*
+  name: ArgumentSourceAttribute
+  href: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html#NanoRoute_HandlerExtensions_ArgumentSourceAttribute__ctor_
+  commentId: Overload:NanoRoute.HandlerExtensions.ArgumentSourceAttribute.#ctor
+  name.vb: New
+  fullName: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.ArgumentSourceAttribute
+  fullName.vb: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.New
+  nameWithType: ArgumentSourceAttribute.ArgumentSourceAttribute
+  nameWithType.vb: ArgumentSourceAttribute.New
+- uid: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name
+  name: Name
+  href: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html#NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Name
+  commentId: P:NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name
+  fullName: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name
+  nameWithType: ArgumentSourceAttribute.Name
+- uid: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name*
+  name: Name
+  href: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html#NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Name_
+  commentId: Overload:NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name
+  fullName: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name
+  nameWithType: ArgumentSourceAttribute.Name
+- uid: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source
+  name: Source
+  href: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html#NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Source
+  commentId: P:NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source
+  fullName: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source
+  nameWithType: ArgumentSourceAttribute.Source
+- uid: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source*
+  name: Source
+  href: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html#NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Source_
+  commentId: Overload:NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source
+  fullName: NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source
+  nameWithType: ArgumentSourceAttribute.Source
+- uid: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions
+  name: NanoRouteHandlerExtensions
+  href: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html
+  commentId: T:NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions
+  fullName: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions
+  nameWithType: NanoRouteHandlerExtensions
+- uid: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler*
+  name: AddHandler
+  href: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler_
+  commentId: Overload:NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler
+  fullName: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler
+  nameWithType: NanoRouteHandlerExtensions.AddHandler
+- uid: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String},System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})
+  name: AddHandler<TBuilder, TRequestContext>(TBuilder, IReadOnlyCollection<string>, string, IReadOnlyDictionary<string, string>, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>>)
+  href: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___
+  commentId: M:NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String},System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})
+  name.vb: AddHandler(Of TBuilder, TRequestContext)(TBuilder, IReadOnlyCollection(Of String), String, IReadOnlyDictionary(Of String, String), Func(Of TRequestContext, CallNextHandlerDelegate, Task(Of HttpResponseMessage)))
+  fullName: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler<TBuilder, TRequestContext>(TBuilder, System.Collections.Generic.IReadOnlyCollection<string>, string, System.Collections.Generic.IReadOnlyDictionary<string, string>, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>)
+  fullName.vb: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler(Of TBuilder, TRequestContext)(TBuilder, System.Collections.Generic.IReadOnlyCollection(Of String), String, System.Collections.Generic.IReadOnlyDictionary(Of String, String), System.Func(Of TRequestContext, NanoRoute.CallNextHandlerDelegate, System.Threading.Tasks.Task(Of System.Net.Http.HttpResponseMessage)))
+  nameWithType: NanoRouteHandlerExtensions.AddHandler<TBuilder, TRequestContext>(TBuilder, IReadOnlyCollection<string>, string, IReadOnlyDictionary<string, string>, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>>)
+  nameWithType.vb: NanoRouteHandlerExtensions.AddHandler(Of TBuilder, TRequestContext)(TBuilder, IReadOnlyCollection(Of String), String, IReadOnlyDictionary(Of String, String), Func(Of TRequestContext, CallNextHandlerDelegate, Task(Of HttpResponseMessage)))
+- uid: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String},System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})
+  name: AddHandler<TBuilder, TRequestContext>(TBuilder, IReadOnlyCollection<string>, string, IReadOnlyDictionary<string, string>, Func<TRequestContext, Task<HttpResponseMessage>>)
+  href: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___
+  commentId: M:NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String},System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})
+  name.vb: AddHandler(Of TBuilder, TRequestContext)(TBuilder, IReadOnlyCollection(Of String), String, IReadOnlyDictionary(Of String, String), Func(Of TRequestContext, Task(Of HttpResponseMessage)))
+  fullName: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler<TBuilder, TRequestContext>(TBuilder, System.Collections.Generic.IReadOnlyCollection<string>, string, System.Collections.Generic.IReadOnlyDictionary<string, string>, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>)
+  fullName.vb: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler(Of TBuilder, TRequestContext)(TBuilder, System.Collections.Generic.IReadOnlyCollection(Of String), String, System.Collections.Generic.IReadOnlyDictionary(Of String, String), System.Func(Of TRequestContext, System.Threading.Tasks.Task(Of System.Net.Http.HttpResponseMessage)))
+  nameWithType: NanoRouteHandlerExtensions.AddHandler<TBuilder, TRequestContext>(TBuilder, IReadOnlyCollection<string>, string, IReadOnlyDictionary<string, string>, Func<TRequestContext, Task<HttpResponseMessage>>)
+  nameWithType.vb: NanoRouteHandlerExtensions.AddHandler(Of TBuilder, TRequestContext)(TBuilder, IReadOnlyCollection(Of String), String, IReadOnlyDictionary(Of String, String), Func(Of TRequestContext, Task(Of HttpResponseMessage)))
+- uid: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})
+  name: AddHandler<TBuilder, TRequestContext>(TBuilder, IReadOnlyCollection<string>, string, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>>)
+  href: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___
+  commentId: M:NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})
+  name.vb: AddHandler(Of TBuilder, TRequestContext)(TBuilder, IReadOnlyCollection(Of String), String, Func(Of TRequestContext, CallNextHandlerDelegate, Task(Of HttpResponseMessage)))
+  fullName: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler<TBuilder, TRequestContext>(TBuilder, System.Collections.Generic.IReadOnlyCollection<string>, string, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>)
+  fullName.vb: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler(Of TBuilder, TRequestContext)(TBuilder, System.Collections.Generic.IReadOnlyCollection(Of String), String, System.Func(Of TRequestContext, NanoRoute.CallNextHandlerDelegate, System.Threading.Tasks.Task(Of System.Net.Http.HttpResponseMessage)))
+  nameWithType: NanoRouteHandlerExtensions.AddHandler<TBuilder, TRequestContext>(TBuilder, IReadOnlyCollection<string>, string, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>>)
+  nameWithType.vb: NanoRouteHandlerExtensions.AddHandler(Of TBuilder, TRequestContext)(TBuilder, IReadOnlyCollection(Of String), String, Func(Of TRequestContext, CallNextHandlerDelegate, Task(Of HttpResponseMessage)))
+- uid: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})
+  name: AddHandler<TBuilder, TRequestContext>(TBuilder, IReadOnlyCollection<string>, string, Func<TRequestContext, Task<HttpResponseMessage>>)
+  href: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___
+  commentId: M:NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})
+  name.vb: AddHandler(Of TBuilder, TRequestContext)(TBuilder, IReadOnlyCollection(Of String), String, Func(Of TRequestContext, Task(Of HttpResponseMessage)))
+  fullName: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler<TBuilder, TRequestContext>(TBuilder, System.Collections.Generic.IReadOnlyCollection<string>, string, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>)
+  fullName.vb: NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler(Of TBuilder, TRequestContext)(TBuilder, System.Collections.Generic.IReadOnlyCollection(Of String), String, System.Func(Of TRequestContext, System.Threading.Tasks.Task(Of System.Net.Http.HttpResponseMessage)))
+  nameWithType: NanoRouteHandlerExtensions.AddHandler<TBuilder, TRequestContext>(TBuilder, IReadOnlyCollection<string>, string, Func<TRequestContext, Task<HttpResponseMessage>>)
+  nameWithType.vb: NanoRouteHandlerExtensions.AddHandler(Of TBuilder, TRequestContext)(TBuilder, IReadOnlyCollection(Of String), String, Func(Of TRequestContext, Task(Of HttpResponseMessage)))
 - uid: NanoRoute.HttpListenerRouter
   name: HttpListenerRouter
   href: NanoRoute.HttpListenerRouter.html

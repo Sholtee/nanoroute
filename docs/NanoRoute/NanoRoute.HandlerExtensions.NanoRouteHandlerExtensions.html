@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class NanoRouteHandlerExtensions | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class NanoRouteHandlerExtensions | NanoRoute ">
+    
+    <meta name="description" content="Adds typed handler overloads that project a  into a request object.">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions">
+
+
+
+  <h1 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions" class="text-break">Class NanoRouteHandlerExtensions</h1>
+  <div class="markdown level0 summary"><p>Adds typed handler overloads that project a <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> into a request object.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">NanoRouteHandlerExtensions</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a>.<a class="xref" href="NanoRoute.HandlerExtensions.html">HandlerExtensions</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class NanoRouteHandlerExtensions</code></pre>
+  </div>
+  <h5 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>
+By default, writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>
+using the property name as the lookup key.
+</p>
+<p>
+Properties of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> are populated
+automatically from the current request.
+</p>
+<p>
+Use <a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html">ArgumentSourceAttribute</a> to bind a property from a specific context key or service.
+Missing required context values and services throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a>.
+</p>
+</div>
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler*"></a>
+  <h4 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String},System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;, string, IReadOnlyDictionary&lt;string, string&gt;, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed middleware handler and the query-string bindings it depends on.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, IReadOnlyCollection&lt;string&gt; verbs, string pattern, IReadOnlyDictionary&lt;string, string&gt; queryBindings, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP verbs handled by the route.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to register.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">queryBindings</span></td>
+        <td><p>Query-string binding definitions that are applied before <code class="paramref">handler</code> is invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TRequestContext, <a class="xref" href="NanoRoute.CallNextHandlerDelegate.html">CallNextHandlerDelegate</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The typed middleware delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TRequestContext</span></td>
+        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>
+Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
+</p>
+<p>
+A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
+</p>
+<p>
+<code class="paramref">queryBindings</code> are registered before the request object is created, so their parsed values
+are available through the default context binding rules.
+</p>
+<p>
+Apply <a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html">ArgumentSourceAttribute</a> to bind a property from a different parameter name
+or from the request service provider.
+</p>
+</div>
+  <a id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler*"></a>
+  <h4 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String},System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;, string, IReadOnlyDictionary&lt;string, string&gt;, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed handler and the query-string bindings it depends on.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, IReadOnlyCollection&lt;string&gt; verbs, string pattern, IReadOnlyDictionary&lt;string, string&gt; queryBindings, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP verbs handled by the route.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to register.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">queryBindings</span></td>
+        <td><p>Query-string binding definitions that are applied before <code class="paramref">handler</code> is invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRequestContext, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The typed handler delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TRequestContext</span></td>
+        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Collections_Generic_IReadOnlyDictionary_System_String_System_String__System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>
+Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
+</p>
+<p>
+A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
+</p>
+<p>
+<code class="paramref">queryBindings</code> are registered before the request object is created, so their parsed values
+are available through the default context binding rules.
+</p>
+<p>
+Apply <a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html">ArgumentSourceAttribute</a> to bind a property from a different parameter name
+or from the request service provider.
+</p>
+</div>
+  <a id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler*"></a>
+  <h4 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed middleware handler that receives a request object and the next handler in the pipeline.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, IReadOnlyCollection&lt;string&gt; verbs, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP verbs handled by the route.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to register.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TRequestContext, <a class="xref" href="NanoRoute.CallNextHandlerDelegate.html">CallNextHandlerDelegate</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The typed middleware delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TRequestContext</span></td>
+        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>
+Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
+</p>
+<p>
+A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
+</p>
+<p>
+Apply <a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html">ArgumentSourceAttribute</a> to bind a property from a different parameter name
+or from the request service provider.
+</p>
+</div>
+  <a id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler*"></a>
+  <h4 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IReadOnlyCollection{System.String},System.String,System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IReadOnlyCollection&lt;string&gt;, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object built from the current <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, IReadOnlyCollection&lt;string&gt; verbs, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP verbs handled by the route.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to register.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRequestContext, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The typed handler delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TRequestContext</span></td>
+        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IReadOnlyCollection_System_String__System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>
+Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
+</p>
+<p>
+A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
+</p>
+<p>
+Apply <a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html">ArgumentSourceAttribute</a> to bind a property from a different parameter name
+or from the request service provider.
+</p>
+</div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>
