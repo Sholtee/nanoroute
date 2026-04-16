@@ -60,15 +60,14 @@ namespace NanoRoute
 
                     if (target.ParsedChildren.SingleOrDefault(cc => cc.SegmentParser!.Definition.ValueParser.Equals(parserDefinition.ValueParser)) is not { } parsedChild)
                     {
-                        parsedChild = new RouteNode
+                        parsedChild = new RouteNode(uriSegment.Current)
                         {
                             SegmentParser = new SegmentParser
                             (
                                 parserDefinition,
                                 parserRegistration.Parse,
                                 parserRegistration.BindArguments(parserDefinition.ValueParser.RawArguments)
-                            ),
-                            Segment = uriSegment.Current
+                            )
                         };
 
                         target.ParsedChildren.Add(parsedChild);
@@ -82,10 +81,7 @@ namespace NanoRoute
                 {
                     if (!target.LiteralChildren.TryGetValue(uriSegment.Current, out RouteNode exactChild))
                     {
-                        exactChild = new RouteNode
-                        {
-                            Segment = uriSegment.Current
-                        };
+                        exactChild = new RouteNode(uriSegment.Current);
                         target.LiteralChildren.Add(uriSegment.Current, exactChild);
                     }
 
@@ -106,7 +102,7 @@ namespace NanoRoute
             _basePattern = JoinPattern(parent._basePattern, baseUrl);
         }
 
-        internal RouteBuilder(): base(new RouteNode { Segment = default })
+        internal RouteBuilder(): base(new RouteNode(default))
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
             _basePattern = string.Empty;
@@ -116,7 +112,7 @@ namespace NanoRoute
         /// Creates an immutable snapshot of the current route tree.
         /// </summary>
         /// <returns>A copy of the configured root node.</returns>
-        internal RouteNode GetRoot() => _root.Copy();
+        internal RouteNode GetRoot(bool frozen) => _root.Copy(frozen);
 
         /// <summary>
         /// Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.
