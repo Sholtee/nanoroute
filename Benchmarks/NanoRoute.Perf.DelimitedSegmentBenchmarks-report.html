@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>NanoRoute.Perf.DelimitedSegmentBenchmarks-20260414-052600</title>
+<title>NanoRoute.Perf.DelimitedSegmentBenchmarks-20260416-072259</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -15,17 +15,17 @@
 <pre><code>
 BenchmarkDotNet v0.15.8, Windows 11 (10.0.26100.32522/24H2/2024Update/HudsonValley) (Hyper-V)
 AMD EPYC 7763 2.44GHz, 1 CPU, 2 logical cores and 1 physical core
-.NET SDK 10.0.201
-  [Host]     : .NET 10.0.5 (10.0.5, 10.0.526.15411), X64 RyuJIT x86-64-v3
-  DefaultJob : .NET 10.0.5 (10.0.5, 10.0.526.15411), X64 RyuJIT x86-64-v3
+.NET SDK 10.0.202
+  [Host]     : .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
+  DefaultJob : .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
 </code></pre>
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>Method </th><th>Path            </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>Method </th><th>Path            </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>WalkSegments</td><td>/api/users/42/orders/7</td><td>43.46 ns</td><td>1.605 ns</td><td>4.733 ns</td><td>45.11 ns</td><td>0.25</td><td>0.03</td><td>-</td><td>-</td><td>0.00</td>
-</tr><tr><td>SplitSegments</td><td>/api/users/42/orders/7</td><td>174.57 ns</td><td>1.675 ns</td><td>1.485 ns</td><td>174.01 ns</td><td>1.00</td><td>0.01</td><td>0.0196</td><td>328 B</td><td>1.00</td>
+</thead><tbody><tr><td>WalkSegments</td><td>/api/users/42/orders/7</td><td>29.03 ns</td><td>0.581 ns</td><td>0.570 ns</td><td>0.28</td><td>0.01</td><td>-</td><td>-</td><td>0.00</td>
+</tr><tr><td>SplitSegments</td><td>/api/users/42/orders/7</td><td>103.76 ns</td><td>1.736 ns</td><td>1.539 ns</td><td>1.00</td><td>0.02</td><td>0.0196</td><td>328 B</td><td>1.00</td>
 </tr></tbody></table>
 </body>
 </html>
