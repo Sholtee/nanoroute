@@ -4,19 +4,21 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace NanoRoute.Internals
 {
     /// <summary>
     /// Represents a node in the per-verb route tree.
     /// </summary>
-    internal sealed class RouteNode
+    internal sealed class RouteNode(ReadOnlyMemory<char> segment)
     {
         /// <summary>
         /// Gets the handlers registered for the current route node.
         /// </summary>
-        public Dictionary<HttpVerb, List<HandlerRegistration>> HandlerRegistrations { get; } = [];
+        public IDictionary<HttpVerb, List<HandlerRegistration>> HandlerRegistrations { get; } = new Dictionary<HttpVerb, List<HandlerRegistration>>();
 
         /// <summary>
         /// Gets or sets the parser used by this node when it represents a parameterized segment.
@@ -26,40 +28,43 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Gets or sets the segment for which this node is created
         /// </summary>
-        public required ReadOnlyMemory<char> Segment { get; init; }
+        public ReadOnlyMemory<char> Segment { get; } = segment;
 
         /// <summary>
         /// Gets literal child nodes keyed by case-insensitive segment value.
         /// </summary>
-        public Dictionary<ReadOnlyMemory<char>, RouteNode> LiteralChildren { get; } = new(ReadOnlyMemoryCharComparer.Instance);
+        public IDictionary<ReadOnlyMemory<char>, RouteNode> LiteralChildren { get; } = new Dictionary<ReadOnlyMemory<char>, RouteNode>(ReadOnlyMemoryCharComparer.Instance);
 
         /// <summary>
         /// Gets parser-based child nodes evaluated after literal matches.
         /// </summary>
-        public List<RouteNode> ParsedChildren { get; } = [];
+        public IList<RouteNode> ParsedChildren { get; } = new List<RouteNode>();
+
+        private RouteNode(RouteNode src, bool freeze): this(src.Segment)
+        {
+            SegmentParser = src.SegmentParser;
+
+            CopyCollection(src.ParsedChildren, ParsedChildren, c => c.Copy(freeze));
+            CopyCollection(src.HandlerRegistrations, HandlerRegistrations, static kvp => new(kvp.Key, [.. kvp.Value]));
+            CopyCollection(src.LiteralChildren, LiteralChildren, kvp => new(kvp.Key, kvp.Value.Copy(freeze)));
+
+            if (freeze)
+            {
+                LiteralChildren = LiteralChildren.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance);
+                ParsedChildren = ParsedChildren.ToImmutableList();
+                HandlerRegistrations = HandlerRegistrations.ToFrozenDictionary(); 
+            }
+
+            static void CopyCollection<TValue>(ICollection<TValue> src, ICollection<TValue> dst, Func<TValue, TValue> valueCopy)
+            {
+                foreach (TValue item in src)
+                    dst.Add(valueCopy(item));
+            }
+        }
 
         /// <summary>
         /// Creates a deep-copy from this node.
         /// </summary>
-        public RouteNode Copy()
-        {
-            RouteNode result = new()
-            {
-                SegmentParser = SegmentParser,
-                Segment = Segment
-            };
-
-            CopyCollection(ParsedChildren,        result.ParsedChildren,        static c => c.Copy());
-            CopyCollection(HandlerRegistrations,  result.HandlerRegistrations,  static kvp => new(kvp.Key, [..kvp.Value]));
-            CopyCollection(LiteralChildren,       result.LiteralChildren,       static kvp => new(kvp.Key, kvp.Value.Copy()));
-
-            return result;
-
-            static void CopyCollection<TValue>(ICollection<TValue> src, ICollection<TValue> dst, Func<TValue, TValue> valueCopy)
-            {
-                foreach(TValue item in src)
-                    dst.Add(valueCopy(item));
-            }
-        }
+        public RouteNode Copy(bool frozen) => new(this, frozen);
     }
 }

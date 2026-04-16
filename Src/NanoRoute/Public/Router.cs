@@ -39,7 +39,7 @@ namespace NanoRoute
         {
             // The base() ctor invocation runs first so we have to do the validation here
             Ensure.NotNull(routeBuilder);
-            return routeBuilder.GetRoot();
+            return routeBuilder.GetRoot(frozen: true);
         }
 
         /// <summary>
