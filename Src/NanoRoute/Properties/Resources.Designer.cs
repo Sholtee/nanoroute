@@ -178,6 +178,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Optional parameters are not supported in segment definitions..
+        /// </summary>
+        internal static string ERR_OPTIONA_PARAMETERS_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("ERR_OPTIONA_PARAMETERS_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Conflicting parameter names are not allowed for the same route segment..
         /// </summary>
         internal static string ERR_PARAMETER_OVERRIDE {

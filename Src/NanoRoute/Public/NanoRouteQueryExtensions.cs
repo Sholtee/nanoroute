@@ -155,7 +155,7 @@ namespace NanoRoute
 
                 foreach (KeyValuePair<string, string> binding in bindings)
                 {
-                    if (!SegmentParserDefinition.IsValidParameterName(binding.Key))
+                    if (!ParameterDefinition.IsValidParameterName(binding.Key))
                         throw new ArgumentException(Resources.ERR_INVALID_QUERY_BINDINGS, nameof(bindings));
 
                     Ensure.NotNull(binding.Value, $"{nameof(binding)}.{nameof(binding.Value)}");

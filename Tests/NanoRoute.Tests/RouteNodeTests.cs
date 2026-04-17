@@ -21,9 +21,9 @@ namespace NanoRoute.Tests
         [Test]
         public void Copy_ShouldCloneTheWholeTree_WhenMutableCopyIsRequested()
         {
-            SegmentParser parser = new
+            ParameterParser parser = new
             (
-                SegmentParserDefinition.Create("{id:str}"),
+                ParameterDefinition.Create("{id:str}"),
                 new Mock<ValueParserDelegate>(MockBehavior.Strict).Object,
                 Arguments: null
             );
@@ -40,7 +40,7 @@ namespace NanoRoute.Tests
             literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(literalHandler, "/users")];
             root.LiteralChildren.Add("users".AsMemory(), literalChild);
 
-            RouteNode parsedChild = new("{id:str}".AsMemory()) { SegmentParser = parser };
+            RouteNode parsedChild = new("{id:str}".AsMemory()) { ParameterParser = parser };
             parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(parsedHandler, "/{id:str}")];
             root.ParsedChildren.Add(parsedChild);
 
@@ -67,7 +67,7 @@ namespace NanoRoute.Tests
                 Assert.That(copy.ParsedChildren, Has.Count.EqualTo(1));
                 Assert.That(copy.ParsedChildren[0], Is.Not.SameAs(parsedChild));
                 Assert.That(copy.ParsedChildren[0].Segment.ToString(), Is.EqualTo("{id:str}"));
-                Assert.That(copy.ParsedChildren[0].SegmentParser, Is.EqualTo(parser));
+                Assert.That(copy.ParsedChildren[0].ParameterParser, Is.EqualTo(parser));
                 Assert.That(copy.ParsedChildren[0].HandlerRegistrations[HttpVerb.Get], Is.EquivalentTo(parsedChild.HandlerRegistrations[HttpVerb.Get]));
             });
         }
@@ -86,9 +86,9 @@ namespace NanoRoute.Tests
 
             RouteNode parsedChild = new("{id:str}".AsMemory())
             {
-                SegmentParser = new SegmentParser
+                ParameterParser = new ParameterParser
                 (
-                    SegmentParserDefinition.Create("{id:str}"),
+                    ParameterDefinition.Create("{id:str}"),
                     new Mock<ValueParserDelegate>(MockBehavior.Strict).Object,
                     Arguments: null
                 )

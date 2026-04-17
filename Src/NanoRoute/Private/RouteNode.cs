@@ -23,7 +23,7 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Gets or sets the parser used by this node when it represents a parameterized segment.
         /// </summary>
-        public SegmentParser? SegmentParser { get; init; }
+        public ParameterParser? ParameterParser { get; init; }
 
         /// <summary>
         /// Gets or sets the segment for which this node is created
@@ -42,7 +42,7 @@ namespace NanoRoute.Internals
 
         private RouteNode(RouteNode src, bool freeze): this(src.Segment)
         {
-            SegmentParser = src.SegmentParser;
+            ParameterParser = src.ParameterParser;
 
             CopyCollection(src.ParsedChildren, ParsedChildren, c => c.Copy(freeze));
             CopyCollection(src.HandlerRegistrations, HandlerRegistrations, static kvp => new(kvp.Key, [.. kvp.Value]));

@@ -25,11 +25,15 @@ namespace NanoRoute
     /// </remarks>
     public class RouteBuilder : RoutingContext
     {
+        private const string
+            URI_CHAR = @"[\w.\-~!$&'()*+,;=:@]",
+            PERCENT_ENCODED_CHAR = "%[0-9A-Fa-f]{2}";
+
         // Avoid using the constructor that accepts RegexOptions, It is not AOT compatible
         private static readonly Regex
             // A path segment consists of one or more valid literal URI characters or valid percent-encoded sequences.
-            s_literalSegmentValidator = new(@"^(?:(?:[\w.\-~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+)$"),
-            // A parser-backed segment is recognized as a {...} shell here; the full interpretation happens in SegmentParserDefinition.
+            s_literalSegmentValidator = new($"^(?:{URI_CHAR}|{PERCENT_ENCODED_CHAR})+$"),
+            // A parser-backed segment is recognized as a {...} shell here; the full interpretation happens in ParameterDefinition.
             s_segmentParserValidator = new(@"^\{[^/{}]+\}$");
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -50,29 +54,32 @@ namespace NanoRoute
 
                 if (s_segmentParserValidator.IsMatch(segment))
                 {
-                    SegmentParserDefinition parserDefinition = SegmentParserDefinition.Create(segment);
+                    ParameterDefinition parameterDefinition = ParameterDefinition.Create(segment);
 
-                    if (!_valueParsers.TryGetValue(parserDefinition.ValueParser.Name, out ValueParserRegistration parserRegistration))
+                    if (parameterDefinition.IsOptional)
+                        throw new InvalidOperationException(Resources.ERR_OPTIONA_PARAMETERS_NOT_SUPPORTED);
+
+                    if (!_valueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration parserRegistration))
                         throw new InvalidOperationException
                         (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parserDefinition.ValueParser.Name)
+                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parameterDefinition.ValueParser.Name)
                         );
 
-                    if (target.ParsedChildren.SingleOrDefault(cc => cc.SegmentParser!.Definition.ValueParser.Equals(parserDefinition.ValueParser)) is not { } parsedChild)
+                    if (target.ParsedChildren.SingleOrDefault(cc => cc.ParameterParser!.Definition.ValueParser.Equals(parameterDefinition.ValueParser)) is not { } parsedChild)
                     {
                         parsedChild = new RouteNode(uriSegment.Current)
                         {
-                            SegmentParser = new SegmentParser
+                            ParameterParser = new ParameterParser
                             (
-                                parserDefinition,
+                                parameterDefinition,
                                 parserRegistration.Parse,
-                                parserRegistration.BindArguments(parserDefinition.ValueParser.RawArguments)
+                                parserRegistration.BindArguments(parameterDefinition.ValueParser.RawArguments)
                             )
                         };
 
                         target.ParsedChildren.Add(parsedChild);
                     }
-                    else if (!StringComparer.OrdinalIgnoreCase.Equals(parsedChild.SegmentParser!.Definition.ParameterName, parserDefinition.ParameterName))
+                    else if (!StringComparer.OrdinalIgnoreCase.Equals(parsedChild.ParameterParser!.Definition.ParameterName, parameterDefinition.ParameterName))
                         throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
 
                     target = parsedChild;

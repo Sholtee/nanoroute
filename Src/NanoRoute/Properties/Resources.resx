@@ -168,4 +168,7 @@
   <data name="ERR_MISSING_REQUIRED_PARAMETER" xml:space="preserve">
     <value>Missing required parameter: {0}</value>
   </data>
+  <data name="ERR_OPTIONA_PARAMETERS_NOT_SUPPORTED" xml:space="preserve">
+    <value>Optional parameters are not supported in segment definitions.</value>
+  </data>
 </root>

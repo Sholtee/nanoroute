@@ -96,9 +96,9 @@ namespace NanoRoute.Tests
                 literal = new("value".AsMemory()),
                 parsed = new("{id:str}".AsMemory())
                 {
-                    SegmentParser = new SegmentParser
+                    ParameterParser = new ParameterParser
                     (
-                        SegmentParserDefinition.Create("{id:str}"),
+                        ParameterDefinition.Create("{id:str}"),
                         static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())),
                         null
                     )
@@ -153,18 +153,18 @@ namespace NanoRoute.Tests
                 api = new("api".AsMemory()),
                 intNode = new("{id:int}".AsMemory())
                 {
-                    SegmentParser = new SegmentParser
+                    ParameterParser = new ParameterParser
                     (
-                        SegmentParserDefinition.Create("{id:int}"),
+                        ParameterDefinition.Create("{id:int}"),
                         mockIntParser.Object,
                         null
                     )
                 },
                 stringNode = new("{slug:str}".AsMemory())
                 {
-                    SegmentParser = new SegmentParser
+                    ParameterParser = new ParameterParser
                     (
-                        SegmentParserDefinition.Create("{slug:str}"),
+                        ParameterDefinition.Create("{slug:str}"),
                         mockStringParser.Object,
                         null
                     )
@@ -199,9 +199,9 @@ namespace NanoRoute.Tests
                 api = new("api".AsMemory()),
                 parsed = new("{str}".AsMemory())
                 {
-                    SegmentParser = new SegmentParser
+                    ParameterParser = new ParameterParser
                     (
-                        SegmentParserDefinition.Create("{str}"),
+                        ParameterDefinition.Create("{str}"),
                         static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())),
                         null
                     )
@@ -238,18 +238,18 @@ namespace NanoRoute.Tests
                 api = new("api".AsMemory()),
                 intNode = new("{id:int}".AsMemory())
                 {
-                    SegmentParser = new SegmentParser
+                    ParameterParser = new ParameterParser
                     (
-                        SegmentParserDefinition.Create("{id:int}"),
+                        ParameterDefinition.Create("{id:int}"),
                         mockIntParser.Object,
                         null
                     )
                 },
                 stringNode = new("{slug:str}".AsMemory())
                 {
-                    SegmentParser = new SegmentParser
+                    ParameterParser = new ParameterParser
                     (
-                        SegmentParserDefinition.Create("{slug:str}"),
+                        ParameterDefinition.Create("{slug:str}"),
                         mockStringParser.Object,
                         null
                     )

@@ -219,13 +219,13 @@ namespace NanoRoute.Internals
             {
                 RouteNode parsedChild = frame.Node.ParsedChildren[TopFrame.ParsedChildIndex++];
 
-                ValueParseResult parsed = await parsedChild.SegmentParser!.Parse
+                ValueParseResult parsed = await parsedChild.ParameterParser!.Parse
                 (
                     new ValueParserContext
                     {
                         Segment = frame.Segment.Current,
                         Services = services,
-                        Arguments = parsedChild.SegmentParser.Arguments,
+                        Arguments = parsedChild.ParameterParser.Arguments,
                         Cancellation = cancellation
                     }
                 );
@@ -233,7 +233,7 @@ namespace NanoRoute.Internals
                 if (!parsed.Success)
                     continue;
 
-                Dictionary<string, object?> extended = parsedChild.SegmentParser.Definition.ParameterName is { Length: > 0 } parameterName
+                Dictionary<string, object?> extended = parsedChild.ParameterParser.Definition.ParameterName is { Length: > 0 } parameterName
                     ? new(frame.Parameters, StringComparer.OrdinalIgnoreCase)
                     {
                         [parameterName] = parsed.Parsed
