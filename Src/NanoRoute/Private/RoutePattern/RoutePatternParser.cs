@@ -16,7 +16,7 @@ namespace NanoRoute.Internals
         {
             bool expectSeparator = true;
 
-            for (int offset = 0; offset < pattern.Length; offset++)
+            for (int offset = 0, parameterIndex = 0; offset < pattern.Length; offset++)
             {
                 if (expectSeparator)
                 {
@@ -34,7 +34,7 @@ namespace NanoRoute.Internals
                         if (parameterDefinition.IsOptional)
                             throw new InvalidOperationException(Resources.ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED);
 
-                        yield return parameterDefinition;
+                        yield return parameterDefinition with { Index = parameterIndex++ };
                         break;
 
                     default:
@@ -51,7 +51,7 @@ namespace NanoRoute.Internals
             bool expectSeparator = false;
             int offset = 0;
 
-            for (; offset < pattern.Length; offset++)
+            for (int parameterIndex = 0; offset < pattern.Length; offset++)
             {
                 if (expectSeparator)
                 {
@@ -62,7 +62,7 @@ namespace NanoRoute.Internals
                     continue;
                 }
 
-                yield return ParameterDefinition.Parse(pattern, ref offset);
+                yield return ParameterDefinition.Parse(pattern, ref offset) with { Index = parameterIndex++ };
                 expectSeparator = true;
             }
 

@@ -3,7 +3,6 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -18,10 +17,7 @@ namespace NanoRoute.NativeAot
     {
         private static void ConfigureTypedHandlerRoutes(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) => builder
             .AddStringParser()
-            .AddQueryBindings("GET", "/typed/items/{id:int(min=1)}", new Dictionary<string, string>
-            {
-                ["query_filter"] = "str(min=3)"
-            })
+            .AddQueryBindings("GET", "/typed/items/{id:int(min=1)}", "{query_filter:str(min=3)}")
             .AddHandler(["GET"], "/typed/items/{id:int(min=1)}", static (TypedRequest request) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent($"{request.Service.Prefix}:{request.Id}:{request.Filter}:{request.Cancellation.CanBeCanceled}", Encoding.UTF8, "text/plain")

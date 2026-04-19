@@ -77,7 +77,7 @@ namespace NanoRoute.HandlerExtensions
     /// </remarks>
     public static class NanoRouteHandlerExtensions
     {
-        private static readonly IReadOnlyDictionary<string, string> s_EmptyDict = new Dictionary<string, string>(0);
+        private const string EMPTY_QUERY_BINDINGS = "";
 
         private static Func<RequestContext, TRequestContext> CreateContextDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>() where TRequestContext : new()
         {
@@ -169,7 +169,7 @@ namespace NanoRoute.HandlerExtensions
             );
         }
 
-        private static TBuilder AddHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IReadOnlyCollection<string> verbs, string pattern, IReadOnlyDictionary<string, string> queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
+        private static TBuilder AddHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IReadOnlyCollection<string> verbs, string pattern, string queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
         {
             Ensure.NotNull(routeBuilder);
             Ensure.NotNull(verbs);
@@ -177,7 +177,7 @@ namespace NanoRoute.HandlerExtensions
             Ensure.NotNull(queryBindings);
             Ensure.NotNull(handler);
 
-            if (queryBindings.Count > 0)
+            if (queryBindings.Length > 0)
                 routeBuilder.AddQueryBindings(verbs, pattern, queryBindings);
 
             Func<RequestContext, TRequestContext> createContext = CreateContextDelegate<TRequestContext>();
@@ -215,7 +215,7 @@ namespace NanoRoute.HandlerExtensions
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
-                return AddHandlerCore(routeBuilder, verbs, pattern, s_EmptyDict, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
+                return AddHandlerCore(routeBuilder, verbs, pattern, EMPTY_QUERY_BINDINGS, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
             }
 
             /// <summary>
@@ -242,7 +242,7 @@ namespace NanoRoute.HandlerExtensions
             /// </para>
             /// </remarks>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
-                AddHandlerCore(routeBuilder, verbs, pattern, s_EmptyDict, handler);
+                AddHandlerCore(routeBuilder, verbs, pattern, EMPTY_QUERY_BINDINGS, handler);
 
             /// <summary>
             /// Registers a typed handler and the query-string bindings it depends on.
@@ -253,7 +253,7 @@ namespace NanoRoute.HandlerExtensions
             /// <param name="verbs">The HTTP verbs handled by the route.</param>
             /// <param name="pattern">The route pattern to register.</param>
             /// <param name="queryBindings">
-            /// Query-string binding definitions that are applied before <paramref name="handler"/> is invoked.
+            /// A query-parameter descriptor that is applied before <paramref name="handler"/> is invoked.
             /// </param>
             /// <param name="handler">The typed handler delegate.</param>
             /// <returns>The current <paramref name="routeBuilder"/>.</returns>
@@ -274,7 +274,7 @@ namespace NanoRoute.HandlerExtensions
             /// or from the request service provider.
             /// </para>
             /// </remarks>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, IReadOnlyDictionary<string, string> queryBindings, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, string queryBindings, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
                 return AddHandlerCore(routeBuilder, verbs, pattern, queryBindings, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
@@ -289,7 +289,7 @@ namespace NanoRoute.HandlerExtensions
             /// <param name="verbs">The HTTP verbs handled by the route.</param>
             /// <param name="pattern">The route pattern to register.</param>
             /// <param name="queryBindings">
-            /// Query-string binding definitions that are applied before <paramref name="handler"/> is invoked.
+            /// A query-parameter descriptor that is applied before <paramref name="handler"/> is invoked.
             /// </param>
             /// <param name="handler">The typed middleware delegate.</param>
             /// <returns>The current <paramref name="routeBuilder"/>.</returns>
@@ -310,7 +310,7 @@ namespace NanoRoute.HandlerExtensions
             /// or from the request service provider.
             /// </para>
             /// </remarks>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, IReadOnlyDictionary<string, string> queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, string queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
                 AddHandlerCore(routeBuilder, verbs, pattern, queryBindings, handler);
         }
     }

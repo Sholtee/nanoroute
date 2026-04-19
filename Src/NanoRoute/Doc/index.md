@@ -24,6 +24,7 @@ The API documentation for this package is generated from the XML comments in the
 - `AddPrefix()` and `CreatePrefix()` create scoped route subtrees without forcing you to repeat common prefixes.
 - `MatchingBehavior` lets you choose whether literal or parameterized child segments are selected first.
 - Once a child branch has been selected for a request, NanoRoute continues only within that branch.
+- `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}` and matches query keys through `Uri.Query` normalization.
 - `NanoRoute.Json` adds JSON request binding and JSON error/response helpers on top of the core pipeline.
 
 ## Value Parser Syntax

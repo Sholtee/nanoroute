@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Collections.Frozen;
 
 namespace NanoRoute
 {
@@ -22,8 +23,7 @@ namespace NanoRoute
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
             /// </summary>
             /// <param name="bindings">
-            /// A case-insensitive map where the key is the target parameter name and the value is a value-parser
-            /// specification. Prefix the parser specification with <c>?</c> to mark the query parameter as optional.
+            /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
@@ -31,7 +31,7 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(IReadOnlyDictionary<string, string> bindings)
+            public TBuilder AddQueryBindings(string bindings)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(bindings);
@@ -49,8 +49,7 @@ namespace NanoRoute
             /// </summary>
             /// <param name="verbs">The HTTP methods that activate the query-binding middleware.</param>
             /// <param name="bindings">
-            /// A case-insensitive map where the key is the target parameter name and the value is a value-parser
-            /// specification. Prefix the parser specification with <c>?</c> to mark the query parameter as optional.
+            /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
@@ -58,7 +57,7 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(IEnumerable<string> verbs, IReadOnlyDictionary<string, string> bindings)
+            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verbs);
@@ -75,8 +74,7 @@ namespace NanoRoute
             /// the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.
             /// </param>
             /// <param name="bindings">
-            /// A case-insensitive map where the key is the target parameter name and the value is a value-parser
-            /// specification. Prefix the parser specification with <c>?</c> to mark the query parameter as optional.
+            /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
@@ -84,7 +82,7 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(string pattern, IReadOnlyDictionary<string, string> bindings)
+            public TBuilder AddQueryBindings(string pattern, string bindings)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(pattern);
@@ -107,8 +105,7 @@ namespace NanoRoute
             /// the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.
             /// </param>
             /// <param name="bindings">
-            /// A case-insensitive map where the key is the target parameter name and the value is a value-parser
-            /// specification. Prefix the parser specification with <c>?</c> to mark the query parameter as optional.
+            /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
@@ -116,7 +113,7 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(string verb, string pattern, IReadOnlyDictionary<string, string> bindings)
+            public TBuilder AddQueryBindings(string verb, string pattern, string bindings)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verb);
@@ -135,8 +132,7 @@ namespace NanoRoute
             /// the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.
             /// </param>
             /// <param name="bindings">
-            /// A case-insensitive map where the key is the target parameter name and the value is a value-parser
-            /// specification. Prefix the parser specification with <c>?</c> to mark the query parameter as optional.
+            /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
@@ -144,50 +140,36 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, IReadOnlyDictionary<string, string> bindings)
+            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verbs);
                 Ensure.NotNull(pattern);
                 Ensure.NotNull(bindings);
 
-                Dictionary<string, QueryParameterDefinition> parsedBindings = new(StringComparer.OrdinalIgnoreCase);
+                Dictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindingsTmp = new(ReadOnlyMemoryCharComparer.Instance);
 
-                foreach (KeyValuePair<string, string> binding in bindings)
+                foreach (ParameterDefinition parameterDefinition in RoutePatternParser.ParseQueryPattern(bindings))
                 {
-                   // if (!ParameterDefinition.IsValidParameterName(binding.Key))
-                   //     throw new ArgumentException(Resources.ERR_INVALID_QUERY_BINDINGS, nameof(bindings));
-
-                    Ensure.NotNull(binding.Value, $"{nameof(binding)}.{nameof(binding.Value)}");
-
-                    bool optional = binding.Value.StartsWith("?", StringComparison.Ordinal);
-
-                    int offset = optional ? 1 : 0;
-                    ValueParserDefinition valueParserDefinition = ValueParserDefinition.Parse(binding.Value, ref offset);
-
-                    if (!routeBuilder.ValueParsers.TryGetValue(valueParserDefinition.Name, out ValueParserRegistration? parserRegistration))
+                    if (!routeBuilder.ValueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration? parserRegistration))
                         throw new InvalidOperationException
                         (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, valueParserDefinition.Name)
+                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parameterDefinition.ValueParser.Name)
                         );
 
-                    parsedBindings.Add
+                    parsedBindingsTmp.Add
                     (
-                        binding.Key,
-                        new QueryParameterDefinition
+                        parameterDefinition.ParameterName!.AsMemory(),
+                        new ParameterParser
                         (
-                            binding.Key,
-                            parsedBindings.Count,
-                            optional,
-                            new ValueParser
-                            (
-                                valueParserDefinition,
-                                parserRegistration.Parse,
-                                parserRegistration.BindArguments(valueParserDefinition.RawArguments)
-                            )
+                            parameterDefinition,
+                            parserRegistration.Parse,
+                            parserRegistration.BindArguments(parameterDefinition.ValueParser.RawArguments)
                         )
                     );
                 }
+
+                IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindings = parsedBindingsTmp.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance);
 
                 routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {

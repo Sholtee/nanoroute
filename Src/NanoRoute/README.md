@@ -169,11 +169,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddPrefix("/items/", items => items
-        .AddQueryBindings("GET", "", new Dictionary<string, string>
-        {
-            ["filter"] = "str(min=3)",
-            ["page"] = "?int(min=1)"
-        })
+        .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}")
         .AddHandler("GET", "", async (context, _) =>
         {
             return HttpResponseMessage.Json(new
@@ -185,10 +181,10 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-- Prefix the parser specification with `?` to make a query parameter optional.
-- Query parameter names use the same identifier rules as route parameter names.
+- Add `?` to the query parameter name to make it optional, for example `{page?:int(min=1)}`.
+- Query parameter names may contain ASCII letters, digits, and underscores.
 - Parsed values are stored in `RequestContext.Parameters` under the configured key.
-- Query keys are matched case-insensitively after percent-decoding.
+- Query keys are matched case-insensitively using the normalized key exposed by `Uri.Query`.
 - Repeated declared query parameters are rejected with `400 Bad Request`.
 - As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
 
@@ -225,10 +221,7 @@ HttpListenerRouter router = HttpListenerRouter
     (
         ["GET"],
         "/items/{id:int}",
-        new Dictionary<string, string>
-        {
-            ["query_filter"] = "str(min=3)"
-        },
+        "{query_filter:str(min=3)}",
         async (GetItemRequest request) =>
         {
             Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
