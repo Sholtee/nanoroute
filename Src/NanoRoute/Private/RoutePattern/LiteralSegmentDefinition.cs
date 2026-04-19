@@ -17,7 +17,7 @@ namespace NanoRoute.Internals
             PERCENT_ENCODED_CHAR = "%[0-9A-Fa-f]{2}",
             LITERAL_SEGMENT_PATTERN = $@"\G(?:{URI_CHAR}|{PERCENT_ENCODED_CHAR})+";
 
-        private static readonly Regex s_literalSegment = new(LITERAL_SEGMENT_PATTERN);
+        private static readonly Regex s_literalSegment = new(LITERAL_SEGMENT_PATTERN, RuntimeFeature.IsDynamicCodeSupported ? RegexOptions.Compiled : RegexOptions.None);
 
         public static ReadOnlyMemory<char> Parse(string pattern, ref int offset)
         {

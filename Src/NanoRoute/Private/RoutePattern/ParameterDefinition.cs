@@ -17,7 +17,7 @@ namespace NanoRoute.Internals
             PARAMETER_NAME = $@"{IDENTIFIER}\??",
             PARAMETER_NAME_PATTERN = $@"\G(?:(?<parameterName>{PARAMETER_NAME}):)?";
 
-        private static readonly Regex s_parameterName = new(PARAMETER_NAME_PATTERN);
+        private static readonly Regex s_parameterName = new(PARAMETER_NAME_PATTERN, RuntimeFeature.IsDynamicCodeSupported ? RegexOptions.Compiled : RegexOptions.None);
 
         public static ParameterDefinition Parse(string pattern, ref int offset)
         {
