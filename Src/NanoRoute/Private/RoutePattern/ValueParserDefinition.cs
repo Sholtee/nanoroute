@@ -44,12 +44,7 @@ namespace NanoRoute.Internals
 
         private static readonly Regex s_parserDefinition = new(PARSER_DEFINITION_PATTERN, RuntimeFeature.IsDynamicCodeSupported ? RegexOptions.Compiled : RegexOptions.None);
 
-        #if DEBUG
-        internal
-        #else
-        private
-        #endif
-        static bool TryExtractArguments(Match parsed, out Dictionary<string, string> result)
+        private static bool TryExtractArguments(Match parsed, out Dictionary<string, string> result)
         {
             result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
