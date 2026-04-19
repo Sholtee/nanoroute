@@ -55,7 +55,9 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 ## Matching Rules
 
 - A trailing `/` makes a route a prefix match.
-- Without a trailing `/`, the route matches only the exact normalized path.
+- Without a trailing `/`, the route matches only the exact normalized request path.
+- Route patterns must start with `/`.
+- Repeated `/` separators in route patterns, such as `//` or `/items//details`, are invalid.
 - Literal segments are matched case-insensitively.
 - Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
 - The parameter name is optional. Segments like `{int}` still validate the path but do not add an entry to `RequestContext.Parameters`.

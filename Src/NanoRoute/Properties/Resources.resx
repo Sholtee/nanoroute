@@ -136,7 +136,7 @@
     <value>Only prefix patterns are allowed.</value>
   </data>
   <data name="ERR_INVALID_PATTERN" xml:space="preserve">
-    <value>Invalid pattern.</value>
+    <value>Invalid pattern (offset: {0})</value>
   </data>
   <data name="ERR_INVALID_QUERY_BINDINGS" xml:space="preserve">
     <value>Invalid query bindings.</value>
@@ -150,11 +150,8 @@
   <data name="ERR_BAD_CONTENT_TYPE" xml:space="preserve">
     <value>Bad content type.</value>
   </data>
-  <data name="ERR_INVALID_PARSERS_ARGS" xml:space="preserve">
-    <value>Invalid parser argument list.</value>
-  </data>
-  <data name="ERR_DUPLICATE_PARSER_ARGS" xml:space="preserve">
-    <value>Duplicate parser arguments.</value>
+  <data name="ERR_INVALID_ARGUMENTS" xml:space="preserve">
+    <value>Invalid arguments provided for '{0}' (offset: {1})</value>
   </data>
   <data name="ERR_QUERY_DUPLICATE_PARAMTER" xml:space="preserve">
     <value>Duplicate query parameter: {0}</value>
@@ -168,7 +165,10 @@
   <data name="ERR_MISSING_REQUIRED_PARAMETER" xml:space="preserve">
     <value>Missing required parameter: {0}</value>
   </data>
-  <data name="ERR_OPTIONA_PARAMETERS_NOT_SUPPORTED" xml:space="preserve">
+  <data name="ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED" xml:space="preserve">
     <value>Optional parameters are not supported in segment definitions.</value>
+  </data>
+  <data name="ERR_INVALID_PARSERS_ARGS" xml:space="preserve">
+    <value>Invalid parser argument(s).</value>
   </data>
 </root>

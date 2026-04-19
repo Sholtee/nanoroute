@@ -18,6 +18,7 @@ The API documentation for this package is generated from the XML comments in the
 ## Highlights
 
 - Routes can be exact matches or prefix matches depending on whether the pattern ends with `/`.
+- Route patterns must start with `/`, and repeated `/` separators such as `//` are invalid.
 - Value parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as `{id:int(min=1)}` once during registration.
 - Parser-backed segments support optional parameter names. `{id:int}` stores the parsed value in `RequestContext.Parameters`, while `{int}` only validates the segment.
 - `AddPrefix()` and `CreatePrefix()` create scoped route subtrees without forcing you to repeat common prefixes.

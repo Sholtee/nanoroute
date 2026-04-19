@@ -16,20 +16,29 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class ValueParserDefinitionTests
     {
+        private static ValueParserDefinition Parse(string definition)
+        {
+            int offset = 0;
+            ValueParserDefinition parsed = ValueParserDefinition.Parse(definition, ref offset);
+
+            Assert.That(offset, Is.EqualTo(definition.Length));
+            return parsed;
+        }
+
         [TestCase("")]
         [TestCase(" ")]
         [TestCase("   ")]
-        public void ParseArguments_ShouldReturnEmptyDictionaryForMissingArguments(string args)
+        public void Parse_ShouldReturnEmptyDictionaryForMissingArguments(string args)
         {
-            IReadOnlyDictionary<string, string> result = ValueParserDefinition.ParseArguments(args);
+            IReadOnlyDictionary<string, string> result = Parse($"parser({args})").RawArguments;
 
             Assert.That(result, Is.Empty);
         }
 
         [Test]
-        public void ParseArguments_ShouldHandleNamedArgumentsWithWhitespace()
+        public void Parse_ShouldHandleNamedArgumentsWithWhitespace()
         {
-            IReadOnlyDictionary<string, string> result = ValueParserDefinition.ParseArguments(" min = 3 , text = 'hello' , flag = true ");
+            IReadOnlyDictionary<string, string> result = Parse("parser( min = 3 , text = 'hello' , flag = true )").RawArguments;
 
             Assert.That(result, Has.Count.EqualTo(3));
             Assert.That(result["min"], Is.EqualTo("3"));
@@ -38,9 +47,9 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void ParseArguments_ShouldOnlyUnescapeEscapedQuotes()
+        public void Parse_ShouldOnlyUnescapeEscapedQuotes()
         {
-            IReadOnlyDictionary<string, string> result = ValueParserDefinition.ParseArguments(@"text='it\'s okay',path='a\\b',line='x\ny',pair='cica,mica=kutya'");
+            IReadOnlyDictionary<string, string> result = Parse(@"parser(text='it\'s okay',path='a\\b',line='x\ny',pair='cica,mica=kutya')").RawArguments;
 
             Assert.That(result["text"], Is.EqualTo("it's okay"));
             Assert.That(result["path"], Is.EqualTo(@"a\\b"));
@@ -49,18 +58,18 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void ParseArguments_ShouldTreatArgumentNamesCaseInsensitively()
+        public void Parse_ShouldTreatArgumentNamesCaseInsensitively()
         {
-            IReadOnlyDictionary<string, string> result = ValueParserDefinition.ParseArguments("MIN=3,max=9");
+            IReadOnlyDictionary<string, string> result = Parse("parser(MIN=3,max=9)").RawArguments;
 
             Assert.That(result["min"], Is.EqualTo("3"));
             Assert.That(result["MAX"], Is.EqualTo("9"));
         }
 
         [Test]
-        public void ParseArguments_ShouldAcceptSupportedScalarValueKinds()
+        public void Parse_ShouldAcceptSupportedScalarValueKinds()
         {
-            IReadOnlyDictionary<string, string> result = ValueParserDefinition.ParseArguments("none=null,flag=false,count=-12,ratio=-0.5,text='hello'");
+            IReadOnlyDictionary<string, string> result = Parse("parser(none=null,flag=false,count=-12,ratio=-0.5,text='hello')").RawArguments;
 
             Assert.That(result["none"], Is.EqualTo("null"));
             Assert.That(result["flag"], Is.EqualTo("false"));
@@ -70,9 +79,9 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void Create_ShouldParseTheFullValueDefinition()
+        public void Parse_ShouldParseTheFullValueDefinition()
         {
-            ValueParserDefinition definition = ValueParserDefinition.Create("int(min=3,text='it\\'s okay')");
+            ValueParserDefinition definition = Parse("int(min=3,text='it\\'s okay')");
 
             Assert.That(definition.Name, Is.EqualTo("int"));
             Assert.That(definition.RawArguments["min"], Is.EqualTo("3"));
@@ -81,51 +90,52 @@ namespace NanoRoute.Tests
 
         [TestCase("int")]
         [TestCase("int()")]
-        public void Create_ShouldHandleOptionalArguments(string definitionText)
+        public void Parse_ShouldHandleOptionalArguments(string definitionText)
         {
-            ValueParserDefinition definition = ValueParserDefinition.Create(definitionText);
+            ValueParserDefinition definition = Parse(definitionText);
 
             Assert.That(definition.Name, Is.EqualTo("int"));
             Assert.That(definition.RawArguments, Has.Count.EqualTo(0));
         }
 
-        [TestCase("invalid-segment")]
         [TestCase("9bad")]
-        [TestCase("literal value")]
-        [TestCase("some%20value")]
-        public void Create_ShouldThrowOnInvalidDefinitions(string definitionText)
+        public void Parse_ShouldRejectInvalidDefinitions(string definitionText)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => ValueParserDefinition.Create(definitionText))!;
+            int offset = 0;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => ValueParserDefinition.Parse(definitionText, ref offset))!;
 
-            Assert.That(ex.ParamName, Is.EqualTo("definition"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
+            Assert.That(ex.Message, Does.StartWith("Invalid pattern"));
         }
 
-        [TestCase("=1")]
-        [TestCase("min")]
-        [TestCase("min=")]
-        [TestCase("min=1,")]
-        [TestCase("min='oops")]
-        [TestCase("min=1,,max=2")]
-        [TestCase("min=1 max=2")]
-        [TestCase("1min=2")]
-        [TestCase("text=hello")]
-        [TestCase("flag=True")]
-        public void ParseArguments_ShouldRejectMalformedArgumentLists(string args)
+        [TestCase("invalid-segment", "invalid")]
+        [TestCase("literal value", "literal")]
+        [TestCase("some%20value", "some")]
+        [TestCase("parser(=1)", "parser")]
+        [TestCase("parser(min)", "parser")]
+        [TestCase("parser(min=)", "parser")]
+        [TestCase("parser(min=1,)", "parser")]
+        [TestCase("parser(min='oops)", "parser")]
+        [TestCase("parser(min=1,,max=2)", "parser")]
+        [TestCase("parser(min=1 max=2)", "parser")]
+        [TestCase("parser(1min=2)", "parser")]
+        [TestCase("parser(text=hello)", "parser")]
+        [TestCase("parser(flag=True)", "parser")]
+        public void Parse_ShouldStopBeforeInvalidTail(string definitionText, string expectedName)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => ValueParserDefinition.ParseArguments(args))!;
+            int offset = 0;
+            ValueParserDefinition definition = ValueParserDefinition.Parse(definitionText, ref offset);
 
-            Assert.That(ex.ParamName, Is.EqualTo("args"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
+            Assert.That(definition.Name, Is.EqualTo(expectedName));
+            Assert.That(offset, Is.EqualTo(expectedName.Length));
         }
 
         [Test]
-        public void ParseArguments_ShouldRejectDuplicateArgumentNames()
+        public void Parse_ShouldRejectDuplicateArgumentNames()
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => ValueParserDefinition.ParseArguments("min=1,min=2"))!;
+            int offset = 0;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => ValueParserDefinition.Parse("parser(min=1,min=2)", ref offset))!;
 
-            Assert.That(ex.ParamName, Is.EqualTo("args"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_DUPLICATE_PARSER_ARGS));
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_ARGUMENTS, "parser", 0)));
         }
 
         [TestCase("int(min=3)", "INT(MIN=3)", true)]
@@ -138,8 +148,8 @@ namespace NanoRoute.Tests
         public void Equals_ShouldMatchTheExpectedContract(string leftDefinition, string rightDefinition, bool expected)
         {
             ValueParserDefinition
-                left = ValueParserDefinition.Create(leftDefinition),
-                right = ValueParserDefinition.Create(rightDefinition);
+                left = Parse(leftDefinition),
+                right = Parse(rightDefinition);
 
             Assert.That(left.Equals(right), Is.EqualTo(expected));
         }

@@ -155,14 +155,15 @@ namespace NanoRoute
 
                 foreach (KeyValuePair<string, string> binding in bindings)
                 {
-                    if (!ParameterDefinition.IsValidParameterName(binding.Key))
-                        throw new ArgumentException(Resources.ERR_INVALID_QUERY_BINDINGS, nameof(bindings));
+                   // if (!ParameterDefinition.IsValidParameterName(binding.Key))
+                   //     throw new ArgumentException(Resources.ERR_INVALID_QUERY_BINDINGS, nameof(bindings));
 
                     Ensure.NotNull(binding.Value, $"{nameof(binding)}.{nameof(binding.Value)}");
 
                     bool optional = binding.Value.StartsWith("?", StringComparison.Ordinal);
 
-                    ValueParserDefinition valueParserDefinition = ValueParserDefinition.Create(optional ? binding.Value.Substring(1) : binding.Value);
+                    int offset = optional ? 1 : 0;
+                    ValueParserDefinition valueParserDefinition = ValueParserDefinition.Parse(binding.Value, ref offset);
 
                     if (!routeBuilder.ValueParsers.TryGetValue(valueParserDefinition.Name, out ValueParserRegistration? parserRegistration))
                         throw new InvalidOperationException

@@ -20,6 +20,16 @@ namespace NanoRoute.Tests
     {
         private static readonly RequestHandlerDelegate s_handler = static (_, _) => Task.FromResult(new HttpResponseMessage());
 
+        private static ParameterDefinition Parse(string segment)
+        {
+            int offset = 0;
+            ParameterDefinition definition = ParameterDefinition.Parse(segment, ref offset);
+
+            Assert.That(offset, Is.EqualTo(segment.Length - 1));
+
+            return definition;
+        }
+
         private static RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingBehavior matchingBehavior = MatchingBehavior.LiteralFirst) => new
         (
             root,
@@ -33,7 +43,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ToString_ShouldExposeTheCurrentStack()
         {
-            RouteNode root = new(default);
+            RouteNode root = new();
             RouteMatchCursor cursor = CreateCursor(root, "/api/users");
 
             Assert.That(cursor.ToString(), Is.EqualTo("RouteMatchCursor { Stack = [0: { Phase = EmitHandlers, Segment = 'api', HandlerIndex = 0, ParsedChildIndex = 0 }] }"));
@@ -43,9 +53,9 @@ namespace NanoRoute.Tests
         public async Task ToString_ShouldSeparateMultipleFrames()
         {
             RouteNode
-                root = new(default),
-                api = new("api".AsMemory()),
-                users = new("users".AsMemory());
+                root = new(),
+                api = new(),
+                users = new();
 
             users.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(s_handler, "/api/users")];
             api.LiteralChildren.Add("users".AsMemory(), users);
@@ -63,9 +73,9 @@ namespace NanoRoute.Tests
             HandlerRegistration handler = new(s_handler, "/api/users");
 
             RouteNode
-                root = new(default),
-                api = new("api".AsMemory()),
-                users = new("users".AsMemory());
+                root = new(),
+                api = new(),
+                users = new();
 
             users.HandlerRegistrations[HttpVerb.Get] = [handler];
             api.LiteralChildren.Add("users".AsMemory(), users);
@@ -91,14 +101,14 @@ namespace NanoRoute.Tests
                 parsedHandler = new(s_handler, "/items/{id:str}");
 
             RouteNode
-                root = new(default),
-                items = new("items".AsMemory()),
-                literal = new("value".AsMemory()),
-                parsed = new("{id:str}".AsMemory())
+                root = new(),
+                items = new(),
+                literal = new(),
+                parsed = new()
                 {
                     ParameterParser = new ParameterParser
                     (
-                        ParameterDefinition.Create("{id:str}"),
+                        Parse("{id:str}"),
                         static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())),
                         null
                     )
@@ -149,27 +159,27 @@ namespace NanoRoute.Tests
             HandlerRegistration handler = new(s_handler, "/api/{slug:str}/details");
 
             RouteNode
-                root = new(default),
-                api = new("api".AsMemory()),
-                intNode = new("{id:int}".AsMemory())
+                root = new(),
+                api = new(),
+                intNode = new()
                 {
                     ParameterParser = new ParameterParser
                     (
-                        ParameterDefinition.Create("{id:int}"),
+                        Parse("{id:int}"),
                         mockIntParser.Object,
                         null
                     )
                 },
-                stringNode = new("{slug:str}".AsMemory())
+                stringNode = new()
                 {
                     ParameterParser = new ParameterParser
                     (
-                        ParameterDefinition.Create("{slug:str}"),
+                        Parse("{slug:str}"),
                         mockStringParser.Object,
                         null
                     )
                 },
-                details = new("details".AsMemory());
+                details = new();
 
             details.HandlerRegistrations[HttpVerb.Get] = [handler];
             stringNode.LiteralChildren.Add("details".AsMemory(), details);
@@ -195,18 +205,18 @@ namespace NanoRoute.Tests
             HandlerRegistration handler = new(s_handler, "/api/{str}/details");
 
             RouteNode
-                root = new(default),
-                api = new("api".AsMemory()),
-                parsed = new("{str}".AsMemory())
+                root = new(),
+                api = new(),
+                parsed = new()
                 {
                     ParameterParser = new ParameterParser
                     (
-                        ParameterDefinition.Create("{str}"),
+                        Parse("{str}"),
                         static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())),
                         null
                     )
                 },
-                details = new("details".AsMemory());
+                details = new();
 
             details.HandlerRegistrations[HttpVerb.Get] = [handler];
             parsed.LiteralChildren.Add("details".AsMemory(), details);
@@ -234,31 +244,31 @@ namespace NanoRoute.Tests
             HandlerRegistration handler = new(s_handler, "/api/{id:int}/details");
 
             RouteNode
-                root = new(default),
-                api = new("api".AsMemory()),
-                intNode = new("{id:int}".AsMemory())
+                root = new(),
+                api = new(),
+                intNode = new()
                 {
                     ParameterParser = new ParameterParser
                     (
-                        ParameterDefinition.Create("{id:int}"),
+                        Parse("{id:int}"),
                         mockIntParser.Object,
                         null
                     )
                 },
-                stringNode = new("{slug:str}".AsMemory())
+                stringNode = new()
                 {
                     ParameterParser = new ParameterParser
                     (
-                        ParameterDefinition.Create("{slug:str}"),
+                        Parse("{slug:str}"),
                         mockStringParser.Object,
                         null
                     )
                 },
-                details = new("details".AsMemory());
+                details = new();
 
             details.HandlerRegistrations[HttpVerb.Get] = [handler];
             intNode.LiteralChildren.Add("details".AsMemory(), details);
-            stringNode.LiteralChildren.Add("details".AsMemory(), new RouteNode("details".AsMemory()));
+            stringNode.LiteralChildren.Add("details".AsMemory(), new RouteNode());
             api.ParsedChildren.Add(intNode);
             api.ParsedChildren.Add(stringNode);
             root.LiteralChildren.Add("api".AsMemory(), api);
@@ -278,7 +288,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Ctor_ShouldThrowOnUnknownMatchingBehavior()
         {
-            RouteNode root = new(default);
+            RouteNode root = new();
 
             ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => CreateCursor(root, "/api", (MatchingBehavior) 99))!;
 

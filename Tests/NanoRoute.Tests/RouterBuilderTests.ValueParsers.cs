@@ -98,16 +98,15 @@ namespace NanoRoute.Tests
             Assert.That(childBuilder.ValueParsers["int"].Name, Is.EqualTo("int"));
         }
 
-        [TestCase("/path/{id:int(=1)}")]
-        [TestCase("/path/{id:int(min='oops)}")]
-        [TestCase("/path/{id:int(min=1,,max=2)}")]
-        public void AddHandler_ShouldThrowOnMalformedParserArgumentSyntax(string pattern)
+        [TestCase("/path/{id:int(=1)}", 6)]
+        [TestCase("/path/{id:int(min='oops)}", 6)]
+        [TestCase("/path/{id:int(min=1,,max=2)}", 6)]
+        public void AddHandler_ShouldThrowOnMalformedParserArgumentSyntax(string pattern, int expectedOffset)
         {
             _routerBuilder.AddValueParser("int", args => int.Parse(args["min"], CultureInfo.InvariantCulture), new Mock<ValueParserDelegate>(MockBehavior.Strict).Object);
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("args"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [Test]
@@ -118,19 +117,18 @@ namespace NanoRoute.Tests
             Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", "/orders/{id:int}/details", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
 
-        [TestCase("/ok/bad[segment]")]
-        [TestCase("/ok/{id:int}/bad[segment]")]
-        public void AddHandler_ShouldThrowWhenAnyLiteralSegmentIsInvalid(string pattern)
+        [TestCase("/ok/bad[segment]", 7)]
+        [TestCase("/ok/{id:int}/bad[segment]", 16)]
+        public void AddHandler_ShouldThrowWhenAnyLiteralSegmentIsInvalid(string pattern, int expectedOffset)
         {
             _routerBuilder.AddValueParser("int", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object);
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
-        [TestCase("path/to/{missing}")]
-        [TestCase("path/to/{parameter_name:missing}")]
+        [TestCase("/path/to/{missing}")]
+        [TestCase("/path/to/{parameter_name:missing}")]
         public void AddHandler_ShouldThrowOnMissingValueParser(string pattern)
         {
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler(pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;

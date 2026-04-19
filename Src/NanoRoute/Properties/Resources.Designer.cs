@@ -79,15 +79,6 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate parser arguments..
-        /// </summary>
-        internal static string ERR_DUPLICATE_PARSER_ARGS {
-            get {
-                return ResourceManager.GetString("ERR_DUPLICATE_PARSER_ARGS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Internal server error..
         /// </summary>
         internal static string ERR_INERNAL_ERROR {
@@ -97,7 +88,16 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid parser argument list..
+        ///   Looks up a localized string similar to Invalid arguments provided for &apos;{0}&apos; (offset: {1}).
+        /// </summary>
+        internal static string ERR_INVALID_ARGUMENTS {
+            get {
+                return ResourceManager.GetString("ERR_INVALID_ARGUMENTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid parser argument(s)..
         /// </summary>
         internal static string ERR_INVALID_PARSERS_ARGS {
             get {
@@ -106,7 +106,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid pattern..
+        ///   Looks up a localized string similar to Invalid pattern (offset: {0}).
         /// </summary>
         internal static string ERR_INVALID_PATTERN {
             get {
@@ -180,9 +180,9 @@ namespace NanoRoute.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Optional parameters are not supported in segment definitions..
         /// </summary>
-        internal static string ERR_OPTIONA_PARAMETERS_NOT_SUPPORTED {
+        internal static string ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED {
             get {
-                return ResourceManager.GetString("ERR_OPTIONA_PARAMETERS_NOT_SUPPORTED", resourceCulture);
+                return ResourceManager.GetString("ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED", resourceCulture);
             }
         }
         

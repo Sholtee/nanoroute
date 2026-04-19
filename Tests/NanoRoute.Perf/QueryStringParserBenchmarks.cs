@@ -20,12 +20,25 @@ namespace NanoRoute.Perf
     {
         private static readonly IServiceProvider s_services = new NoopServiceProvider();
 
+        private static readonly ValueParserDefinition s_valueParserDefinition = ParseValue("str");
+
         private static readonly ValueParser s_parser = new
         (
-            ValueParserDefinition.Create("str"),
+            s_valueParserDefinition,
             static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.DecodedSegment.ToString())),
             Arguments: null
         );
+
+        private static ValueParserDefinition ParseValue(string definition)
+        {
+            int offset = 0;
+            ValueParserDefinition result = ValueParserDefinition.Parse(definition, ref offset);
+
+            if (offset != definition.Length)
+                throw new InvalidOperationException();
+
+            return result;
+        }
 
         private static readonly IReadOnlyDictionary<string, QueryParameterDefinition>
             s_allExpected = CreateExpectedParameters

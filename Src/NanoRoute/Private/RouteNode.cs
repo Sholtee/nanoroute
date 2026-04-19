@@ -13,7 +13,7 @@ namespace NanoRoute.Internals
     /// <summary>
     /// Represents a node in the per-verb route tree.
     /// </summary>
-    internal sealed class RouteNode(ReadOnlyMemory<char> segment)
+    internal sealed class RouteNode()
     {
         /// <summary>
         /// Gets the handlers registered for the current route node.
@@ -21,14 +21,9 @@ namespace NanoRoute.Internals
         public IDictionary<HttpVerb, List<HandlerRegistration>> HandlerRegistrations { get; } = new Dictionary<HttpVerb, List<HandlerRegistration>>();
 
         /// <summary>
-        /// Gets or sets the parser used by this node when it represents a parameterized segment.
+        /// Gets the parser used by this node when it represents a parameterized segment.
         /// </summary>
         public ParameterParser? ParameterParser { get; init; }
-
-        /// <summary>
-        /// Gets or sets the segment for which this node is created
-        /// </summary>
-        public ReadOnlyMemory<char> Segment { get; } = segment;
 
         /// <summary>
         /// Gets literal child nodes keyed by case-insensitive segment value.
@@ -40,7 +35,7 @@ namespace NanoRoute.Internals
         /// </summary>
         public IList<RouteNode> ParsedChildren { get; } = new List<RouteNode>();
 
-        private RouteNode(RouteNode src, bool freeze): this(src.Segment)
+        private RouteNode(RouteNode src, bool freeze): this()
         {
             ParameterParser = src.ParameterParser;
 

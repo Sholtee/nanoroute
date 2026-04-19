@@ -125,12 +125,11 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_NOT_PREFIX));
         }
 
-        [TestCase("/path/{invalid-segment}/")]
-        public void CreatePrefix_ShouldThrowOnInvalidPattern(string pattern)
+        [TestCase("/path/{invalid-segment}/", 6)]
+        public void CreatePrefix_ShouldThrowOnInvalidPattern(string pattern, int expectedOffset)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.CreatePrefix(pattern))!;
-            Assert.That(ex.ParamName, Is.EqualTo("definition"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.CreatePrefix(pattern))!;
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [Test]
@@ -148,12 +147,11 @@ namespace NanoRoute.Tests
             Assert.That(result, Is.SameAs(_routerBuilder));
         }
 
-        [TestCase("/path/{invalid-segment}")]
-        public void AddHandler_ShouldThrowOnInvalidPattern(string pattern)
+        [TestCase("/path/{invalid-segment}", 6)]
+        public void AddHandler_ShouldThrowOnInvalidPattern(string pattern, int expectedOffset)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("definition"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PATTERN));
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [TestCase("/users/~denes")]
@@ -164,12 +162,14 @@ namespace NanoRoute.Tests
             Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
 
-        [TestCase("//")]
-        [TestCase("/path//to")]
-        [TestCase("/path//to/")]
-        public void RoutePatterns_ShouldNormalizeRepeatedSeparators(string pattern)
+        [TestCase("//", 1)]
+        [TestCase("/path//to", 6)]
+        [TestCase("/path//to/", 6)]
+        public void RoutePatterns_ShouldRejectRepeatedSeparators(string pattern, int expectedOffset)
         {
-            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [Test]

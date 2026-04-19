@@ -21,8 +21,17 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class QueryStringParserTests
     {
+        private static ValueParserDefinition ParseValue(string definition)
+        {
+            int offset = 0;
+            ValueParserDefinition parsed = ValueParserDefinition.Parse(definition, ref offset);
+
+            Assert.That(offset, Is.EqualTo(definition.Length));
+            return parsed;
+        }
+
         private static ValueParser CreateParser(ValueParserDelegate parse, object? arguments = null) =>
-            new(ValueParserDefinition.Create("str"), parse, arguments);
+            new(ParseValue("str"), parse, arguments);
 
         private static Dictionary<string, QueryParameterDefinition> CreateExpectedParameters(params (string Name, bool Optional, ValueParser Parser)[] parameters)
         {
