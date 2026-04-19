@@ -190,6 +190,8 @@ namespace NanoRoute.Internals
 
             DelimitedSegment nextSegment = NextSegment(frame.Segment);
 
+            TopFrame.Phase = MatchPhase.Done;
+
             PushFrame
             (
                 new Frame
@@ -207,7 +209,7 @@ namespace NanoRoute.Internals
 
         private async ValueTask<bool> TryPushParsedBranchAsync()
         {
-            // This copy captures only stable values used across awaits; ParsedChildIndex must still be read from TopFrame below.
+            // Capture stable values used across awaits; ParsedChildIndex must still be read from TopFrame below.
             Frame frame = TopFrame;
 
             if (!frame.Segment.HasValue)
@@ -233,12 +235,10 @@ namespace NanoRoute.Internals
                 if (!parsed.Success)
                     continue;
 
-                Dictionary<string, object?> extended = parsedChild.ParameterParser.Definition.ParameterName is { Length: > 0 } parameterName
-                    ? new(frame.Parameters, StringComparer.OrdinalIgnoreCase)
-                    {
-                        [parameterName] = parsed.Parsed
-                    }
-                    : frame.Parameters;
+                if (parsedChild.ParameterParser.Definition.ParameterName is { Length: > 0 } parameterName)
+                    frame.Parameters[parameterName] = parsed.Parsed;
+
+                TopFrame.Phase = MatchPhase.Done;
 
                 PushFrame
                 (
@@ -247,7 +247,7 @@ namespace NanoRoute.Internals
                         Node = parsedChild,
                         Verb = frame.Verb,
                         Segment = nextSegment,
-                        Parameters = extended,
+                        Parameters = frame.Parameters,
                         Phase = MatchPhase.EmitHandlers
                     }
                 );

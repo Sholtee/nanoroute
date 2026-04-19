@@ -64,7 +64,7 @@ namespace NanoRoute.Tests
             RouteMatchCursor cursor = CreateCursor(root, "/api/users");
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.ToString(), Is.EqualTo("RouteMatchCursor { Stack = [0: { Phase = SecondBranch, Segment = 'api', HandlerIndex = 0, ParsedChildIndex = 0 }, 1: { Phase = SecondBranch, Segment = 'users', HandlerIndex = 0, ParsedChildIndex = 0 }, 2: { Phase = EmitHandlers, Segment = '', HandlerIndex = 1, ParsedChildIndex = 0 }] }"));
+            Assert.That(cursor.ToString(), Is.EqualTo("RouteMatchCursor { Stack = [0: { Phase = Done, Segment = 'api', HandlerIndex = 0, ParsedChildIndex = 0 }, 1: { Phase = Done, Segment = 'users', HandlerIndex = 0, ParsedChildIndex = 0 }, 2: { Phase = EmitHandlers, Segment = '', HandlerIndex = 1, ParsedChildIndex = 0 }] }"));
         }
 
         [Test]
@@ -127,6 +127,8 @@ namespace NanoRoute.Tests
 
             if (matchingBehavior is MatchingBehavior.ParameterizedChildrenFirst)
                 Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue("value"));
+
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
         }
 
         [Test]
