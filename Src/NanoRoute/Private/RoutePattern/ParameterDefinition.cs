@@ -14,9 +14,10 @@ namespace NanoRoute.Internals
     {
         private const string
             IDENTIFIER = @"[A-Za-z_]\w*",
-            PARAMETER_NAME = $@"{IDENTIFIER}\??";
+            PARAMETER_NAME = $@"{IDENTIFIER}\??",
+            PARAMETER_NAME_PATTERN = $@"\G(?:(?<parameterName>{PARAMETER_NAME}):)?";
 
-        private static readonly Regex s_parameterName = new($@"\G(?:(?<parameterName>{PARAMETER_NAME}):)?");
+        private static readonly Regex s_parameterName = new(PARAMETER_NAME_PATTERN);
 
         public static ParameterDefinition Parse(string pattern, ref int offset)
         {

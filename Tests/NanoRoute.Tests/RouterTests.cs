@@ -310,8 +310,8 @@ namespace NanoRoute.Tests
                     parsed = null;
                     return false;
                 })
-                .AddHandler("GET", "api/users/{user_id:int}/", mockGetUser.Object)
-                .AddHandler("GET", "api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object)
+                .AddHandler("GET", "/api/users/{user_id:int}/", mockGetUser.Object)
+                .AddHandler("GET", "/api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
@@ -364,7 +364,7 @@ namespace NanoRoute.Tests
                     parsed = null;
                     return false;
                 })
-                .AddPrefix("api/users/{user_id:int}/", routerBuilder => routerBuilder
+                .AddPrefix("/api/users/{user_id:int}/", routerBuilder => routerBuilder
                     .AddHandler("GET", "/", mockGetUser.Object)
                     .AddHandler("GET", "/dosomething", mockDoSomethingWithUser.Object))
                 .CreateRouter();
@@ -393,7 +393,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddValueParser("slug", (SyncValueParserDelegate) ParseSlug)
-                .AddHandler("GET", "users/{user_id:int}/{slug}/cica", async (context, next) =>
+                .AddHandler("GET", "/users/{user_id:int}/{slug}/cica", async (context, next) =>
                 {
                     paramz = context.Parameters;
                     return s_response;
@@ -417,7 +417,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder.AddHandler("POST", "path/to/somewhere", mockHandler.Object).CreateRouter();
+            TestRouter router = _routerBuilder.AddHandler("POST", "/path/to/somewhere", mockHandler.Object).CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
             _request.Method = HttpMethod.Get;
@@ -441,7 +441,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder.AddHandler(["GET", "POST"], "path/to/somewhere", mockHandler.Object).CreateRouter();
+            TestRouter router = _routerBuilder.AddHandler(["GET", "POST"], "/path/to/somewhere", mockHandler.Object).CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
             _request.Method = HttpMethod.Get;
@@ -464,7 +464,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("path/to/somewhere", mockHandler.Object)
+                .AddHandler("/path/to/somewhere", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
@@ -486,7 +486,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "path/to/SOMEWHERE", mockHandler.Object)
+                .AddHandler("GET", "/path/to/SOMEWHERE", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/PATH/to/somewhere");
