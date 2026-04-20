@@ -161,7 +161,7 @@ namespace NanoRoute.Internals
 
             match = null!;
 
-            if (!frame.Node.HandlerRegistrations.TryGetValue(frame.Verb, out List<HandlerRegistration>? handlers))
+            if (!frame.Node.HandlerRegistrations.TryGetValue(frame.Verb, out IList<HandlerRegistration>? handlers))
                 return false;
 
             while (frame.HandlerIndex < handlers.Count)

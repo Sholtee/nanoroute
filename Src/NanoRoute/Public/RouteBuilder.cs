@@ -231,7 +231,7 @@ namespace NanoRoute
 
             RouteNode target = FindNode(pattern);
 
-            if (!target.HandlerRegistrations.TryGetValue(v, out List<HandlerRegistration> handlerRegistrations))
+            if (!target.HandlerRegistrations.TryGetValue(v, out IList<HandlerRegistration> handlerRegistrations))
             {
                 handlerRegistrations = [];
                 target.HandlerRegistrations.Add(v, handlerRegistrations);
@@ -339,7 +339,7 @@ namespace NanoRoute
 
                 static void Walk(RouteNode node, HashSet<string> patterns)
                 {
-                    foreach (KeyValuePair<HttpVerb, List<HandlerRegistration>> handlerRegistrations in node.HandlerRegistrations)
+                    foreach (KeyValuePair<HttpVerb, IList<HandlerRegistration>> handlerRegistrations in node.HandlerRegistrations)
                         foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
                             patterns.Add($"[{handlerRegistrations.Key}] {handlerRegistration.Pattern}");
  
