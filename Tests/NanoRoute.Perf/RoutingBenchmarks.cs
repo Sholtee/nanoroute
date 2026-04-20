@@ -16,6 +16,14 @@ namespace NanoRoute.Perf
     [MemoryDiagnoser]
     public class RoutingBenchmarks
     {
+        public enum ScenarioKind
+        {
+            SingleLiteral,
+            SingleParsed,
+            ComplexLiteral,
+            ComplexParsed
+        }
+
         private static readonly HttpResponseMessage s_response = new(HttpStatusCode.OK);
 
         private static readonly IServiceProvider s_services = new NoopServiceProvider();
@@ -24,8 +32,8 @@ namespace NanoRoute.Perf
 
         private HttpRequestMessage _request = null!;
 
-        [Params("single-literal", "single-parsed", "complex-literal", "complex-parsed")]
-        public string Scenario { get; set; } = string.Empty;
+        [Params(ScenarioKind.SingleLiteral, ScenarioKind.SingleParsed, ScenarioKind.ComplexLiteral, ScenarioKind.ComplexParsed)]
+        public ScenarioKind Scenario { get; set; }
 
         [GlobalSetup]
         public void Setup()
@@ -35,24 +43,24 @@ namespace NanoRoute.Perf
 
             switch (Scenario)
             {
-                case "single-literal":
+                case ScenarioKind.SingleLiteral:
                     builder.AddHandler("GET", "/health", static (_, _) => Task.FromResult(s_response));
                     _request = CreateRequest("/health");
                     break;
 
-                case "single-parsed":
+                case ScenarioKind.SingleParsed:
                     builder
                         .AddIntParser()
                         .AddHandler("GET", "/{id:int}", static (_, _) => Task.FromResult(s_response));
                     _request = CreateRequest("/42");
                     break;
 
-                case "complex-literal":
+                case ScenarioKind.ComplexLiteral:
                     builder.AddHandler("GET", "/api/v1/users/42/orders/7/items/3/details", static (_, _) => Task.FromResult(s_response));
                     _request = CreateRequest("/api/v1/users/42/orders/7/items/3/details");
                     break;
 
-                case "complex-parsed":
+                case ScenarioKind.ComplexParsed:
                     builder
                         .AddDefaultValueParsers()
                         .AddHandler("GET", "/api/v1/users/{userId:int}/orders/{orderId:int}/items/{itemId:int}/details", static (_, _) => Task.FromResult(s_response));
