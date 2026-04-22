@@ -23,8 +23,8 @@ namespace NanoRoute.Internals
         {
             if (s_literalSegment.Match(pattern, offset) is not { Success: true, Length: int length })
                 throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
-    
-            ReadOnlyMemory<char> segment = pattern.AsMemory(offset, length);
+
+            ReadOnlyMemory<char> segment = UrlUtils.DecodeUrl(pattern.AsMemory(offset, length), UrlDecodeMode.Path);
 
             offset += length - 1;
             return segment;

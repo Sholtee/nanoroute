@@ -18,18 +18,23 @@ namespace NanoRoute.Internals
     {
         public static async ValueTask Parse(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters)
         {
+            ReadOnlyMemory<char> query = context.Request.RequestUri.Query.AsMemory(context.Request.RequestUri.Query.StartsWith(['?']) ? 1 : 0);
+            char[] decodedBuffer = new char[query.Length];
+            int nextDecoded = 0;
+
             // Track only query parameters seen during this parse so required checks and duplicate detection
             // will not be confused by values that were already present in context.Parameters.
             bool[] visited = new bool[expectedParameters.Count];
 
-            for (DelimitedSegment parameter = new(context.Request.RequestUri.Query.AsMemory(context.Request.RequestUri.Query.StartsWith(['?']) ? 1 : 0), '&'); parameter.MoveNext();)
+            for (DelimitedSegment parameter = new(query, '&'); parameter.MoveNext();)
             {
                 int separatorIndex = parameter.Current.Span.IndexOf('=');
                 if (separatorIndex <= 0)
                     ThrowBadRequest(null);
 
-                // Uri.Query already normalizes query keys enough for descriptor matching.
-                if (!expectedParameters.TryGetValue(parameter.Current.Slice(0, separatorIndex), out ParameterParser? expectedParameter))
+                ReadOnlyMemory<char> parameterName = Decode(parameter.Current.Slice(0, separatorIndex), decodedBuffer, ref nextDecoded);
+
+                if (!expectedParameters.TryGetValue(parameterName, out ParameterParser? expectedParameter))
                     continue;
 
                 ParameterDefinition parameterDefinition = expectedParameter!.Definition;
@@ -43,7 +48,7 @@ namespace NanoRoute.Internals
                 (
                     new ValueParserContext
                     {
-                        Segment = parameter.Current.Slice(separatorIndex + 1),
+                        Segment = Decode(parameter.Current.Slice(separatorIndex + 1), decodedBuffer, ref nextDecoded),
                         Services = context.Services,
                         Arguments = expectedParameter.Arguments,
                         Cancellation = context.Cancellation
@@ -64,6 +69,17 @@ namespace NanoRoute.Internals
                 if (!parameterDefinition.IsOptional && !visited[parameterDefinition.Index])
                     ThrowBadRequest(Resources.ERR_QUERY_MISSING_PARAMETER, parameterDefinition.ParameterName!);
             }
+        }
+
+        private static ReadOnlyMemory<char> Decode(ReadOnlyMemory<char> source, char[] buffer, ref int nextDecoded)
+        {
+            if (!UrlUtils.TryDecodeUrl(source.Span, buffer.AsSpan(nextDecoded), UrlDecodeMode.Form, out int charsWritten))
+                ThrowBadRequest(Resources.ERR_DECODING_FAILED);
+
+            ReadOnlyMemory<char> result = buffer.AsMemory(nextDecoded, charsWritten);
+            nextDecoded += charsWritten;
+
+            return result;
         }
 
         [DoesNotReturn]

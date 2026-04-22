@@ -16,7 +16,8 @@ namespace NanoRoute.Tests
     internal sealed class LiteralSegmentDefinitionTests
     {
         [TestCase("/items/details", 1, "items", 5)]
-        [TestCase("alpha%20beta/cica", 0, "alpha%20beta", 11)]
+        [TestCase("alpha%20beta/cica", 0, "alpha beta", 11)]
+        [TestCase("alpha+beta/cica", 0, "alpha+beta", 9)]
         public void Parse_ShouldConsumeLiteralSegments(string pattern, int offset, string expectedSegment, int expectedNewOffset)
         {
             ReadOnlyMemory<char> segment = LiteralSegmentDefinition.Parse(pattern, ref offset);

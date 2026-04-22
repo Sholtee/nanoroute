@@ -125,7 +125,7 @@ namespace NanoRoute
             linked.CancelAfter(Timeout);
             cancellation = linked.Token;
 
-            RouteMatchCursor matches = new
+            using RouteMatchCursor matches = new
             (
                 _root,
                 verb,

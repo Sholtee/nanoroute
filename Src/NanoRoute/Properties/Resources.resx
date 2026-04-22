@@ -171,4 +171,7 @@
   <data name="ERR_INVALID_PARSERS_ARGS" xml:space="preserve">
     <value>Invalid parser argument(s).</value>
   </data>
+  <data name="ERR_DECODING_FAILED" xml:space="preserve">
+    <value>Decoding failed.</value>
+  </data>
 </root>

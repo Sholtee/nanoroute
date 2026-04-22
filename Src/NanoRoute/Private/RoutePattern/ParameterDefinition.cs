@@ -13,8 +13,7 @@ namespace NanoRoute.Internals
     internal readonly struct ParameterDefinition
     {
         private const string
-            ASCII_CHARS = @"[a-zA-Z_0-9]+",
-            PARAMETER_NAME = $@"{ASCII_CHARS}\??",
+            PARAMETER_NAME = $@"\w+\??",
             PARAMETER_NAME_PATTERN = $@"\G(?:(?<parameterName>{PARAMETER_NAME}):)?";
 
         private static readonly Regex s_parameterName = new(PARAMETER_NAME_PATTERN, RuntimeFeature.IsDynamicCodeSupported ? RegexOptions.Compiled : RegexOptions.None);

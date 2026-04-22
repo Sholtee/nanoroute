@@ -48,7 +48,7 @@ namespace NanoRoute
     /// <summary>
     /// Represents a synchronous value parser.
     /// </summary>
-    /// <param name="segment">The raw path segment extracted from the request URI.</param>
+    /// <param name="segment">The decoded segment extracted from the request URI.</param>
     /// <param name="arguments">
     /// The parser-specific argument payload produced by <see cref="BindArgumentsDelegate"/> during route registration,
     /// or <see langword="null"/> when the parser was registered without arguments.
@@ -84,8 +84,7 @@ namespace NanoRoute
     /// Tries to parse a single route segment into a value that can optionally be stored in <see cref="RequestContext.Parameters"/>.
     /// </summary>
     /// <param name="context">
-    /// The parser context, including the raw route segment, request services, and the linked pipeline cancellation token.
-    /// Parsers that need percent-decoded text can use <see cref="ValueParserContext.DecodedSegment"/>.
+    /// The parser context, including the decoded route segment, request services, and the linked pipeline cancellation token.
     /// </param>
     /// <returns>A <see cref="ValueParseResult"/> that describes whether the segment matched and what value it produced.</returns>
     /// <example>

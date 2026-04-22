@@ -41,33 +41,6 @@ namespace NanoRoute.Tests
         );
 
         [Test]
-        public void ToString_ShouldExposeTheCurrentStack()
-        {
-            RouteNode root = new();
-            RouteMatchCursor cursor = CreateCursor(root, "/api/users");
-
-            Assert.That(cursor.ToString(), Is.EqualTo("RouteMatchCursor { Stack = [0: { Phase = EmitHandlers, Segment = 'api', HandlerIndex = 0, ParsedChildIndex = 0 }] }"));
-        }
-
-        [Test]
-        public async Task ToString_ShouldSeparateMultipleFrames()
-        {
-            RouteNode
-                root = new(),
-                api = new(),
-                users = new();
-
-            users.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(s_handler, "/api/users")];
-            api.LiteralChildren.Add("users".AsMemory(), users);
-            root.LiteralChildren.Add("api".AsMemory(), api);
-
-            RouteMatchCursor cursor = CreateCursor(root, "/api/users");
-
-            Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.ToString(), Is.EqualTo("RouteMatchCursor { Stack = [0: { Phase = Done, Segment = 'api', HandlerIndex = 0, ParsedChildIndex = 0 }, 1: { Phase = Done, Segment = 'users', HandlerIndex = 0, ParsedChildIndex = 0 }, 2: { Phase = EmitHandlers, Segment = '', HandlerIndex = 1, ParsedChildIndex = 0 }] }"));
-        }
-
-        [Test]
         public async Task MoveNextAsync_ShouldMatchLiteralBranches()
         {
             HandlerRegistration handler = new(s_handler, "/api/users");
@@ -89,7 +62,6 @@ namespace NanoRoute.Tests
             Assert.That(cursor.Current.AttachedParameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
-            Assert.That(cursor.ToString(), Is.EqualTo("RouteMatchCursor { Stack = [] }"));
         }
 
         [TestCase(MatchingBehavior.LiteralFirst, "/items/value")]

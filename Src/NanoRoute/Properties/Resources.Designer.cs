@@ -79,6 +79,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Decoding failed..
+        /// </summary>
+        internal static string ERR_DECODING_FAILED {
+            get {
+                return ResourceManager.GetString("ERR_DECODING_FAILED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal server error..
         /// </summary>
         internal static string ERR_INERNAL_ERROR {

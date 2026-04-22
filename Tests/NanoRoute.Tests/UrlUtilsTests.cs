@@ -14,11 +14,11 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class UrlUtilsTests
     {
-        private static string Decode(string source)
+        private static string Decode(string source, UrlDecodeMode mode = UrlDecodeMode.Form)
         {
             char[] buffer = new char[source.Length];
 
-            Assert.That(UrlUtils.TryDecodeUrl(source, buffer, out int charsWritten), Is.True);
+            Assert.That(UrlUtils.TryDecodeUrl(source, buffer, mode, out int charsWritten), Is.True);
             return new string(buffer, 0, charsWritten);
         }
 
@@ -32,6 +32,12 @@ namespace NanoRoute.Tests
         public void TryDecodeUrl_ShouldDecodeValidInputs(string source, string expected)
         {
             Assert.That(Decode(source), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void TryDecodeUrl_ShouldPreservePlusInPathMode()
+        {
+            Assert.That(Decode("hello+world%20again", UrlDecodeMode.Path), Is.EqualTo("hello+world again"));
         }
 
         [TestCase("%")]
@@ -50,7 +56,7 @@ namespace NanoRoute.Tests
         {
             char[] buffer = new char[source.Length];
 
-            Assert.That(UrlUtils.TryDecodeUrl(source, buffer, out _), Is.False);
+            Assert.That(UrlUtils.TryDecodeUrl(source, buffer, UrlDecodeMode.Form, out _), Is.False);
         }
 
         [Test]
@@ -58,7 +64,7 @@ namespace NanoRoute.Tests
         {
             Span<char> buffer = stackalloc char[2];
 
-            Assert.That(UrlUtils.TryDecodeUrl("abcd", buffer, out _), Is.False);
+            Assert.That(UrlUtils.TryDecodeUrl("abcd", buffer, UrlDecodeMode.Form, out _), Is.False);
         }
     }
 }

@@ -122,7 +122,6 @@ NanoRoute.ValueParserContext.Arguments.get -> object?
 NanoRoute.ValueParserContext.Arguments.init -> void
 NanoRoute.ValueParserContext.Cancellation.get -> System.Threading.CancellationToken
 NanoRoute.ValueParserContext.Cancellation.init -> void
-NanoRoute.ValueParserContext.DecodedSegment.get -> System.ReadOnlyMemory<char>
 NanoRoute.ValueParserContext.Segment.get -> System.ReadOnlyMemory<char>
 NanoRoute.ValueParserContext.Segment.init -> void
 NanoRoute.ValueParserContext.Services.get -> System.IServiceProvider!

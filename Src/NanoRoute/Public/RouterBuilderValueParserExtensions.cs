@@ -271,17 +271,15 @@ namespace NanoRoute
                     },
                     tryParseDelegate: static (ValueParserContext context) =>
                     {
-                        ReadOnlyMemory<char> decodedSegment = context.DecodedSegment;
-
                         StringParserArguments args = (StringParserArguments) context.Arguments!;
 
-                        if (decodedSegment.Length < args.Min)
+                        if (context.Segment.Length < args.Min)
                             return s_false;
 
-                        if (decodedSegment.Length > args.Max)
+                        if (context.Segment.Length > args.Max)
                             return s_false;
 
-                        string segmentStr = decodedSegment.ToString();
+                        string segmentStr = context.Segment.ToString();
 
                         if (args.Pattern?.IsMatch(segmentStr) is false)
                             return s_false;

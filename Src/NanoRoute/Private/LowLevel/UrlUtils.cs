@@ -8,11 +8,29 @@ using System.Text;
 
 namespace NanoRoute.Internals
 {
+    using Properties;
+
+    internal enum UrlDecodeMode
+    {
+        Path,
+        Form
+    }
+
     internal static class UrlUtils
     {
         private static readonly Encoding s_utf8 = new UTF8Encoding(false, true);
 
-        public static bool TryDecodeUrl(ReadOnlySpan<char> source, Span<char> destination, out int charsWritten)
+        public static ReadOnlyMemory<char> DecodeUrl(ReadOnlyMemory<char> source, UrlDecodeMode mode)
+        {
+            char[] result = new char[source.Length];
+
+            if (!TryDecodeUrl(source.Span, result.AsSpan(), mode, out int charsWritten))
+                throw new InvalidOperationException(Resources.ERR_DECODING_FAILED);
+
+            return result.AsMemory(0, charsWritten);
+        }
+
+        public static bool TryDecodeUrl(ReadOnlySpan<char> source, Span<char> destination, UrlDecodeMode mode, out int charsWritten)
         {
             charsWritten = 0;
 
@@ -23,7 +41,7 @@ namespace NanoRoute.Internals
 
                 switch (source[i])
                 {
-                    case '+':
+                    case '+' when mode is UrlDecodeMode.Form:
                         destination[charsWritten++] = ' ';
                         i++;
                         break;
@@ -34,7 +52,7 @@ namespace NanoRoute.Internals
                         break;
 
                     default:
-                        if (!TryCopyLiteralSegment(source, ref i, destination, ref charsWritten))
+                        if (!TryCopyLiteralSegment(source, mode, ref i, destination, ref charsWritten))
                             return false;
                         break;
                 }
@@ -43,11 +61,11 @@ namespace NanoRoute.Internals
             return true;
         }
 
-        private static bool TryCopyLiteralSegment(ReadOnlySpan<char> source, ref int offset, Span<char> destination, ref int charsWritten)
+        private static bool TryCopyLiteralSegment(ReadOnlySpan<char> source, UrlDecodeMode mode, ref int offset, Span<char> destination, ref int charsWritten)
         {
             ReadOnlySpan<char> segment = source.Slice(offset);
 
-            int special = segment.IndexOfAny('%', '+');
+            int special = mode is UrlDecodeMode.Form ? segment.IndexOfAny('%', '+') : segment.IndexOf('%');
             if (special > 0)
                 segment = segment.Slice(0, special);
 
