@@ -18,7 +18,7 @@ namespace NanoRoute.Internals
     {
         public static async ValueTask Parse(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters)
         {
-            ReadOnlyMemory<char> query = context.Request.RequestUri.Query.AsMemory(context.Request.RequestUri.Query.StartsWith(['?']) ? 1 : 0);
+            ReadOnlyMemory<char> query = GetRawQuery(context.Request.RequestUri);
             char[] decodedBuffer = new char[query.Length];
             int nextDecoded = 0;
 
@@ -69,6 +69,20 @@ namespace NanoRoute.Internals
                 if (!parameterDefinition.IsOptional && !visited[parameterDefinition.Index])
                     ThrowBadRequest(Resources.ERR_QUERY_MISSING_PARAMETER, parameterDefinition.ParameterName!);
             }
+        }
+
+        private static ReadOnlyMemory<char> GetRawQuery(Uri uri)
+        {
+            ReadOnlyMemory<char> raw = uri.OriginalString.AsMemory();
+
+            int fragmentIndex = raw.Span.IndexOf('#');
+            if (fragmentIndex >= 0)
+                raw = raw.Slice(0, fragmentIndex);
+
+            int queryIndex = raw.Span.IndexOf('?');
+            return queryIndex >= 0
+                ? raw.Slice(queryIndex + 1)
+                : default;
         }
 
         private static ReadOnlyMemory<char> Decode(ReadOnlyMemory<char> source, char[] buffer, ref int nextDecoded)
