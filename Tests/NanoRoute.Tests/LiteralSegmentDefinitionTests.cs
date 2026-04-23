@@ -26,10 +26,12 @@ namespace NanoRoute.Tests
             Assert.That(offset, Is.EqualTo(expectedNewOffset));
         }
 
-        [TestCase("{value:int}", 0)]
-        [TestCase("%2X", 0)]
-        public void Parse_ShouldRejectWhenNoLiteralStartsAtOffset(string pattern, int offset)
+        [TestCase("{value:int}")]
+        [TestCase("&query")]
+        [TestCase("%2X")]
+        public void Parse_ShouldRejectNoLiterals(string pattern)
         {
+            int offset = 0;
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => LiteralSegmentDefinition.Parse(pattern, ref offset))!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset)));

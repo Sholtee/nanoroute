@@ -44,6 +44,7 @@ namespace NanoRoute.Tests
         }
 
         [TestCase("{id:int}", "id", false)]
+        [TestCase("{9id:int}", "9id", false)]
         [TestCase("{id?:int}", "id", true)]
         [TestCase("{id:int()}", "id", false)]
         [TestCase("{int}", null, false)]
@@ -61,7 +62,6 @@ namespace NanoRoute.Tests
         [TestCase("{?:int}")]
         [TestCase("{:int}")]
         [TestCase("{id:invalid-segment}")]
-        [TestCase("{9bad:int}")]
         [TestCase("{id??:int}")]
         [TestCase("{id:9bad}")]
         [TestCase("literal")]
