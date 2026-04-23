@@ -49,7 +49,7 @@ namespace NanoRoute.Perf
         [Benchmark]
         public int Decode()
         {
-            if (!UrlUtils.TryDecodeUrl(_source, _buffer, out int charsWritten))
+            if (!UrlUtils.TryDecodeUrl(_source, _buffer, UrlDecodeMode.Form, out int charsWritten))
                 throw new InvalidOperationException("Could not decode benchmark input.");
 
             return charsWritten;
