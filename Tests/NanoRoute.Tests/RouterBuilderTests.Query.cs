@@ -24,11 +24,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddPrefix("/items/", items => items
-                    .AddQueryBindings("GET", "", new Dictionary<string, string>
-                    {
-                        ["filter"] = "str(min=3)",
-                        ["page"] = "?int(min=1)"
-                    })
+                    .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}")
                     .AddHandler("GET", "", async (context, _) => new HttpResponseMessage
                     {
                         Content = new StringContent($"{context.Parameters["filter"]}:{context.Parameters["page"]}")
@@ -54,10 +50,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddQueryBindings(new Dictionary<string, string>
-                {
-                    ["filter"] = "?str(min=3)"
-                })
+                .AddQueryBindings("{filter?:str(min=3)}")
                 .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
                 {
                     Content = new StringContent(context.Parameters.ContainsKey("filter") ? "present" : "missing")
@@ -84,10 +77,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddPrefix("/items/", items => items
-                    .AddQueryBindings("GET", "", new Dictionary<string, string>
-                    {
-                        ["filter"] = "str(min=3)"
-                    })
+                    .AddQueryBindings("GET", "", "{filter:str(min=3)}")
                     .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
@@ -111,46 +101,42 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddDefaultValueParsers();
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddQueryBindings
-            (
-                new Dictionary<string, string>
-                {
-                    ["filter-value"] = "str"
-                }
-            ))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddQueryBindings("{filter-value:str}"))!;
 
-            Assert.That(ex.ParamName, Is.EqualTo("bindings"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_QUERY_BINDINGS));
-        }
-
-        [Test]
-        public void AddQueryBindings_ShouldThrowOnNullBindingValues()
-        {
-            _routerBuilder.AddDefaultValueParsers();
-
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings
-            (
-                new Dictionary<string, string?>
-                {
-                    ["filter"] = null
-                }!
-            ))!;
-
-            Assert.That(ex.ParamName, Is.EqualTo("binding.Value"));
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, 0)));
         }
 
         [Test]
         public void AddQueryBindings_ShouldThrowOnMissingValueParsers()
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddQueryBindings
-            (
-                new Dictionary<string, string>
-                {
-                    ["filter"] = "missing"
-                }
-            ))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddQueryBindings("{filter:missing}"))!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, "missing")));
+        }
+
+        [Test]
+        public async Task AddQueryBindings_ShouldMatchDecodedQueryParameterNames()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddQueryBindings("{query_filter:str(min=3)}")
+                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                {
+                    Content = new StringContent((string) context.Parameters["query_filter"]!)
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("https://test.test/items?query%5Ffilter=spikey")
+                },
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
         }
 
         [Test]
@@ -158,10 +144,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddQueryBindings("GET", "/items", new Dictionary<string, string>
-                {
-                    ["filter"] = "str(min=3)"
-                })
+                .AddQueryBindings("GET", "/items", "{filter:str(min=3)}")
                 .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
@@ -194,31 +177,31 @@ namespace NanoRoute.Tests
         [Test]
         public void QueryHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddQueryBindings(new Dictionary<string, string>()))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddQueryBindings(""))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IReadOnlyDictionary<string, string>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!, new Dictionary<string, string>()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!, ""))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("/", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IEnumerable<string>) null!, new Dictionary<string, string>()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IEnumerable<string>) null!, ""))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IEnumerable<string>) null!, "/", new Dictionary<string, string>()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IEnumerable<string>) null!, "/", ""))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!, "/", new Dictionary<string, string>()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!, "/", ""))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", null!, new Dictionary<string, string>()))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", null!, ""))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", "/", (IReadOnlyDictionary<string, string>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", "/", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
         });
     }
