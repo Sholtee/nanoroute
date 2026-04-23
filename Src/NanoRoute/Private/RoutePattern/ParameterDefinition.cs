@@ -45,11 +45,11 @@ namespace NanoRoute.Internals
             throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
         }
 
-        public ValueParserDefinition ValueParser { get; private init; }
+        public ValueParserDefinition ValueParser { get; init; }
 
-        public string? ParameterName { get; private init; }
+        public string? ParameterName { get; init; }
 
-        public bool IsOptional { get; private init; }
+        public bool IsOptional { get; init; }
 
         public int Index { get; init; }
     }

@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,27 +21,7 @@ namespace NanoRoute.Perf
     {
         private static readonly IServiceProvider s_services = new NoopServiceProvider();
 
-        private static readonly ValueParserDefinition s_valueParserDefinition = ParseValue("str");
-
-        private static readonly ValueParser s_parser = new
-        (
-            s_valueParserDefinition,
-            static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.DecodedSegment.ToString())),
-            Arguments: null
-        );
-
-        private static ValueParserDefinition ParseValue(string definition)
-        {
-            int offset = 0;
-            ValueParserDefinition result = ValueParserDefinition.Parse(definition, ref offset);
-
-            if (offset != definition.Length)
-                throw new InvalidOperationException();
-
-            return result;
-        }
-
-        private static readonly IReadOnlyDictionary<string, QueryParameterDefinition>
+        private static readonly IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>
             s_allExpected = CreateExpectedParameters
             (
                 ("filter", false),
@@ -77,32 +58,49 @@ namespace NanoRoute.Perf
             QueryStringParser.Parse(CreateContext(s_undeclaredPresentUri), s_optionalExpected);
 
         [Benchmark]
-        public async ValueTask<bool> Parse_RequiredParameterMissing()
+        public async ValueTask Parse_RequiredParameterMissing()
         {
             try
             {
                 await QueryStringParser.Parse(CreateContext(s_missingRequiredUri), s_missingRequiredExpected).ConfigureAwait(false);
-                return false;
             }
             catch (HttpRequestException)
             {
-                return true;
             }
         }
 
-        private static Dictionary<string, QueryParameterDefinition> CreateExpectedParameters(params (string Name, bool Optional)[] parameters)
+        private static Dictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(params (string Name, bool Optional)[] parameters)
         {
-            Dictionary<string, QueryParameterDefinition> result = new(StringComparer.OrdinalIgnoreCase);
+            Dictionary<ReadOnlyMemory<char>, ParameterParser> result = new(ReadOnlyMemoryCharComparer.Instance);
+            int offset = 0;
+            ValueParserDefinition stringParser = ValueParserDefinition.Parse("str", ref offset);
 
             for (int i = 0; i < parameters.Length; i++)
             {
-                QueryParameterDefinition parameter = new(parameters[i].Name, i, parameters[i].Optional, s_parser);
-                result.Add(parameter.Name, parameter);
+                ParameterDefinition definition = new()
+                {
+                    ValueParser = stringParser,
+                    ParameterName = parameters[i].Name,
+                    IsOptional = parameters[i].Optional,
+                    Index = i
+                };
+
+                result.Add
+                (
+                    definition.ParameterName!.AsMemory(),
+                    new ParameterParser
+                    (
+                        definition,
+                        static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.DecodedSegment.ToString())),
+                        Arguments: null
+                    )
+                );
             }
 
             return result;
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "The request has no body to dispose")]
         private static RequestContext CreateContext(Uri uri) => new
         (
             new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
