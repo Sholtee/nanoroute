@@ -11,7 +11,7 @@ namespace NanoRoute
     /// <summary>
     /// Carries the current route segment and request-scoped services into an asynchronous value parser.
     /// </summary>
-    public readonly record struct ValueParserContext
+    public readonly struct ValueParserContext
     {
         /// <summary>
         /// Gets the decoded route segment.

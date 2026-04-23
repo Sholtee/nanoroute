@@ -92,9 +92,9 @@ namespace NanoRoute.Internals
             return result;
         }
 
-        public string Name { get; private init; }
+        public required string Name { get; init; }
 
-        public IReadOnlyDictionary<string, string> RawArguments { get; private init; }
+        public required IReadOnlyDictionary<string, string> RawArguments { get; init; }
 
         public override bool Equals(object other)
         {

@@ -72,14 +72,16 @@ namespace NanoRoute.Perf
         private static Dictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(params (string Name, bool Optional)[] parameters)
         {
             Dictionary<ReadOnlyMemory<char>, ParameterParser> result = new(ReadOnlyMemoryCharComparer.Instance);
-            int offset = 0;
-            ValueParserDefinition stringParser = ValueParserDefinition.Parse("str", ref offset);
 
             for (int i = 0; i < parameters.Length; i++)
             {
                 ParameterDefinition definition = new()
                 {
-                    ValueParser = stringParser,
+                    ValueParser = new()
+                    {
+                        Name = "str",
+                        RawArguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    },
                     ParameterName = parameters[i].Name,
                     IsOptional = parameters[i].Optional,
                     Index = i
