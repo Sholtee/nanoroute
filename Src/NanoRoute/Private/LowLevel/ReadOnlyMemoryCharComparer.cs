@@ -16,15 +16,15 @@ namespace NanoRoute.Internals
 
         public bool Equals(ReadOnlyMemory<char> x, ReadOnlyMemory<char> y)
         {
-            ReadOnlySpan<char>
-                left = x.Span,
-                right = y.Span;
-
-            if (left.Length != right.Length)
+            if (x.Length != y.Length)
                 return false;
 
-            for (int i = 0; i < left.Length; i++)
-                if (CharToUpper(left[i]) != CharToUpper(right[i]))
+            ref char
+                leftRef = ref MemoryMarshal.GetReference(x.Span),
+                rightRef = ref MemoryMarshal.GetReference(y.Span);
+
+            for (int i = 0; i < y.Length; i++)
+                if (CharToUpper(Unsafe.Add(ref leftRef, i)) != CharToUpper(Unsafe.Add(ref rightRef, i)))
                     return false;
 
             return true;
@@ -32,9 +32,7 @@ namespace NanoRoute.Internals
 
         public int GetHashCode(ReadOnlyMemory<char> obj)
         {
-            ReadOnlySpan<char> input = obj.Span;
-
-            Span<char> buffer = stackalloc char[4];
+            ref char inputRef = ref MemoryMarshal.GetReference(obj.Span);
 
             // https://github.com/bryc/code/blob/master/jshash/hashes/murmurhash3.js
             unchecked
@@ -45,35 +43,39 @@ namespace NanoRoute.Internals
 
                 for (int b = obj.Length & -4; i < b; i += 4)
                 {
-                    ReadOnlySpan<char> block = BlockToUpper(input.Slice(i, 4), buffer);
+                    ulong
+                        block = Unsafe.As<char, ulong>(ref Unsafe.Add(ref inputRef, i)),
+                        upperBlock = BlockToUpper(block);
 
-                    k = (uint) (block[3] << 24 | block[2] << 16 | block[1] << 8 | block[0]);
+                    ref char upperBlockRef = ref Unsafe.As<ulong, char>(ref upperBlock);
+
+                    k = (uint) (Unsafe.Add(ref upperBlockRef, 3) << 24 | Unsafe.Add(ref upperBlockRef, 2) << 16 | Unsafe.Add(ref upperBlockRef, 1) << 8 | upperBlockRef);
                     k *= 3432918353; k = k << 15 | k >> 17;
                     h ^= k * 461845907; h = h << 13 | h >> 19;
                     h = h * 5 + 3864292196;
                 }
 
-                int m = input.Length & 3;
+                int m = obj.Length & 3;
                 if (m > 0)
                 {
                     k = 0;
                     switch (m)
                     {
                         case 3:
-                            k ^= (uint) CharToUpper(input[i + 2]) << 16;
+                            k ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i + 2)) << 16;
                             goto case 2;
                         case 2:
-                            k ^= (uint) CharToUpper(input[i + 1]) << 8;
+                            k ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i + 1)) << 8;
                             goto case 1;
                         case 1:
-                            k ^= (uint) CharToUpper(input[i]);
+                            k ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i));
                             k *= 3432918353; k = k << 15 | k >> 17;
                             h ^= k * 461845907;
                             break;
                     }
                 }
 
-                h ^= (uint) input.Length;
+                h ^= (uint) obj.Length;
 
                 h ^= h >> 16; h *= 2246822507;
                 h ^= h >> 13; h *= 3266489909;
@@ -83,28 +85,30 @@ namespace NanoRoute.Internals
             }
 
             // https://github.com/dotnet/runtime/blob/ecc8cb5bc0411e0fb0549230f70dfe8ab302c65c/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf16Utility.cs#L98
-            static ReadOnlySpan<char> BlockToUpper(ReadOnlySpan<char> chars, Span<char> buffer)
+            static ulong BlockToUpper(ulong input)
             {
-                ulong l = Unsafe.As<char, ulong>(ref MemoryMarshal.GetReference(chars));
-
-                if ((l & ~0x007F_007F_007F_007Ful) is 0)
+                if ((input & ~0x007F_007F_007F_007Ful) is 0)
                 {
                     // All the 4 chars are ASCII
                     ulong
-                        lowerIndicator = l + 0x0080_0080_0080_0080ul - 0x0061_0061_0061_0061ul,
-                        upperIndicator = l + 0x0080_0080_0080_0080ul - 0x007B_007B_007B_007Bul,
+                        lowerIndicator = input + 0x0080_0080_0080_0080ul - 0x0061_0061_0061_0061ul,
+                        upperIndicator = input + 0x0080_0080_0080_0080ul - 0x007B_007B_007B_007Bul,
                         combinedIndicator = lowerIndicator ^ upperIndicator,
                         mask = (combinedIndicator & 0x0080_0080_0080_0080ul) >> 2;
 
-                    Unsafe.As<char, ulong>(ref MemoryMarshal.GetReference(buffer)) = l ^ mask;
+                    return input ^ mask;
                 }
                 else
-                    // Slow like hell
-                    chars.ToUpperInvariant(buffer);
+                {
+                    ref char inputRef = ref Unsafe.As<ulong, char>(ref input);
 
-                return buffer;
+                    return
+                        (ulong) CharToUpper(inputRef) |
+                        ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 1)) << 16) |
+                        ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 2)) << 32) |
+                        ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 3)) << 48);
+                }
             }
-
         }
 
         private static char CharToUpper(char chr)

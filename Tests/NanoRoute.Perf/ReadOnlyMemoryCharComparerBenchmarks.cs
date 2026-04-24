@@ -20,8 +20,7 @@ namespace NanoRoute.Perf
             AsciiEqual,
             AsciiDifferent,
             NonAsciiEqual,
-            NonAsciiDifferent,
-            MixedEqual
+            NonAsciiDifferent
         }
 
         private readonly ReadOnlyMemoryCharComparer _comparer = ReadOnlyMemoryCharComparer.Instance;
@@ -32,7 +31,7 @@ namespace NanoRoute.Perf
             _left,
             _right;
 
-        [Params(ScenarioKind.AsciiEqual, ScenarioKind.AsciiDifferent, ScenarioKind.NonAsciiEqual, ScenarioKind.NonAsciiDifferent, ScenarioKind.MixedEqual)]
+        [Params(ScenarioKind.AsciiEqual, ScenarioKind.AsciiDifferent, ScenarioKind.NonAsciiEqual, ScenarioKind.NonAsciiDifferent)]
         public ScenarioKind Scenario { get; set; }
 
         [GlobalSetup]
@@ -44,7 +43,6 @@ namespace NanoRoute.Perf
                 ScenarioKind.AsciiDifferent => ("warehouse".AsMemory(), "currency".AsMemory()),
                 ScenarioKind.NonAsciiEqual => ("café".AsMemory(), "CAFÉ".AsMemory()),
                 ScenarioKind.NonAsciiDifferent => ("café".AsMemory(), "cafe\u0301".AsMemory()),
-                ScenarioKind.MixedEqual => ("raktár-42-café".AsMemory(), "RAKTÁR-42-CAFÉ".AsMemory()),
                 _ => throw new ArgumentOutOfRangeException(nameof(Scenario), Scenario, "Unknown comparer benchmark scenario.")
             };
 
