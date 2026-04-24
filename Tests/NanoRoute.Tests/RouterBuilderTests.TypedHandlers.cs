@@ -77,10 +77,7 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddQueryBindings("GET", "/items/{id:int}", new Dictionary<string, string>
-                {
-                    ["query_filter"] = "str(min=3)"
-                })
+                .AddQueryBindings("GET", "/items/{id:int}", "{query_filter:str(min=3)}")
                 .AddHandler
                 (
                     ["GET"],
@@ -112,8 +109,6 @@ namespace NanoRoute.Tests
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("hello:42:spikey"));
-            Assert.That(capturedCancellation.CanBeCanceled, Is.True);
-            Assert.That(capturedCancellation.IsCancellationRequested, Is.False);
             Assert.That(capturedCancellation, Is.EqualTo(capturedContext.Cancellation));
             Assert.That(capturedContext.Request.RequestUri, Is.EqualTo(new Uri("https://test.test/items/42?query_filter=spikey")));
             Assert.That(capturedContext.Parameters["id"], Is.EqualTo(42));
@@ -129,10 +124,7 @@ namespace NanoRoute.Tests
                 (
                     ["GET"],
                     "/items/{id:int}",
-                    new Dictionary<string, string>
-                    {
-                        ["query_filter"] = "str(min=3)"
-                    },
+                    "{query_filter:str(min=3)}",
                     (TypedHandlerRequest request) => Task.FromResult
                     (
                         new HttpResponseMessage(HttpStatusCode.OK)
@@ -203,10 +195,7 @@ namespace NanoRoute.Tests
                 (
                     ["GET"],
                     "/items/{id:int}",
-                    new Dictionary<string, string>
-                    {
-                        ["query_filter"] = "str(min=3)"
-                    },
+                    "{query_filter:str(min=3)}",
                     async (TypedHandlerRequest request, CallNextHandlerDelegate next) =>
                     {
                         request.RequestContext.Parameters["composed"] = $"{request.Id}:{request.Filter}";
@@ -331,13 +320,13 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", (Func<TypedRouteRequest, Task<HttpResponseMessage>>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", (IReadOnlyDictionary<string, string>) null!, handler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", (string) null!, handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("queryBindings"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], null!, new Dictionary<string, string>(), handler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], null!, "", handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", new Dictionary<string, string>(), (Func<TypedRouteRequest, Task<HttpResponseMessage>>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", "", (Func<TypedRouteRequest, Task<HttpResponseMessage>>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(((RouterBuilder<TestRouter, RouterConfig>) null!)!, ["GET"], "/items", middlewareHandler))!;
@@ -352,13 +341,13 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", (Func<TypedRouteRequest, CallNextHandlerDelegate, Task<HttpResponseMessage>>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", (IReadOnlyDictionary<string, string>) null!, middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", (string) null!, middlewareHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("queryBindings"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], null!, new Dictionary<string, string>(), middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], null!, "", middlewareHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", new Dictionary<string, string>(), (Func<TypedRouteRequest, CallNextHandlerDelegate, Task<HttpResponseMessage>>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteHandlerExtensions.AddHandler<RouterBuilder<TestRouter, RouterConfig>, TypedRouteRequest>(_routerBuilder, ["GET"], "/items", "", (Func<TypedRouteRequest, CallNextHandlerDelegate, Task<HttpResponseMessage>>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
         });
     }

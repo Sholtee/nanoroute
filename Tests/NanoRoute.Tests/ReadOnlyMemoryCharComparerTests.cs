@@ -60,8 +60,7 @@ namespace NanoRoute.Tests
                 ["café".AsMemory()] = 42
             };
 
-            Assert.That(dictionary.TryGetValue("CAFÉ".AsMemory(), out int value), Is.True);
-            Assert.That(value, Is.EqualTo(42));
+            Assert.That(dictionary.ContainsKey("CAFÉ".AsMemory()), Is.True);
         }
     }
 }

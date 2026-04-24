@@ -65,7 +65,7 @@ namespace NanoRoute.Internals
                 h ^= h >> 13; h *= 3266489909;
                 h ^= h >> 16;
 
-                return (int)h;
+                return (int) h;
             }
 
             // https://github.com/dotnet/runtime/blob/ecc8cb5bc0411e0fb0549230f70dfe8ab302c65c/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf16Utility.cs#L98
