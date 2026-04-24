@@ -14,7 +14,21 @@ namespace NanoRoute.Internals
     {
         public static ReadOnlyMemoryCharComparer Instance { get; } = new();
 
-        public bool Equals(ReadOnlyMemory<char> x, ReadOnlyMemory<char> y) => x.Span.Equals(y.Span, StringComparison.OrdinalIgnoreCase);
+        public bool Equals(ReadOnlyMemory<char> x, ReadOnlyMemory<char> y)
+        {
+            ReadOnlySpan<char>
+                left = x.Span,
+                right = y.Span;
+
+            if (left.Length != right.Length)
+                return false;
+
+            for (int i = 0; i < left.Length; i++)
+                if (CharToUpper(left[i]) != CharToUpper(right[i]))
+                    return false;
+
+            return true;
+        }
 
         public int GetHashCode(ReadOnlyMemory<char> obj)
         {
@@ -85,29 +99,29 @@ namespace NanoRoute.Internals
                     Unsafe.As<char, ulong>(ref MemoryMarshal.GetReference(buffer)) = l ^ mask;
                 }
                 else
-                {
                     // Slow like hell
                     chars.ToUpperInvariant(buffer);
-                }
+
                 return buffer;
             }
 
-            static char CharToUpper(char chr)
+        }
+
+        private static char CharToUpper(char chr)
+        {
+            if ((chr & ~0x007Fu) is 0)
             {
-                if ((chr & ~0x007Fu) is 0)
-                {
-                    uint
-                        lowerIndicator = chr + 0x0080u - 0x0061u,
-                        upperIndicator = chr + 0x0080u - 0x007Bu,
-                        combinedIndicator = lowerIndicator ^ upperIndicator,
-                        mask = (combinedIndicator & 0x0080u) >> 2;
+                uint
+                    lowerIndicator = chr + 0x0080u - 0x0061u,
+                    upperIndicator = chr + 0x0080u - 0x007Bu,
+                    combinedIndicator = lowerIndicator ^ upperIndicator,
+                    mask = (combinedIndicator & 0x0080u) >> 2;
 
-                    return (char)(chr ^ mask);
-                }
-
-                // Slow...
-                return char.ToUpperInvariant(chr);
+                return (char) (chr ^ mask);
             }
+
+            // Slow...
+            return char.ToUpperInvariant(chr);
         }
     }
 }

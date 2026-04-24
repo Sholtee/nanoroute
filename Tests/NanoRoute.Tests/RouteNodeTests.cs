@@ -61,9 +61,10 @@ namespace NanoRoute.Tests
                 Assert.That(copy, Is.Not.SameAs(root));
 
                 Assert.That(copy.HandlerRegistrations, Is.Not.SameAs(root.HandlerRegistrations));
-                Assert.That(copy.HandlerRegistrations, Is.TypeOf<Dictionary<HttpVerb, List<HandlerRegistration>>>());
+                Assert.That(copy.HandlerRegistrations, Is.TypeOf<Dictionary<HttpVerb, IList<HandlerRegistration>>>());
                 Assert.That(copy.HandlerRegistrations[HttpVerb.Get], Is.Not.SameAs(root.HandlerRegistrations[HttpVerb.Get]));
                 Assert.That(copy.HandlerRegistrations[HttpVerb.Get], Is.EquivalentTo(root.HandlerRegistrations[HttpVerb.Get]));
+                Assert.That(copy.HandlerRegistrations[HttpVerb.Get], Is.TypeOf<List<HandlerRegistration>>());
 
                 Assert.That(copy.LiteralChildren, Is.Not.SameAs(root.LiteralChildren));
                 Assert.That(copy.LiteralChildren, Is.TypeOf<Dictionary<ReadOnlyMemory<char>, RouteNode>>());
@@ -107,12 +108,12 @@ namespace NanoRoute.Tests
 
             Assert.Multiple(() =>
             {
-                Assert.That(copy.HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, List<HandlerRegistration>>>());
+                Assert.That(copy.HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
                 Assert.That(copy.LiteralChildren, Is.InstanceOf<FrozenDictionary<ReadOnlyMemory<char>, RouteNode>>());
-                Assert.That(copy.ParsedChildren, Is.InstanceOf<ImmutableList<RouteNode>>());
+                Assert.That(copy.ParsedChildren, Is.InstanceOf<ImmutableArray<RouteNode>>());
 
-                Assert.That(copy.LiteralChildren["users".AsMemory()].HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, List<HandlerRegistration>>>());
-                Assert.That(copy.ParsedChildren[0].HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, List<HandlerRegistration>>>());
+                Assert.That(copy.LiteralChildren["users".AsMemory()].HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
+                Assert.That(copy.ParsedChildren[0].HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
             });
         }
 

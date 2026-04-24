@@ -13,7 +13,7 @@ namespace NanoRoute.Internals
     internal static class LiteralSegmentDefinition
     {
         private const string
-            URI_CHAR = @"[\w.\-~]",
+            URI_CHAR = @"[\w.\-~+]",
             PERCENT_ENCODED_CHAR = "%[0-9A-Fa-f]{2}",
             LITERAL_SEGMENT_PATTERN = $@"\G(?:{URI_CHAR}|{PERCENT_ENCODED_CHAR})+";
 

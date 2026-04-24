@@ -20,8 +20,6 @@ namespace NanoRoute.Tests
         [TestCase("", "", true)]
         [TestCase("route", "ROUTE", true)]
         [TestCase("café", "CAFÉ", true)]
-        [TestCase("κόσμος", "ΚΌΣΜΟΣ", true)]
-        [TestCase("ς", "σ", true)]
         [TestCase("ı", "I", false)]
         [TestCase("ß", "ẞ", false)]
         [TestCase("café", "cafe\u0301", false)]
@@ -33,13 +31,29 @@ namespace NanoRoute.Tests
 
         [TestCase("route", "ROUTE")]
         [TestCase("café", "CAFÉ")]
-        [TestCase("κόσμος", "ΚΌΣΜΟΣ")]
-        [TestCase("ς", "σ")]
         public void GetHashCode_ShouldReturnSameHashWhenValuesAreEqual(string left, string right)
         {
             Assert.That(s_comparer.Equals(left.AsMemory(), right.AsMemory()), Is.True);
             Assert.That(s_comparer.GetHashCode(left.AsMemory()), Is.EqualTo(s_comparer.GetHashCode(right.AsMemory())));
         }
+
+#if NET10_0_OR_GREATER
+        [TestCase("κόσμος", "ΚΌΣΜΟΣ")]
+        [TestCase("ς", "σ")]
+        public void Equals_ShouldHandleExtendedUnicodeCasePairs_WhenTheRuntimeSupportsThem(string left, string right)
+        {
+            Assert.That(s_comparer.Equals(left.AsMemory(), right.AsMemory()), Is.True);
+            Assert.That(s_comparer.Equals(right.AsMemory(), left.AsMemory()), Is.True);
+        }
+
+        [TestCase("κόσμος", "ΚΌΣΜΟΣ")]
+        [TestCase("ς", "σ")]
+        public void GetHashCode_ShouldMatchForExtendedUnicodeCasePairs_WhenTheRuntimeSupportsThem(string left, string right)
+        {
+            Assert.That(s_comparer.Equals(left.AsMemory(), right.AsMemory()), Is.True);
+            Assert.That(s_comparer.GetHashCode(left.AsMemory()), Is.EqualTo(s_comparer.GetHashCode(right.AsMemory())));
+        }
+#endif
 
         [Test]
         public void Equals_ShouldHandleSlicedMemory()
