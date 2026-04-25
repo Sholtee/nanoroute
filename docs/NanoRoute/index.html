@@ -54,11 +54,13 @@
 <h2 id="highlights">Highlights</h2>
 <ul>
 <li>Routes can be exact matches or prefix matches depending on whether the pattern ends with <code>/</code>.</li>
+<li>Route patterns must start with <code>/</code>, and repeated <code>/</code> separators such as <code>//</code> are invalid.</li>
 <li>Value parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as <code>{id:int(min=1)}</code> once during registration.</li>
 <li>Parser-backed segments support optional parameter names. <code>{id:int}</code> stores the parsed value in <code>RequestContext.Parameters</code>, while <code>{int}</code> only validates the segment.</li>
 <li><code>AddPrefix()</code> and <code>CreatePrefix()</code> create scoped route subtrees without forcing you to repeat common prefixes.</li>
 <li><code>MatchingBehavior</code> lets you choose whether literal or parameterized child segments are selected first.</li>
 <li>Once a child branch has been selected for a request, NanoRoute continues only within that branch.</li>
+<li><code>AddQueryBindings()</code> uses query descriptors such as <code>{filter:str(min=3)}&amp;{page?:int(min=1)}</code> and matches query keys through <code>Uri.Query</code> normalization.</li>
 <li><code>NanoRoute.Json</code> adds JSON request binding and JSON error/response helpers on top of the core pipeline.</li>
 </ul>
 <h2 id="value-parser-syntax">Value Parser Syntax</h2>

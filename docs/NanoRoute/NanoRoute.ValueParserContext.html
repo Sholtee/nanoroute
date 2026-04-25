@@ -43,10 +43,6 @@
   <div class="markdown level0 summary"><p>Carries the current route segment and request-scoped services into an asynchronous value parser.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="NanoRoute.ValueParserContext.html">ValueParserContext</a>&gt;</div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -72,7 +68,7 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_ValueParserContext_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct ValueParserContext : IEquatable&lt;ValueParserContext&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct ValueParserContext</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
@@ -83,7 +79,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public object? Arguments { readonly get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public object? Arguments { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -107,7 +103,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CancellationToken Cancellation { readonly get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public CancellationToken Cancellation { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -124,38 +120,14 @@
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_ValueParserContext_DecodedSegment_" data-uid="NanoRoute.ValueParserContext.DecodedSegment*"></a>
-  <h4 id="NanoRoute_ValueParserContext_DecodedSegment" data-uid="NanoRoute.ValueParserContext.DecodedSegment">DecodedSegment</h4>
-  <div class="markdown level1 summary"><p>Gets the decoded route segment, computing the decoded representation only on first access per context instance.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ReadOnlyMemory&lt;char&gt; DecodedSegment { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <a id="NanoRoute_ValueParserContext_Segment_" data-uid="NanoRoute.ValueParserContext.Segment*"></a>
   <h4 id="NanoRoute_ValueParserContext_Segment" data-uid="NanoRoute.ValueParserContext.Segment">Segment</h4>
-  <div class="markdown level1 summary"><p>Gets the raw route segment exactly as it appeared in the request URI path.</p>
+  <div class="markdown level1 summary"><p>Gets the decoded route segment.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public required ReadOnlyMemory&lt;char&gt; Segment { readonly get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public required ReadOnlyMemory&lt;char&gt; Segment { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -179,7 +151,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public required IServiceProvider Services { readonly get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public required IServiceProvider Services { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -196,10 +168,6 @@
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
-  </div>
 
 </article>
           </div>
