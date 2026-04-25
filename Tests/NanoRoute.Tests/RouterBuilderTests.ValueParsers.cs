@@ -59,6 +59,38 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task AddValueParser_ShouldSupportAsyncParserWithoutArguments()
+        {
+            TestRouter router = _routerBuilder
+                .AddValueParser("value", static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, $"async:{context.Segment}")))
+                .AddHandler("GET", "/items/{id:value}", async (context, _) => new HttpResponseMessage
+                {
+                    Content = new StringContent((string) context.Parameters["id"]!)
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"), new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("async:42"));
+        }
+
+        [Test]
+        public async Task AddValueParser_ShouldSupportAsyncParserWithBoundArguments()
+        {
+            TestRouter router = _routerBuilder
+                .AddValueParser("value", static args => args["prefix"], static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, $"{context.Arguments}:{context.Segment}")))
+                .AddHandler("GET", "/items/{id:value(prefix='bound')}", async (context, _) => new HttpResponseMessage
+                {
+                    Content = new StringContent((string) context.Parameters["id"]!)
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"), new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("bound:42"));
+        }
+
+        [Test]
         public async Task WithBase_ShouldKeepChildParserOverridesLocal()
         {
             RouteBuilder childBuilder = _routerBuilder
@@ -258,6 +290,15 @@ namespace NanoRoute.Tests
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddValueParser(null!, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("parserName"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddValueParser("any", (SyncValueParserDelegate) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddValueParser("any", null!, new Mock<SyncValueParserDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("bindArguments"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddValueParser("any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, (SyncValueParserDelegate) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddValueParser("any", null!, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindArguments"));

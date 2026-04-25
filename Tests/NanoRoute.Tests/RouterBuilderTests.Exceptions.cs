@@ -88,5 +88,28 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler("GET", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
         });
+
+        [Test]
+        public void GetErrorDetails_ShouldAcceptIntegerStatusCodes()
+        {
+            HttpRequestException ex = new("teapot");
+            ex.Data[NanoRouteExceptionExtensions.STATUS_NAME] = 404;
+
+            ErrorDetails details = ex.GetErrorDetails(traceId: "trace");
+
+            Assert.That(details.Status, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(details.Title, Is.EqualTo("teapot"));
+            Assert.That(details.TraceId, Is.EqualTo("trace"));
+        }
+
+        [Test]
+        public void GetErrorDetails_ShouldUseInternalServerErrorWhenStatusCodeIsMissing()
+        {
+            ErrorDetails details = new HttpRequestException("boom").GetErrorDetails(traceId: "trace");
+
+            Assert.That(details.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(details.Title, Is.EqualTo("boom"));
+            Assert.That(details.TraceId, Is.EqualTo("trace"));
+        }
     }
 }

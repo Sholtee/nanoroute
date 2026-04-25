@@ -23,6 +23,8 @@ namespace NanoRoute.Tests
         [TestCase("ı", "I", false)]
         [TestCase("ß", "ẞ", false)]
         [TestCase("café", "cafe\u0301", false)]
+        [TestCase("abC", "abD", false)]
+        [TestCase("aB", "aC", false)]
         public void Equals_ShouldUseOrdinalIgnoreCaseSemantics(string left, string right, bool expected)
         {
             Assert.That(s_comparer.Equals(left.AsMemory(), right.AsMemory()), Is.EqualTo(expected));
@@ -31,6 +33,9 @@ namespace NanoRoute.Tests
 
         [TestCase("route", "ROUTE")]
         [TestCase("café", "CAFÉ")]
+        [TestCase("éabc", "ÉABC")]
+        [TestCase("aébc", "AÉBC")]
+        [TestCase("abéc", "ABÉC")]
         public void GetHashCode_ShouldReturnSameHashWhenValuesAreEqual(string left, string right)
         {
             Assert.That(s_comparer.Equals(left.AsMemory(), right.AsMemory()), Is.True);

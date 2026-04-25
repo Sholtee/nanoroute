@@ -153,5 +153,17 @@ namespace NanoRoute.Tests
 
             Assert.That(left.Equals(right), Is.EqualTo(expected));
         }
+
+        [Test]
+        public void Equals_ShouldReturnFalseForOtherObjectTypes()
+        {
+            Assert.That(Parse("int").Equals("int"), Is.False);
+        }
+
+        [Test]
+        public void GetHashCode_ShouldThrow()
+        {
+            Assert.Throws<NotImplementedException>(() => Parse("int").GetHashCode());
+        }
     }
 }

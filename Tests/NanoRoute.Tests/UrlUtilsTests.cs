@@ -66,5 +66,27 @@ namespace NanoRoute.Tests
 
             Assert.That(UrlUtils.TryDecodeUrl("abcd", buffer, UrlDecodeMode.Form, out _), Is.False);
         }
+
+        [Test]
+        public void TryDecodeUrl_ShouldRejectWhenDestinationIsAlreadyFull()
+        {
+            Span<char> buffer = stackalloc char[0];
+
+            Assert.That(UrlUtils.TryDecodeUrl("a", buffer, UrlDecodeMode.Form, out _), Is.False);
+        }
+
+        [Test]
+        public void TryDecodeUrl_ShouldRejectWhenDecodedUtf8SequenceDoesNotFit()
+        {
+            Span<char> buffer = stackalloc char[1];
+
+            Assert.That(UrlUtils.TryDecodeUrl("%F0%9F%98%80", buffer, UrlDecodeMode.Form, out _), Is.False);
+        }
+
+        [Test]
+        public void DecodeUrl_ShouldThrowOnInvalidEscapes()
+        {
+            Assert.Throws<InvalidOperationException>(() => UrlUtils.DecodeUrl("%GG".AsMemory(), UrlDecodeMode.Form));
+        }
     }
 }

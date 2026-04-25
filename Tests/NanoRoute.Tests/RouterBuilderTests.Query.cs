@@ -175,6 +175,48 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task AddQueryBindings_ShouldSupportVerbCollectionOverload()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddQueryBindings(new[] { "GET" }, "{filter:str(min=3)}")
+                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                {
+                    Content = new StringContent((string) context.Parameters["filter"]!)
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
+        }
+
+        [Test]
+        public async Task AddQueryBindings_ShouldSupportPatternOverload()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddQueryBindings("/items", "{filter:str(min=3)}")
+                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                {
+                    Content = new StringContent((string) context.Parameters["filter"]!)
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
+        }
+
+        [Test]
         public void QueryHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddQueryBindings(""))!;

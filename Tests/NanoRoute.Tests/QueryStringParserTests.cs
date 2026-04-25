@@ -243,6 +243,20 @@ namespace NanoRoute.Tests
             Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_INVALID_PARAMETER, "filter") }));
         }
+
+        [Test]
+        public void Parse_ShouldRejectInvalidEscapesInQueryValues()
+        {
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => QueryStringParser.Parse
+            (
+                CreateContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase), new Uri("https://test.test/items?filter=%GG"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(static _ => new ValueTask<ValueParseResult>(new ValueParseResult(true, null)))))
+            ).AsTask())!;
+
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { Resources.ERR_DECODING_FAILED }));
+        }
     }
 }
 
