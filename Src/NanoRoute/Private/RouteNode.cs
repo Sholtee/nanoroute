@@ -13,22 +13,17 @@ namespace NanoRoute.Internals
     /// <summary>
     /// Represents a node in the per-verb route tree.
     /// </summary>
-    internal sealed class RouteNode(ReadOnlyMemory<char> segment)
+    internal sealed class RouteNode()
     {
         /// <summary>
         /// Gets the handlers registered for the current route node.
         /// </summary>
-        public IDictionary<HttpVerb, List<HandlerRegistration>> HandlerRegistrations { get; } = new Dictionary<HttpVerb, List<HandlerRegistration>>();
+        public IDictionary<HttpVerb, IList<HandlerRegistration>> HandlerRegistrations { get; } = new Dictionary<HttpVerb, IList<HandlerRegistration>>();
 
         /// <summary>
-        /// Gets or sets the parser used by this node when it represents a parameterized segment.
+        /// Gets the parser used by this node when it represents a parameterized segment.
         /// </summary>
-        public SegmentParser? SegmentParser { get; init; }
-
-        /// <summary>
-        /// Gets or sets the segment for which this node is created
-        /// </summary>
-        public ReadOnlyMemory<char> Segment { get; } = segment;
+        public ParameterParser? ParameterParser { get; init; }
 
         /// <summary>
         /// Gets literal child nodes keyed by case-insensitive segment value.
@@ -40,9 +35,14 @@ namespace NanoRoute.Internals
         /// </summary>
         public IList<RouteNode> ParsedChildren { get; } = new List<RouteNode>();
 
-        private RouteNode(RouteNode src, bool freeze): this(src.Segment)
+        /// <summary>
+        /// Returns true if this node is read-only.
+        /// </summary>
+        public bool Frozen { get; }
+
+        private RouteNode(RouteNode src, bool freeze): this()
         {
-            SegmentParser = src.SegmentParser;
+            ParameterParser = src.ParameterParser;
 
             CopyCollection(src.ParsedChildren, ParsedChildren, c => c.Copy(freeze));
             CopyCollection(src.HandlerRegistrations, HandlerRegistrations, static kvp => new(kvp.Key, [.. kvp.Value]));
@@ -51,8 +51,9 @@ namespace NanoRoute.Internals
             if (freeze)
             {
                 LiteralChildren = LiteralChildren.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance);
-                ParsedChildren = ParsedChildren.ToImmutableList();
-                HandlerRegistrations = HandlerRegistrations.ToFrozenDictionary(); 
+                ParsedChildren = ParsedChildren.ToImmutableArray();
+                HandlerRegistrations = HandlerRegistrations.ToFrozenDictionary(static kvp => kvp.Key, static kvp => (IList<HandlerRegistration>) kvp.Value.ToImmutableArray());
+                Frozen = true;
             }
 
             static void CopyCollection<TValue>(ICollection<TValue> src, ICollection<TValue> dst, Func<TValue, TValue> valueCopy)

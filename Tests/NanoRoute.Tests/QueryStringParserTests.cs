@@ -21,17 +21,30 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class QueryStringParserTests
     {
-        private static ValueParser CreateParser(ValueParserDelegate parse, object? arguments = null) =>
-            new(ValueParserDefinition.Create("str"), parse, arguments);
+        private sealed record TestParser(ValueParserDelegate Parse, object? Arguments);
 
-        private static Dictionary<string, QueryParameterDefinition> CreateExpectedParameters(params (string Name, bool Optional, ValueParser Parser)[] parameters)
+        private static TestParser CreateParser(ValueParserDelegate parse, object? arguments = null) =>
+            new(parse, arguments);
+
+        private static Dictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(params (string Name, bool Optional, TestParser Parser)[] parameters)
         {
-            Dictionary<string, QueryParameterDefinition> result = new(StringComparer.OrdinalIgnoreCase);
+            Dictionary<ReadOnlyMemory<char>, ParameterParser> result = new(ReadOnlyMemoryCharComparer.Instance);
 
             for (int i = 0; i < parameters.Length; i++)
             {
-                QueryParameterDefinition parameter = new(parameters[i].Name, i, parameters[i].Optional, parameters[i].Parser);
-                result.Add(parameter.Name, parameter);
+                ParameterDefinition definition = new()
+                {
+                    ValueParser = new()
+                    {
+                        Name = "str",
+                        RawArguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    },
+                    ParameterName = parameters[i].Name,
+                    IsOptional = parameters[i].Optional,
+                    Index = i
+                };
+
+                result.Add(definition.ParameterName!.AsMemory(), new ParameterParser(definition, parameters[i].Parser.Parse, parameters[i].Parser.Arguments));
             }
 
             return result;
@@ -49,11 +62,11 @@ namespace NanoRoute.Tests
 
             mockParser
                 .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context =>
-                    context.Segment.ToString() == "a%20b" &&
+                    context.Segment.ToString() == "a b" &&
                     context.Services == mockServices.Object &&
                     context.Arguments!.Equals("args") &&
                     context.Cancellation == CancellationToken.None)))
-                .Returns((ValueParserContext context) => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.DecodedSegment.ToString())));
+                .Returns((ValueParserContext context) => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())));
 
             await QueryStringParser.Parse
             (
@@ -63,6 +76,46 @@ namespace NanoRoute.Tests
 
             Assert.That(result, Has.Count.EqualTo(1));
             Assert.That(result["filter"], Is.EqualTo("a b"));
+            mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Parse_ShouldDecodeQueryValuesAsFormData()
+        {
+            Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
+
+            mockParser
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "a b c")))
+                .Returns((ValueParserContext context) => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())));
+
+            await QueryStringParser.Parse
+            (
+                CreateContext(result, new Uri("https://test.test/items?filter=a+b%20c"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(mockParser.Object)))
+            );
+
+            Assert.That(result["filter"], Is.EqualTo("a b c"));
+            mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Parse_ShouldIgnoreUriFragment()
+        {
+            Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
+
+            mockParser
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")))
+                .Returns((ValueParserContext context) => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())));
+
+            await QueryStringParser.Parse
+            (
+                CreateContext(result, new Uri("https://test.test/items?filter=abc#filter=bad"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(mockParser.Object)))
+            );
+
+            Assert.That(result["filter"], Is.EqualTo("abc"));
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
         }
 
@@ -102,6 +155,26 @@ namespace NanoRoute.Tests
             Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_MISSING_PARAMETER, "filter") }));
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Never);
+        }
+
+        [Test]
+        public async Task Parse_ShouldMatchDecodedQueryParameterNames()
+        {
+            Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
+
+            mockParser
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")))
+                .Returns(new ValueTask<ValueParseResult>(new ValueParseResult(true, "abc")));
+
+            await QueryStringParser.Parse
+            (
+                CreateContext(result, new Uri("https://test.test/items?query%5Ffilter=abc"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("query_filter", false, CreateParser(mockParser.Object)))
+            );
+
+            Assert.That(result["query_filter"], Is.EqualTo("abc"));
+            mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
         }
 
         [Test]
@@ -169,6 +242,20 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_INVALID_PARAMETER, "filter") }));
+        }
+
+        [Test]
+        public void Parse_ShouldRejectInvalidEscapesInQueryValues()
+        {
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => QueryStringParser.Parse
+            (
+                CreateContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase), new Uri("https://test.test/items?filter=%GG"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(static _ => new ValueTask<ValueParseResult>(new ValueParseResult(true, null)))))
+            ).AsTask())!;
+
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { Resources.ERR_DECODING_FAILED }));
         }
     }
 }

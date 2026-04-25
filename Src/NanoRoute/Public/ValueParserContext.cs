@@ -5,17 +5,16 @@
 ********************************************************************************/
 using System;
 using System.Threading;
-using System.Web;
 
 namespace NanoRoute
 {
     /// <summary>
     /// Carries the current route segment and request-scoped services into an asynchronous value parser.
     /// </summary>
-    public record struct ValueParserContext
+    public readonly struct ValueParserContext
     {
         /// <summary>
-        /// Gets the raw route segment exactly as it appeared in the request URI path.
+        /// Gets the decoded route segment.
         /// </summary>
         public required ReadOnlyMemory<char> Segment { get; init; }
         
@@ -33,23 +32,6 @@ namespace NanoRoute
         /// Gets the linked pipeline cancellation token.
         /// </summary>
         public CancellationToken Cancellation { get; init; }
-
-        /// <summary>
-        /// Gets the decoded route segment, computing the decoded representation only on first access per context instance.
-        /// </summary>
-        public ReadOnlyMemory<char> DecodedSegment
-        {
-            get
-            {
-                if (field.Equals(default))
-                {
-                    field = Segment.Span.IndexOf('%') < 0
-                        ? Segment
-                        : HttpUtility.UrlDecode(Segment.ToString()).AsMemory();
-                }
-                return field;
-            }
-        }
     }
 }
 

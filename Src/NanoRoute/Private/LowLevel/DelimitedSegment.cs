@@ -9,13 +9,15 @@ namespace NanoRoute.Internals
 {
     internal struct DelimitedSegment(ReadOnlyMemory<char> original, char separator)
     {
+        private const int DONE = -1;
+
         private int _next;
 
         public bool MoveNext()
         {
             ReadOnlySpan<char> span = original.Span;
 
-            if (_next < 0)
+            if (_next is DONE)
             {
                 Current = default;
                 return false;
@@ -27,7 +29,7 @@ namespace NanoRoute.Internals
             if (_next >= span.Length)
             {
                 Current = default;
-                _next = -1;
+                _next = DONE;
                 return false;
             }
 
@@ -35,7 +37,7 @@ namespace NanoRoute.Internals
             if (i < 0)
             {
                 Current = original.Slice(_next);
-                _next = -1;
+                _next = DONE;
             }
             else
             {
@@ -48,6 +50,6 @@ namespace NanoRoute.Internals
 
         public ReadOnlyMemory<char> Current { get; private set; }
 
-        public readonly bool HasValue => !Current.Equals(default);
+        public readonly bool HasValue => Current.Length > 0;
     }
 }

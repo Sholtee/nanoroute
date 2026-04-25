@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,78 +19,125 @@ namespace NanoRoute.Perf
     [MemoryDiagnoser]
     public class QueryStringParserBenchmarks
     {
+        public enum ScenarioKind
+        {
+            AllParametersProvided,
+            OptionalParameterMissing,
+            UndeclaredParametersPresent,
+            RequiredParameterMissing
+        }
+
         private static readonly IServiceProvider s_services = new NoopServiceProvider();
 
-        private static readonly ValueParser s_parser = new
-        (
-            ValueParserDefinition.Create("str"),
-            static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.DecodedSegment.ToString())),
-            Arguments: null
-        );
+        private IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> _expected = null!;
 
-        private static readonly IReadOnlyDictionary<string, QueryParameterDefinition>
-            s_allExpected = CreateExpectedParameters
-            (
-                ("filter", false),
-                ("page", false),
-                ("optional", true)
-            ),
-            s_optionalExpected = CreateExpectedParameters
-            (
-                ("filter", false),
-                ("optional", true)
-            ),
-            s_missingRequiredExpected = CreateExpectedParameters
-            (
-                ("filter", false),
-                ("page", false)
-            );
+        private Uri _uri = null!;
 
-        private static readonly Uri
-            s_allParametersUri = new("https://www.example.com/items?filter=active&page=2&optional=extra", UriKind.Absolute),
-            s_optionalMissingUri = new("https://www.example.com/items?filter=active", UriKind.Absolute),
-            s_undeclaredPresentUri = new("https://www.example.com/items?filter=active&extra=1&debug=true&trace=abc", UriKind.Absolute),
-            s_missingRequiredUri = new("https://www.example.com/items?filter=active", UriKind.Absolute);
+        private bool _expectBadRequest;
 
-        [Benchmark(Baseline = true)]
-        public ValueTask Parse_AllParametersProvided() =>
-            QueryStringParser.Parse(CreateContext(s_allParametersUri), s_allExpected);
+        [Params(ScenarioKind.AllParametersProvided, ScenarioKind.OptionalParameterMissing, ScenarioKind.UndeclaredParametersPresent, ScenarioKind.RequiredParameterMissing)]
+        public ScenarioKind Scenario { get; set; }
+
+        [GlobalSetup]
+        public void Setup()
+        {
+            (_uri, _expected, _expectBadRequest) = Scenario switch
+            {
+                ScenarioKind.AllParametersProvided => new ValueTuple<Uri, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
+                (
+                    new Uri("https://www.example.com/items?filter=active&page=2&optional=extra", UriKind.Absolute),
+                    CreateExpectedParameters
+                    (
+                        ("filter", false),
+                        ("page", false),
+                        ("optional", true)
+                    ),
+                    false
+                ),
+
+                ScenarioKind.OptionalParameterMissing => new ValueTuple<Uri, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
+                (
+                    new Uri("https://www.example.com/items?filter=active", UriKind.Absolute),
+                    CreateExpectedParameters
+                    (
+                        ("filter", false),
+                        ("optional", true)
+                    ),
+                    false
+                ),
+
+                ScenarioKind.UndeclaredParametersPresent => new ValueTuple<Uri, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
+                (
+                    new Uri("https://www.example.com/items?filter=active&extra=1&debug=true&trace=abc", UriKind.Absolute),
+                    CreateExpectedParameters
+                    (
+                        ("filter", false),
+                        ("optional", true)
+                    ),
+                    false
+                ),
+
+                ScenarioKind.RequiredParameterMissing => new ValueTuple<Uri, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
+                (
+                    new Uri("https://www.example.com/items?filter=active", UriKind.Absolute),
+                    CreateExpectedParameters
+                    (
+                        ("filter", false),
+                        ("page", false)
+                    ),
+                    true
+                ),
+
+                _ => throw new ArgumentOutOfRangeException(nameof(Scenario), Scenario, "Unknown query-string benchmark scenario.")
+            };
+        }
 
         [Benchmark]
-        public ValueTask Parse_OptionalParameterMissing() =>
-            QueryStringParser.Parse(CreateContext(s_optionalMissingUri), s_optionalExpected);
-
-        [Benchmark]
-        public ValueTask Parse_UndeclaredParametersPresent() =>
-            QueryStringParser.Parse(CreateContext(s_undeclaredPresentUri), s_optionalExpected);
-
-        [Benchmark]
-        public async ValueTask<bool> Parse_RequiredParameterMissing()
+        public async ValueTask Parse()
         {
             try
             {
-                await QueryStringParser.Parse(CreateContext(s_missingRequiredUri), s_missingRequiredExpected).ConfigureAwait(false);
-                return false;
+                await QueryStringParser.Parse(CreateContext(_uri), _expected).ConfigureAwait(false);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException) when (_expectBadRequest)
             {
-                return true;
             }
         }
 
-        private static Dictionary<string, QueryParameterDefinition> CreateExpectedParameters(params (string Name, bool Optional)[] parameters)
+        private static Dictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(params (string Name, bool Optional)[] parameters)
         {
-            Dictionary<string, QueryParameterDefinition> result = new(StringComparer.OrdinalIgnoreCase);
+            Dictionary<ReadOnlyMemory<char>, ParameterParser> result = new(ReadOnlyMemoryCharComparer.Instance);
 
             for (int i = 0; i < parameters.Length; i++)
             {
-                QueryParameterDefinition parameter = new(parameters[i].Name, i, parameters[i].Optional, s_parser);
-                result.Add(parameter.Name, parameter);
+                ParameterDefinition definition = new()
+                {
+                    ValueParser = new()
+                    {
+                        Name = "str",
+                        RawArguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    },
+                    ParameterName = parameters[i].Name,
+                    IsOptional = parameters[i].Optional,
+                    Index = i
+                };
+
+                result.Add
+                (
+                    definition.ParameterName!.AsMemory(),
+                    new ParameterParser
+                    (
+                        definition,
+                        static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())),
+                        Arguments: null
+                    )
+                );
             }
 
             return result;
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "The request has no body to dispose")]
         private static RequestContext CreateContext(Uri uri) => new
         (
             new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),

@@ -55,7 +55,7 @@ jobs:
 
           Remove-Item -Path ./gh-pages/Benchmarks -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
           New-Item -Path ./gh-pages/Benchmarks -ItemType Directory -Force | Out-Null
-          Copy-Item ./Artifacts/BenchmarkDotNet/results/*.html ./gh-pages/Benchmarks/ -Force
+          Copy-Item ./Artifacts/BenchmarkDotNet/results/*.md ./gh-pages/Benchmarks/ -Force
 
           Set-Location gh-pages
           git add .

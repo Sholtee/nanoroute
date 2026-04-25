@@ -201,37 +201,6 @@ namespace NanoRoute.Json
             }
 
             /// <summary>
-            /// Deserializes JSON request bodies into a route parameter using <typeparamref name="TBody"/>.
-            /// </summary>
-            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
-            /// <param name="verbs">
-            /// The HTTP methods that should require a JSON body. When omitted, <c>POST</c> and <c>PUT</c> are used.
-            /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
-            /// <remarks>
-            /// This overload inserts the JSON-binding middleware at <c>/</c>, so it can participate in any matching
-            /// route for the selected HTTP methods. Requests without content, requests with a
-            /// non-JSON content type, and requests with invalid JSON throw <see cref="HttpRequestException"/>
-            /// instead of producing responses on their own. Add <see cref="AddJsonErrorDetails"/> if you want those
-            /// exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-            /// exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
-            /// into <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
-            /// </remarks>
-            /// <example>
-            /// <code>
-            /// routerBuilder
-            ///     .AddJsonErrorDetails()
-            ///     .AddJsonBody&lt;CreateUserRequest&gt;("body")
-            ///     .AddHandler("POST", "/users", (context, _) =&gt;
-            ///     {
-            ///         CreateUserRequest body = (CreateUserRequest) context.Parameters["body"]!;
-            ///         return Task.FromResult(HttpResponseMessage.Json(HttpStatusCode.Created, body));
-            ///     });
-            /// </code>
-            /// </example>
-            public TBuilder AddJsonBody<TBody>(string paramName, params IReadOnlyCollection<string> verbs) => routeBuilder.AddJsonBody(typeof(TBody), paramName, verbs);
-
-            /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses.
             /// </summary>
             /// <param name="populateErrorInfo">

@@ -79,11 +79,11 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate parser arguments..
+        ///   Looks up a localized string similar to Decoding failed..
         /// </summary>
-        internal static string ERR_DUPLICATE_PARSER_ARGS {
+        internal static string ERR_DECODING_FAILED {
             get {
-                return ResourceManager.GetString("ERR_DUPLICATE_PARSER_ARGS", resourceCulture);
+                return ResourceManager.GetString("ERR_DECODING_FAILED", resourceCulture);
             }
         }
         
@@ -97,7 +97,16 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid parser argument list..
+        ///   Looks up a localized string similar to Invalid arguments provided for &apos;{0}&apos; (offset: {1}).
+        /// </summary>
+        internal static string ERR_INVALID_ARGUMENTS {
+            get {
+                return ResourceManager.GetString("ERR_INVALID_ARGUMENTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid parser argument(s)..
         /// </summary>
         internal static string ERR_INVALID_PARSERS_ARGS {
             get {
@@ -106,7 +115,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid pattern..
+        ///   Looks up a localized string similar to Invalid pattern (offset: {0}).
         /// </summary>
         internal static string ERR_INVALID_PATTERN {
             get {
@@ -174,6 +183,15 @@ namespace NanoRoute.Properties {
         internal static string ERR_NOT_PREFIX {
             get {
                 return ResourceManager.GetString("ERR_NOT_PREFIX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Optional parameters are not supported in segment definitions..
+        /// </summary>
+        internal static string ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED", resourceCulture);
             }
         }
         

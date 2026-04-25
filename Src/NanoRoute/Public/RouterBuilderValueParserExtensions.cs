@@ -170,8 +170,11 @@ namespace NanoRoute
                     {
                         IntParserArguments args = (IntParserArguments) arguments!;
                         parsed = null;
-
+#if NETSTANDARD2_1_OR_GREATER
+                        if (!int.TryParse(segment.Span, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
+#else
                         if (!int.TryParse(segment.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
+#endif
                             return false;
 
                         if (value < args.Min)
@@ -200,7 +203,12 @@ namespace NanoRoute
                 "guid",
                 static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    bool success = Guid.TryParse(segment.ToString(), out Guid value);
+                    bool success =
+#if NETSTANDARD2_1_OR_GREATER
+                        Guid.TryParse(segment.Span, out Guid value);
+#else
+                        Guid.TryParse(segment.ToString(), out Guid value);
+#endif
                     parsed = success ? value : null;
                     return success;
                 }
@@ -218,7 +226,12 @@ namespace NanoRoute
                 "bool",
                 static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    bool success = bool.TryParse(segment.ToString(), out bool value);
+                    bool success =
+#if NETSTANDARD2_1_OR_GREATER
+                        bool.TryParse(segment.Span, out bool value);
+#else
+                        bool.TryParse(segment.ToString(), out bool value);
+#endif
                     parsed = success ? value : null;
                     return success;
                 }
@@ -271,17 +284,15 @@ namespace NanoRoute
                     },
                     tryParseDelegate: static (ValueParserContext context) =>
                     {
-                        ReadOnlyMemory<char> decodedSegment = context.DecodedSegment;
-
                         StringParserArguments args = (StringParserArguments) context.Arguments!;
 
-                        if (decodedSegment.Length < args.Min)
+                        if (context.Segment.Length < args.Min)
                             return s_false;
 
-                        if (decodedSegment.Length > args.Max)
+                        if (context.Segment.Length > args.Max)
                             return s_false;
 
-                        string segmentStr = decodedSegment.ToString();
+                        string segmentStr = context.Segment.ToString();
 
                         if (args.Pattern?.IsMatch(segmentStr) is false)
                             return s_false;

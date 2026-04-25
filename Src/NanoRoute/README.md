@@ -4,6 +4,8 @@ NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines
 
 The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
+NanoRoute targets `netstandard2.0` and `netstandard2.1`.
+
 > Note: NanoRoute is compatible with Native AOT scenarios.
 
 ## Quick Start
@@ -55,7 +57,9 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 ## Matching Rules
 
 - A trailing `/` makes a route a prefix match.
-- Without a trailing `/`, the route matches only the exact normalized path.
+- Without a trailing `/`, the route matches only the exact normalized request path.
+- Route patterns must start with `/`.
+- Repeated `/` separators in route patterns, such as `//` or `/items//details`, are invalid.
 - Literal segments are matched case-insensitively.
 - Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
 - The parameter name is optional. Segments like `{int}` still validate the path but do not add an entry to `RequestContext.Parameters`.
@@ -167,11 +171,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddPrefix("/items/", items => items
-        .AddQueryBindings("GET", "", new Dictionary<string, string>
-        {
-            ["filter"] = "str(min=3)",
-            ["page"] = "?int(min=1)"
-        })
+        .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}")
         .AddHandler("GET", "", async (context, _) =>
         {
             return HttpResponseMessage.Json(new
@@ -183,10 +183,10 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-- Prefix the parser specification with `?` to make a query parameter optional.
-- Query parameter names use the same identifier rules as route parameter names.
+- Add `?` to the query parameter name to make it optional, for example `{page?:int(min=1)}`.
+- Query parameter names may contain ASCII letters, digits, and underscores.
 - Parsed values are stored in `RequestContext.Parameters` under the configured key.
-- Query keys are matched case-insensitively after percent-decoding.
+- Query keys are matched case-insensitively using the normalized key exposed by `Uri.Query`.
 - Repeated declared query parameters are rejected with `400 Bad Request`.
 - As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
 
@@ -223,10 +223,7 @@ HttpListenerRouter router = HttpListenerRouter
     (
         ["GET"],
         "/items/{id:int}",
-        new Dictionary<string, string>
-        {
-            ["query_filter"] = "str(min=3)"
-        },
+        "{query_filter:str(min=3)}",
         async (GetItemRequest request) =>
         {
             Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);

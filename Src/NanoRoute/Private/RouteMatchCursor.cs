@@ -4,15 +4,22 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Buffers;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace NanoRoute.Internals
 {
-    internal sealed class RouteMatchCursor(RouteNode root, HttpVerb verb, Uri uri, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation)
+    using Properties;
+
+    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation): IDisposable
     {
+        private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
+
         private readonly BranchOrder _branchOrder = matchingBehavior switch
         {
             MatchingBehavior.LiteralFirst => new BranchOrder(BranchKind.Literal, BranchKind.Parsed),
@@ -20,212 +27,149 @@ namespace NanoRoute.Internals
             _ => throw new ArgumentOutOfRangeException(nameof(matchingBehavior))
         };
 
-        private Frame[] _stack =
-        [
-            new Frame
-            {
-                Node = root,
-                Verb = verb,
-                Segment = NextSegment
-                (
-                    // Escaped path, not percent decoded -> "/path%2Fto%2Fsomewhere/" will be treated as a single segment
-                    new DelimitedSegment(uri.AbsolutePath.AsMemory(), '/')
-                ),
-                Parameters = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
-                Phase = MatchPhase.EmitHandlers
-            },
-            default,
-            default,
-            default,
-            default,
-            default,
-            default,
-            default
-        ];
+        private readonly Dictionary<string, object?> _parameters = new(StringComparer.OrdinalIgnoreCase);
 
-        private int _stackLength = 1;
+        private readonly char[] _decodedSegmentBuffer = s_arrayPool.Rent(uri.AbsolutePath.Length);
 
-        private ref Frame TopFrame => ref _stack[_stackLength - 1];
+        // DelimitedSegment is a mutable struct: keep this field non-readonly so MoveNext() updates the cursor
+        // itself instead of a defensive copy.
+        private DelimitedSegment _segment = SplitUri(uri);
 
-        private static DelimitedSegment NextSegment(DelimitedSegment segment)
+        private MatchPhase _phase = MatchPhase.EmitHandlers;
+
+        private ReadOnlyMemory<char> _decodedSegment;
+
+        private IList<HandlerRegistration>? _handlers;
+
+        private int
+            _handlerIndex,
+            _nextDecodedSegment;
+
+        private static DelimitedSegment SplitUri(Uri uri)
         {
-            segment.MoveNext();
-            return segment;
+            DelimitedSegment result = new
+            (
+                // Escaped path, not percent decoded -> "/path%2Fto%2Fsomewhere/" will be treated as a single segment
+                uri.AbsolutePath.AsMemory(),
+                '/'
+            );
+            result.MoveNext();
+            return result;
         }
 
         public HandlerRegistration Current { get; private set; } = null!;
 
-        public override string ToString()
-        {
-            StringBuilder builder = new();
-
-            builder
-                .Append(nameof(RouteMatchCursor))
-                .Append(" { Stack = [");
-
-            for (int i = 0; i < _stackLength; i++)
-            {
-                if (i > 0)
-                    builder.Append(", ");
-
-                Frame frame = _stack[i];
-
-                builder.AppendFormat
-                (
-                    "{0}: {{ Phase = {1}, Segment = '{2}', HandlerIndex = {3}, ParsedChildIndex = {4} }}",
-                    i,
-                    frame.Phase,
-                    frame.Segment.Current,
-                    frame.HandlerIndex,
-                    frame.ParsedChildIndex
-                );
-            }
-
-            return builder
-                .Append("] }")
-                .ToString();
-        }
+        public void Dispose() => s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
 
         public async ValueTask<bool> MoveNextAsync()
         {
-            while (_stackLength > 0)
+            while (_phase is not MatchPhase.Done)
             {
                 cancellation.ThrowIfCancellationRequested();
 
-                ref Frame frame = ref TopFrame;
-
-                switch (frame.Phase)
+                switch (_phase)
                 {
                     case MatchPhase.EmitHandlers:
-                        if (TryEmitHandler(out HandlerRegistration match))
-                        {
-                            Current = match;
+                        if (TryEmitHandler())
                             return true;
-                        }
 
-                        frame.Phase = frame.Segment.HasValue
-                            ? MatchPhase.FirstBranch
-                            : MatchPhase.Done;
-
+                        // No handler terminated the pipeline, go to the first branch
+                        _phase = MatchPhase.FirstBranch;
                         break;
 
                     case MatchPhase.FirstBranch:
-                        frame.Phase = MatchPhase.SecondBranch;
-
-                        if (_branchOrder.First is BranchKind.Literal)
+                        if (!_segment.HasValue)
                         {
-                            TryPushLiteralBranch();
+                            _phase = MatchPhase.Done;
                             break;
                         }
 
-                        await TryPushParsedBranchAsync();
+                        // Decode only when the matcher is about to inspect the segment. Prefix handlers can still run
+                        // without paying this cost, while invalid escapes are reported before any child branch is parsed.
+
+                        if (!UrlUtils.TryDecodeUrl(_segment.Current.Span, _decodedSegmentBuffer.AsSpan(_nextDecodedSegment), UrlDecodeMode.Path, out int charsWritten))
+                            HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_DECODING_FAILED);
+
+                        _decodedSegment = _decodedSegmentBuffer.AsMemory(_nextDecodedSegment, charsWritten);
+                        _nextDecodedSegment += charsWritten;
+
+                        _phase = await TryBranchAsync(_branchOrder.First)
+                            ? MatchPhase.EmitHandlers
+                            : MatchPhase.SecondBranch;
                         break;
 
                     case MatchPhase.SecondBranch:
-                        frame.Phase = MatchPhase.Done;
+                        Debug.Assert(_segment.HasValue, "Second branch should not be reached when there is no segment to process");
 
-                        if (_branchOrder.Second is BranchKind.Literal)
-                        {
-                            TryPushLiteralBranch();
-                            break;
-                        }
-
-                        await TryPushParsedBranchAsync();
+                        _phase = await TryBranchAsync(_branchOrder.Second)
+                            ? MatchPhase.EmitHandlers
+                            : MatchPhase.Done;
                         break;
-
-                    case MatchPhase.Done:
-                        PopFrame();
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
                 }
             }
 
             return false;
         }
 
-        private void PushFrame(Frame frame)
+        private void AdvanceToNextSegment(RouteNode nextNode)
         {
-            if (_stackLength == _stack.Length)
-                Array.Resize(ref _stack, _stack.Length * 2);
+            node = nextNode;
 
-            _stack[_stackLength++] = frame;
+            _handlerIndex = 0;
+            _handlers = null;
+            _decodedSegment = default;
+            
+            _segment.MoveNext();
         }
 
-        private void PopFrame() => _stack[--_stackLength] = default;
-
-        private bool TryEmitHandler(out HandlerRegistration match)
+        private bool TryEmitHandler()
         {
-            ref Frame frame = ref TopFrame;
-
-            match = null!;
-
-            if (!frame.Node.HandlerRegistrations.TryGetValue(frame.Verb, out List<HandlerRegistration>? handlers))
+            if (_handlers is null && !node.HandlerRegistrations.TryGetValue(verb, out _handlers))
                 return false;
 
-            while (frame.HandlerIndex < handlers.Count)
+            while (_handlerIndex < _handlers.Count)
             {
-                HandlerRegistration candidate = handlers[frame.HandlerIndex++];
+                HandlerRegistration candidate = _handlers[_handlerIndex++];
 
-                if (frame.Segment.HasValue && !candidate.IsPrefix)
+                if (_segment.HasValue && !candidate.IsPrefix)
                     continue;
 
-                match = candidate with { AttachedParameters = frame.Parameters };
+                Current = candidate with { AttachedParameters = _parameters };
                 return true;
             }
 
             return false;
         }
 
-        private bool TryPushLiteralBranch()
+        private ValueTask<bool> TryBranchAsync(BranchKind branchKind) => branchKind switch
         {
-            Frame frame = TopFrame;
+            BranchKind.Literal => new ValueTask<bool>(TryLiteralBranch()),
+            BranchKind.Parsed => TryParsedBranchAsync(),
+            _ => throw new ArgumentOutOfRangeException(nameof(branchKind))
+        };
 
-            if (!frame.Segment.HasValue)
+        private bool TryLiteralBranch()
+        {
+            if (!node.LiteralChildren.TryGetValue(_decodedSegment, out RouteNode literalChild))
                 return false;
 
-            if (!frame.Node.LiteralChildren.TryGetValue(frame.Segment.Current, out RouteNode literalChild))
-                return false;
-
-            DelimitedSegment nextSegment = NextSegment(frame.Segment);
-
-            PushFrame
-            (
-                new Frame
-                {
-                    Node = literalChild,
-                    Verb = frame.Verb,
-                    Segment = nextSegment,
-                    Parameters = frame.Parameters,
-                    Phase = MatchPhase.EmitHandlers
-                }
-            );
-
+            AdvanceToNextSegment(literalChild);
             return true;
         }
 
-        private async ValueTask<bool> TryPushParsedBranchAsync()
+        private async ValueTask<bool> TryParsedBranchAsync()
         {
-            // This copy captures only stable values used across awaits; ParsedChildIndex must still be read from TopFrame below.
-            Frame frame = TopFrame;
-
-            if (!frame.Segment.HasValue)
-                return false;
-
-            DelimitedSegment nextSegment = NextSegment(frame.Segment);
-
-            while (TopFrame.ParsedChildIndex < frame.Node.ParsedChildren.Count)
+            for (int i = 0; i < node.ParsedChildren.Count; i++)
             {
-                RouteNode parsedChild = frame.Node.ParsedChildren[TopFrame.ParsedChildIndex++];
+                RouteNode parsedChild = node.ParsedChildren[i];
 
-                ValueParseResult parsed = await parsedChild.SegmentParser!.Parse
+                ValueParseResult parsed = await parsedChild.ParameterParser!.Parse
                 (
                     new ValueParserContext
                     {
-                        Segment = frame.Segment.Current,
+                        Segment = _decodedSegment,
                         Services = services,
-                        Arguments = parsedChild.SegmentParser.Arguments,
+                        Arguments = parsedChild.ParameterParser.Arguments,
                         Cancellation = cancellation
                     }
                 );
@@ -233,25 +177,10 @@ namespace NanoRoute.Internals
                 if (!parsed.Success)
                     continue;
 
-                Dictionary<string, object?> extended = parsedChild.SegmentParser.Definition.ParameterName is { Length: > 0 } parameterName
-                    ? new(frame.Parameters, StringComparer.OrdinalIgnoreCase)
-                    {
-                        [parameterName] = parsed.Parsed
-                    }
-                    : frame.Parameters;
+                if (parsedChild.ParameterParser.Definition.ParameterName is { Length: > 0 } parameterName)
+                    _parameters[parameterName] = parsed.Parsed;
 
-                PushFrame
-                (
-                    new Frame
-                    {
-                        Node = parsedChild,
-                        Verb = frame.Verb,
-                        Segment = nextSegment,
-                        Parameters = extended,
-                        Phase = MatchPhase.EmitHandlers
-                    }
-                );
-
+                AdvanceToNextSegment(parsedChild);
                 return true;
             }
 
@@ -284,26 +213,9 @@ namespace NanoRoute.Internals
             SecondBranch,
 
             /// <summary>
-            /// The frame has no more work to do and can be removed from the stack.
+            /// Terminating step
             /// </summary>
             Done
-        }
-
-        private struct Frame
-        {
-            public RouteNode Node;
-
-            public HttpVerb Verb;
-
-            public DelimitedSegment Segment;
-
-            public Dictionary<string, object?> Parameters;
-
-            public MatchPhase Phase;
-
-            public int HandlerIndex;
-
-            public int ParsedChildIndex;
         }
     }
 }

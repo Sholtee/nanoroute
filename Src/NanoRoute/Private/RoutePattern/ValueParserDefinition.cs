@@ -37,40 +37,16 @@ namespace NanoRoute.Internals
             NAME_VALUE_PAIR = $@"(?<name>{IDENTIFIER})\s*=\s*(?<value>{VALUE})",
 
             // Matches the full input string and captures every name/value pair.
-            ARGS_PATTERN = $@"^\s*{NAME_VALUE_PAIR}(?:\s*,\s*{NAME_VALUE_PAIR})*\s*$",
+            ARGS_PATTERN = $@"\s*(?:{NAME_VALUE_PAIR}(?:\s*,\s*{NAME_VALUE_PAIR})*)?\s*",
 
             // Matches and captures a complete parser-backed value definition.
-            PARSER_DEFINITION_PATTERN = $@"^(?<parserName>{IDENTIFIER})(?:\((?<arguments>.*)\))?$";
+            PARSER_DEFINITION_PATTERN = $@"\G(?<parserName>{IDENTIFIER})(?:\({ARGS_PATTERN}\))?";
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private static readonly IReadOnlyDictionary<string, string> s_empty = new Dictionary<string, string>(0, StringComparer.OrdinalIgnoreCase);
+        private static readonly Regex s_parserDefinition = new(PARSER_DEFINITION_PATTERN, RuntimeFeature.IsDynamicCodeSupported ? RegexOptions.Compiled : RegexOptions.None);
 
-        private static readonly Regex
-            s_argumentParser = new(ARGS_PATTERN),
-            s_parserDefinitionParser = new(PARSER_DEFINITION_PATTERN);
-
-        /// <summary>
-        /// Parses a parser-argument list such as <c>min=1, text='it\'s ok'</c>.
-        /// </summary>
-        /// <param name="args">The raw argument list between the parentheses, or an empty value when no arguments were supplied.</param>
-        /// <returns>The normalized argument map keyed case-insensitively.</returns>
-        /// <exception cref="ArgumentException">Thrown when the argument list is malformed.</exception>
-        #if DEBUG
-        internal
-        #else
-        private
-        #endif
-        static IReadOnlyDictionary<string, string> ParseArguments(string args)
+        private static bool TryExtractArguments(Match parsed, out Dictionary<string, string> result)
         {
-            if (string.IsNullOrWhiteSpace(args))
-                return s_empty;
-
-            Match parsed = s_argumentParser.Match(args);
-
-            if (!parsed.Success)
-                throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, nameof(args));
-
-            Dictionary<string, string> result = new(StringComparer.OrdinalIgnoreCase);
+            result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             CaptureCollection
                 names = parsed.Groups["name"].Captures,
@@ -88,32 +64,37 @@ namespace NanoRoute.Internals
                         .Replace("\\'", "'");
 
                 if (result.ContainsKey(name))
-                    throw new ArgumentException(Resources.ERR_DUPLICATE_PARSER_ARGS, nameof(args));
+                    return false;
 
                 result.Add(name, value);
             }
 
-            return result;
+            return true;
         }
 
-        public static ValueParserDefinition Create(string definition)
+        public static ValueParserDefinition Parse(string pattern, ref int offset)
         {
-            if (s_parserDefinitionParser.Match(definition) is not { Success: true } parsed)
-                throw new ArgumentException(Resources.ERR_INVALID_PATTERN, nameof(definition));
+            if (s_parserDefinition.Match(pattern, offset) is not { Success: true, Index: int index, Length: int length } parsed || index != offset)
+                throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
 
             string parserName = parsed.Groups["parserName"].Value;
             Debug.Assert(!string.IsNullOrEmpty(parserName), "Parser name could not be extracted");
 
-            return new ValueParserDefinition
+            ValueParserDefinition result = new()
             {
                 Name = parserName,
-                RawArguments = ParseArguments(parsed.Groups["arguments"].Value)
+                RawArguments = TryExtractArguments(parsed, out Dictionary<string, string> rawArguments)
+                    ? rawArguments
+                    : throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_ARGUMENTS, parserName, offset))
             };
+
+            offset += length;
+            return result;
         }
 
-        public string Name { get; private init; }
+        public required string Name { get; init; }
 
-        public IReadOnlyDictionary<string, string> RawArguments { get; private init; }
+        public required IReadOnlyDictionary<string, string> RawArguments { get; init; }
 
         public override bool Equals(object other)
         {
