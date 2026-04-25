@@ -586,24 +586,6 @@ references:
   commentId: T:NanoRoute.RequestContext
   fullName: NanoRoute.RequestContext
   nameWithType: RequestContext
-- uid: NanoRoute.RequestContext.#ctor(System.Collections.Generic.Dictionary{System.String,System.Object},System.IServiceProvider,System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)
-  name: RequestContext(Dictionary<string, object?>, IServiceProvider, HttpRequestMessage, CancellationToken)
-  href: NanoRoute.RequestContext.html#NanoRoute_RequestContext__ctor_System_Collections_Generic_Dictionary_System_String_System_Object__System_IServiceProvider_System_Net_Http_HttpRequestMessage_System_Threading_CancellationToken_
-  commentId: M:NanoRoute.RequestContext.#ctor(System.Collections.Generic.Dictionary{System.String,System.Object},System.IServiceProvider,System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)
-  name.vb: New(Dictionary(Of String, Object), IServiceProvider, HttpRequestMessage, CancellationToken)
-  fullName: NanoRoute.RequestContext.RequestContext(System.Collections.Generic.Dictionary<string, object?>, System.IServiceProvider, System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken)
-  fullName.vb: NanoRoute.RequestContext.New(System.Collections.Generic.Dictionary(Of String, Object), System.IServiceProvider, System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken)
-  nameWithType: RequestContext.RequestContext(Dictionary<string, object?>, IServiceProvider, HttpRequestMessage, CancellationToken)
-  nameWithType.vb: RequestContext.New(Dictionary(Of String, Object), IServiceProvider, HttpRequestMessage, CancellationToken)
-- uid: NanoRoute.RequestContext.#ctor*
-  name: RequestContext
-  href: NanoRoute.RequestContext.html#NanoRoute_RequestContext__ctor_
-  commentId: Overload:NanoRoute.RequestContext.#ctor
-  name.vb: New
-  fullName: NanoRoute.RequestContext.RequestContext
-  fullName.vb: NanoRoute.RequestContext.New
-  nameWithType: RequestContext.RequestContext
-  nameWithType.vb: RequestContext.New
 - uid: NanoRoute.RequestContext.Cancellation
   name: Cancellation
   href: NanoRoute.RequestContext.html#NanoRoute_RequestContext_Cancellation

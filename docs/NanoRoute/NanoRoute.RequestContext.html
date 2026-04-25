@@ -43,10 +43,6 @@
   <div class="markdown level0 summary"><p>Carries request-specific data through the NanoRoute handler pipeline.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>&gt;</div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -72,70 +68,20 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_RequestContext_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct RequestContext : IEquatable&lt;RequestContext&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct RequestContext</code></pre>
   </div>
   <h5 id="NanoRoute_RequestContext_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>The same context instance is passed to each matching handler. Handlers can use
-<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> to share values, <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Services">Services</a> to resolve dependencies, and
-<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Cancellation">Cancellation</a> to observe either caller-initiated cancellation or router timeouts.
-<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> is a shared mutable dictionary for the active pipeline so handlers
-may overwrite values that were written earlier by other handlers.</p>
-</div>
-  <h3 id="constructors">Constructors
-</h3>
-  <a id="NanoRoute_RequestContext__ctor_" data-uid="NanoRoute.RequestContext.#ctor*"></a>
-  <h4 id="NanoRoute_RequestContext__ctor_System_Collections_Generic_Dictionary_System_String_System_Object__System_IServiceProvider_System_Net_Http_HttpRequestMessage_System_Threading_CancellationToken_" data-uid="NanoRoute.RequestContext.#ctor(System.Collections.Generic.Dictionary{System.String,System.Object},System.IServiceProvider,System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">RequestContext(Dictionary&lt;string, object?&gt;, IServiceProvider, HttpRequestMessage, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Carries request-specific data through the NanoRoute handler pipeline.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RequestContext(Dictionary&lt;string, object?&gt; Parameters, IServiceProvider Services, HttpRequestMessage Request, CancellationToken Cancellation)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2">Dictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</td>
-        <td><span class="parametername">Parameters</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a></td>
-        <td><span class="parametername">Services</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a></td>
-        <td><span class="parametername">Request</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">Cancellation</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="NanoRoute_RequestContext__ctor_System_Collections_Generic_Dictionary_System_String_System_Object__System_IServiceProvider_System_Net_Http_HttpRequestMessage_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The same context instance is passed to each matching handler. Handlers can use
-<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> to share values, <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Services">Services</a> to resolve dependencies, and
-<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Cancellation">Cancellation</a> to observe either caller-initiated cancellation or router timeouts.
-<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> is a shared mutable dictionary for the active pipeline so handlers
-may overwrite values that were written earlier by other handlers.</p>
+  <div class="markdown level0 remarks"><p>Handlers can use <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> to share values, <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Services">Services</a> to resolve
+dependencies, and <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Cancellation">Cancellation</a> to observe either caller-initiated cancellation
+or router timeouts. <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> is a shared mutable dictionary for the active
+pipeline so handlers may overwrite values that were written earlier by other handlers.</p>
 </div>
   <h3 id="properties">Properties
 </h3>
   <a id="NanoRoute_RequestContext_Cancellation_" data-uid="NanoRoute.RequestContext.Cancellation*"></a>
   <h4 id="NanoRoute_RequestContext_Cancellation" data-uid="NanoRoute.RequestContext.Cancellation">Cancellation</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the cancellation token for the active request.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
@@ -158,11 +104,12 @@ may overwrite values that were written earlier by other handlers.</p>
   </table>
   <a id="NanoRoute_RequestContext_Parameters_" data-uid="NanoRoute.RequestContext.Parameters*"></a>
   <h4 id="NanoRoute_RequestContext_Parameters" data-uid="NanoRoute.RequestContext.Parameters">Parameters</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the parsed route, query, and handler-shared values for the active request.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Dictionary&lt;string, object?&gt; Parameters { get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public required Dictionary&lt;string, object?&gt; Parameters { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -181,11 +128,12 @@ may overwrite values that were written earlier by other handlers.</p>
   </table>
   <a id="NanoRoute_RequestContext_Request_" data-uid="NanoRoute.RequestContext.Request*"></a>
   <h4 id="NanoRoute_RequestContext_Request" data-uid="NanoRoute.RequestContext.Request">Request</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the request being routed.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public HttpRequestMessage Request { get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public required HttpRequestMessage Request { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -204,11 +152,12 @@ may overwrite values that were written earlier by other handlers.</p>
   </table>
   <a id="NanoRoute_RequestContext_Services_" data-uid="NanoRoute.RequestContext.Services*"></a>
   <h4 id="NanoRoute_RequestContext_Services" data-uid="NanoRoute.RequestContext.Services">Services</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the service provider available to handlers and parsers.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IServiceProvider Services { get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public required IServiceProvider Services { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -225,10 +174,6 @@ may overwrite values that were written earlier by other handlers.</p>
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
-  </div>
 
 </article>
           </div>
