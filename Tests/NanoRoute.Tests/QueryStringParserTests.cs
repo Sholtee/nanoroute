@@ -51,7 +51,13 @@ namespace NanoRoute.Tests
         }
 
         private static RequestContext CreateContext(Dictionary<string, object?> parameters, Uri uri, IServiceProvider services, CancellationToken cancellation = default) =>
-            new(parameters, services, new HttpRequestMessage(HttpMethod.Get, uri), cancellation);
+            new()
+            {
+                Parameters = parameters,
+                Services = services,
+                Request = new HttpRequestMessage(HttpMethod.Get, uri),
+                Cancellation = cancellation
+            };
 
         [Test]
         public async Task Parse_ShouldParseExpectedQueryParameters()

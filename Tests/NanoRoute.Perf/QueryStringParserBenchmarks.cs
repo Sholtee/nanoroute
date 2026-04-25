@@ -138,13 +138,13 @@ namespace NanoRoute.Perf
         }
 
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "The request has no body to dispose")]
-        private static RequestContext CreateContext(Uri uri) => new
-        (
-            new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
-            s_services,
-            new HttpRequestMessage(HttpMethod.Get, uri),
-            CancellationToken.None
-        );
+        private static RequestContext CreateContext(Uri uri) => new()
+        {
+            Parameters = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
+            Services = s_services,
+            Request = new HttpRequestMessage(HttpMethod.Get, uri),
+            Cancellation = CancellationToken.None
+        };
 
         private sealed class NoopServiceProvider : IServiceProvider
         {
