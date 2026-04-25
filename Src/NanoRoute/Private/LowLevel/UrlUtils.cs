@@ -82,9 +82,11 @@ namespace NanoRoute.Internals
         private static bool TryDecodeUtf8Sequence(ReadOnlySpan<char> source, ref int offset, Span<char> destination, ref int charsWritten)
         {
             const int ESCAPED_BYTE_LENGTH = 3; // "%XX"
-
+#if NETSTANDARD2_1_OR_GREATER
+            Span<byte> bytes = stackalloc byte[4];
+#else
             byte[] bytes = new byte[4];
-
+#endif
             // The first escaped byte determines how many %XX chunks belong to this UTF-8 sequence.
             if (!TryParseEscapedByte(source, offset, out bytes[0]))
                 return false;
@@ -95,19 +97,23 @@ namespace NanoRoute.Internals
 
             // Collect the remaining escaped bytes, then let the strict UTF-8 decoder validate them.
             for (int i = 1; i < byteCount; i++)
-            {
-                int byteOffset = offset + i * ESCAPED_BYTE_LENGTH;
-
-                if (!TryParseEscapedByte(source, byteOffset, out bytes[i]))
+                if (!TryParseEscapedByte(source, offset + i * ESCAPED_BYTE_LENGTH, out bytes[i]))
                     return false;
-            }
 
+#if NETSTANDARD2_1_OR_GREATER
+            Span<char> chars = stackalloc char[2];
+#else
             char[] chars = new char[2];
+#endif
             int decodedChars;
 
             try
             {
+#if NETSTANDARD2_1_OR_GREATER
+                decodedChars = s_utf8.GetChars(bytes.Slice(0, byteCount), chars);
+#else
                 decodedChars = s_utf8.GetChars(bytes, 0, byteCount, chars, 0);
+#endif
             }
             catch (DecoderFallbackException)
             {
@@ -117,7 +123,11 @@ namespace NanoRoute.Internals
             if (charsWritten + decodedChars > destination.Length)
                 return false;
 
-            chars.AsSpan(0, decodedChars).CopyTo(destination.Slice(charsWritten));
+            chars
+#if NETSTANDARD2_0
+                .AsSpan(0, decodedChars)
+#endif
+                .CopyTo(destination.Slice(charsWritten));
             charsWritten += decodedChars;
             offset += byteCount * ESCAPED_BYTE_LENGTH;
 

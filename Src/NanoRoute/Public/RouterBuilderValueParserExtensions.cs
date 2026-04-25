@@ -170,8 +170,11 @@ namespace NanoRoute
                     {
                         IntParserArguments args = (IntParserArguments) arguments!;
                         parsed = null;
-
-                        if (!ValueParsers.TryParseInt32(segment, out int value))
+#if NETSTANDARD2_1_OR_GREATER
+                        if (!int.TryParse(segment.Span, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
+#else
+                        if (!int.TryParse(segment.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
+#endif
                             return false;
 
                         if (value < args.Min)
@@ -200,7 +203,12 @@ namespace NanoRoute
                 "guid",
                 static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    bool success = ValueParsers.TryParseGuid(segment, out Guid value);
+                    bool success =
+#if NETSTANDARD2_1_OR_GREATER
+                        Guid.TryParse(segment.Span, out Guid value);
+#else
+                        Guid.TryParse(segment.ToString(), out Guid value);
+#endif
                     parsed = success ? value : null;
                     return success;
                 }
@@ -218,7 +226,12 @@ namespace NanoRoute
                 "bool",
                 static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
-                    bool success = ValueParsers.TryParseBoolean(segment, out bool value);
+                    bool success =
+#if NETSTANDARD2_1_OR_GREATER
+                        bool.TryParse(segment.Span, out bool value);
+#else
+                        bool.TryParse(segment.ToString(), out bool value);
+#endif
                     parsed = success ? value : null;
                     return success;
                 }
