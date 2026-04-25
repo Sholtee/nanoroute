@@ -16,16 +16,40 @@ namespace NanoRoute.Internals
 
         public bool Equals(ReadOnlyMemory<char> x, ReadOnlyMemory<char> y)
         {
-            if (x.Length != y.Length)
+            int length = x.Length;
+            if (length != y.Length)
                 return false;
 
             ref char
                 leftRef = ref MemoryMarshal.GetReference(x.Span),
                 rightRef = ref MemoryMarshal.GetReference(y.Span);
 
-            for (int i = 0; i < y.Length; i++)
-                if (CharToUpper(Unsafe.Add(ref leftRef, i)) != CharToUpper(Unsafe.Add(ref rightRef, i)))
+            int i = 0;
+            for (int bulkLength = length & -4; i < bulkLength; i += 4)
+            {
+                ulong
+                    leftBlock = Unsafe.As<char, ulong>(ref Unsafe.Add(ref leftRef, i)),
+                    rightBlock = Unsafe.As<char, ulong>(ref Unsafe.Add(ref rightRef, i));
+
+                if (BlockToUpper(leftBlock) != BlockToUpper(rightBlock))
                     return false;
+            }
+
+            switch (length & 3)
+            {
+                case 3:
+                    if (CharToUpper(Unsafe.Add(ref leftRef, i + 2)) != CharToUpper(Unsafe.Add(ref rightRef, i + 2)))
+                        return false;
+                    goto case 2;
+                case 2:
+                    if (CharToUpper(Unsafe.Add(ref leftRef, i + 1)) != CharToUpper(Unsafe.Add(ref rightRef, i + 1)))
+                        return false;
+                    goto case 1;
+                case 1:
+                    if (CharToUpper(Unsafe.Add(ref leftRef, i)) != CharToUpper(Unsafe.Add(ref rightRef, i)))
+                        return false;
+                    break;
+            }
 
             return true;
         }
@@ -37,11 +61,11 @@ namespace NanoRoute.Internals
             // https://github.com/bryc/code/blob/master/jshash/hashes/murmurhash3.js
             unchecked
             {
-                uint h = (uint) 1986, k;
+                uint hash = 1986, blockHash;
 
                 int i = 0;
 
-                for (int b = obj.Length & -4; i < b; i += 4)
+                for (int bulkLength = obj.Length & -4; i < bulkLength; i += 4)
                 {
                     ulong
                         block = Unsafe.As<char, ulong>(ref Unsafe.Add(ref inputRef, i)),
@@ -49,65 +73,65 @@ namespace NanoRoute.Internals
 
                     ref char upperBlockRef = ref Unsafe.As<ulong, char>(ref upperBlock);
 
-                    k = (uint) (Unsafe.Add(ref upperBlockRef, 3) << 24 | Unsafe.Add(ref upperBlockRef, 2) << 16 | Unsafe.Add(ref upperBlockRef, 1) << 8 | upperBlockRef);
-                    k *= 3432918353; k = k << 15 | k >> 17;
-                    h ^= k * 461845907; h = h << 13 | h >> 19;
-                    h = h * 5 + 3864292196;
+                    blockHash = (uint) (Unsafe.Add(ref upperBlockRef, 3) << 24 | Unsafe.Add(ref upperBlockRef, 2) << 16 | Unsafe.Add(ref upperBlockRef, 1) << 8 | upperBlockRef);
+                    blockHash *= 3432918353; blockHash = blockHash << 15 | blockHash >> 17;
+                    hash ^= blockHash * 461845907; hash = hash << 13 | hash >> 19;
+                    hash = hash * 5 + 3864292196;
                 }
 
-                int m = obj.Length & 3;
-                if (m > 0)
+                int remainingChars = obj.Length & 3;
+                if (remainingChars > 0)
                 {
-                    k = 0;
-                    switch (m)
+                    blockHash = 0;
+                    switch (remainingChars)
                     {
                         case 3:
-                            k ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i + 2)) << 16;
+                            blockHash ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i + 2)) << 16;
                             goto case 2;
                         case 2:
-                            k ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i + 1)) << 8;
+                            blockHash ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i + 1)) << 8;
                             goto case 1;
                         case 1:
-                            k ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i));
-                            k *= 3432918353; k = k << 15 | k >> 17;
-                            h ^= k * 461845907;
+                            blockHash ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i));
+                            blockHash *= 3432918353; blockHash = blockHash << 15 | blockHash >> 17;
+                            hash ^= blockHash * 461845907;
                             break;
                     }
                 }
 
-                h ^= (uint) obj.Length;
+                hash ^= (uint) obj.Length;
 
-                h ^= h >> 16; h *= 2246822507;
-                h ^= h >> 13; h *= 3266489909;
-                h ^= h >> 16;
+                hash ^= hash >> 16; hash *= 2246822507;
+                hash ^= hash >> 13; hash *= 3266489909;
+                hash ^= hash >> 16;
 
-                return (int) h;
+                return (int) hash;
             }
+        }
 
-            // https://github.com/dotnet/runtime/blob/ecc8cb5bc0411e0fb0549230f70dfe8ab302c65c/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf16Utility.cs#L98
-            static ulong BlockToUpper(ulong input)
+        // https://github.com/dotnet/runtime/blob/ecc8cb5bc0411e0fb0549230f70dfe8ab302c65c/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf16Utility.cs#L98
+        private static ulong BlockToUpper(ulong input)
+        {
+            if ((input & ~0x007F_007F_007F_007Ful) is 0)
             {
-                if ((input & ~0x007F_007F_007F_007Ful) is 0)
-                {
-                    // All the 4 chars are ASCII
-                    ulong
-                        lowerIndicator = input + 0x0080_0080_0080_0080ul - 0x0061_0061_0061_0061ul,
-                        upperIndicator = input + 0x0080_0080_0080_0080ul - 0x007B_007B_007B_007Bul,
-                        combinedIndicator = lowerIndicator ^ upperIndicator,
-                        mask = (combinedIndicator & 0x0080_0080_0080_0080ul) >> 2;
+                // All the 4 chars are ASCII
+                ulong
+                    lowerIndicator = input + 0x0080_0080_0080_0080ul - 0x0061_0061_0061_0061ul,
+                    upperIndicator = input + 0x0080_0080_0080_0080ul - 0x007B_007B_007B_007Bul,
+                    combinedIndicator = lowerIndicator ^ upperIndicator,
+                    mask = (combinedIndicator & 0x0080_0080_0080_0080ul) >> 2;
 
-                    return input ^ mask;
-                }
-                else
-                {
-                    ref char inputRef = ref Unsafe.As<ulong, char>(ref input);
+                return input ^ mask;
+            }
+            else
+            {
+                ref char inputRef = ref Unsafe.As<ulong, char>(ref input);
 
-                    return
-                        (ulong) CharToUpper(inputRef) |
-                        ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 1)) << 16) |
-                        ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 2)) << 32) |
-                        ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 3)) << 48);
-                }
+                return
+                    (ulong) CharToUpper(inputRef) |
+                    ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 1)) << 16) |
+                    ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 2)) << 32) |
+                    ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 3)) << 48);
             }
         }
 
