@@ -41,7 +41,6 @@ NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo, string! paramName, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo, string! paramName, string! pattern, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Type! type, string! paramName, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
-NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody<TBody>(string! paramName, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonErrorDetails(bool populateErrorInfo = false) -> TBuilder!
 NanoRoute.MatchingBehavior
 NanoRoute.MatchingBehavior.LiteralFirst = 0 -> NanoRoute.MatchingBehavior
