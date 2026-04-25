@@ -55,6 +55,24 @@ namespace NanoRoute.Internals
             }
 
             return true;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static char CharToUpper(char chr)
+            {
+                if ((chr & ~0x007Fu) is 0)
+                {
+                    uint
+                        lowerIndicator = chr + 0x0080u - 0x0061u,
+                        upperIndicator = chr + 0x0080u - 0x007Bu,
+                        combinedIndicator = lowerIndicator ^ upperIndicator,
+                        mask = (combinedIndicator & 0x0080u) >> 2;
+
+                    return (char)(chr ^ mask);
+                }
+
+                // Slow...
+                return char.ToUpperInvariant(chr);
+            }
         }
 
         public int GetHashCode(ReadOnlyMemory<char> obj)
@@ -177,24 +195,6 @@ namespace NanoRoute.Internals
             }
 
             return asciiUpper;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static char CharToUpper(char chr)
-        {
-            if ((chr & ~0x007Fu) is 0)
-            {
-                uint
-                    lowerIndicator = chr + 0x0080u - 0x0061u,
-                    upperIndicator = chr + 0x0080u - 0x007Bu,
-                    combinedIndicator = lowerIndicator ^ upperIndicator,
-                    mask = (combinedIndicator & 0x0080u) >> 2;
-
-                return (char) (chr ^ mask);
-            }
-
-            // Slow...
-            return char.ToUpperInvariant(chr);
         }
     }
 }
