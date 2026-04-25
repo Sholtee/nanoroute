@@ -7,26 +7,26 @@ NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` 
 ```text
 nanoroute/
 |-- Src/                        Main source code
-|   `-- NanoRoute/              Library project
+|   |-- NanoRoute/              Library project
 |       |-- Doc/                DocFX documentation sources
 |       |-- Public/             Public API surface
 |       |-- Private/            Internal implementation details
 |       |   |-- LowLevel/       Low-level path and buffer helpers
-|       |   `-- RoutePattern/   Route pattern parsing and matching
+|       |   |-- RoutePattern/   Route pattern parsing and matching
 |       |-- Properties/         Resources and generated metadata
 |       |-- Icon.png            NuGet package icon
 |       |-- NanoRoute.csproj    Project file
 |       |-- PublicAPI.*.txt     Public API analyzer baselines
-|       `-- README.md           NuGet package README
+|       |-- README.md           NuGet package README
 |-- Tests/                      Validation and benchmarks
 |   |-- NanoRoute.Tests/        Unit tests
 |   |-- NanoRoute.Perf/         Performance benchmarks
 |   |-- NanoRoute.NativeAot/    Native AOT smoke test
 |   |-- CoverageSettings.xml    Coverage configuration
-|   `-- Tests.Build.props       Shared test project settings
+|   |-- Tests.Build.props       Shared test project settings
 |-- Scripts/                    Build and test helpers
 |-- Directory.Build.props       Shared MSBuild settings
-`-- NanoRoute.slnx              Solution entry point
+|-- NanoRoute.slnx              Solution entry point
 ```
 
 ## Target Frameworks
