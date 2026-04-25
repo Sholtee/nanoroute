@@ -4,14 +4,15 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Collections.Generic;
 
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 
 namespace NanoRoute.Perf
 {
     using Internals;
 
+    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
     [MemoryDiagnoser]
     public class ReadOnlyMemoryCharComparerBenchmarks
     {
@@ -23,42 +24,37 @@ namespace NanoRoute.Perf
             NonAsciiDifferent
         }
 
-        private readonly ReadOnlyMemoryCharComparer _comparer = ReadOnlyMemoryCharComparer.Instance;
-
-        private Dictionary<ReadOnlyMemory<char>, int> _dictionary = null!;
-
-        private ReadOnlyMemory<char>
-            _left,
-            _right;
+        private string
+            _leftString = null!,
+            _rightString = null!;
 
         [Params(ScenarioKind.AsciiEqual, ScenarioKind.AsciiDifferent, ScenarioKind.NonAsciiEqual, ScenarioKind.NonAsciiDifferent)]
         public ScenarioKind Scenario { get; set; }
 
         [GlobalSetup]
-        public void Setup()
+        public void Setup() => (_leftString, _rightString) = Scenario switch
         {
-            (_left, _right) = Scenario switch
-            {
-                ScenarioKind.AsciiEqual => ("warehouse".AsMemory(), "WAREHOUSE".AsMemory()),
-                ScenarioKind.AsciiDifferent => ("warehouse".AsMemory(), "currency".AsMemory()),
-                ScenarioKind.NonAsciiEqual => ("café".AsMemory(), "CAFÉ".AsMemory()),
-                ScenarioKind.NonAsciiDifferent => ("café".AsMemory(), "cafe\u0301".AsMemory()),
-                _ => throw new ArgumentOutOfRangeException(nameof(Scenario), Scenario, "Unknown comparer benchmark scenario.")
-            };
+            ScenarioKind.AsciiEqual => ("warehouse", "WAREHOUSE"),
+            ScenarioKind.AsciiDifferent => ("warehouse", "currency"),
+            ScenarioKind.NonAsciiEqual => ("café", "CAFÉ"),
+            ScenarioKind.NonAsciiDifferent => ("café", "cafe\u0301"),
+            _ => throw new ArgumentOutOfRangeException(nameof(Scenario), Scenario, "Unknown comparer benchmark scenario.")
+        };
 
-            _dictionary = new Dictionary<ReadOnlyMemory<char>, int>(_comparer)
-            {
-                [_left] = 42
-            };
-        }
+        [BenchmarkCategory(nameof(Equals))]
+        [Benchmark(Baseline = true)]
+        public bool FrameworkEquals() => StringComparer.OrdinalIgnoreCase.Equals(_leftString, _rightString);
 
+        [BenchmarkCategory(nameof(Equals))]
         [Benchmark]
-        public bool Equals() => _comparer.Equals(_left, _right);
+        public bool Equals() => ReadOnlyMemoryCharComparer.Instance.Equals(_leftString.AsMemory(), _rightString.AsMemory());
 
-        [Benchmark]
-        public int ComputeHashCode() => _comparer.GetHashCode(_left);
+        [BenchmarkCategory(nameof(ComputeHashCode))]
+        [Benchmark(Baseline = true)]
+        public int FrameworkComputeHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(_leftString);
 
+        [BenchmarkCategory(nameof(ComputeHashCode))]
         [Benchmark]
-        public bool DictionaryLookup() => _dictionary.TryGetValue(_right, out _);
+        public int ComputeHashCode() => ReadOnlyMemoryCharComparer.Instance.GetHashCode(_leftString.AsMemory());
     }
 }
