@@ -61,10 +61,11 @@ namespace NanoRoute.Internals
         {
             ref char inputRef = ref MemoryMarshal.GetReference(obj.Span);
 
-            // https://github.com/bryc/code/blob/master/jshash/hashes/murmurhash3.js
             unchecked
             {
-                uint hash = 1986, blockHash;
+                uint
+                    p0 = 0xD6E8_FEB8u,
+                    p1 = 0xA5A5_A5A5u;
 
                 int i = 0;
 
@@ -74,41 +75,74 @@ namespace NanoRoute.Internals
                         block = Unsafe.As<char, ulong>(ref Unsafe.Add(ref inputRef, i)),
                         upperBlock = BlockToUpper(block);
 
-                    ref char upperBlockRef = ref Unsafe.As<ulong, char>(ref upperBlock);
+                    // Feed Marvin with the uppercased UTF-16 bytes, two chars at a time.
+                    ref uint upperBlockRef = ref Unsafe.As<ulong, uint>(ref upperBlock);
 
-                    blockHash = (uint) (Unsafe.Add(ref upperBlockRef, 3) << 24 | Unsafe.Add(ref upperBlockRef, 2) << 16 | Unsafe.Add(ref upperBlockRef, 1) << 8 | upperBlockRef);
-                    blockHash *= 3432918353; blockHash = blockHash << 15 | blockHash >> 17;
-                    hash ^= blockHash * 461845907; hash = hash << 13 | hash >> 19;
-                    hash = hash * 5 + 3864292196;
+                    p0 += upperBlockRef;
+                    MarvinBlock(ref p0, ref p1);
+
+                    p0 += Unsafe.Add(ref upperBlockRef, 1);
+                    MarvinBlock(ref p0, ref p1);
                 }
 
                 int remainingChars = obj.Length & 3;
-                if (remainingChars > 0)
+
+                if (remainingChars is 0)
+                    p0 += 0x80u;
+                else
                 {
-                    blockHash = 0;
+                    // Pack the 1-3 char tail into a local block so BlockToUpper can handle it too.
+                    ulong tail = 0;
+
                     switch (remainingChars)
                     {
                         case 3:
-                            blockHash ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i + 2)) << 16;
+                            tail |= (ulong) Unsafe.Add(ref inputRef, i + 2) << 32;
                             goto case 2;
                         case 2:
-                            blockHash ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i + 1)) << 8;
+                            tail |= (ulong) Unsafe.Add(ref inputRef, i + 1) << 16;
                             goto case 1;
                         case 1:
-                            blockHash ^= (uint) CharToUpper(Unsafe.Add(ref inputRef, i));
-                            blockHash *= 3432918353; blockHash = blockHash << 15 | blockHash >> 17;
-                            hash ^= blockHash * 461845907;
+                            tail |= Unsafe.Add(ref inputRef, i);
                             break;
                     }
+
+                    tail = BlockToUpper(tail);
+
+                    ref char tailRef = ref Unsafe.As<ulong, char>(ref tail);
+                    // A 2- or 3-char tail has one complete Marvin block before padding.
+                    if (remainingChars >= 2)
+                    {
+                        p0 += Unsafe.As<char, uint>(ref tailRef);
+                        MarvinBlock(ref p0, ref p1);
+                    }
+
+                    // Add Marvin's final 0x80 padding after the remaining UTF-16 bytes.
+                    p0 += remainingChars is 2
+                        ? 0x80u
+                        : (uint) Unsafe.Add(ref tailRef, remainingChars - 1) | 0x0080_0000u;
                 }
 
-                hash ^= (uint) obj.Length;
+                MarvinBlock(ref p0, ref p1);
+                MarvinBlock(ref p0, ref p1);
 
-                hash ^= hash >> 16; hash *= 2246822507;
-                hash ^= hash >> 13; hash *= 3266489909;
-                hash ^= hash >> 16;
+                return (int) (p1 ^ p0);
+            }
 
-                return (int) hash;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static void MarvinBlock(ref uint p0, ref uint p1)
+            {
+                p1 ^= p0;
+                p0 = RotateLeft(p0, 20);
+                p0 += p1;
+                p1 = RotateLeft(p1, 9);
+                p1 ^= p0;
+                p0 = RotateLeft(p0, 27);
+                p0 += p1;
+                p1 = RotateLeft(p1, 19);
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static uint RotateLeft(uint value, int offset) => value << offset | value >> (32 - offset);
             }
         }
 
@@ -116,6 +150,7 @@ namespace NanoRoute.Internals
         private static ulong BlockToUpper(ulong input)
         {
             ulong
+                // Each 16-bit lane is non-zero here only when that char is outside ASCII.
                 nonAsciiMask = input & ~0x007F_007F_007F_007Ful,
                 lowerIndicator = input + 0x0080_0080_0080_0080ul - 0x0061_0061_0061_0061ul,
                 upperIndicator = input + 0x0080_0080_0080_0080ul - 0x007B_007B_007B_007Bul,
@@ -124,7 +159,7 @@ namespace NanoRoute.Internals
 
             if (nonAsciiMask is not 0)
             {
-                // call the slow path where it is necessary 
+                // ASCII lanes are already uppercased; only non-ASCII lanes need the slow path.
                 ref char inputRef = ref Unsafe.As<ulong, char>(ref input);
                 ref char resultRef = ref Unsafe.As<ulong, char>(ref asciiUpper);
 
