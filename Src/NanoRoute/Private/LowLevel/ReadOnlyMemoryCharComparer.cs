@@ -25,6 +25,7 @@ namespace NanoRoute.Internals
                 rightRef = ref MemoryMarshal.GetReference(y.Span);
 
             int i = 0;
+
             for (int bulkLength = length & -4; i < bulkLength; i += 4)
             {
                 ulong
@@ -35,7 +36,9 @@ namespace NanoRoute.Internals
                     return false;
             }
 
-            switch (length & 3)
+            int remainingChars = length & 3;
+
+            switch (remainingChars)
             {
                 case 3:
                     if (CharToUpper(Unsafe.Add(ref leftRef, i + 2)) != CharToUpper(Unsafe.Add(ref rightRef, i + 2)))
@@ -112,29 +115,36 @@ namespace NanoRoute.Internals
         // https://github.com/dotnet/runtime/blob/ecc8cb5bc0411e0fb0549230f70dfe8ab302c65c/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf16Utility.cs#L98
         private static ulong BlockToUpper(ulong input)
         {
-            if ((input & ~0x007F_007F_007F_007Ful) is 0)
-            {
-                // All the 4 chars are ASCII
-                ulong
-                    lowerIndicator = input + 0x0080_0080_0080_0080ul - 0x0061_0061_0061_0061ul,
-                    upperIndicator = input + 0x0080_0080_0080_0080ul - 0x007B_007B_007B_007Bul,
-                    combinedIndicator = lowerIndicator ^ upperIndicator,
-                    mask = (combinedIndicator & 0x0080_0080_0080_0080ul) >> 2;
+            ulong
+                nonAsciiMask = input & ~0x007F_007F_007F_007Ful,
+                lowerIndicator = input + 0x0080_0080_0080_0080ul - 0x0061_0061_0061_0061ul,
+                upperIndicator = input + 0x0080_0080_0080_0080ul - 0x007B_007B_007B_007Bul,
+                combinedIndicator = lowerIndicator ^ upperIndicator,
+                asciiUpper = input ^ ((combinedIndicator & 0x0080_0080_0080_0080ul) >> 2);
 
-                return input ^ mask;
-            }
-            else
+            if (nonAsciiMask is not 0)
             {
+                // call the slow path where it is necessary 
                 ref char inputRef = ref Unsafe.As<ulong, char>(ref input);
+                ref char resultRef = ref Unsafe.As<ulong, char>(ref asciiUpper);
 
-                return
-                    (ulong) CharToUpper(inputRef) |
-                    ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 1)) << 16) |
-                    ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 2)) << 32) |
-                    ((ulong) CharToUpper(Unsafe.Add(ref inputRef, 3)) << 48);
+                if ((nonAsciiMask & 0xFF80ul) is not 0)
+                    resultRef = char.ToUpperInvariant(inputRef);
+
+                if ((nonAsciiMask & 0xFF80_0000ul) is not 0)
+                    Unsafe.Add(ref resultRef, 1) = char.ToUpperInvariant(Unsafe.Add(ref inputRef, 1));
+
+                if ((nonAsciiMask & 0xFF80_0000_0000ul) is not 0)
+                    Unsafe.Add(ref resultRef, 2) = char.ToUpperInvariant(Unsafe.Add(ref inputRef, 2));
+
+                if ((nonAsciiMask & 0xFF80_0000_0000_0000ul) is not 0)
+                    Unsafe.Add(ref resultRef, 3) = char.ToUpperInvariant(Unsafe.Add(ref inputRef, 3));
             }
+
+            return asciiUpper;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static char CharToUpper(char chr)
         {
             if ((chr & ~0x007Fu) is 0)
