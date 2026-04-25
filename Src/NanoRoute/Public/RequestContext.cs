@@ -14,11 +14,31 @@ namespace NanoRoute
     /// Carries request-specific data through the NanoRoute handler pipeline.
     /// </summary>
     /// <remarks>
-    /// The same context instance is passed to each matching handler. Handlers can use
-    /// <see cref="Parameters"/> to share values, <see cref="Services"/> to resolve dependencies, and
-    /// <see cref="Cancellation"/> to observe either caller-initiated cancellation or router timeouts.
-    /// <see cref="Parameters"/> is a shared mutable dictionary for the active pipeline so handlers
-    /// may overwrite values that were written earlier by other handlers.
+    /// Handlers can use <see cref="Parameters"/> to share values, <see cref="Services"/> to resolve 
+    /// dependencies, and <see cref="Cancellation"/> to observe either caller-initiated cancellation
+    /// or router timeouts. <see cref="Parameters"/> is a shared mutable dictionary for the active 
+    /// pipeline so handlers may overwrite values that were written earlier by other handlers.
     /// </remarks>
-    public readonly record struct RequestContext(Dictionary<string, object?> Parameters, IServiceProvider Services, HttpRequestMessage Request, CancellationToken Cancellation);
+    public readonly struct RequestContext
+    {
+        /// <summary>
+        /// Gets the parsed route, query, and handler-shared values for the active request.
+        /// </summary>
+        public required Dictionary<string, object?> Parameters { get; init; }
+
+        /// <summary>
+        /// Gets the service provider available to handlers and parsers.
+        /// </summary>
+        public required IServiceProvider Services { get; init; }
+
+        /// <summary>
+        /// Gets the request being routed.
+        /// </summary>
+        public required HttpRequestMessage Request { get; init; }
+
+        /// <summary>
+        /// Gets the cancellation token for the active request.
+        /// </summary>
+        public CancellationToken Cancellation { get; init; }
+    }
 }

@@ -162,13 +162,13 @@ namespace NanoRoute
                     ParameterCount = match.AttachedParameters!.Count
                 });
 
-                RequestContext requestContext = new
-                (
-                    match.AttachedParameters!,
-                    services,
-                    request,
-                    cancellation
-                );
+                RequestContext requestContext = new()
+                {
+                    Parameters = match.AttachedParameters!,
+                    Services = services,
+                    Request = request,
+                    Cancellation = cancellation
+                };
 
                 return await match.Handler(requestContext, CallNextHandler);
             }
