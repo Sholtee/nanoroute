@@ -42,6 +42,24 @@ namespace NanoRoute
             return routeBuilder.GetRoot(frozen: true);
         }
 
+        private IDisposable? CreateLinkedTokenIfNecessary(ref CancellationToken cancellation)
+        {
+            if (Timeout == System.Threading.Timeout.InfiniteTimeSpan)
+                return null!;
+
+            if (cancellation.Equals(default))
+            {
+                CancellationTokenSource src = new(Timeout);
+                cancellation = src.Token;
+                return src;
+            }
+
+            CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+            linked.CancelAfter(Timeout);
+            cancellation = linked.Token;
+            return linked;
+        }
+
         /// <summary>
         /// Initializes a router from a route builder snapshot and router configuration.
         /// </summary>
@@ -121,9 +139,7 @@ namespace NanoRoute
                 Verb = verb
             });
 
-            using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
-            linked.CancelAfter(Timeout);
-            cancellation = linked.Token;
+            using IDisposable? tokeScope = CreateLinkedTokenIfNecessary(ref cancellation);
 
             using RouteMatchCursor matches = new
             (
