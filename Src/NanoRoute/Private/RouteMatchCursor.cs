@@ -18,6 +18,38 @@ namespace NanoRoute.Internals
 
     internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation): IDisposable
     {
+        #region Private
+        private enum BranchKind
+        {
+            Literal,
+            Parsed
+        }
+
+        private enum MatchPhase
+        {
+            /// <summary>
+            /// Emit all handlers that belong to the current node before descending into child nodes.
+            /// </summary>
+            EmitHandlers,
+
+            /// <summary>
+            /// Explore the branch category that currently has higher precedence.
+            /// </summary>
+            FirstBranch,
+
+            /// <summary>
+            /// Explore the remaining branch category after the preferred one has been attempted.
+            /// </summary>
+            SecondBranch,
+
+            /// <summary>
+            /// Terminating step
+            /// </summary>
+            Done
+        }
+
+        private readonly record struct BranchOrder(BranchKind First, BranchKind Second);
+
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
         private readonly BranchOrder _branchOrder = matchingBehavior switch
@@ -57,58 +89,11 @@ namespace NanoRoute.Internals
             return result;
         }
 
-        public HandlerRegistration Current { get; private set; } = null!;
-
-        public void Dispose() => s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
-
-        public async ValueTask<bool> MoveNextAsync()
+        // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
+        private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched, MatchPhase successPhase, MatchPhase failurePhase)
         {
-            while (_phase is not MatchPhase.Done)
-            {
-                cancellation.ThrowIfCancellationRequested();
-
-                switch (_phase)
-                {
-                    case MatchPhase.EmitHandlers:
-                        if (TryEmitHandler())
-                            return true;
-
-                        // No handler terminated the pipeline, go to the first branch
-                        _phase = MatchPhase.FirstBranch;
-                        break;
-
-                    case MatchPhase.FirstBranch:
-                        if (!_segment.HasValue)
-                        {
-                            _phase = MatchPhase.Done;
-                            break;
-                        }
-
-                        // Decode only when the matcher is about to inspect the segment. Prefix handlers can still run
-                        // without paying this cost, while invalid escapes are reported before any child branch is parsed.
-
-                        if (!UrlUtils.TryDecodeUrl(_segment.Current.Span, _decodedSegmentBuffer.AsSpan(_nextDecodedSegment), UrlDecodeMode.Path, out int charsWritten))
-                            HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_DECODING_FAILED);
-
-                        _decodedSegment = _decodedSegmentBuffer.AsMemory(_nextDecodedSegment, charsWritten);
-                        _nextDecodedSegment += charsWritten;
-
-                        _phase = await TryBranchAsync(_branchOrder.First)
-                            ? MatchPhase.EmitHandlers
-                            : MatchPhase.SecondBranch;
-                        break;
-
-                    case MatchPhase.SecondBranch:
-                        Debug.Assert(_segment.HasValue, "Second branch should not be reached when there is no segment to process");
-
-                        _phase = await TryBranchAsync(_branchOrder.Second)
-                            ? MatchPhase.EmitHandlers
-                            : MatchPhase.Done;
-                        break;
-                }
-            }
-
-            return false;
+            _phase = await branchMatched ? successPhase : failurePhase;
+            return await MoveNextAsync();
         }
 
         private void AdvanceToNextSegment(RouteNode nextNode)
@@ -185,7 +170,7 @@ namespace NanoRoute.Internals
             return new ValueTask<bool>(false);
         }
 
-        // Pay the state machine cost only for incomplete tasks 
+        // Keep TryParsedBranchAsync() state-machine-free while branch matching completes synchronously
         private async ValueTask<bool> TryParsedBranchAwaitedAsync(ValueTask<ValueParseResult> parseResult, int branchIndex, RouteNode branchNode)
         {
             if (TryAcceptParsedBranch(branchNode, await parseResult))
@@ -205,36 +190,68 @@ namespace NanoRoute.Internals
             AdvanceToNextSegment(branchNode);
             return true;
         }
+        #endregion
 
-        private readonly record struct BranchOrder(BranchKind First, BranchKind Second);
+        public HandlerRegistration Current { get; private set; } = null!;
 
-        private enum BranchKind
+        public void Dispose() => s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
+
+        public ValueTask<bool> MoveNextAsync()
         {
-            Literal,
-            Parsed
-        }
+            while (_phase is not MatchPhase.Done)
+            {
+                cancellation.ThrowIfCancellationRequested();
 
-        private enum MatchPhase
-        {
-            /// <summary>
-            /// Emit all handlers that belong to the current node before descending into child nodes.
-            /// </summary>
-            EmitHandlers,
+                switch (_phase)
+                {
+                    case MatchPhase.EmitHandlers:
+                        if (TryEmitHandler())
+                            return new ValueTask<bool>(true);
 
-            /// <summary>
-            /// Explore the branch category that currently has higher precedence.
-            /// </summary>
-            FirstBranch,
+                        // No handler terminated the pipeline, go to the first branch
+                        _phase = MatchPhase.FirstBranch;
+                        break;
 
-            /// <summary>
-            /// Explore the remaining branch category after the preferred one has been attempted.
-            /// </summary>
-            SecondBranch,
+                    case MatchPhase.FirstBranch:
+                        if (!_segment.HasValue)
+                        {
+                            _phase = MatchPhase.Done;
+                            break;
+                        }
 
-            /// <summary>
-            /// Terminating step
-            /// </summary>
-            Done
+                        // Decode only when the matcher is about to inspect the segment. Prefix handlers can still run
+                        // without paying this cost, while invalid escapes are reported before any child branch is parsed.
+
+                        if (!UrlUtils.TryDecodeUrl(_segment.Current.Span, _decodedSegmentBuffer.AsSpan(_nextDecodedSegment), UrlDecodeMode.Path, out int charsWritten))
+                            HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_DECODING_FAILED);
+
+                        _decodedSegment = _decodedSegmentBuffer.AsMemory(_nextDecodedSegment, charsWritten);
+                        _nextDecodedSegment += charsWritten;
+
+                        ValueTask<bool> firstBranchMatched = TryBranchAsync(_branchOrder.First);
+                        if (!firstBranchMatched.IsCompletedSuccessfully)
+                            return MoveNextAwaitedAsync(firstBranchMatched, MatchPhase.EmitHandlers, MatchPhase.SecondBranch);
+
+                        _phase = firstBranchMatched.Result ? MatchPhase.EmitHandlers : MatchPhase.SecondBranch;
+                        break;
+
+                    case MatchPhase.SecondBranch:
+                        Debug.Assert(_segment.HasValue, "Second branch should not be reached when there is no segment to process");
+
+                        ValueTask<bool> secondBranchMatched = TryBranchAsync(_branchOrder.Second);
+                        if (!secondBranchMatched.IsCompletedSuccessfully)
+                            return MoveNextAwaitedAsync(secondBranchMatched, MatchPhase.EmitHandlers, MatchPhase.Done);
+
+                        _phase = secondBranchMatched.Result ? MatchPhase.EmitHandlers : MatchPhase.Done;
+                        break;
+
+                    default:
+                        Debug.Fail($"Unknown phase: {_phase}");
+                        break;
+                }
+            }
+
+            return new ValueTask<bool>(false);
         }
     }
 }
