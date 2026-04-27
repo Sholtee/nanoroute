@@ -44,7 +44,7 @@ namespace NanoRoute
 
         private IDisposable? CreateLinkedTokenIfNecessary(ref CancellationToken cancellation)
         {
-            if (Timeout == System.Threading.Timeout.InfiniteTimeSpan)
+            if (Timeout.Equals(System.Threading.Timeout.InfiniteTimeSpan))
                 return null!;
 
             if (cancellation.Equals(default))

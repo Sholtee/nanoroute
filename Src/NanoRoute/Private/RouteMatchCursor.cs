@@ -150,41 +150,60 @@ namespace NanoRoute.Internals
 
         private bool TryLiteralBranch()
         {
-            if (!node.LiteralChildren.TryGetValue(_decodedSegment, out RouteNode literalChild))
+            if (!node.LiteralChildren.TryGetValue(_decodedSegment, out RouteNode branchNode))
                 return false;
 
-            AdvanceToNextSegment(literalChild);
+            AdvanceToNextSegment(branchNode);
             return true;
         }
 
-        private async ValueTask<bool> TryParsedBranchAsync()
+        private ValueTask<bool> TryParsedBranchAsync(int startIndex = 0)
         {
-            for (int i = 0; i < node.ParsedChildren.Count; i++)
+            for (int i = startIndex; i < node.ParsedChildren.Count; i++)
             {
-                RouteNode parsedChild = node.ParsedChildren[i];
+                RouteNode branchNode = node.ParsedChildren[i];
+                ParameterParser parser = branchNode.ParameterParser!;
 
-                ValueParseResult parsed = await parsedChild.ParameterParser!.Parse
+                ValueTask<ValueParseResult> parseResult = parser.Parse
                 (
                     new ValueParserContext
                     {
                         Segment = _decodedSegment,
                         Services = services,
-                        Arguments = parsedChild.ParameterParser.Arguments,
+                        Arguments = parser.Arguments,
                         Cancellation = cancellation
                     }
                 );
 
-                if (!parsed.Success)
-                    continue;
+                if (!parseResult.IsCompletedSuccessfully)
+                    return TryParsedBranchAwaitedAsync(parseResult, i, branchNode);
 
-                if (parsedChild.ParameterParser.Definition.ParameterName is { Length: > 0 } parameterName)
-                    _parameters[parameterName] = parsed.Parsed;
-
-                AdvanceToNextSegment(parsedChild);
-                return true;
+                if (TryAcceptParsedBranch(branchNode, parseResult.Result))
+                    return new ValueTask<bool>(true);
             }
 
-            return false;
+            return new ValueTask<bool>(false);
+        }
+
+        // Pay the state machine cost only for incomplete tasks 
+        private async ValueTask<bool> TryParsedBranchAwaitedAsync(ValueTask<ValueParseResult> parseResult, int branchIndex, RouteNode branchNode)
+        {
+            if (TryAcceptParsedBranch(branchNode, await parseResult))
+                return true;
+
+            return await TryParsedBranchAsync(branchIndex + 1);
+        }
+
+        private bool TryAcceptParsedBranch(RouteNode branchNode, ValueParseResult parseResult)
+        {
+            if (!parseResult.Success)
+                return false;
+
+            if (branchNode.ParameterParser!.Definition.ParameterName is { Length: > 0 } parameterName)
+                _parameters[parameterName] = parseResult.Parsed;
+
+            AdvanceToNextSegment(branchNode);
+            return true;
         }
 
         private readonly record struct BranchOrder(BranchKind First, BranchKind Second);
