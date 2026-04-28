@@ -173,11 +173,9 @@ namespace NanoRoute
 
                 routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
-                    await QueryStringParser.Parse
-                    (
-                        context,
-                        parsedBindings
-                    );
+                    using QueryStringParser queryStringParser = new(context, parsedBindings);
+
+                    await queryStringParser.Parse();
 
                     return await next();
                 });
