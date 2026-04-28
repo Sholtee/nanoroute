@@ -15,22 +15,22 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class QueryStringParser: IDisposable
+    internal sealed class QueryStringParser(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters): IDisposable
     {
         #region Private
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
-        private readonly RequestContext _context;
+        private readonly ReadOnlyMemory<char> _query = GetRawQuery(context.Request.RequestUri);
 
-        private readonly IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> _expectedParameters;
+        private char[]? _decodedBuffer;
 
-        private readonly char[] _decodedBuffer;
-
-        private readonly bool[] _visited;
+        // Track only query parameters seen during this parse so required checks and duplicate detection
+        // will not be confused by values that were already present in context.Parameters.
+        private readonly bool[] _visited = new bool[expectedParameters.Count];
 
         // DelimitedSegment is a mutable struct: keep this field non-readonly so MoveNext() updates the _parameter
         // itself instead of a defensive copy.
-        private DelimitedSegment _parameter;
+        private DelimitedSegment _parameter = new(GetRawQuery(context.Request.RequestUri), '&');
 
         private int _nextDecoded;
 
@@ -47,15 +47,20 @@ namespace NanoRoute.Internals
             if (!parseResult.Success)
                 ThrowBadRequest(Resources.ERR_QUERY_INVALID_PARAMETER, parameterDefinition.ParameterName!);
 
-            _context.Parameters[parameterDefinition.ParameterName!] = parseResult.Parsed;
+            context.Parameters[parameterDefinition.ParameterName!] = parseResult.Parsed;
         }
 
         private ReadOnlyMemory<char> DecodeParameter(ReadOnlyMemory<char> source)
         {
-            if (!UrlUtils.TryDecodeUrl(source.Span, _decodedBuffer.AsSpan(_nextDecoded), UrlDecodeMode.Form, out int charsWritten))
+            if (source.Span.IndexOfAny('%', '+') < 0)
+                return source;
+
+            char[] decodedBuffer = _decodedBuffer ??= s_arrayPool.Rent(_query.Length);
+
+            if (!UrlUtils.TryDecodeUrl(source.Span, decodedBuffer.AsSpan(_nextDecoded), UrlDecodeMode.Form, out int charsWritten))
                 ThrowBadRequest(Resources.ERR_DECODING_FAILED);
 
-            ReadOnlyMemory<char> result = _decodedBuffer.AsMemory(_nextDecoded, charsWritten);
+            ReadOnlyMemory<char> result = decodedBuffer.AsMemory(_nextDecoded, charsWritten);
             _nextDecoded += charsWritten;
 
             return result;
@@ -84,21 +89,11 @@ namespace NanoRoute.Internals
         );
         #endregion
 
-        public QueryStringParser(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters)
+        public void Dispose()
         {
-            ReadOnlyMemory<char> query = GetRawQuery(context.Request.RequestUri);
-
-            _context = context;
-            _expectedParameters = expectedParameters;
-            _decodedBuffer = s_arrayPool.Rent(query.Length);
-
-            // Track only query parameters seen during this parse so required checks and duplicate detection
-            // will not be confused by values that were already present in context.Parameters.
-            _visited = new bool[expectedParameters.Count];
-            _parameter = new DelimitedSegment(query, '&');
+            if (_decodedBuffer is not null)
+                s_arrayPool.Return(_decodedBuffer, clearArray: false);
         }
-
-        public void Dispose() => s_arrayPool.Return(_decodedBuffer, clearArray: false);
 
         public ValueTask Parse()
         {
@@ -110,7 +105,7 @@ namespace NanoRoute.Internals
 
                 ReadOnlyMemory<char> parameterName = DecodeParameter(_parameter.Current.Slice(0, separatorIndex));
 
-                if (!_expectedParameters.TryGetValue(parameterName, out ParameterParser? expectedParameter))
+                if (!expectedParameters.TryGetValue(parameterName, out ParameterParser? expectedParameter))
                     continue;
 
                 ParameterDefinition parameterDefinition = expectedParameter.Definition;
@@ -125,9 +120,9 @@ namespace NanoRoute.Internals
                     new ValueParserContext
                     {
                         Segment = DecodeParameter(_parameter.Current.Slice(separatorIndex + 1)),
-                        Services = _context.Services,
+                        Services = context.Services,
                         Arguments = expectedParameter.Arguments,
-                        Cancellation = _context.Cancellation
+                        Cancellation = context.Cancellation
                     }
                 );
 
@@ -139,7 +134,7 @@ namespace NanoRoute.Internals
 
             // FrozenDictionary uses ImmutableArray to access Values so accessing this property is a relative fast operation
             // https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary-2.values?view=net-10.0#property-value
-            foreach (ParameterParser expectedParameter in _expectedParameters.Values)
+            foreach (ParameterParser expectedParameter in expectedParameters.Values)
             {
                 ParameterDefinition parameterDefinition = expectedParameter.Definition;
 
