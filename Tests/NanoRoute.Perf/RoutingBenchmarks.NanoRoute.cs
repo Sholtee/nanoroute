@@ -17,14 +17,14 @@ namespace NanoRoute.Perf
         {
             private sealed class NanoRouteRouter(string routePattern, Uri requestUri) : IRouter
             {
-                private static readonly HttpResponseMessage s_response = new(HttpStatusCode.OK);
-
                 private static readonly IServiceProvider s_services = new NoopServiceProvider();
+
+                private static readonly Task<HttpResponseMessage> s_responseTask = Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 
                 private readonly TestRouter _router = new RouterBuilder<TestRouter, RouterConfig>(static bldr => new TestRouter(bldr))
                     .WithConfiguration(static cfg => cfg.Timeout = Timeout.InfiniteTimeSpan)
                     .AddDefaultValueParsers()
-                    .AddHandler("GET", routePattern, static (_, _) => Task.FromResult(s_response))
+                    .AddHandler("GET", routePattern, static (_, _) => s_responseTask)
                     .CreateRouter();
 
                 private readonly HttpRequestMessage _request = new(HttpMethod.Get, requestUri);
