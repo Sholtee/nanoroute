@@ -16,7 +16,14 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation): IAsyncEnumerator<HandlerRegistration>
+    internal readonly struct RouteMatch
+    {
+        public required HandlerRegistration HandlerRegistration { get; init; }
+
+        public required Dictionary<string, object?> AttachedParameters { get; init; }
+    }
+
+    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation): IAsyncEnumerator<RouteMatch>
     {
         #region Private
         private enum BranchKind
@@ -138,7 +145,7 @@ namespace NanoRoute.Internals
                 if (_segment.HasValue && !candidate.IsPrefix)
                     continue;
 
-                Current = candidate with { AttachedParameters = _parameters };
+                Current = new RouteMatch { HandlerRegistration = candidate, AttachedParameters = _parameters };
                 return true;
             }
 
@@ -211,7 +218,7 @@ namespace NanoRoute.Internals
         }
         #endregion
 
-        public HandlerRegistration Current { get; private set; } = null!;
+        public RouteMatch Current { get; private set; }
 
         public ValueTask DisposeAsync()
         {

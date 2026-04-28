@@ -57,8 +57,7 @@ namespace NanoRoute.Tests
             RouteMatchCursor cursor = CreateCursor(root, "/api/users");
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.Handler, Is.EqualTo(handler.Handler));
-            Assert.That(cursor.Current.Pattern, Is.EqualTo(handler.Pattern));
+            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
             Assert.That(cursor.Current.AttachedParameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
@@ -95,7 +94,7 @@ namespace NanoRoute.Tests
             RouteMatchCursor cursor = CreateCursor(root, "/items/value", matchingBehavior);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.Pattern, Is.EqualTo(expectedPattern));
+            Assert.That(cursor.Current.HandlerRegistration.Pattern, Is.EqualTo(expectedPattern));
 
             if (matchingBehavior is MatchingBehavior.ParameterizedChildrenFirst)
                 Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue("value"));
@@ -164,8 +163,7 @@ namespace NanoRoute.Tests
             RouteMatchCursor cursor = CreateCursor(root, "/api/abc/details");
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.Handler, Is.EqualTo(handler.Handler));
-            Assert.That(cursor.Current.Pattern, Is.EqualTo(handler.Pattern));
+            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
             Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("slug").WithValue("abc"));
             Assert.That(cursor.Current.AttachedParameters, Does.Not.ContainKey("id"));
 
@@ -200,7 +198,7 @@ namespace NanoRoute.Tests
             RouteMatchCursor cursor = CreateCursor(root, "/api/value/details");
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.Pattern, Is.EqualTo(handler.Pattern));
+            Assert.That(cursor.Current.HandlerRegistration.Pattern, Is.EqualTo(handler.Pattern));
             Assert.That(cursor.Current.AttachedParameters, Is.Empty);
         }
 
@@ -250,7 +248,7 @@ namespace NanoRoute.Tests
             RouteMatchCursor cursor = CreateCursor(root, "/api/1986/details");
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.Pattern, Is.EqualTo(handler.Pattern));
+            Assert.That(cursor.Current.HandlerRegistration.Pattern, Is.EqualTo(handler.Pattern));
             Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue(1986));
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);

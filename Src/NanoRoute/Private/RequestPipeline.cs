@@ -61,27 +61,25 @@ namespace NanoRoute.Internals
 
         private Task<HttpResponseMessage> InvokeCurrentHandler()
         {
-            HandlerRegistration match = _matches.Current;
-
-            Debug.Assert(match.AttachedParameters is not null, "Parameters must be attached here");
+            RouteMatch match = _matches.Current;
 
             RouterEventSource.Log.Info("MatchingHandler", () => new
             {
                 RequestUri = request.RequestUri.OriginalString,
                 Verb = request.Method.Method,
-                match.Pattern,
-                ParameterCount = match.AttachedParameters!.Count
+                Pattern = match.HandlerRegistration.Pattern,
+                ParameterCount = match.AttachedParameters.Count
             });
 
             RequestContext requestContext = new()
             {
-                Parameters = match.AttachedParameters!,
+                Parameters = match.AttachedParameters,
                 Services = services,
                 Request = request,
                 Cancellation = cancellation
             };
 
-            return match.Handler(requestContext, CallNextHandler);
+            return match.HandlerRegistration.Handler(requestContext, CallNextHandler);
         }
 
         private void ThrowNotFound()
