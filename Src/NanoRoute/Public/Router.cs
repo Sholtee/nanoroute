@@ -127,67 +127,17 @@ namespace NanoRoute
             Ensure.NotNull(request);
             Ensure.NotNull(services);
 
-            if (!Enum.TryParse(request.Method.Method, ignoreCase: true, out HttpVerb verb))
-                throw new ArgumentException
-                (
-                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(request)
-                );
-
             RouterEventSource.Log.Info("RequestProcessingStarted", () => new
             {
                 RequestUri = request.RequestUri.OriginalString,
-                Verb = verb
+                Verb = request.Method.Method
             });
 
-            using IDisposable? tokeScope = CreateLinkedTokenIfNecessary(ref cancellation);
+            using IDisposable? cancellationSoke = CreateLinkedTokenIfNecessary(ref cancellation);
 
-            using RouteMatchCursor matches = new
-            (
-                _root,
-                verb,
-                request.RequestUri,
-                services,
-                MatchingBehavior,
-                cancellation
-            );
+            await using RequestPipeline pipeline = new(_root, MatchingBehavior, request, services, cancellation);
 
-            return await CallNextHandler();
-
-            async Task<HttpResponseMessage> CallNextHandler()
-            {
-                if (!await matches.MoveNextAsync())
-                {
-                    RouterEventSource.Log.Info("NoMatchingHandler", () => new
-                    {
-                        RequestUri = request.RequestUri.OriginalString,
-                        Verb = verb
-                    });
-
-                    HttpRequestException.Throw(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
-                }
-
-                HandlerRegistration match = matches.Current;
-
-                Debug.Assert(match.AttachedParameters is not null, "Parameters must be attached here");
-
-                RouterEventSource.Log.Info("MatchingHandler", () => new
-                {
-                    RequestUri = request.RequestUri.OriginalString,
-                    Verb = verb,
-                    match.Pattern,
-                    ParameterCount = match.AttachedParameters!.Count
-                });
-
-                RequestContext requestContext = new()
-                {
-                    Parameters = match.AttachedParameters!,
-                    Services = services,
-                    Request = request,
-                    Cancellation = cancellation
-                };
-
-                return await match.Handler(requestContext, CallNextHandler);
-            }
+            return await pipeline.RunAsync();
         }
     }
 }

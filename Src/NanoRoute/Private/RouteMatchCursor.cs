@@ -16,7 +16,7 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation): IDisposable
+    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, MatchingBehavior matchingBehavior, CancellationToken cancellation): IAsyncEnumerator<HandlerRegistration>
     {
         #region Private
         private enum BranchKind
@@ -109,6 +109,7 @@ namespace NanoRoute.Internals
 
         private bool TryEmitHandler()
         {
+            // Retrieve the handler list on the first iteration
             if (_handlers is null && !node.HandlerRegistrations.TryGetValue(verb, out _handlers))
                 return false;
 
@@ -194,7 +195,11 @@ namespace NanoRoute.Internals
 
         public HandlerRegistration Current { get; private set; } = null!;
 
-        public void Dispose() => s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
+        public ValueTask DisposeAsync()
+        {
+            s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
+            return default;
+        }
 
         public ValueTask<bool> MoveNextAsync()
         {
