@@ -61,7 +61,7 @@ namespace NanoRoute.Internals
 
         private readonly Dictionary<string, object?> _parameters = new(StringComparer.OrdinalIgnoreCase);
 
-        private readonly char[] _decodedSegmentBuffer = s_arrayPool.Rent(uri.AbsolutePath.Length);
+        private char[]? _decodedSegmentBuffer;
 
         // DelimitedSegment is a mutable struct: keep this field non-readonly so MoveNext() updates the cursor
         // itself instead of a defensive copy.
@@ -87,6 +87,24 @@ namespace NanoRoute.Internals
             );
             result.MoveNext();
             return result;
+        }
+
+        private ReadOnlyMemory<char> GetSegmentForMatching()
+        {
+            ReadOnlyMemory<char> current = _segment.Current;
+
+            // This check is fast since span operations are vectorized
+            if (current.Span.IndexOf('%') < 0)
+                return current;
+
+            char[] decodedSegmentBuffer = _decodedSegmentBuffer ??= s_arrayPool.Rent(uri.AbsolutePath.Length);
+
+            if (!UrlUtils.TryDecodeUrl(current.Span, decodedSegmentBuffer.AsSpan(_nextDecodedSegment), UrlDecodeMode.Path, out int charsWritten))
+                HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_DECODING_FAILED);
+
+            ReadOnlyMemory<char> decodedSegment = decodedSegmentBuffer.AsMemory(_nextDecodedSegment, charsWritten);
+            _nextDecodedSegment += charsWritten;
+            return decodedSegment;
         }
 
         // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
@@ -197,7 +215,9 @@ namespace NanoRoute.Internals
 
         public ValueTask DisposeAsync()
         {
-            s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
+            if (_decodedSegmentBuffer is not null)
+                s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
+
             return default;
         }
 
@@ -225,13 +245,8 @@ namespace NanoRoute.Internals
                         }
 
                         // Decode only when the matcher is about to inspect the segment. Prefix handlers can still run
-                        // without paying this cost, while invalid escapes are reported before any child branch is parsed.
-
-                        if (!UrlUtils.TryDecodeUrl(_segment.Current.Span, _decodedSegmentBuffer.AsSpan(_nextDecodedSegment), UrlDecodeMode.Path, out int charsWritten))
-                            HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_DECODING_FAILED);
-
-                        _decodedSegment = _decodedSegmentBuffer.AsMemory(_nextDecodedSegment, charsWritten);
-                        _nextDecodedSegment += charsWritten;
+                        // without paying this cost and they can catch invalid escape errors, too.
+                        _decodedSegment = GetSegmentForMatching();
 
                         ValueTask<bool> firstBranchMatched = TryBranchAsync(_branchOrder.First);
                         if (!firstBranchMatched.IsCompletedSuccessfully)
