@@ -191,6 +191,33 @@ namespace NanoRoute.Tests
             Assert.That(body!.Name, Is.EqualTo("Spikey"));
         }
 
+        [TestCase("POST")]
+        [TestCase("PUT")]
+        public async Task AddJsonBody_ShouldDefaultToPostAndPut(string verb)
+        {
+            TestJsonPayload? body = null;
+
+            TestRouter router = _routerBuilder
+                .AddJsonBody(typeof(TestJsonPayload), "payload")
+                .AddHandler(verb, "/items", async (context, _) =>
+                {
+                    body = (TestJsonPayload) context.Parameters["payload"]!;
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                })
+                .CreateRouter();
+
+            HttpRequestMessage request = new(new HttpMethod(verb), "https://test.test/items")
+            {
+                Content = new StringContent("{\"name\":\"Spikey\"}", Encoding.UTF8, "application/json")
+            };
+
+            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(body, Is.Not.Null);
+            Assert.That(body!.Name, Is.EqualTo("Spikey"));
+        }
+
         [Test]
         public void AddJsonBody_ShouldRejectRequestsWithoutContent()
         {
