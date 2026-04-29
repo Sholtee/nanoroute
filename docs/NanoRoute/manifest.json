@@ -158,17 +158,17 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.MatchingBehavior.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.MatchingPrecedence.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.MatchingBehavior.html"
+          "relative_path": "NanoRoute.MatchingPrecedence.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.MatchingBehavior",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.MatchingBehavior.yml\" sourcestartlinenumber=\"1\">Controls how the router selects between literal and parameterized child segments during matching.</p>\n"
+      "Title": "NanoRoute.MatchingPrecedence",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.MatchingPrecedence.yml\" sourcestartlinenumber=\"1\">Defines how the router prioritizes literal and parameterized child segments during matching.</p>\n"
     },
     {
       "type": "ManagedReference",

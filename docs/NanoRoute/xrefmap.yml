@@ -391,24 +391,24 @@ references:
   fullName.vb: NanoRoute.Json.NanoRouteJsonExtensions.Json(Of T)(T)
   nameWithType: NanoRouteJsonExtensions.Json<T>(T?)
   nameWithType.vb: NanoRouteJsonExtensions.Json(Of T)(T)
-- uid: NanoRoute.MatchingBehavior
-  name: MatchingBehavior
-  href: NanoRoute.MatchingBehavior.html
-  commentId: T:NanoRoute.MatchingBehavior
-  fullName: NanoRoute.MatchingBehavior
-  nameWithType: MatchingBehavior
-- uid: NanoRoute.MatchingBehavior.LiteralFirst
+- uid: NanoRoute.MatchingPrecedence
+  name: MatchingPrecedence
+  href: NanoRoute.MatchingPrecedence.html
+  commentId: T:NanoRoute.MatchingPrecedence
+  fullName: NanoRoute.MatchingPrecedence
+  nameWithType: MatchingPrecedence
+- uid: NanoRoute.MatchingPrecedence.LiteralFirst
   name: LiteralFirst
-  href: NanoRoute.MatchingBehavior.html#NanoRoute_MatchingBehavior_LiteralFirst
-  commentId: F:NanoRoute.MatchingBehavior.LiteralFirst
-  fullName: NanoRoute.MatchingBehavior.LiteralFirst
-  nameWithType: MatchingBehavior.LiteralFirst
-- uid: NanoRoute.MatchingBehavior.ParameterizedChildrenFirst
+  href: NanoRoute.MatchingPrecedence.html#NanoRoute_MatchingPrecedence_LiteralFirst
+  commentId: F:NanoRoute.MatchingPrecedence.LiteralFirst
+  fullName: NanoRoute.MatchingPrecedence.LiteralFirst
+  nameWithType: MatchingPrecedence.LiteralFirst
+- uid: NanoRoute.MatchingPrecedence.ParameterizedChildrenFirst
   name: ParameterizedChildrenFirst
-  href: NanoRoute.MatchingBehavior.html#NanoRoute_MatchingBehavior_ParameterizedChildrenFirst
-  commentId: F:NanoRoute.MatchingBehavior.ParameterizedChildrenFirst
-  fullName: NanoRoute.MatchingBehavior.ParameterizedChildrenFirst
-  nameWithType: MatchingBehavior.ParameterizedChildrenFirst
+  href: NanoRoute.MatchingPrecedence.html#NanoRoute_MatchingPrecedence_ParameterizedChildrenFirst
+  commentId: F:NanoRoute.MatchingPrecedence.ParameterizedChildrenFirst
+  fullName: NanoRoute.MatchingPrecedence.ParameterizedChildrenFirst
+  nameWithType: MatchingPrecedence.ParameterizedChildrenFirst
 - uid: NanoRoute.NanoRouteExceptionExtensions
   name: NanoRouteExceptionExtensions
   href: NanoRoute.NanoRouteExceptionExtensions.html
@@ -784,18 +784,18 @@ references:
   commentId: Overload:NanoRoute.Router.Handle
   fullName: NanoRoute.Router.Handle
   nameWithType: Router.Handle
-- uid: NanoRoute.Router.MatchingBehavior
-  name: MatchingBehavior
-  href: NanoRoute.Router.html#NanoRoute_Router_MatchingBehavior
-  commentId: P:NanoRoute.Router.MatchingBehavior
-  fullName: NanoRoute.Router.MatchingBehavior
-  nameWithType: Router.MatchingBehavior
-- uid: NanoRoute.Router.MatchingBehavior*
-  name: MatchingBehavior
-  href: NanoRoute.Router.html#NanoRoute_Router_MatchingBehavior_
-  commentId: Overload:NanoRoute.Router.MatchingBehavior
-  fullName: NanoRoute.Router.MatchingBehavior
-  nameWithType: Router.MatchingBehavior
+- uid: NanoRoute.Router.MatchingPrecedence
+  name: MatchingPrecedence
+  href: NanoRoute.Router.html#NanoRoute_Router_MatchingPrecedence
+  commentId: P:NanoRoute.Router.MatchingPrecedence
+  fullName: NanoRoute.Router.MatchingPrecedence
+  nameWithType: Router.MatchingPrecedence
+- uid: NanoRoute.Router.MatchingPrecedence*
+  name: MatchingPrecedence
+  href: NanoRoute.Router.html#NanoRoute_Router_MatchingPrecedence_
+  commentId: Overload:NanoRoute.Router.MatchingPrecedence
+  fullName: NanoRoute.Router.MatchingPrecedence
+  nameWithType: Router.MatchingPrecedence
 - uid: NanoRoute.Router.ORIGINAL_REQUEST_NAME
   name: ORIGINAL_REQUEST_NAME
   href: NanoRoute.Router.html#NanoRoute_Router_ORIGINAL_REQUEST_NAME
@@ -1112,18 +1112,18 @@ references:
   fullName.vb: NanoRoute.RouterConfig.New
   nameWithType: RouterConfig.RouterConfig
   nameWithType.vb: RouterConfig.New
-- uid: NanoRoute.RouterConfig.MatchingBehavior
-  name: MatchingBehavior
-  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_MatchingBehavior
-  commentId: P:NanoRoute.RouterConfig.MatchingBehavior
-  fullName: NanoRoute.RouterConfig.MatchingBehavior
-  nameWithType: RouterConfig.MatchingBehavior
-- uid: NanoRoute.RouterConfig.MatchingBehavior*
-  name: MatchingBehavior
-  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_MatchingBehavior_
-  commentId: Overload:NanoRoute.RouterConfig.MatchingBehavior
-  fullName: NanoRoute.RouterConfig.MatchingBehavior
-  nameWithType: RouterConfig.MatchingBehavior
+- uid: NanoRoute.RouterConfig.MatchingPrecedence
+  name: MatchingPrecedence
+  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_MatchingPrecedence
+  commentId: P:NanoRoute.RouterConfig.MatchingPrecedence
+  fullName: NanoRoute.RouterConfig.MatchingPrecedence
+  nameWithType: RouterConfig.MatchingPrecedence
+- uid: NanoRoute.RouterConfig.MatchingPrecedence*
+  name: MatchingPrecedence
+  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_MatchingPrecedence_
+  commentId: Overload:NanoRoute.RouterConfig.MatchingPrecedence
+  fullName: NanoRoute.RouterConfig.MatchingPrecedence
+  nameWithType: RouterConfig.MatchingPrecedence
 - uid: NanoRoute.RouterConfig.Timeout
   name: Timeout
   href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_Timeout
