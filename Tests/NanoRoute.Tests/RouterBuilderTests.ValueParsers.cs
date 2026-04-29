@@ -91,6 +91,20 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void AddValueParser_ShouldReturnTheOriginalBuilder()
+        {
+            RouterBuilder<TestRouter, RouterConfig> result = RouterBuilderValueParserExtensions.AddValueParser
+            (
+                _routerBuilder,
+                "value",
+                new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object,
+                new Mock<ValueParserDelegate>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(result, Is.SameAs(_routerBuilder));
+        }
+
+        [Test]
         public async Task WithBase_ShouldKeepChildParserOverridesLocal()
         {
             RouteBuilder childBuilder = _routerBuilder

@@ -549,6 +549,27 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task Handle_ShouldLeaveCancellationTokenUnchangedWhenTimeoutIsInfinite()
+        {
+            using CancellationTokenSource cts = new();
+
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
+            mockHandler
+                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && c.Cancellation.Equals(cts.Token)), It.IsAny<CallNextHandlerDelegate>()))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .WithConfiguration(config => config.Timeout = Timeout.InfiniteTimeSpan)
+                .AddHandler("GET", "/", mockHandler.Object)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/");
+
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cts.Token), Is.EqualTo(s_response));
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
+        }
+
+        [Test]
         public async Task Handle_ShouldPropagateTheServiceProvider()
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
@@ -760,6 +781,35 @@ namespace NanoRoute.Tests
             Assert.That(await router.Handle(_request, mockServices.Object), Is.EqualTo(s_response));
             mockParser.Verify(p => p.Invoke(It.Is<ValueParserContext>(ctx => ctx.Segment.ToString() == "a b" && ctx.Services == mockServices.Object)), Times.Once);
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task Handle_ShouldAcceptParsersWithAndWithoutStateMachine(bool forceStateMachine)
+        {
+            static ValueTask<ValueParseResult> ParserWithoutStateMachine(ValueParserContext context) =>
+                new(new ValueParseResult(true, context.Segment.ToString()));
+
+            static async ValueTask<ValueParseResult> ParserWithStateMachine(ValueParserContext context)
+            {
+                await Task.Yield();
+                return new ValueParseResult(true, context.Segment.ToString());
+            }
+
+            TestRouter router = _routerBuilder
+                .AddValueParser("str", forceStateMachine ? ParserWithStateMachine : ParserWithoutStateMachine)
+                .AddHandler("GET", "/files/{name:str}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent((string) context.Parameters["name"]!)
+                })
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
+
+            HttpResponseMessage response = await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("a b"));
         }
 
         [Test]
