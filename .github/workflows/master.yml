@@ -125,8 +125,9 @@ jobs:
             param($ROOT, $GH_PAGES)
 
             $badges = Join-Path $GH_PAGES "badges"
+            if (-not (Test-Path $badges)) { throw "Badges directory not found: $badges" }
 
-            New-Item -Path $badges -ItemType Directory -Force | Out-Null
+            Remove-Item -Path (Join-Path $badges "*.svg") -Force -ErrorAction SilentlyContinue
             Get-ChildItem -Path (Join-Path $ROOT "Artifacts") -Recurse -Filter *-badge.svg -File | ForEach-Object {
               Copy-Item -Path $_.FullName -Destination $badges -Force
             }
