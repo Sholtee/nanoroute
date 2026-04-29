@@ -20,7 +20,7 @@ dotnet build-server shutdown
 foreach ($csproj in (Get-ChildItem -Path $SRC -Recurse -File -Filter *.csproj)) {
   Write-Host "`n---------Create NuGet package for $($csproj.Name)---------"
 
-  dotnet pack $csproj.FullName --configuration Release --output $PACKAGES
+  dotnet pack $csproj.FullName --configuration Release --output $PACKAGES --include-symbols -p:SymbolPackageFormat=snupkg
   if (-not $?) { throw "Package creation failed" }
 
   Write-Host "-------------------------------Done-------------------------------`n"
