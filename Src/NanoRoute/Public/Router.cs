@@ -127,11 +127,11 @@ namespace NanoRoute
             Ensure.NotNull(request);
             Ensure.NotNull(services);
 
-            RouterEventSource.Log.Info("RequestProcessingStarted", () => new
+            RouterEventSource.Info.Write("RequestProcessingStarted", static request => new
             {
                 RequestUri = request.RequestUri.OriginalString,
                 Verb = request.Method.Method
-            });
+            }, request);
 
             using IDisposable? cancellationSoke = CreateLinkedTokenIfNecessary(ref cancellation);
 

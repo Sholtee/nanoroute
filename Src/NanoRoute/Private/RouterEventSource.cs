@@ -28,51 +28,46 @@ namespace NanoRoute.Internals
         /// <summary>
         /// The singleton instance.
         /// </summary>
-        public static RouterEventSource Log { get; } = new();
+        public static RouterEventSource Instance { get; } = new();
+
+        public static EventSourceWriter Debug { get; } = new EventSourceWriter(Instance, EventLevel.Verbose);
+
+        public static EventSourceWriter Info { get; } = new EventSourceWriter(Instance, EventLevel.Informational);
+
+        public static EventSourceWriter Warning { get; } = new EventSourceWriter(Instance, EventLevel.Warning);
+
+        public static EventSourceWriter Error { get; } = new EventSourceWriter(Instance, EventLevel.Error);
     }
 
     /// <summary>
     /// Defines some extensions methods over the <see cref="EventSource"/> class.
     /// </summary>
-    internal static class EventSourceExtensions
+    internal sealed class EventSourceWriter(EventSource target, EventLevel level)
     {
+        private readonly EventSourceOptions _options = new() { Level = level };
+
         /// <summary>
-        /// Logs a message with the given <paramref name="level"/>. The <paramref name="attributesFactory"/> is called only when the log <paramref name="level"/> is enabled.
+        /// Logs a message with the given <see cref="Level"/>. The <paramref name="attributesFactory"/> is called only when the log <see cref="Level"/> is enabled.
         /// </summary>
         [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "We won't use composite types when calling this method")]
-        public static void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(this EventSource src, string eventName, EventLevel level, Func<T> attributesFactory)
+        public void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TParam>(string eventName, Func<TParam, T> attributesFactory, TParam p)
         {
-            if (src.IsEnabled(level, EventKeywords.None))
-                src.Write
-                (
-                    eventName,
-                    new EventSourceOptions { Level = level },
-                    attributesFactory()
-                );
+            if (target.IsEnabled(Level, EventKeywords.None))
+                target.Write(eventName, _options, attributesFactory(p));
         }
 
         /// <summary>
-        /// Logs a debug message
+        /// Logs a message with the given <see cref="Level"/>. The <paramref name="attributesFactory"/> is called only when the log <see cref="Level"/> is enabled.
         /// </summary>
-        public static void Debug<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(this EventSource src, string eventName, Func<T> attributesFactory) =>
-            src.Write(eventName, EventLevel.Verbose, attributesFactory);
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "We won't use composite types when calling this method")]
+        public void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TParam_1, TParam_2>(string eventName, Func<TParam_1, TParam_2, T> attributesFactory, TParam_1 p1, TParam_2 p2)
+        {
+            if (target.IsEnabled(Level, EventKeywords.None))
+                target.Write(eventName, _options, attributesFactory(p1, p2));
+        }
 
-        /// <summary>
-        /// Logs an information message
-        /// </summary>
-        public static void Info<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(this EventSource src, string eventName, Func<T> attributesFactory) =>
-            src.Write(eventName, EventLevel.Informational, attributesFactory);
+        public EventLevel Level { get; } = level;
 
-        /// <summary>
-        /// Logs a warning message
-        /// </summary>
-        public static void Warn<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(this EventSource src, string eventName, Func<T> attributesFactory) =>
-            src.Write(eventName, EventLevel.Warning, attributesFactory);
-
-        /// <summary>
-        /// Logs an error message
-        /// </summary>
-        public static void Error<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(this EventSource src, string eventName, Func<T> attributesFactory) =>
-            src.Write(eventName, EventLevel.Error, attributesFactory);
+        public override string ToString() => Level.ToString();
     }
 }

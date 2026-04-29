@@ -4,7 +4,6 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -63,13 +62,13 @@ namespace NanoRoute.Internals
         {
             RouteMatch match = _matches.Current;
 
-            RouterEventSource.Log.Info("MatchingHandler", () => new
+            RouterEventSource.Info.Write("MatchingHandler", static (request, match) => new
             {
                 RequestUri = request.RequestUri.OriginalString,
                 Verb = request.Method.Method,
                 Pattern = match.HandlerRegistration.Pattern,
                 ParameterCount = match.AttachedParameters.Count
-            });
+            }, request, match);
 
             RequestContext requestContext = new()
             {
@@ -84,11 +83,11 @@ namespace NanoRoute.Internals
 
         private void ThrowNotFound()
         {
-            RouterEventSource.Log.Info("NoMatchingHandler", () => new
+            RouterEventSource.Info.Write("NoMatchingHandler", static request => new
             {
                 RequestUri = request.RequestUri.OriginalString,
                 Verb = request.Method.Method
-            });
+            }, request);
 
             HttpRequestException.Throw(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
         }
