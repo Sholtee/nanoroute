@@ -15,13 +15,13 @@ namespace NanoRoute.Internals
 
         public bool MoveNext()
         {
-            ReadOnlySpan<char> span = original.Span;
-
             if (_next is DONE)
             {
                 Current = default;
                 return false;
             }
+
+            ReadOnlySpan<char> span = original.Span;
 
             while (_next < span.Length && span[_next] == separator)
                 _next++;
