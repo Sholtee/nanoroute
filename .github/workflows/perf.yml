@@ -48,16 +48,10 @@ jobs:
         shell: pwsh
         if: ${{ inputs.publish-artifacts }}
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-    
-          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sholtee/nanoroute.git gh-pages
+          ./Scripts/Update-GitHubPages.ps1 {
+            param($ROOT, $GH_PAGES)
 
-          Remove-Item -Path ./gh-pages/Benchmarks -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-          New-Item -Path ./gh-pages/Benchmarks -ItemType Directory -Force | Out-Null
-          Copy-Item ./Artifacts/BenchmarkDotNet/results/*.md ./gh-pages/Benchmarks/ -Force
-
-          Set-Location gh-pages
-          git add .
-          git commit -m "[bot] update artifacts" || Write-Host "Nothing to commit"
-          git push origin gh-pages
+            Remove-Item -Path (Join-Path $GH_PAGES "Benchmarks") -Recurse -Force -ErrorAction SilentlyContinue
+            New-Item -Path (Join-Path $GH_PAGES "Benchmarks") -ItemType Directory -Force
+            Copy-Item (Join-Path $ROOT "Artifacts/BenchmarkDotNet/results/*.md") (Join-Path $GH_PAGES "Benchmarks") -Force
+          } "${{ secrets.GITHUB_TOKEN }}"

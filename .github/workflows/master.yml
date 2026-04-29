@@ -121,23 +121,19 @@ jobs:
       - name: Upload artifacts to gh-pages
         shell: pwsh
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          ./Scripts/Update-GitHubPages.ps1 {
+            param($ROOT, $GH_PAGES)
 
-          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/sholtee/nanoroute.git gh-pages
+            $badges = Join-Path $GH_PAGES "badges"
 
-          New-Item -Path ./gh-pages/badges -ItemType Directory -Force | Out-Null
-          Get-ChildItem -Path ./Artifacts -Recurse -Filter *-badge.svg -File | ForEach-Object {
-            Copy-Item -Path $_.FullName -Destination ./gh-pages/badges/ -Force
-          }
+            New-Item -Path $badges -ItemType Directory -Force | Out-Null
+            Get-ChildItem -Path (Join-Path $ROOT "Artifacts") -Recurse -Filter *-badge.svg -File | ForEach-Object {
+              Copy-Item -Path $_.FullName -Destination $badges -Force
+            }
 
-          Remove-Item -Path ./gh-pages/CoverageReport -Recurse -Force -ErrorAction SilentlyContinue
-          Move-Item ./Artifacts/test-results/CoverageReport ./gh-pages/
+            Remove-Item -Path (Join-Path $GH_PAGES "CoverageReport") -Recurse -Force -ErrorAction SilentlyContinue
+            Move-Item (Join-Path $ROOT "Artifacts/test-results/CoverageReport") $GH_PAGES
 
-          Remove-Item -Path ./gh-pages/docs -Recurse -Force -ErrorAction SilentlyContinue
-          Move-Item ./Artifacts/docs ./gh-pages/
-
-          Set-Location gh-pages
-          git add .
-          git commit -m "[bot] update artifacts" || Write-Host "Nothing to commit"
-          git push origin gh-pages
+            Remove-Item -Path (Join-Path $GH_PAGES "docs") -Recurse -Force -ErrorAction SilentlyContinue
+            Move-Item (Join-Path $ROOT "Artifacts/docs") $GH_PAGES
+          } "${{ secrets.GITHUB_TOKEN }}"
