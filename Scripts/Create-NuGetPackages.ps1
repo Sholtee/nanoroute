@@ -4,6 +4,8 @@
 # Author: Denes Solti
 #
 
+param([Parameter(Position = 0, Mandatory = $true)][string] $project)
+
 $ErrorActionPreference = "Stop"
 
 $ENV:DOTNET_CLI_TELEMETRY_OPTOUT = $True
@@ -15,13 +17,14 @@ $PACKAGES = Join-Path $ARTIFACTS "NuGet"
 
 Remove-Item $PACKAGES -Recurse -Force -ErrorAction SilentlyContinue
 
+$csproj = Get-ChildItem -Path $SRC -Recurse -File -Filter *.csproj | Where-Object { $_.BaseName -eq $project }
+if ($null -eq $csproj) { throw "Unknown project: $project" }
+
 dotnet build-server shutdown
 
-foreach ($csproj in (Get-ChildItem -Path $SRC -Recurse -File -Filter *.csproj)) {
-  Write-Host "`n---------Create NuGet package for $($csproj.Name)---------"
+Write-Host "`n---------Create NuGet package for $($csproj.Name)---------"
 
-  dotnet pack $csproj.FullName --configuration Release --output $PACKAGES --include-symbols -p:SymbolPackageFormat=snupkg
-  if (-not $?) { throw "Package creation failed" }
+dotnet pack $csproj.FullName --configuration Release --output $PACKAGES --include-symbols -p:SymbolPackageFormat=snupkg
+if (-not $?) { throw "Package creation failed" }
 
-  Write-Host "-------------------------------Done-------------------------------`n"
-}
+Write-Host "-------------------------------Done-------------------------------`n"
