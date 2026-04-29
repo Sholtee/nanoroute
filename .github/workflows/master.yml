@@ -113,6 +113,9 @@ jobs:
       actions: read
       contents: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Download results
         run: gh run download ${{ github.run_id }} --repo ${{ github.repository }} --dir Artifacts
         env:
