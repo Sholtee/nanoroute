@@ -49,7 +49,7 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Logs a message with the given <see cref="Level"/>. The <paramref name="attributesFactory"/> is called only when the log <see cref="Level"/> is enabled.
         /// </summary>
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "We won't use composite types when calling this method")]
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The 'attributesFactory' won't return composite types")]
         public void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TParam>(string eventName, Func<TParam, T> attributesFactory, TParam p)
         {
             if (target.IsEnabled(Level, EventKeywords.None))
@@ -59,7 +59,7 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Logs a message with the given <see cref="Level"/>. The <paramref name="attributesFactory"/> is called only when the log <see cref="Level"/> is enabled.
         /// </summary>
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "We won't use composite types when calling this method")]
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The 'attributesFactory' won't return composite types")]
         public void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TParam_1, TParam_2>(string eventName, Func<TParam_1, TParam_2, T> attributesFactory, TParam_1 p1, TParam_2 p2)
         {
             if (target.IsEnabled(Level, EventKeywords.None))
