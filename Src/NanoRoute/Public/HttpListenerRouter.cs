@@ -84,10 +84,7 @@ namespace NanoRoute
                     requestMessage.Content?.Headers.TryAddWithoutValidation(header, values) is true; // fall back to content headers
 
                 if (!headerSet)
-                    RouterEventSource.Log.Warn("HeaderCopyFailed", () => new
-                    {
-                        Header = header
-                    });
+                    RouterEventSource.Warning.Write("HeaderCopyFailed", static header => new { Header = header }, header);
             }
 
             return requestMessage;

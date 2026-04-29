@@ -3,9 +3,12 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Threading;
 
+using Moq;
 using NUnit.Framework;
 
 namespace NanoRoute.Tests
@@ -15,40 +18,81 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class RouterEventSourceTests
     {
+        private sealed class TestEventSource : EventSource;
+
+        public static IEnumerable<EventSourceWriter> ESWriters
+        {
+            get
+            {
+                yield return RouterEventSource.Debug;
+                yield return RouterEventSource.Info;
+                yield return RouterEventSource.Warning;
+                yield return RouterEventSource.Error;
+            }
+        }
+
         [Test]
-        public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload()
+        public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload([ValueSource(nameof(ESWriters))] EventSourceWriter writer)
         {
             using DebugEventListener listener = new(EventLevel.LogAlways);
 
-            RouterEventSource.Log.Debug("DebugEvent", () => new { Value = "debug" });
-            RouterEventSource.Log.Info("InfoEvent", () => new { Value = "info" });
-            RouterEventSource.Log.Warn("WarnEvent", () => new { Value = "warn" });
-            RouterEventSource.Log.Error("ErrorEvent", () => new { Value = "error" });
+            writer.Write("Event", static value => new { Value = value }, "data");
 
-            Assert.That(SpinWait.SpinUntil(() => listener.Events.Count == 4, 1000), Is.True);
+            Assert.That(SpinWait.SpinUntil(() => listener.Events.Count == 1, 1000), Is.True);
 
             Assert.Multiple(() =>
             {
-                Assert.That(listener.Events[0].EventName, Is.EqualTo("DebugEvent"));
-                Assert.That(listener.Events[0].Level, Is.EqualTo(EventLevel.Verbose));
+                Assert.That(listener.Events[0].EventName, Is.EqualTo("Event"));
+                Assert.That(listener.Events[0].Level, Is.EqualTo(writer.Level));
                 Assert.That(listener.Events[0].PayloadNames, Is.EquivalentTo(new[] { "Value" }));
-                Assert.That(listener.Events[0].Payload, Is.EquivalentTo(new object?[] { "debug" }));
-
-                Assert.That(listener.Events[1].EventName, Is.EqualTo("InfoEvent"));
-                Assert.That(listener.Events[1].Level, Is.EqualTo(EventLevel.Informational));
-                Assert.That(listener.Events[1].PayloadNames, Is.EquivalentTo(new[] { "Value" }));
-                Assert.That(listener.Events[1].Payload, Is.EquivalentTo(new object?[] { "info" }));
-
-                Assert.That(listener.Events[2].EventName, Is.EqualTo("WarnEvent"));
-                Assert.That(listener.Events[2].Level, Is.EqualTo(EventLevel.Warning));
-                Assert.That(listener.Events[2].PayloadNames, Is.EquivalentTo(new[] { "Value" }));
-                Assert.That(listener.Events[2].Payload, Is.EquivalentTo(new object?[] { "warn" }));
-
-                Assert.That(listener.Events[3].EventName, Is.EqualTo("ErrorEvent"));
-                Assert.That(listener.Events[3].Level, Is.EqualTo(EventLevel.Error));
-                Assert.That(listener.Events[3].PayloadNames, Is.EquivalentTo(new[] { "Value" }));
-                Assert.That(listener.Events[3].Payload, Is.EquivalentTo(new object?[] { "error" }));
+                Assert.That(listener.Events[0].Payload, Is.EquivalentTo(new object?[] { "data" }));
             });
+        }
+
+        [Test]
+        public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload_DoubleParam([ValueSource(nameof(ESWriters))] EventSourceWriter writer)
+        {
+            using DebugEventListener listener = new(EventLevel.LogAlways);
+
+            writer.Write("Event", static (first, second) => new { First = first, Second = second }, "one", 2);
+
+            Assert.That(SpinWait.SpinUntil(() => listener.Events.Count == 1, 1000), Is.True);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(listener.Events[0].EventName, Is.EqualTo("Event"));
+                Assert.That(listener.Events[0].Level, Is.EqualTo(writer.Level));
+                Assert.That(listener.Events[0].PayloadNames, Is.EquivalentTo(new[] { "First", "Second" }));
+                Assert.That(listener.Events[0].Payload, Is.EquivalentTo(new object?[] { "one", 2 }));
+            });
+        }
+
+        [Test]
+        public void LogHelpers_ShouldNotInvokePayloadFactoryWhenDisabled_SingleParam()
+        {
+            using TestEventSource eventSource = new();
+
+            EventSourceWriter writer = new(eventSource, EventLevel.Informational);
+
+            Mock<Func<int, object>> mockPayloadFactory = new(MockBehavior.Strict);
+
+            writer.Write("DisabledEvent", mockPayloadFactory.Object, 1986);
+
+            mockPayloadFactory.Verify(factory => factory.Invoke(It.IsAny<int>()), Times.Never);
+        }
+
+        [Test]
+        public void LogHelpers_ShouldNotInvokePayloadFactoryWhenDisabled_DoubleParam()
+        {
+            using TestEventSource eventSource = new();
+
+            EventSourceWriter writer = new(eventSource, EventLevel.Informational);
+
+            Mock<Func<int, int, object>> mockPayloadFactory = new(MockBehavior.Strict);
+
+            writer.Write("DisabledEvent", mockPayloadFactory.Object, 1986, 1026);
+
+            mockPayloadFactory.Verify(factory => factory.Invoke(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }
     }
 }

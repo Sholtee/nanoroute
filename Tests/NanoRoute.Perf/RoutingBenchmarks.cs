@@ -4,17 +4,25 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using BenchmarkDotNet.Attributes;
 
 namespace NanoRoute.Perf
 {
+    public interface IRouter : IDisposable
+    {
+        Task Match();
+    }
+
+    public interface IRouterFactory
+    {
+        IRouter Create(string pattern, Uri requestUri);
+    }
+
     [MemoryDiagnoser]
-    public class RoutingBenchmarks
+    public partial class RoutingBenchmarks
     {
         public enum ScenarioKind
         {
@@ -24,70 +32,43 @@ namespace NanoRoute.Perf
             ComplexParsed
         }
 
-        private static readonly HttpResponseMessage s_response = new(HttpStatusCode.OK);
-
-        private static readonly IServiceProvider s_services = new NoopServiceProvider();
-
-        private TestRouter _router = null!;
-
-        private HttpRequestMessage _request = null!;
-
         [Params(ScenarioKind.SingleLiteral, ScenarioKind.SingleParsed, ScenarioKind.ComplexLiteral, ScenarioKind.ComplexParsed)]
         public ScenarioKind Scenario { get; set; }
+
+        public static IEnumerable<IRouterFactory> RouterFactories
+        {
+            get
+            {
+                yield return new AspNetCoreRouterFactory();
+                yield return new NanoRouteRouterFactory();
+            }
+        }
+
+        [ParamsSource(nameof(RouterFactories))]
+        public IRouterFactory RouterFactory { get; set; } = null!;
+
+        private IRouter _router = null!;
 
         [GlobalSetup]
         public void Setup()
         {
-            RouterBuilder<TestRouter, RouterConfig> builder = new(static bldr => new TestRouter(bldr));
-            builder.WithConfiguration(static cfg => cfg.Timeout = Timeout.InfiniteTimeSpan);
-
-            switch (Scenario)
+            (string pattern, Uri requestUri) = Scenario switch
             {
-                case ScenarioKind.SingleLiteral:
-                    builder.AddHandler("GET", "/health", static (_, _) => Task.FromResult(s_response));
-                    _request = CreateRequest("/health");
-                    break;
+                ScenarioKind.SingleLiteral => ("/health", new Uri("https://www.example.com/health")),
+                ScenarioKind.SingleParsed => ("/{id:int}", new Uri("https://www.example.com/42")),
+                ScenarioKind.ComplexLiteral => ("/api/v1/users/42/orders/7/items/3/details", new Uri("https://www.example.com/api/v1/users/42/orders/7/items/3/details")),
+                ScenarioKind.ComplexParsed => ("/api/v1/users/{userId:int}/orders/{orderId:int}/items/{itemId:int}/details", new Uri("https://www.example.com/api/v1/users/42/orders/7/items/3/details")),
+                _ => throw new ArgumentOutOfRangeException(nameof(Scenario), Scenario, "Unknown routing benchmark scenario.")
+            };
 
-                case ScenarioKind.SingleParsed:
-                    builder
-                        .AddIntParser()
-                        .AddHandler("GET", "/{id:int}", static (_, _) => Task.FromResult(s_response));
-                    _request = CreateRequest("/42");
-                    break;
-
-                case ScenarioKind.ComplexLiteral:
-                    builder.AddHandler("GET", "/api/v1/users/42/orders/7/items/3/details", static (_, _) => Task.FromResult(s_response));
-                    _request = CreateRequest("/api/v1/users/42/orders/7/items/3/details");
-                    break;
-
-                case ScenarioKind.ComplexParsed:
-                    builder
-                        .AddDefaultValueParsers()
-                        .AddHandler("GET", "/api/v1/users/{userId:int}/orders/{orderId:int}/items/{itemId:int}/details", static (_, _) => Task.FromResult(s_response));
-                    _request = CreateRequest("/api/v1/users/42/orders/7/items/3/details");
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Scenario), Scenario, "Unknown routing benchmark scenario.");
-            }
-
-            _router = builder.CreateRouter();
+            _router = RouterFactory.Create(pattern, requestUri);
         }
+
+        [GlobalCleanup]
+        public void Cleanup() => _router.Dispose();
 
         [Benchmark]
-        public Task<HttpResponseMessage> Route() => _router.Route(_request, s_services);
-
-        private static HttpRequestMessage CreateRequest(string path) => new(HttpMethod.Get, $"https://www.example.com{path}");
-
-        private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router(builder, builder.RouterConfig)
-        {
-            public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) => Handle(request, services, cancellation);
-        }
-
-        private sealed class NoopServiceProvider : IServiceProvider
-        {
-            public object? GetService(Type serviceType) => null;
-        }
+        public Task Route() => _router.Match();
     }
 }
 

@@ -1102,11 +1102,11 @@ namespace NanoRoute.Tests
             {
                 Assert.That(requestStarted.Level, Is.EqualTo(EventLevel.Informational));
                 Assert.That(requestStarted.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb" }));
-                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/somewhere", HttpVerb.Get }));
+                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/somewhere", HttpMethod.Get.Method }));
 
                 Assert.That(matchingHandler.Level, Is.EqualTo(EventLevel.Informational));
                 Assert.That(matchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb", "Pattern", "ParameterCount" }));
-                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/somewhere", HttpVerb.Get, "/path/to/somewhere", 0 }));
+                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/somewhere", HttpMethod.Get.Method, "/path/to/somewhere", 0 }));
             });
         }
 
@@ -1131,11 +1131,11 @@ namespace NanoRoute.Tests
             {
                 Assert.That(requestStarted.Level, Is.EqualTo(EventLevel.Informational));
                 Assert.That(requestStarted.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb" }));
-                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/nowhere", HttpVerb.Get }));
+                Assert.That(requestStarted.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/nowhere", HttpMethod.Get.Method }));
 
                 Assert.That(noMatchingHandler.Level, Is.EqualTo(EventLevel.Informational));
                 Assert.That(noMatchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb" }));
-                Assert.That(noMatchingHandler.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/nowhere", HttpVerb.Get }));
+                Assert.That(noMatchingHandler.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/nowhere", HttpMethod.Get.Method }));
             });
         }
     }

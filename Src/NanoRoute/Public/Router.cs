@@ -42,6 +42,24 @@ namespace NanoRoute
             return routeBuilder.GetRoot(frozen: true);
         }
 
+        private IDisposable? CreateLinkedTokenIfNecessary(ref CancellationToken cancellation)
+        {
+            if (Timeout.Equals(System.Threading.Timeout.InfiniteTimeSpan))
+                return null!;
+
+            if (cancellation.Equals(default))
+            {
+                CancellationTokenSource src = new(Timeout);
+                cancellation = src.Token;
+                return src;
+            }
+
+            CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+            linked.CancelAfter(Timeout);
+            cancellation = linked.Token;
+            return linked;
+        }
+
         /// <summary>
         /// Initializes a router from a route builder snapshot and router configuration.
         /// </summary>
@@ -109,70 +127,17 @@ namespace NanoRoute
             Ensure.NotNull(request);
             Ensure.NotNull(services);
 
-            if (!Enum.TryParse(request.Method.Method, ignoreCase: true, out HttpVerb verb))
-                throw new ArgumentException
-                (
-                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(request)
-                );
-
-            RouterEventSource.Log.Info("RequestProcessingStarted", () => new
+            RouterEventSource.Info.Write("RequestProcessingStarted", static request => new
             {
                 RequestUri = request.RequestUri.OriginalString,
-                Verb = verb
-            });
+                Verb = request.Method.Method
+            }, request);
 
-            using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
-            linked.CancelAfter(Timeout);
-            cancellation = linked.Token;
+            using IDisposable? cancellationSoke = CreateLinkedTokenIfNecessary(ref cancellation);
 
-            using RouteMatchCursor matches = new
-            (
-                _root,
-                verb,
-                request.RequestUri,
-                services,
-                MatchingBehavior,
-                cancellation
-            );
+            await using RequestPipeline pipeline = new(_root, MatchingBehavior, request, services, cancellation);
 
-            return await CallNextHandler();
-
-            async Task<HttpResponseMessage> CallNextHandler()
-            {
-                if (!await matches.MoveNextAsync())
-                {
-                    RouterEventSource.Log.Info("NoMatchingHandler", () => new
-                    {
-                        RequestUri = request.RequestUri.OriginalString,
-                        Verb = verb
-                    });
-
-                    HttpRequestException.Throw(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
-                }
-
-                HandlerRegistration match = matches.Current;
-
-                Debug.Assert(match.AttachedParameters is not null, "Parameters must be attached here");
-
-                RouterEventSource.Log.Info("MatchingHandler", () => new
-                {
-                    RequestUri = request.RequestUri.OriginalString,
-                    Verb = verb,
-                    match.Pattern,
-                    ParameterCount = match.AttachedParameters!.Count
-                });
-
-                RequestContext requestContext = new()
-                {
-                    Parameters = match.AttachedParameters!,
-                    Services = services,
-                    Request = request,
-                    Cancellation = cancellation
-                };
-
-                return await match.Handler(requestContext, CallNextHandler);
-            }
+            return await pipeline.RunAsync();
         }
     }
 }
-

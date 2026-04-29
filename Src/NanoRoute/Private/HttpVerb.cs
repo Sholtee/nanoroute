@@ -5,6 +5,8 @@
 ********************************************************************************/
 namespace NanoRoute.Internals
 {
+    // Instead of string, we use this value type in dictionaries as it makes the lookup
+    // much faster
     internal enum HttpVerb
     {
         Get,
