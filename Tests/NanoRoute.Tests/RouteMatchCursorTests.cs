@@ -30,13 +30,13 @@ namespace NanoRoute.Tests
             return definition;
         }
 
-        private static RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingBehavior matchingBehavior = MatchingBehavior.LiteralFirst) => new
+        private static RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingPrecedence matchingPrecedence = MatchingPrecedence.LiteralFirst) => new
         (
             root,
             HttpVerb.Get,
             new Uri($"https://www.example.com{path}", UriKind.Absolute),
             new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-            matchingBehavior,
+            matchingPrecedence,
             CancellationToken.None
         );
 
@@ -63,9 +63,9 @@ namespace NanoRoute.Tests
             Assert.That(await cursor.MoveNextAsync(), Is.False);
         }
 
-        [TestCase(MatchingBehavior.LiteralFirst, "/items/value")]
-        [TestCase(MatchingBehavior.ParameterizedChildrenFirst, "/items/{id:str}")]
-        public async Task MoveNextAsync_ShouldRespectMatchingBehavior(MatchingBehavior matchingBehavior, string expectedPattern)
+        [TestCase(MatchingPrecedence.LiteralFirst, "/items/value")]
+        [TestCase(MatchingPrecedence.ParameterizedChildrenFirst, "/items/{id:str}")]
+        public async Task MoveNextAsync_ShouldRespectMatchingPrecedence(MatchingPrecedence matchingPrecedence, string expectedPattern)
         {
             HandlerRegistration
                 literalHandler = new(s_handler, "/items/value"),
@@ -91,12 +91,12 @@ namespace NanoRoute.Tests
             items.ParsedChildren.Add(parsed);
             root.LiteralChildren.Add("items".AsMemory(), items);
 
-            RouteMatchCursor cursor = CreateCursor(root, "/items/value", matchingBehavior);
+            RouteMatchCursor cursor = CreateCursor(root, "/items/value", matchingPrecedence);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
             Assert.That(cursor.Current.HandlerRegistration.Pattern, Is.EqualTo(expectedPattern));
 
-            if (matchingBehavior is MatchingBehavior.ParameterizedChildrenFirst)
+            if (matchingPrecedence is MatchingPrecedence.ParameterizedChildrenFirst)
                 Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue("value"));
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
@@ -258,13 +258,13 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void Ctor_ShouldThrowOnUnknownMatchingBehavior()
+        public void Ctor_ShouldThrowOnUnknownMatchingPrecedence()
         {
             RouteNode root = new();
 
-            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => CreateCursor(root, "/api", (MatchingBehavior) 99))!;
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => CreateCursor(root, "/api", (MatchingPrecedence) 99))!;
 
-            Assert.That(ex.ParamName, Is.EqualTo("matchingBehavior"));
+            Assert.That(ex.ParamName, Is.EqualTo("matchingPrecedence"));
         }
     }
 }

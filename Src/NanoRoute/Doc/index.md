@@ -22,7 +22,7 @@ The API documentation for this package is generated from the XML comments in the
 - Value parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as `{id:int(min=1)}` once during registration.
 - Parser-backed segments support optional parameter names. `{id:int}` stores the parsed value in `RequestContext.Parameters`, while `{int}` only validates the segment.
 - `AddPrefix()` and `CreatePrefix()` create scoped route subtrees without forcing you to repeat common prefixes.
-- `MatchingBehavior` lets you choose whether literal or parameterized child segments are selected first.
+- `MatchingPrecedence` lets you choose whether literal or parameterized child segments are selected first.
 - Once a child branch has been selected for a request, NanoRoute continues only within that branch.
 - `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}` and matches query keys through `Uri.Query` normalization.
 - `NanoRoute.Json` adds JSON request binding and JSON error/response helpers on top of the core pipeline.

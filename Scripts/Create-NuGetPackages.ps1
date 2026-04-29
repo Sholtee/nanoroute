@@ -1,0 +1,30 @@
+#
+# Create-NuGetPackages.ps1
+#
+# Author: Denes Solti
+#
+
+param([Parameter(Position = 0, Mandatory = $true)][string] $project)
+
+$ErrorActionPreference = "Stop"
+
+$ENV:DOTNET_CLI_TELEMETRY_OPTOUT = $True
+
+$ROOT = Join-Path $PSScriptRoot ".." | Resolve-Path
+$SRC = Join-Path $ROOT "Src"
+$ARTIFACTS = Join-Path $ROOT "Artifacts"
+$PACKAGES = Join-Path $ARTIFACTS "NuGet"
+
+Remove-Item $PACKAGES -Recurse -Force -ErrorAction SilentlyContinue
+
+$csproj = Get-ChildItem -Path $SRC -Recurse -File -Filter *.csproj | Where-Object { $_.BaseName -eq $project }
+if ($null -eq $csproj) { throw "Unknown project: $project" }
+
+dotnet build-server shutdown
+
+Write-Host "`n---------Create NuGet package for $($csproj.Name)---------"
+
+dotnet pack $csproj.FullName --configuration Release --output $PACKAGES --include-symbols -p:SymbolPackageFormat=snupkg
+if (-not $?) { throw "Package creation failed" }
+
+Write-Host "-------------------------------Done-------------------------------`n"
