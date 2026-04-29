@@ -222,9 +222,9 @@ namespace NanoRoute.Tests
             mockHandler_2.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
-        [TestCase(MatchingBehavior.LiteralFirst)]
-        [TestCase(MatchingBehavior.ParameterizedChildrenFirst)]
-        public async Task Handle_ShouldRespectConfiguredMatchingBehavior(MatchingBehavior matchingBehavior)
+        [TestCase(MatchingPrecedence.LiteralFirst)]
+        [TestCase(MatchingPrecedence.ParameterizedChildrenFirst)]
+        public async Task Handle_ShouldRespectConfiguredMatchingPrecedence(MatchingPrecedence matchingPrecedence)
         {
             Mock<RequestHandlerDelegate>
                 mockLiteralHandler = new(MockBehavior.Strict),
@@ -248,7 +248,7 @@ namespace NanoRoute.Tests
                     parsed = segment.ToString();
                     return true;
                 })
-                .WithConfiguration(config => config.MatchingBehavior = matchingBehavior)
+                .WithConfiguration(config => config.MatchingPrecedence = matchingPrecedence)
                 .AddHandler("GET", "/items/literal", mockLiteralHandler.Object)
                 .AddHandler("GET", "/items/{value:str}", mockParameterizedHandler.Object)
                 .CreateRouter();
@@ -256,14 +256,14 @@ namespace NanoRoute.Tests
             _request.RequestUri = new Uri("https://www.exmaple.com/items/literal");
 
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
-            mockLiteralHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingBehavior == MatchingBehavior.LiteralFirst ? Times.Once() : Times.Never());
-            mockParameterizedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingBehavior == MatchingBehavior.ParameterizedChildrenFirst ? Times.Once() : Times.Never());
+            mockLiteralHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingPrecedence == MatchingPrecedence.LiteralFirst ? Times.Once() : Times.Never());
+            mockParameterizedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingPrecedence == MatchingPrecedence.ParameterizedChildrenFirst ? Times.Once() : Times.Never());
         }
 
         [Test]
-        public void Handle_ShouldRejectUnknownMatchingBehavior()
+        public void Handle_ShouldRejectUnknownMatchingPrecedence()
         {
-            _routerBuilder.WithConfiguration(config => config.MatchingBehavior = (MatchingBehavior) 100);
+            _routerBuilder.WithConfiguration(config => config.MatchingPrecedence = (MatchingPrecedence) 100);
 
             ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => _routerBuilder.CreateRouter())!;
             Assert.That(ex.ParamName, Is.EqualTo("value"));

@@ -15,7 +15,7 @@ namespace NanoRoute
         /// <summary>
         /// Gets or sets how NanoRoute prioritizes literal and parameterized child segments at the same depth.
         /// </summary>
-        public MatchingBehavior MatchingBehavior { get; set; }
+        public MatchingPrecedence MatchingPrecedence { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum time a request may spend in the router pipeline before its linked cancellation

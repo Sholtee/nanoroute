@@ -1,14 +1,14 @@
 /********************************************************************************
-* MatchingBehavior.cs                                                           *
+* MatchingPrecedence.cs                                                         *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 namespace NanoRoute
 {
     /// <summary>
-    /// Controls how the router selects between literal and parameterized child segments during matching.
+    /// Defines how the router prioritizes literal and parameterized child segments during matching.
     /// </summary>
-    public enum MatchingBehavior
+    public enum MatchingPrecedence
     {
         /// <summary>
         /// Instructs the router to select literal child segments before parameterized child segments.

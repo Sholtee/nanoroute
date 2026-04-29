@@ -42,9 +42,9 @@ NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBod
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo, string! paramName, string! pattern, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Type! type, string! paramName, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonErrorDetails(bool populateErrorInfo = false) -> TBuilder!
-NanoRoute.MatchingBehavior
-NanoRoute.MatchingBehavior.LiteralFirst = 0 -> NanoRoute.MatchingBehavior
-NanoRoute.MatchingBehavior.ParameterizedChildrenFirst = 1 -> NanoRoute.MatchingBehavior
+NanoRoute.MatchingPrecedence
+NanoRoute.MatchingPrecedence.LiteralFirst = 0 -> NanoRoute.MatchingPrecedence
+NanoRoute.MatchingPrecedence.ParameterizedChildrenFirst = 1 -> NanoRoute.MatchingPrecedence
 NanoRoute.NanoRouteExceptionExtensions
 NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!)
 NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).GetErrorDetails(bool populateErrorInfo = false, string? traceId = null) -> NanoRoute.ErrorDetails!
@@ -83,7 +83,7 @@ NanoRoute.RouteBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<st
 NanoRoute.RouteBuilder.ValueParsers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, NanoRoute.ValueParserRegistration!>!
 NanoRoute.Router
 NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage! request, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
-NanoRoute.Router.MatchingBehavior.get -> NanoRoute.MatchingBehavior
+NanoRoute.Router.MatchingPrecedence.get -> NanoRoute.MatchingPrecedence
 NanoRoute.Router.Router(NanoRoute.RouteBuilder! routeBuilder, NanoRoute.RouterConfig! config) -> void
 NanoRoute.Router.Timeout.get -> System.TimeSpan
 NanoRoute.RouterBuilder<TRouter, TConfig>
@@ -108,8 +108,8 @@ NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddV
 NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.SyncValueParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.ValueParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.RouterConfig
-NanoRoute.RouterConfig.MatchingBehavior.get -> NanoRoute.MatchingBehavior
-NanoRoute.RouterConfig.MatchingBehavior.set -> void
+NanoRoute.RouterConfig.MatchingPrecedence.get -> NanoRoute.MatchingPrecedence
+NanoRoute.RouterConfig.MatchingPrecedence.set -> void
 NanoRoute.RouterConfig.RouterConfig() -> void
 NanoRoute.RouterConfig.Timeout.get -> System.TimeSpan
 NanoRoute.RouterConfig.Timeout.set -> void

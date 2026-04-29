@@ -64,7 +64,7 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 - Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
 - The parameter name is optional. Segments like `{int}` still validate the path but do not add an entry to `RequestContext.Parameters`.
 - When multiple handlers match within the selected route branch, NanoRoute evaluates compatible handlers from shorter prefixes toward more specific matches.
-- At the same path depth, `RouterConfig.MatchingBehavior` decides whether literal or parameterized child segments are selected first.
+- At the same path depth, `RouterConfig.MatchingPrecedence` decides whether literal or parameterized child segments are selected first.
 - Once NanoRoute selects a child branch at a given depth, it does not return to sibling branches later in the pipeline.
 
 ## Advanced Usage

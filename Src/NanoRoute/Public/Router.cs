@@ -68,19 +68,19 @@ namespace NanoRoute
             //Ensure.NotNull(routeBuilder);
             Ensure.NotNull(config);
 
-            MatchingBehavior = config.MatchingBehavior;
+            MatchingPrecedence = config.MatchingPrecedence;
             Timeout = config.Timeout;
         }
 
         /// <summary>
         /// Gets the configured precedence between literal and parameterized child segments.
         /// </summary>
-        public MatchingBehavior MatchingBehavior
+        public MatchingPrecedence MatchingPrecedence
         {
             get;
             private init
             {
-                if (!Enum.IsDefined(typeof(MatchingBehavior), value))
+                if (!Enum.IsDefined(typeof(MatchingPrecedence), value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 field = value;
@@ -107,7 +107,7 @@ namespace NanoRoute
         /// Prefix routes can participate in the same pipeline as exact routes. Consecutive <c>/</c> separators in the
         /// request path are treated as a single separator during matching. When several handlers match, NanoRoute
         /// evaluates compatible matches from shorter prefixes toward more specific matches and honors
-        /// <see cref="MatchingBehavior"/> when both literal and parameterized segments are available at the same depth.
+        /// <see cref="MatchingPrecedence"/> when both literal and parameterized segments are available at the same depth.
         /// Once a branch is selected at a given depth, NanoRoute does not return to sibling branches later in the pipeline.
         /// </remarks>
         /// <exception cref="HttpRequestException">Thrown when no handler matches the request path.</exception>
@@ -132,7 +132,7 @@ namespace NanoRoute
 
             using IDisposable? cancellationScope = CreateLinkedTokenIfNecessary(ref cancellation);
 
-            await using RequestPipeline pipeline = new(_root, MatchingBehavior, request, services, cancellation);
+            await using RequestPipeline pipeline = new(_root, MatchingPrecedence, request, services, cancellation);
 
             return await pipeline.RunAsync();
         }
