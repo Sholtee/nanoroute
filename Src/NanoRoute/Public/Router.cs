@@ -4,9 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +12,6 @@ using System.Threading.Tasks;
 namespace NanoRoute
 {
     using Internals;
-    using Properties;
 
     /// <summary>
     /// Executes the route matching pipeline built by <see cref="RouteBuilder"/>.
@@ -133,7 +130,7 @@ namespace NanoRoute
                 Verb = request.Method.Method
             }, request);
 
-            using IDisposable? cancellationSoke = CreateLinkedTokenIfNecessary(ref cancellation);
+            using IDisposable? cancellationScope = CreateLinkedTokenIfNecessary(ref cancellation);
 
             await using RequestPipeline pipeline = new(_root, MatchingBehavior, request, services, cancellation);
 
