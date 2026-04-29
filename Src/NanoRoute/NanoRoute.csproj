@@ -104,6 +104,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>Icon.png</PackageIcon>
     <PackageTags>Router;Routing;</PackageTags>
+    <RepositoryUrl>https://github.com/Sholtee/nanoroute</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   
 </Project>
