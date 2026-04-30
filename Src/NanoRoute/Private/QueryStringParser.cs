@@ -111,7 +111,7 @@ namespace NanoRoute.Internals
                 ParameterDefinition parameterDefinition = expectedParameter.Definition;
 
                 if (_visited[parameterDefinition.Index])
-                    ThrowBadRequest(Resources.ERR_QUERY_DUPLICATE_PARAMTER, parameterDefinition.ParameterName!);
+                    ThrowBadRequest(Resources.ERR_QUERY_DUPLICATE_PARAMETER, parameterDefinition.ParameterName!);
 
                 _visited[parameterDefinition.Index] = true;
 

@@ -88,11 +88,11 @@ namespace NanoRoute
                         switch (ex)
                         {
                             case AggregateException aggregateException:
-                                HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, ex, developerMessage: [..aggregateException.InnerExceptions.Select(static ex => ex.ToString())]);
+                                HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessage: [..aggregateException.InnerExceptions.Select(static ex => ex.ToString())]);
                                 break;
                         }
 
-                        HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INERNAL_ERROR, ex, developerMessage: [ex.ToString()]);
+                        HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessage: [ex.ToString()]);
                         return null!;
                     }
                 });

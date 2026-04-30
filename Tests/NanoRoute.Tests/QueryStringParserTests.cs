@@ -187,7 +187,7 @@ namespace NanoRoute.Tests
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_DUPLICATE_PARAMTER, "filter") }));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_DUPLICATE_PARAMETER, "filter") }));
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
         }
 

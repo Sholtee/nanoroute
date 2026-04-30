@@ -69,7 +69,7 @@ namespace NanoRoute.Tests
             ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, s_caseInsensitiveJson)!;
             Assert.That(deserialized, Is.Not.Null);
             Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
-            Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
+            Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INTERNAL_ERROR));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-2"));
             Assert.That(deserialized.Errors, Is.Null);
             Assert.That(deserialized.DeveloperMessage, populateErrorInfo ? Has.Some.Contains(ERROR_MSG) : Is.Null);
@@ -139,7 +139,7 @@ namespace NanoRoute.Tests
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
             Assert.That(deserialized.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
-            Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INERNAL_ERROR));
+            Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INTERNAL_ERROR));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-aggregate"));
             if (populateErrorInfo)
             {

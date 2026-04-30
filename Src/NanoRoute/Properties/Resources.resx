@@ -121,7 +121,7 @@
     <value>Not found.</value>
   </data>
   <data name="ERR_NO_SUCH_PARSER" xml:space="preserve">
-    <value>No such value parser: {0}</value>
+    <value>No value parser is registered for '{0}'.</value>
   </data>
   <data name="ERR_PARAMETER_OVERRIDE" xml:space="preserve">
     <value>Conflicting parameter names are not allowed for the same route segment.</value>
@@ -129,14 +129,14 @@
   <data name="ERR_INVALID_VERB" xml:space="preserve">
     <value>Invalid verb: {0}</value>
   </data>
-  <data name="ERR_INERNAL_ERROR" xml:space="preserve">
+  <data name="ERR_INTERNAL_ERROR" xml:space="preserve">
     <value>Internal server error.</value>
   </data>
   <data name="ERR_NOT_PREFIX" xml:space="preserve">
     <value>Only prefix patterns are allowed.</value>
   </data>
   <data name="ERR_INVALID_PATTERN" xml:space="preserve">
-    <value>Invalid pattern (offset: {0})</value>
+    <value>Invalid pattern at offset {0}.</value>
   </data>
   <data name="ERR_INVALID_QUERY_BINDINGS" xml:space="preserve">
     <value>Invalid query bindings.</value>
@@ -148,12 +148,12 @@
     <value>Bad request.</value>
   </data>
   <data name="ERR_BAD_CONTENT_TYPE" xml:space="preserve">
-    <value>Bad content type.</value>
+    <value>Unsupported content type.</value>
   </data>
   <data name="ERR_INVALID_ARGUMENTS" xml:space="preserve">
-    <value>Invalid arguments provided for '{0}' (offset: {1})</value>
+    <value>Invalid arguments for '{0}' at offset {1}.</value>
   </data>
-  <data name="ERR_QUERY_DUPLICATE_PARAMTER" xml:space="preserve">
+  <data name="ERR_QUERY_DUPLICATE_PARAMETER" xml:space="preserve">
     <value>Duplicate query parameter: {0}</value>
   </data>
   <data name="ERR_QUERY_INVALID_PARAMETER" xml:space="preserve">
@@ -169,7 +169,7 @@
     <value>Optional parameters are not supported in segment definitions.</value>
   </data>
   <data name="ERR_INVALID_PARSERS_ARGS" xml:space="preserve">
-    <value>Invalid parser argument(s).</value>
+    <value>Invalid parser arguments.</value>
   </data>
   <data name="ERR_DECODING_FAILED" xml:space="preserve">
     <value>Decoding failed.</value>

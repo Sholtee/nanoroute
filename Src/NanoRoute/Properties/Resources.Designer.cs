@@ -61,7 +61,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bad content type..
+        ///   Looks up a localized string similar to Unsupported content type..
         /// </summary>
         internal static string ERR_BAD_CONTENT_TYPE {
             get {
@@ -90,14 +90,14 @@ namespace NanoRoute.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Internal server error..
         /// </summary>
-        internal static string ERR_INERNAL_ERROR {
+        internal static string ERR_INTERNAL_ERROR {
             get {
-                return ResourceManager.GetString("ERR_INERNAL_ERROR", resourceCulture);
+                return ResourceManager.GetString("ERR_INTERNAL_ERROR", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid arguments provided for &apos;{0}&apos; (offset: {1}).
+        ///   Looks up a localized string similar to Invalid arguments for &apos;{0}&apos; at offset {1}..
         /// </summary>
         internal static string ERR_INVALID_ARGUMENTS {
             get {
@@ -106,7 +106,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid parser argument(s)..
+        ///   Looks up a localized string similar to Invalid parser arguments..
         /// </summary>
         internal static string ERR_INVALID_PARSERS_ARGS {
             get {
@@ -115,7 +115,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid pattern (offset: {0}).
+        ///   Looks up a localized string similar to Invalid pattern at offset {0}..
         /// </summary>
         internal static string ERR_INVALID_PATTERN {
             get {
@@ -160,7 +160,7 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No such value parser: {0}.
+        ///   Looks up a localized string similar to No value parser is registered for &apos;{0}&apos;..
         /// </summary>
         internal static string ERR_NO_SUCH_PARSER {
             get {
@@ -207,9 +207,9 @@ namespace NanoRoute.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate query parameter: {0}.
         /// </summary>
-        internal static string ERR_QUERY_DUPLICATE_PARAMTER {
+        internal static string ERR_QUERY_DUPLICATE_PARAMETER {
             get {
-                return ResourceManager.GetString("ERR_QUERY_DUPLICATE_PARAMTER", resourceCulture);
+                return ResourceManager.GetString("ERR_QUERY_DUPLICATE_PARAMETER", resourceCulture);
             }
         }
         
