@@ -17,20 +17,21 @@ NanoRoute.ErrorDetails.Title.get -> string!
 NanoRoute.ErrorDetails.Title.init -> void
 NanoRoute.ErrorDetails.TraceId.get -> string!
 NanoRoute.ErrorDetails.TraceId.init -> void
-NanoRoute.HandlerExtensions.ArgumentSource
-NanoRoute.HandlerExtensions.ArgumentSource.Context = 0 -> NanoRoute.HandlerExtensions.ArgumentSource
-NanoRoute.HandlerExtensions.ArgumentSource.ServiceLocator = 1 -> NanoRoute.HandlerExtensions.ArgumentSource
-NanoRoute.HandlerExtensions.ArgumentSourceAttribute
-NanoRoute.HandlerExtensions.ArgumentSourceAttribute.ArgumentSourceAttribute(NanoRoute.HandlerExtensions.ArgumentSource source) -> void
-NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name.get -> string?
-NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name.init -> void
-NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source.get -> NanoRoute.HandlerExtensions.ArgumentSource
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(System.Collections.Generic.IReadOnlyCollection<string!>! verbs, string! pattern, string! queryBindings, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate!, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(System.Collections.Generic.IReadOnlyCollection<string!>! verbs, string! pattern, string! queryBindings, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(System.Collections.Generic.IReadOnlyCollection<string!>! verbs, string! pattern, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate!, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(System.Collections.Generic.IReadOnlyCollection<string!>! verbs, string! pattern, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
+NanoRoute.HandlerExtensions.ValueSource
+NanoRoute.HandlerExtensions.ValueSource.Context = 1 -> NanoRoute.HandlerExtensions.ValueSource
+NanoRoute.HandlerExtensions.ValueSource.ServiceLocator = 2 -> NanoRoute.HandlerExtensions.ValueSource
+NanoRoute.HandlerExtensions.ValueSource.Skip = 0 -> NanoRoute.HandlerExtensions.ValueSource
+NanoRoute.HandlerExtensions.ValueSourceAttribute
+NanoRoute.HandlerExtensions.ValueSourceAttribute.Name.get -> string?
+NanoRoute.HandlerExtensions.ValueSourceAttribute.Name.init -> void
+NanoRoute.HandlerExtensions.ValueSourceAttribute.Source.get -> NanoRoute.HandlerExtensions.ValueSource
+NanoRoute.HandlerExtensions.ValueSourceAttribute.ValueSourceAttribute(NanoRoute.HandlerExtensions.ValueSource source) -> void
 NanoRoute.HttpListenerRouter
 NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 NanoRoute.HttpListenerRouterConfig

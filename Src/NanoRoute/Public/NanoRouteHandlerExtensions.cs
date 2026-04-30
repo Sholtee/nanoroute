@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Net.Http;
@@ -23,8 +24,13 @@ namespace NanoRoute.HandlerExtensions
     /// <summary>
     /// Describes how a typed handler property is populated.
     /// </summary>
-    public enum ArgumentSource
+    public enum ValueSource
     {
+        /// <summary>
+        /// Leaves the property untouched.
+        /// </summary>
+        Skip,
+
         /// <summary>
         /// Reads the value from <see cref="RequestContext.Parameters"/>.
         /// </summary>
@@ -41,22 +47,33 @@ namespace NanoRoute.HandlerExtensions
     /// </summary>
     /// <param name="source">The source used to populate the annotated property.</param>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public sealed class ArgumentSourceAttribute(ArgumentSource source) : Attribute
+    public sealed class ValueSourceAttribute(ValueSource source) : Attribute
     {
         /// <summary>
         /// Gets the binding source used for the annotated property.
         /// </summary>
-        public ArgumentSource Source { get; } = source;
+        public ValueSource Source { get; } = source;
 
         /// <summary>
         /// Gets or sets an optional binding name.
         /// </summary>
         /// <remarks>
-        /// For <see cref="ArgumentSource.Context"/>, this overrides the key looked up in
-        /// <see cref="RequestContext.Parameters"/>. For <see cref="ArgumentSource.ServiceLocator"/>,
-        /// this is treated as the keyed service name.
+        /// For <see cref="ValueSource.Context"/>, this overrides the key looked up in
+        /// <see cref="RequestContext.Parameters"/>. For <see cref="ValueSource.ServiceLocator"/>,
+        /// this is treated as the keyed service name. <see cref="ValueSource.Skip"/> does not allow
+        /// a name because no value is read.
         /// </remarks>
-        public string? Name { get; init; }
+        public string? Name
+        {
+            get;
+            init
+            {
+                if (Source is ValueSource.Skip && value is not null)
+                    throw new InvalidOperationException();
+
+                field = value;
+            }
+        }
     }
 
     /// <summary>
@@ -72,7 +89,7 @@ namespace NanoRoute.HandlerExtensions
     /// automatically from the current request.
     /// </para>
     /// <para>
-    /// Use <see cref="ArgumentSourceAttribute"/> to bind a property from a specific context key or service.
+    /// Use <see cref="ValueSourceAttribute"/> to bind a property from a specific context key or service.
     /// Missing required context values and services throw <see cref="InvalidOperationException"/>.
     /// </para>
     /// </remarks>
@@ -101,23 +118,25 @@ namespace NanoRoute.HandlerExtensions
                 if (!prop.CanWrite)
                     continue;
 
-                ArgumentSourceAttribute? argumentSource = prop.GetCustomAttribute<ArgumentSourceAttribute>();
+                ValueSourceAttribute? valueSource = prop.GetCustomAttribute<ValueSourceAttribute>();
 
-                switch (argumentSource?.Source)
+                switch (valueSource?.Source)
                 {
-                    case ArgumentSource.ServiceLocator:
+                    case ValueSource.Skip:
+                        continue;
+                    case ValueSource.ServiceLocator:
                     {
                         SetProperty
                         (
-                            argumentSource?.Name is { } name
+                            valueSource?.Name is { } name
                                 ? context => context.Services.GetRequiredKeyedService(prop.PropertyType, name)
                                 : context => context.Services.GetRequiredService(prop.PropertyType)
                         );
                         continue;
                     }
-                    case ArgumentSource.Context:
+                    case ValueSource.Context:
                     {
-                        string name = argumentSource?.Name ?? prop.Name;
+                        string name = valueSource?.Name ?? prop.Name;
                         SetProperty
                         (
                             context => context.Parameters.TryGetValue(name, out object? arg)
@@ -127,7 +146,7 @@ namespace NanoRoute.HandlerExtensions
                         );
                         continue;
                     }
-                    default:
+                    case null:
                         switch (prop.PropertyType)
                         {
                             case Type x when x == typeof(RequestContext):
@@ -137,7 +156,10 @@ namespace NanoRoute.HandlerExtensions
                                 SetProperty(static context => context.Cancellation);
                                 continue;                 
                         }
-                        goto case ArgumentSource.Context;
+                        goto case ValueSource.Context;
+                    default:
+                        Debug.Fail($"Unknown source: {valueSource.Source}");
+                        break;
                 }
 
                 void SetPropertyValue(Expression value) => propSetters.Add
@@ -206,7 +228,7 @@ namespace NanoRoute.HandlerExtensions
             /// <see cref="CancellationToken"/> receives the active request token.
             /// </para>
             /// <para>
-            /// Apply <see cref="ArgumentSourceAttribute"/> to bind a property from a different parameter name
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
             /// or from the request service provider.
             /// </para>
             /// </remarks>
@@ -235,7 +257,7 @@ namespace NanoRoute.HandlerExtensions
             /// <see cref="CancellationToken"/> receives the active request token.
             /// </para>
             /// <para>
-            /// Apply <see cref="ArgumentSourceAttribute"/> to bind a property from a different parameter name
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
             /// or from the request service provider.
             /// </para>
             /// </remarks>
@@ -268,7 +290,7 @@ namespace NanoRoute.HandlerExtensions
             /// are available through the default context binding rules.
             /// </para>
             /// <para>
-            /// Apply <see cref="ArgumentSourceAttribute"/> to bind a property from a different parameter name
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
             /// or from the request service provider.
             /// </para>
             /// </remarks>
@@ -306,7 +328,7 @@ namespace NanoRoute.HandlerExtensions
             /// are available through the default context binding rules.
             /// </para>
             /// <para>
-            /// Apply <see cref="ArgumentSourceAttribute"/> to bind a property from a different parameter name
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
             /// or from the request service provider.
             /// </para>
             /// </remarks>

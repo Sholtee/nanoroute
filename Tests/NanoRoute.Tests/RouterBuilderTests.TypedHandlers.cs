@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 
@@ -34,10 +35,10 @@ namespace NanoRoute.Tests
         {
             public int Id { get; set; }
 
-            [ArgumentSource(ArgumentSource.Context, Name = "query_filter")]
+            [ValueSource(ValueSource.Context, Name = "query_filter")]
             public string Filter { get; set; } = null!;
 
-            [ArgumentSource(ArgumentSource.ServiceLocator)]
+            [ValueSource(ValueSource.ServiceLocator)]
             public GreetingService Service { get; set; } = null!;
 
             public RequestContext RequestContext { get; set; }
@@ -52,13 +53,27 @@ namespace NanoRoute.Tests
 
         private sealed class MissingServiceRequest
         {
-            [ArgumentSource(ArgumentSource.ServiceLocator)]
+            [ValueSource(ValueSource.ServiceLocator)]
             public GreetingService Service { get; set; } = null!;
+        }
+
+        private sealed class KeyedServiceRequest
+        {
+            [ValueSource(ValueSource.ServiceLocator, Name = "friendly")]
+            public GreetingService Service { get; set; } = null!;
+        }
+
+        private sealed class SkippedPropertyRequest
+        {
+            public int Id { get; set; }
+
+            [ValueSource(ValueSource.Skip)]
+            public string OptionalName { get; set; } = "default";
         }
 
         private sealed class ReadOnlyPropertyRequest
         {
-            [ArgumentSource(ArgumentSource.Context, Name = "id")]
+            [ValueSource(ValueSource.Context, Name = "id")]
             public int Id { get; }
 
             public RequestContext RequestContext { get; set; }
@@ -271,6 +286,79 @@ namespace NanoRoute.Tests
             ))!;
 
             Assert.That(ex.Message, Does.Contain(nameof(GreetingService)));
+        }
+
+        [Test]
+        public async Task AddTypedHandler_ShouldResolveKeyedServices()
+        {
+            Mock<IServiceProvider> services = new(MockBehavior.Strict);
+            Mock<IKeyedServiceProvider> keyedServices = services.As<IKeyedServiceProvider>();
+
+            keyedServices
+                .Setup(s => s.GetRequiredKeyedService(typeof(GreetingService), "friendly"))
+                .Returns(new GreetingService { Prefix = "keyed" });
+
+            TestRouter router = _routerBuilder
+                .AddHandler
+                (
+                    ["GET"],
+                    "/items",
+                    (KeyedServiceRequest request) => Task.FromResult
+                    (
+                        new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent(request.Service.Prefix)
+                        }
+                    )
+                )
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                services.Object
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("keyed"));
+        }
+
+        [Test]
+        public async Task AddTypedHandler_ShouldLeaveSkippedPropertiesUntouched()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddHandler
+                (
+                    ["GET"],
+                    "/items/{id:int}",
+                    (SkippedPropertyRequest request) => Task.FromResult
+                    (
+                        new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent($"{request.Id}:{request.OptionalName}")
+                        }
+                    )
+                )
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("42:default"));
+        }
+
+        [Test]
+        public void ValueSourceAttribute_ShouldRejectNamesForSkippedProperties()
+        {
+            Assert.Throws<InvalidOperationException>(() => _ = new ValueSourceAttribute(ValueSource.Skip)
+            {
+                Name = "ignored"
+            });
         }
 
         [Test]

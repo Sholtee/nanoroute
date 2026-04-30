@@ -55,10 +55,10 @@ namespace NanoRoute.NativeAot
     {
         public int Id { get; set; }
 
-        [ArgumentSource(ArgumentSource.Context, Name = "query_filter")]
+        [ValueSource(ValueSource.Context, Name = "query_filter")]
         public string Filter { get; set; } = null!;
 
-        [ArgumentSource(ArgumentSource.ServiceLocator)]
+        [ValueSource(ValueSource.ServiceLocator)]
         public GreetingService Service { get; set; } = null!;
 
         public CancellationToken Cancellation { get; set; }
