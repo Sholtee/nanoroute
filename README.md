@@ -23,7 +23,7 @@ nanoroute/
 |   |-- NanoRoute.Perf/         Performance benchmarks
 |   |-- NanoRoute.NativeAot/    Native AOT smoke test
 |   |-- CoverageSettings.xml    Coverage configuration
-|   |-- Tests.Build.props       Shared test project settings
+|   |-- Directory.Build.props   Shared test project settings
 |-- Scripts/                    Build and test helpers
 |-- Directory.Build.props       Shared MSBuild settings
 |-- NanoRoute.slnx              Solution entry point

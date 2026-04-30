@@ -1,4 +1,4 @@
-# NanoRoute ![Tests](https://sholtee.github.io/nanoroute/badges/tests-badge.svg) [![Coverage](https://sholtee.github.io/nanoroute/badges/coverage-badge.svg)](https://sholtee.github.io/nanoroute/CoverageReport/)
+# NanoRoute
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with an optional `HttpListener` adapter and focused helpers for JSON payloads and error handling.
 
@@ -58,7 +58,7 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 
 - A trailing `/` makes a route a prefix match.
 - Without a trailing `/`, the route matches only the exact normalized request path.
-- Route patterns must start with `/`.
+- Route patterns must start with `/`, except for the empty string `""`, which matches the current scoped path exactly.
 - Repeated `/` separators in route patterns, such as `//` or `/items//details`, are invalid.
 - Literal segments are matched case-insensitively.
 - Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
