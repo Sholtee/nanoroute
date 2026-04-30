@@ -76,12 +76,12 @@ namespace NanoRoute.Tests
         [Test]
         public void TryParse_ShouldConsumeParameterSegmentsContainingQuotedSlash()
         {
-            const string PARAMTER_DEF = "/{value:str(pattern='/')}";
+            const string PARAMETER_DEF = "/{value:str(pattern='/')}";
 
             int offset = 1;
-            ParameterDefinition definition = ParameterDefinition.Parse($"{PARAMTER_DEF}/cica", ref offset);
+            ParameterDefinition definition = ParameterDefinition.Parse($"{PARAMETER_DEF}/cica", ref offset);
 
-            Assert.That(offset, Is.EqualTo(PARAMTER_DEF.Length - 1));
+            Assert.That(offset, Is.EqualTo(PARAMETER_DEF.Length - 1));
             Assert.That(definition.ParameterName, Is.EqualTo("value"));
             Assert.That(definition.ValueParser, Is.EqualTo(ParseValue("str(pattern='/')")));
         }
