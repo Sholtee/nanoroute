@@ -355,10 +355,12 @@ namespace NanoRoute.Tests
         [Test]
         public void ValueSourceAttribute_ShouldRejectNamesForSkippedProperties()
         {
-            Assert.Throws<InvalidOperationException>(() => _ = new ValueSourceAttribute(ValueSource.Skip)
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _ = new ValueSourceAttribute(ValueSource.Skip)
             {
                 Name = "ignored"
-            });
+            })!;
+
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_SKIPPED_VALUE_SOURCE_NAME));
         }
 
         [Test]

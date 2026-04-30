@@ -69,7 +69,7 @@ namespace NanoRoute.HandlerExtensions
             init
             {
                 if (Source is ValueSource.Skip && value is not null)
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(Resources.ERR_SKIPPED_VALUE_SOURCE_NAME);
 
                 field = value;
             }
