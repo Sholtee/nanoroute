@@ -174,4 +174,7 @@
   <data name="ERR_DECODING_FAILED" xml:space="preserve">
     <value>Decoding failed.</value>
   </data>
+  <data name="ERR_SKIPPED_VALUE_SOURCE_NAME" xml:space="preserve">
+    <value>Skipped value sources cannot have a binding name.</value>
+  </data>
 </root>
