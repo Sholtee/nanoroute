@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Class ArgumentSourceAttribute | NanoRoute </title>
+      <title>Class ValueSourceAttribute | NanoRoute </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Class ArgumentSourceAttribute | NanoRoute ">
+      <meta name="title" content="Class ValueSourceAttribute | NanoRoute ">
     
     <meta name="description" content="Overrides the default binding behavior for a typed handler request property.">
       <link rel="shortcut icon" href="Icon.png">
@@ -35,11 +35,11 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.HandlerExtensions.ArgumentSourceAttribute">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.HandlerExtensions.ValueSourceAttribute">
 
 
 
-  <h1 id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute" data-uid="NanoRoute.HandlerExtensions.ArgumentSourceAttribute" class="text-break">Class ArgumentSourceAttribute</h1>
+  <h1 id="NanoRoute_HandlerExtensions_ValueSourceAttribute" data-uid="NanoRoute.HandlerExtensions.ValueSourceAttribute" class="text-break">Class ValueSourceAttribute</h1>
   <div class="markdown level0 summary"><p>Overrides the default binding behavior for a typed handler request property.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -47,7 +47,7 @@
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.attribute">Attribute</a></div>
-    <div class="level2"><span class="xref">ArgumentSourceAttribute</span></div>
+    <div class="level2"><span class="xref">ValueSourceAttribute</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -177,21 +177,21 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a>.<a class="xref" href="NanoRoute.HandlerExtensions.html">HandlerExtensions</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute_syntax">Syntax</h5>
+  <h5 id="NanoRoute_HandlerExtensions_ValueSourceAttribute_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-public sealed class ArgumentSourceAttribute : Attribute</code></pre>
+public sealed class ValueSourceAttribute : Attribute</code></pre>
   </div>
   <h3 id="constructors">Constructors
 </h3>
-  <a id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute__ctor_" data-uid="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.#ctor*"></a>
-  <h4 id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute__ctor_NanoRoute_HandlerExtensions_ArgumentSource_" data-uid="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.#ctor(NanoRoute.HandlerExtensions.ArgumentSource)">ArgumentSourceAttribute(ArgumentSource)</h4>
+  <a id="NanoRoute_HandlerExtensions_ValueSourceAttribute__ctor_" data-uid="NanoRoute.HandlerExtensions.ValueSourceAttribute.#ctor*"></a>
+  <h4 id="NanoRoute_HandlerExtensions_ValueSourceAttribute__ctor_NanoRoute_HandlerExtensions_ValueSource_" data-uid="NanoRoute.HandlerExtensions.ValueSourceAttribute.#ctor(NanoRoute.HandlerExtensions.ValueSource)">ValueSourceAttribute(ValueSource)</h4>
   <div class="markdown level1 summary"><p>Overrides the default binding behavior for a typed handler request property.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ArgumentSourceAttribute(ArgumentSource source)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueSourceAttribute(ValueSource source)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -204,7 +204,7 @@ public sealed class ArgumentSourceAttribute : Attribute</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSource.html">ArgumentSource</a></td>
+        <td><a class="xref" href="NanoRoute.HandlerExtensions.ValueSource.html">ValueSource</a></td>
         <td><span class="parametername">source</span></td>
         <td><p>The source used to populate the annotated property.</p>
 </td>
@@ -213,8 +213,8 @@ public sealed class ArgumentSourceAttribute : Attribute</code></pre>
   </table>
   <h3 id="properties">Properties
 </h3>
-  <a id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Name_" data-uid="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name*"></a>
-  <h4 id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Name" data-uid="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Name">Name</h4>
+  <a id="NanoRoute_HandlerExtensions_ValueSourceAttribute_Name_" data-uid="NanoRoute.HandlerExtensions.ValueSourceAttribute.Name*"></a>
+  <h4 id="NanoRoute_HandlerExtensions_ValueSourceAttribute_Name" data-uid="NanoRoute.HandlerExtensions.ValueSourceAttribute.Name">Name</h4>
   <div class="markdown level1 summary"><p>Gets or sets an optional binding name.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -237,19 +237,20 @@ public sealed class ArgumentSourceAttribute : Attribute</code></pre>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Name_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>For <a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSource.html#NanoRoute_HandlerExtensions_ArgumentSource_Context">Context</a>, this overrides the key looked up in
-<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. For <a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSource.html#NanoRoute_HandlerExtensions_ArgumentSource_ServiceLocator">ServiceLocator</a>,
-this is treated as the keyed service name.</p>
+  <h5 id="NanoRoute_HandlerExtensions_ValueSourceAttribute_Name_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>For <a class="xref" href="NanoRoute.HandlerExtensions.ValueSource.html#NanoRoute_HandlerExtensions_ValueSource_Context">Context</a>, this overrides the key looked up in
+<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. For <a class="xref" href="NanoRoute.HandlerExtensions.ValueSource.html#NanoRoute_HandlerExtensions_ValueSource_ServiceLocator">ServiceLocator</a>,
+this is treated as the keyed service name. <a class="xref" href="NanoRoute.HandlerExtensions.ValueSource.html#NanoRoute_HandlerExtensions_ValueSource_Skip">Skip</a> does not allow
+a name because no value is read.</p>
 </div>
-  <a id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Source_" data-uid="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source*"></a>
-  <h4 id="NanoRoute_HandlerExtensions_ArgumentSourceAttribute_Source" data-uid="NanoRoute.HandlerExtensions.ArgumentSourceAttribute.Source">Source</h4>
+  <a id="NanoRoute_HandlerExtensions_ValueSourceAttribute_Source_" data-uid="NanoRoute.HandlerExtensions.ValueSourceAttribute.Source*"></a>
+  <h4 id="NanoRoute_HandlerExtensions_ValueSourceAttribute_Source" data-uid="NanoRoute.HandlerExtensions.ValueSourceAttribute.Source">Source</h4>
   <div class="markdown level1 summary"><p>Gets the binding source used for the annotated property.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ArgumentSource Source { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueSource Source { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -261,7 +262,7 @@ this is treated as the keyed service name.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.HandlerExtensions.ArgumentSource.html">ArgumentSource</a></td>
+        <td><a class="xref" href="NanoRoute.HandlerExtensions.ValueSource.html">ValueSource</a></td>
         <td></td>
       </tr>
     </tbody>

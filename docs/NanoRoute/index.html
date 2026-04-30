@@ -50,6 +50,9 @@
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html">ErrorDetails</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html">NanoRouteHandlerExtensions</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSource.html">ValueSource</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSourceAttribute.html">ValueSourceAttribute</a></li>
 </ul>
 <h2 id="highlights">Highlights</h2>
 <ul>
@@ -61,6 +64,8 @@
 <li><code>MatchingPrecedence</code> lets you choose whether literal or parameterized child segments are selected first.</li>
 <li>Once a child branch has been selected for a request, NanoRoute continues only within that branch.</li>
 <li><code>AddQueryBindings()</code> uses query descriptors such as <code>{filter:str(min=3)}&amp;{page?:int(min=1)}</code> and matches query keys through <code>Uri.Query</code> normalization.</li>
+<li><code>AddHandler&lt;TRequestContext&gt;()</code> can project route parameters, query bindings, services, keyed services, <code>RequestContext</code>, and <code>CancellationToken</code> into typed request objects.</li>
+<li><code>ValueSourceAttribute</code> customizes typed-handler property binding with <code>Context</code>, <code>ServiceLocator</code>, and <code>Skip</code> sources.</li>
 <li><code>NanoRoute.Json</code> adds JSON request binding and JSON error/response helpers on top of the core pipeline.</li>
 </ul>
 <h2 id="value-parser-syntax">Value Parser Syntax</h2>

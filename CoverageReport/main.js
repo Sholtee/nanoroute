@@ -213,8 +213,8 @@ var assemblies = [
   {
     "name": "NanoRoute.dll",
     "classes": [
-      { "name": "NanoRoute.HandlerExtensions.ArgumentSourceAttribute", "rp": "NanoRoute.dll_ArgumentSourceAttribute.html", "cl": 2, "ucl": 0, "cal": 2, "tl": 321, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions", "rp": "NanoRoute.dll_NanoRouteHandlerExtensions.html", "cl": 75, "ucl": 0, "cal": 75, "tl": 321, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions", "rp": "NanoRoute.dll_NanoRouteHandlerExtensions.html", "cl": 76, "ucl": 3, "cal": 79, "tl": 343, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "NanoRoute.HandlerExtensions.ValueSourceAttribute", "rp": "NanoRoute.dll_ValueSourceAttribute.html", "cl": 7, "ucl": 0, "cal": 7, "tl": 343, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "NanoRoute.HttpListenerRouter", "rp": "NanoRoute.dll_HttpListenerRouter.html", "cl": 29, "ucl": 1, "cal": 30, "tl": 156, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "NanoRoute.Internals.DelimitedSegment", "rp": "NanoRoute.dll_DelimitedSegment.html", "cl": 26, "ucl": 0, "cal": 26, "tl": 55, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "NanoRoute.Internals.Ensure", "rp": "NanoRoute.dll_Ensure.html", "cl": 4, "ucl": 0, "cal": 4, "tl": 25, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
