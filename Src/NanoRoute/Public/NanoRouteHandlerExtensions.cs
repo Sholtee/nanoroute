@@ -200,9 +200,9 @@ namespace NanoRoute.HandlerExtensions
             if (queryBindings is not null)
                 routeBuilder.AddQueryBindings(verbs, pattern, queryBindings);
 
-            Func<RequestContext, TRequestContext> createContext = CreateContextMapperDelegate<TRequestContext>();
+            Func<RequestContext, TRequestContext> mapContext = CreateContextMapperDelegate<TRequestContext>();
 
-            routeBuilder.AddHandler(verbs, pattern, (context, next) => handler(createContext(context), next));
+            routeBuilder.AddHandler(verbs, pattern, (context, next) => handler(mapContext(context), next));
 
             return routeBuilder;
         } 
