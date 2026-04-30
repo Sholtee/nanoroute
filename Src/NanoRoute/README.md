@@ -207,11 +207,14 @@ public sealed class GetItemRequest
 {
     public int Id { get; set; }
 
-    [ArgumentSource(ArgumentSource.Context, Name = "query_filter")]
+    [ValueSource(ValueSource.Context, Name = "query_filter")]
     public string Filter { get; set; } = null!;
 
-    [ArgumentSource(ArgumentSource.ServiceLocator)]
+    [ValueSource(ValueSource.ServiceLocator)]
     public IItemService Items { get; set; } = null!;
+
+    [ValueSource(ValueSource.Skip)]
+    public string? DiagnosticsLabel { get; set; }
 
     public CancellationToken Cancellation { get; set; }
 }
@@ -242,9 +245,10 @@ Binding rules:
 - Writable public properties are bound from `RequestContext.Parameters` by default, using the property name as the key.
 - `RequestContext` properties receive the current request context automatically.
 - `CancellationToken` properties receive the active request token automatically.
-- `[ArgumentSource(ArgumentSource.Context, Name = "...")]` binds from a different parameter or query-binding name.
-- `[ArgumentSource(ArgumentSource.ServiceLocator)]` resolves a service from `RequestContext.Services`.
-- `[ArgumentSource(ArgumentSource.ServiceLocator, Name = "...")]` resolves a keyed service.
+- `[ValueSource(ValueSource.Context, Name = "...")]` binds from a different parameter or query-binding name.
+- `[ValueSource(ValueSource.ServiceLocator)]` resolves a service from `RequestContext.Services`.
+- `[ValueSource(ValueSource.ServiceLocator, Name = "...")]` resolves a keyed service.
+- `[ValueSource(ValueSource.Skip)]` leaves the property untouched and does not allow `Name`.
 - Read-only properties are ignored.
 - Missing required values or services fail fast with `InvalidOperationException`.
 
@@ -324,7 +328,8 @@ This keeps the transport-specific concerns in your own router type while still r
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
 - [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html)
-- [ArgumentSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ArgumentSourceAttribute.html)
+- [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSource.html)
+- [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSourceAttribute.html)
 
 ## Documentation
 
