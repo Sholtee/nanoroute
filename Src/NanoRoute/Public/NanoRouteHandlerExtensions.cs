@@ -95,7 +95,7 @@ namespace NanoRoute.HandlerExtensions
     /// </remarks>
     public static class NanoRouteHandlerExtensions
     {
-        private static Func<RequestContext, TRequestContext> CreateContextDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>() where TRequestContext : new()
+        private static Func<RequestContext, TRequestContext> CreateContextMapperDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>() where TRequestContext : new()
         {
             ParameterExpression
                 source = Expression.Parameter(typeof(RequestContext), nameof(source)),
@@ -200,9 +200,9 @@ namespace NanoRoute.HandlerExtensions
             if (queryBindings is not null)
                 routeBuilder.AddQueryBindings(verbs, pattern, queryBindings);
 
-            Func<RequestContext, TRequestContext> createContext = CreateContextDelegate<TRequestContext>();
+            Func<RequestContext, TRequestContext> mapContext = CreateContextMapperDelegate<TRequestContext>();
 
-            routeBuilder.AddHandler(verbs, pattern, (context, next) => handler(createContext(context), next));
+            routeBuilder.AddHandler(verbs, pattern, (context, next) => handler(mapContext(context), next));
 
             return routeBuilder;
         } 
