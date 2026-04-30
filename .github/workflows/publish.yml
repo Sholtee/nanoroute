@@ -43,8 +43,12 @@ jobs:
       - name: Publish NuGet package
         shell: pwsh
         run: |
-          dotnet nuget push ./Artifacts/NuGet/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-          if (!$?) { throw "Package publishing failed" }
+          if (@(Get-ChildItem -Path ./Artifacts/NuGet -File -Filter *.nupkg).Length -ne 1) { throw "Expected exactly one package" }
+
+          foreach ($package in (Get-ChildItem -Path ./Artifacts/NuGet -File | Where-Object { $_.Extension -in @(".nupkg", ".snupkg") })) {
+            dotnet nuget push $package.FullName --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+            if (!$?) { throw "Package publishing failed: $($package.Name)" }
+          }
 
       - name: Push git tag
         shell: pwsh
