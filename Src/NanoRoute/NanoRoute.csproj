@@ -106,7 +106,7 @@
     <PackageTags>Router;Routing;</PackageTags>
     <RepositoryUrl>https://github.com/Sholtee/nanoroute</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>See https://github.com/Sholtee/nanoroute/blob/master/SRC/NanoRoute/HISTORY.md </PackageReleaseNotes>
+    <PackageReleaseNotes>See https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/HISTORY.md </PackageReleaseNotes>
   </PropertyGroup>
   
 </Project>
