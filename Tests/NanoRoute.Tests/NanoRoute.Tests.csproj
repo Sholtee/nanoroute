@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Tests.Build.props" />
 
   <PropertyGroup>
     <AssemblyName>NanoRoute.Tests</AssemblyName>
