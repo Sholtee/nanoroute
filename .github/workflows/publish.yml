@@ -43,10 +43,8 @@ jobs:
       - name: Publish NuGet package
         shell: pwsh
         run: |
-          if ([string]::IsNullOrWhiteSpace('${{ secrets.NUGET_API_KEY }}')) { throw "NuGet API key is not available" }
-
-          # dotnet nuget push ./Artifacts/NuGet/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-          # if (!$?) { throw "Package publishing failed" }
+          dotnet nuget push ./Artifacts/NuGet/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          if (!$?) { throw "Package publishing failed" }
 
       - name: Push git tag
         shell: pwsh
