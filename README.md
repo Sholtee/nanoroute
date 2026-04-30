@@ -1,4 +1,4 @@
-# NanoRoute ![Tests](https://sholtee.github.io/nanoroute/badges/tests-badge.svg) [![Coverage](https://sholtee.github.io/nanoroute/badges/coverage-badge.svg)](https://sholtee.github.io/nanoroute/CoverageReport/)
+# NanoRoute ![Tests](https://sholtee.github.io/nanoroute/badges/tests-badge.svg) [![Coverage](https://sholtee.github.io/nanoroute/badges/coverage-badge.svg)](https://sholtee.github.io/nanoroute/CoverageReport/) ![GitHub License](https://img.shields.io/github/license/sholtee/nanoroute) [![NuGet Version](https://img.shields.io/nuget/v/nanoroute)](https://www.nuget.org/packages/nanoroute)
 
 NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` pipelines. It includes an optional `HttpListener` adapter plus focused helpers for JSON payloads, query binding, and error handling.
 
@@ -23,7 +23,7 @@ nanoroute/
 |   |-- NanoRoute.Perf/         Performance benchmarks
 |   |-- NanoRoute.NativeAot/    Native AOT smoke test
 |   |-- CoverageSettings.xml    Coverage configuration
-|   |-- Tests.Build.props       Shared test project settings
+|   |-- Directory.Build.props   Shared test project settings
 |-- Scripts/                    Build and test helpers
 |-- Directory.Build.props       Shared MSBuild settings
 |-- NanoRoute.slnx              Solution entry point
