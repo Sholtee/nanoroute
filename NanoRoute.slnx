@@ -6,5 +6,6 @@
       <Build Solution="Release|*" Project="false" />
     </Project>
   </Folder>
+  <Project Path="Src/NanoRoute.AwsLambda/NanoRoute.AwsLambda.csproj" />
   <Project Path="Src/NanoRoute/NanoRoute.csproj" />
 </Solution>

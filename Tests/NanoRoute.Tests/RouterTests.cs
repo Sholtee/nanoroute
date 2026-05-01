@@ -69,11 +69,6 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            mockHandler_3
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .ReturnsAsync(s_response);
-
             TestRouter router = _routerBuilder
                 .AddValueParser("any", new Mock<SyncValueParserDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/path/to/{some_str:any}/something/", mockHandler_3.Object) // should not match after the literal branch was selected
@@ -104,11 +99,6 @@ namespace NanoRoute.Tests
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (_, next) => await next());
 
             mockHandler_2
-                .InSequence(seq)
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .ReturnsAsync(s_response);
-
-            mockHandler_3
                 .InSequence(seq)
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
