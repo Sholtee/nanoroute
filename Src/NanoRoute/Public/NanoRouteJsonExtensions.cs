@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -33,6 +34,13 @@ namespace NanoRoute.Json
     /// </remarks>
     public static class NanoRouteJsonExtensions
     {
+        private const string JSON_MEDIA_TYPE =
+#if NETSTANDARD2_1_OR_GREATER
+            MediaTypeNames.Application.Json;
+#else
+            "application/json";
+#endif
+
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder: RouteBuilder
         {
             /// <summary>
@@ -90,7 +98,7 @@ namespace NanoRoute.Json
                         return null!;
                     }
 
-                    if (!"application/json".Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
+                    if (!JSON_MEDIA_TYPE.Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
                         HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_BAD_CONTENT_TYPE);
 
                     Stream contentStream = await content.ReadAsStreamAsync();
@@ -270,7 +278,7 @@ namespace NanoRoute.Json
                     (
                         JsonSerializer.Serialize(body, typeInfo),
                         Encoding.UTF8,
-                        "application/json"
+                        JSON_MEDIA_TYPE
                     )
                 };
             }
