@@ -12,19 +12,19 @@ param
   [string] $runtime = "dotnet8",
   [string] $region = "us-east-1",
   [string] $containerName = "nanoroute-localstack",
-  [string] $localStackImage = "localstack/localstack:2026.04.0",
+  [string] $localStackImage = "localstack/localstack:4.14.0",
   [int] $port = 4566,
-  [int] $timeoutSeconds = 120
+  [int] $timeoutSeconds = 30
 )
 
 $ErrorActionPreference = "Stop"
 
-$root = Join-Path $PSScriptRoot ".." | Resolve-Path
-
 function Invoke-Docker
 {
-  docker @args
-  if (-not $?) { throw "Docker command failed: docker $($args -join ' ')" }
+  $output = docker @args
+  if (-not $?) { throw "Docker command failed" }
+
+  return $output
 }
 
 function Invoke-LocalAws
@@ -39,31 +39,33 @@ function Invoke-LocalAws
 function Wait-LocalStack
 {
   $deadline = [DateTime]::UtcNow.AddSeconds($timeoutSeconds)
-
   do
   {
     try
     {
-      $response = Invoke-RestMethod -Uri "http://localhost:$port/_localstack/health" -Method Get -TimeoutSec 2
-      if ($response.services.lambda -in @("available", "running")) { return }
+      $state = (Invoke-RestMethod -Uri "http://localhost:$port/_localstack/health" -Method Get -TimeoutSec 2 -ErrorAction Stop).services.lambda
+      if ($state -in @("available", "running")) { return }
     }
-    catch { Write-Host $_  }
+    catch { }
 
     Start-Sleep -Seconds 1
   }
   while ([DateTime]::UtcNow -lt $deadline)
+
+  Invoke-Docker logs --tail 120 $containerName
 
   throw "LocalStack did not become ready within $timeoutSeconds seconds."
 }
 
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { throw "Docker CLI was not found." }
 
-$existingContainer = Invoke-Docker ps -aq --filter "name=^/$containerName$"
-if ($existingContainer) {
-  Write-Host "Remove existing container"
+if ((Invoke-Docker ps -aq --filter "name=^/$containerName$")) {
+  Write-Host -NoNewLine "Remove existing container......"
   Invoke-Docker rm -f $containerName | Out-Null
+  Write-Host "OK" -ForegroundColor Green
 }
 
+Write-Host -NoNewLine "Starting the LocalStack container......"
 Invoke-Docker run `
   --detach `
   --name $containerName `
@@ -74,17 +76,16 @@ Invoke-Docker run `
   $localStackImage | Out-Null
 
 Wait-LocalStack
+Write-Host "OK" -ForegroundColor Green
 
-$packageOutput = & (Join-Path $PSScriptRoot "Package-Lambda.ps1") $project
-if (-not $?)
-{
-  $packageOutput | Write-Error
-  throw "Failed to package Lambda project '$project'."
-}
+Write-Host -NoNewLine "Creating the deploy package......"
+& (Join-Path $PSScriptRoot "Package-Lambda.ps1") $project | Out-Null
 
-$packagePath =  [System.IO.Path]::Combine($root, "BIN", "Publish", "$project.zip")
+$packagePath =  [System.IO.Path]::Combine($PSScriptRoot, "..", "BIN", "Publish", "$project.zip")
 if (-not (Test-Path $packagePath)) { throw "Lambda package was not created: $packagePath" }
+Write-Host "OK" -ForegroundColor Green
 
+Write-Host -NoNewLine "Deploying the package......"
 $containerPackagePath = "/tmp/$project.zip"
 
 Invoke-Docker cp $packagePath "${containerName}:$containerPackagePath" | Out-Null
@@ -106,5 +107,6 @@ $endpoint = Invoke-LocalAws lambda create-function-url-config `
   --query FunctionUrl `
   --output text
 if ([string]::IsNullOrWhiteSpace($endpoint)) { throw "LocalStack did not return a Lambda function URL." }
+Write-Host "OK" -ForegroundColor Green
 
 $endpoint
