@@ -87,7 +87,6 @@ NanoRoute.Router
 NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage! request, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
 NanoRoute.Router.MatchingPrecedence.get -> NanoRoute.MatchingPrecedence
 NanoRoute.Router.Router(NanoRoute.RouteBuilder! routeBuilder, NanoRoute.RouterConfig! config) -> void
-NanoRoute.Router.Timeout.get -> System.TimeSpan
 NanoRoute.RouterBuilder<TRouter, TConfig>
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
@@ -113,8 +112,6 @@ NanoRoute.RouterConfig
 NanoRoute.RouterConfig.MatchingPrecedence.get -> NanoRoute.MatchingPrecedence
 NanoRoute.RouterConfig.MatchingPrecedence.set -> void
 NanoRoute.RouterConfig.RouterConfig() -> void
-NanoRoute.RouterConfig.Timeout.get -> System.TimeSpan
-NanoRoute.RouterConfig.Timeout.set -> void
 NanoRoute.RoutingContext
 NanoRoute.SyncValueParserDelegate
 NanoRoute.ValueParserContext

@@ -15,9 +15,9 @@ namespace NanoRoute
     /// </summary>
     /// <remarks>
     /// Handlers can use <see cref="Parameters"/> to share values, <see cref="Services"/> to resolve 
-    /// dependencies, and <see cref="Cancellation"/> to observe either caller-initiated cancellation
-    /// or router timeouts. <see cref="Parameters"/> is a shared mutable dictionary for the active 
-    /// pipeline so handlers may overwrite values that were written earlier by other handlers.
+    /// dependencies, and <see cref="Cancellation"/> to observe caller-initiated cancellation. 
+    /// <see cref="Parameters"/> is a shared mutable dictionary for the active pipeline so handlers may overwrite values
+    /// that were written earlier by other handlers.
     /// </remarks>
     public readonly struct RequestContext
     {

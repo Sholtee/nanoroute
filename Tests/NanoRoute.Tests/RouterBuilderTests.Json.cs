@@ -97,10 +97,11 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void AddJsonErrorDetails_ShouldPropagateRouterTimeoutCancellation()
+        public void AddJsonErrorDetails_ShouldPropagateCancellationDuringHandlerExecution()
         {
+            using CancellationTokenSource cancellation = new(TimeSpan.FromMilliseconds(50));
+
             TestRouter router = _routerBuilder
-                .WithConfiguration(config => config.Timeout = TimeSpan.FromMilliseconds(50))
                 .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere", async (context, _) =>
                 {
@@ -111,7 +112,7 @@ namespace NanoRoute.Tests
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
 
-            Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
         }
 
         [TestCase(false)]

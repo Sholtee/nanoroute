@@ -30,7 +30,7 @@ namespace NanoRoute
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
-            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
+            /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
             public TBuilder AddExceptionHandler() => routeBuilder.AddExceptionHandler(Enum.GetNames(typeof(HttpVerb)));
 
@@ -46,7 +46,7 @@ namespace NanoRoute
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
-            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
+            /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
             public TBuilder AddExceptionHandler(string pattern)
             {
@@ -69,7 +69,7 @@ namespace NanoRoute
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
-            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
+            /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
             public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs, string pattern)
             {
@@ -113,7 +113,7 @@ namespace NanoRoute
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
-            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
+            /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
             public TBuilder AddExceptionHandler(string verb, string pattern)
             {
@@ -133,7 +133,7 @@ namespace NanoRoute
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
-            /// not normalized so caller-driven cancellation and router timeouts can propagate unchanged.
+            /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
             public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs)
             {

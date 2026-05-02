@@ -22,7 +22,6 @@ namespace NanoRoute.Perf
                 private static readonly Task<HttpResponseMessage> s_responseTask = Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 
                 private readonly TestRouter _router = new RouterBuilder<TestRouter, RouterConfig>(static bldr => new TestRouter(bldr))
-                    .WithConfiguration(static cfg => cfg.Timeout = Timeout.InfiniteTimeSpan)
                     .AddDefaultValueParsers()
                     .AddHandler("GET", routePattern, static (_, _) => s_responseTask)
                     .CreateRouter();

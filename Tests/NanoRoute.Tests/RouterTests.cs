@@ -516,8 +516,10 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void Handle_ShouldCancelWhenTimeoutExpires()
+        public void Handle_ShouldPropagateCancellationDuringHandlerExecution()
         {
+            using CancellationTokenSource cancellation = new(TimeSpan.FromMilliseconds(50));
+
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && c.Cancellation.CanBeCanceled), It.IsAny<CallNextHandlerDelegate>()))
@@ -528,18 +530,17 @@ namespace NanoRoute.Tests
                 });
 
             TestRouter router = _routerBuilder
-                .WithConfiguration(config => config.Timeout = TimeSpan.FromMilliseconds(50))
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/");
 
-            Assert.That(async () => await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
         [Test]
-        public async Task Handle_ShouldLeaveCancellationTokenUnchangedWhenTimeoutIsInfinite()
+        public async Task Handle_ShouldExposeTheCallerCancellationToken()
         {
             using CancellationTokenSource cts = new();
 
@@ -549,7 +550,6 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .WithConfiguration(config => config.Timeout = Timeout.InfiniteTimeSpan)
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 

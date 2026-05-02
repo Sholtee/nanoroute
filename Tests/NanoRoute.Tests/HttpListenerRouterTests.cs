@@ -197,8 +197,9 @@ namespace NanoRoute.Tests
         [Platform(Exclude = "Linux", Reason = "HttpListenerResponse.Abort() does not reliably surface as a client-observable failure on Linux, so this transport-specific assertion is not portable there.")]
         public async Task Route_ShouldAbortTheResponseAndRethrowWhenTheRouterIsCancelled()
         {
+            using CancellationTokenSource cancellation = new(TimeSpan.FromMilliseconds(50));
+
             CreateRouter(bldr => bldr
-                .WithConfiguration(config => config.Timeout = TimeSpan.FromMilliseconds(50))
                 .AddHandler("GET", "/welcome", async (context, _) =>
                 {
                     await Task.Delay(Timeout.InfiniteTimeSpan, context.Cancellation);
@@ -208,7 +209,7 @@ namespace NanoRoute.Tests
             _client.Timeout = TimeSpan.FromSeconds(2);
             Task<HttpResponseMessage> responseTask = _client.GetAsync(RelativeUri("welcome"));
 
-            Assert.That(async () => await HandleRequest(), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await HandleRequest(cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
             Assert.That(async () => await responseTask, Throws.Exception);
         }
 

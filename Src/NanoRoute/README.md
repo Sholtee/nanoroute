@@ -297,11 +297,9 @@ InMemoryRouter router = InMemoryRouter
 
 This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline.
 
-### Timeouts And Cancellation
+### Cancellation
 
-- `RouterConfig.Timeout` defaults to `TimeSpan.FromMinutes(1)`.
-- NanoRoute exposes a linked cancellation token to async value parsers and handlers through `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
-- That linked token is canceled when either the caller-provided cancellation token is canceled or the router timeout elapses.
+- NanoRoute exposes the caller-provided cancellation token to async value parsers and handlers through `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
 - `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
 - `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
 

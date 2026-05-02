@@ -95,8 +95,8 @@ namespace NanoRoute
         /// <param name="cancellation">A token that can cancel request processing and response streaming.</param>
         /// <returns>A task that completes after the router has finished writing the response.</returns>
         /// <exception cref="OperationCanceledException">
-        /// Thrown when the caller cancels <paramref name="cancellation"/> or when the configured router timeout
-        /// elapses. In either case the listener response is aborted before the exception is rethrown.
+        /// Thrown when the caller cancels <paramref name="cancellation"/>. The listener response is aborted before the
+        /// exception is rethrown.
         /// </exception>
         /// <remarks>
         /// Request and content headers are copied into the intermediate <see cref="HttpRequestMessage"/>.

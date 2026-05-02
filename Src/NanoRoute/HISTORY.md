@@ -5,6 +5,7 @@
 ### Breaking Changes
 
 - Renamed `ArgumentSourceAttribute` to `ValueSourceAttribute`, and renamed the companion `ArgumentSource` enum to `ValueSource`.
+- Removed the router timeout API. Pass a `CancellationToken` to `Router.Handle()` or `HttpListenerRouter.Route()` when request processing needs a deadline.
 
 ### Added
 
