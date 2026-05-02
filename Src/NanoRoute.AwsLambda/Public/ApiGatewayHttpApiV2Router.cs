@@ -38,12 +38,11 @@ namespace NanoRoute.AwsLambda
             Ensure.NotNull(request, nameof(request));
             Ensure.NotNull(services, nameof(services));
 
-            using CancellationTokenSource cts = new();
-
             TimeSpan cancellationDelay = remainingTime.Add(TimeSpan.FromSeconds(-1));
             if (cancellationDelay <= TimeSpan.Zero)
                 return Timeout();
 
+            using CancellationTokenSource cts = new();
             cts.CancelAfter(cancellationDelay);
 
             using HttpRequestMessage requestMessage = request.CreateRequestMessage();

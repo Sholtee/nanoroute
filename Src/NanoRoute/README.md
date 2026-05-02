@@ -313,7 +313,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
-- `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
+- `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 

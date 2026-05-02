@@ -2,6 +2,7 @@
   <Folder Name="/Tests/">
     <Project Path="Tests/NanoRoute.NativeAot/NanoRoute.NativeAot.csproj" />
     <Project Path="Tests/NanoRoute.Perf/NanoRoute.Perf.csproj" />
+    <Project Path="Tests/NanoRoute.TestLambda/NanoRoute.TestLambda.csproj" />
     <Project Path="Tests/NanoRoute.Tests/NanoRoute.Tests.csproj">
       <Build Solution="Release|*" Project="false" />
     </Project>
