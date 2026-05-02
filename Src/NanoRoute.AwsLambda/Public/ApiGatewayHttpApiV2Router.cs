@@ -18,7 +18,7 @@ namespace NanoRoute.AwsLambda
     using Json;
 
     /// <summary>
-    /// Routes <see cref="APIGatewayHttpApiV2ProxyRequest"/> instances through a NanoRoute pipeline.
+    /// Routes API Gateway HTTP API and Lambda Function URL <see cref="APIGatewayHttpApiV2ProxyRequest"/> instances through a NanoRoute pipeline.
     /// </summary>
     public sealed class ApiGatewayHttpApiV2Router : Router
     {
@@ -27,7 +27,7 @@ namespace NanoRoute.AwsLambda
         }
 
         /// <summary>
-        /// Routes a Lambda HTTP API payload-format-2.0 request and returns the corresponding proxy response.
+        /// Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.
         /// </summary>
         /// <param name="request">The API Gateway v2 request event.</param>
         /// <param name="services">The service provider exposed to handlers through <see cref="RequestContext.Services"/>.</param>

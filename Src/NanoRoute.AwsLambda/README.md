@@ -1,5 +1,185 @@
 # NanoRoute.AwsLambda
 
-AWS Lambda adapters for NanoRoute.
+NanoRoute.AwsLambda adds AWS Lambda adapters for NanoRoute while keeping the core package transport-neutral.
 
-This package keeps the NanoRoute core transport-neutral and adds request/response translation for Amazon API Gateway proxy event models.
+The package currently supports Amazon API Gateway HTTP APIs and Lambda Function URLs that invoke Lambda functions with payload format version `2.0`. It translates `APIGatewayHttpApiV2ProxyRequest` events into `HttpRequestMessage` instances, runs the normal NanoRoute pipeline, and converts the produced `HttpResponseMessage` into an `APIGatewayHttpApiV2ProxyResponse`.
+
+NanoRoute.AwsLambda targets `netstandard2.0` and `netstandard2.1`.
+
+## Quick Start
+
+```csharp
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using Microsoft.Extensions.DependencyInjection;
+using NanoRoute;
+using NanoRoute.AwsLambda;
+
+public sealed class Function
+{
+    private static readonly IServiceProvider Services = new ServiceCollection().BuildServiceProvider();
+
+    private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
+        .CreateBuilder()
+        .AddDefaultValueParsers()
+        .AddHandler("GET", "/health", static async (_, _) =>
+        {
+            await Task.CompletedTask;
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("ok")
+            };
+        })
+        .CreateRouter();
+
+    public Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+    {
+        return Router.Route(request, Services, context.RemainingTime);
+    }
+}
+```
+
+`ApiGatewayHttpApiV2Router.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router between Lambda invocations.
+
+The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass `ILambdaContext.RemainingTime` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
+
+## Routing
+
+The Lambda adapter uses the same route matching and handler pipeline as NanoRoute.
+
+```csharp
+using System.Net;
+using System.Net.Http;
+
+using NanoRoute;
+using NanoRoute.AwsLambda;
+using NanoRoute.Json;
+
+ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+    .CreateBuilder()
+    .AddDefaultValueParsers()
+    .AddPrefix("/api/items/", items => items
+        .AddQueryBindings("GET", "", "{filter?:str(min=3)}")
+        .AddHandler("GET", "", static async (context, _) =>
+        {
+            await Task.CompletedTask;
+
+            return HttpResponseMessage.Json(new
+            {
+                filter = context.Parameters.TryGetValue("filter", out object? filter) ? filter : null
+            });
+        })
+        .AddHandler("GET", "{id:int(min=1)}", static async (context, _) =>
+        {
+            await Task.CompletedTask;
+
+            return HttpResponseMessage.Json(new
+            {
+                id = context.Parameters["id"]
+            });
+        }))
+    .CreateRouter();
+```
+
+The adapter calls `AddJsonErrorDetails()` automatically from `CreateBuilder()`, because Lambda proxy integrations expect a serializable response body even when the routing pipeline fails. You can still add your own exception handling middleware or response shaping handlers using the normal NanoRoute APIs.
+
+## Request Mapping
+
+`ApiGatewayHttpApiV2Router` converts the API Gateway event into an `HttpRequestMessage` before executing the NanoRoute pipeline.
+
+- The request URI is built from `RawPath`, `RawQueryString`, the `Host` header, and the request scheme.
+- The scheme is read from `Forwarded: proto=...`, `X-Forwarded-Proto`, or inferred as `https` for Lambda Function URL domains.
+- Request headers are copied onto the `HttpRequestMessage` or its content headers.
+- Plain request bodies are exposed as `StringContent`; base64-encoded request bodies are exposed as `StreamContent`.
+- The original `APIGatewayHttpApiV2ProxyRequest` is available through the NanoRoute request context as the original request object.
+- The API Gateway request id is used as the NanoRoute trace id.
+
+Payload format `2.0` does not include the scheme directly, so the adapter derives it from forwarding metadata or the Lambda Function URL domain. If the adapter cannot determine the scheme or host, the request cannot be mapped to an absolute `HttpRequestMessage.RequestUri` and routing fails before handlers run.
+
+## Response Mapping
+
+NanoRoute handlers return ordinary `HttpResponseMessage` instances.
+
+- `StringContent` is returned as a plain response body.
+- Other content types are base64 encoded and set `IsBase64Encoded` to `true`.
+- Response headers are flattened into the API Gateway response header dictionary.
+- `Set-Cookie` values are returned through the API Gateway `Cookies` collection.
+
+Header values other than `Set-Cookie` are joined with commas, matching the single-value header model used by `APIGatewayHttpApiV2ProxyResponse.Headers`.
+
+## Timeout Handling
+
+Pass `ILambdaContext.RemainingTime` to `Route()`. The adapter starts cancellation one second before the Lambda timeout so async value parsers and handlers can observe `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
+
+If the invocation is already inside that safety window, the request is cancelled immediately and the adapter returns a `504 Gateway Timeout` JSON error response.
+
+## Typed Handlers
+
+Typed handlers work the same way under Lambda as they do in the core package. The service provider passed to `Route()` is exposed through `RequestContext.Services`, so `[ValueSource(ValueSource.ServiceLocator)]` can resolve request object dependencies from your Lambda function's service container.
+
+```csharp
+using System.Net.Http;
+using System.Threading;
+
+using NanoRoute;
+using NanoRoute.AwsLambda;
+using NanoRoute.HandlerExtensions;
+using NanoRoute.Json;
+
+public sealed class GetItemRequest
+{
+    public int Id { get; set; }
+
+    [ValueSource(ValueSource.Context, Name = "filter")]
+    public string? Filter { get; set; }
+
+    [ValueSource(ValueSource.ServiceLocator)]
+    public IItemRepository Items { get; set; } = null!;
+
+    public CancellationToken Cancellation { get; set; }
+}
+
+ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+    .CreateBuilder()
+    .AddDefaultValueParsers()
+    .AddHandler
+    (
+        ["GET"],
+        "/items/{id:int}",
+        "{filter?:str(min=3)}",
+        static async (GetItemRequest request) =>
+        {
+            Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
+            return HttpResponseMessage.Json(item);
+        }
+    )
+    .CreateRouter();
+```
+
+## Common Building Blocks
+
+- `ApiGatewayHttpApiV2Router.CreateBuilder()` starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.
+- `AwsLambdaRouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`.
+- `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
+- `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
+- `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
+- `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
+- `AddHandler<TRequest>()` projects `RequestContext` into a typed request object before invoking the handler.
+- `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
+
+## Supported API Gateway Model
+
+This package is intentionally narrow:
+
+- Supported: API Gateway HTTP API events represented by `APIGatewayHttpApiV2ProxyRequest`.
+- Supported: Lambda Function URL events represented by `APIGatewayHttpApiV2ProxyRequest`.
+- Supported: Lambda proxy responses represented by `APIGatewayHttpApiV2ProxyResponse`.
+- Not currently supported: REST API payload format `1.0`, Application Load Balancer events, or custom event models.
+
+For unsupported transports, derive a custom router from the core `Router` type and map your event model to `HttpRequestMessage` before calling `Handle()`.
