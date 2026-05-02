@@ -28,10 +28,10 @@ namespace NanoRoute.AwsLambda
             UriBuilder uriBuilder = new()
             {
                 // https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-http-apis
-                Scheme = GetHeader(request.Headers, "forwarded") is { Length: > 0 } forwarded && s_protoMatcher.Match(forwarded) is { Success: true } match
+                Scheme = request.Headers.TryGetValue("forwarded" /*AWS lowercases the header names*/, out string forwarded) && s_protoMatcher.Match(forwarded) is { Success: true } match
                     ? match.Groups["proto"].Value
                     : throw new InvalidOperationException(Resources.ERR_UNKNOWN_SCHEME),
-                Host = GetHeader(request.Headers, "host") ?? throw new InvalidOperationException(Resources.ERR_UNKNOWN_HOST),
+                Host = request.Headers.TryGetValue("host", out string host) ? host : throw new InvalidOperationException(Resources.ERR_UNKNOWN_HOST),
                 Path = request.RawPath,
                 Query = request.RawQueryString
             };
@@ -61,15 +61,6 @@ namespace NanoRoute.AwsLambda
             requestMessage.Properties[Router.TRACE_ID_NAME] = request.RequestContext.RequestId;
 
             return requestMessage;
-
-            static string? GetHeader(IDictionary<string, string> headers, string name)
-            {
-                foreach (KeyValuePair<string, string> header in headers)
-                    if (string.Equals(header.Key, name))
-                        return header.Value;
-
-                return null;
-            }
         }
  
         public static async Task<APIGatewayHttpApiV2ProxyResponse> CreateResponse(this HttpResponseMessage responseMessage)
