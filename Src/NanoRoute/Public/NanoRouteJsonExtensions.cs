@@ -241,7 +241,7 @@ namespace NanoRoute.Json
                             (
                                 errorDetails.Status,
                                 errorDetails,
-                                JsonContext.Default.ErrorDetails
+                                ErrorDetails.JsonTypeInfo
                             );
                         }
                     })
@@ -308,6 +308,14 @@ namespace NanoRoute.Json
             /// <param name="body">The value to serialize.</param>
             /// <returns>A new <see cref="HttpResponseMessage"/> with JSON content.</returns>
             public static HttpResponseMessage Json<T>(T? body) => Json(HttpStatusCode.OK, body);
+        }
+
+        extension(ErrorDetails)
+        {
+            /// <summary>
+            /// Provides the JSON serialization meta-data.
+            /// </summary>
+            public static JsonTypeInfo<ErrorDetails> JsonTypeInfo => JsonContext.Default.ErrorDetails;
         }
     }
 }

@@ -53,8 +53,6 @@ namespace NanoRoute
 
             void CopyResponseHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
             {
-                cancellation.ThrowIfCancellationRequested();
-
                 foreach (KeyValuePair<string, IEnumerable<string>> header in headers)
                     if (!s_reservedHeaders.Contains(header.Key))
                         response.Headers.Add(header.Key, string.Join(",", header.Value));
@@ -79,12 +77,9 @@ namespace NanoRoute
             {
                 string[] values = request.Headers.GetValues(header);
 
-                bool headerSet =
+                _ =
                     requestMessage.Headers.TryAddWithoutValidation(header, values) || // normal request headers
                     requestMessage.Content?.Headers.TryAddWithoutValidation(header, values) is true; // fall back to content headers
-
-                if (!headerSet)
-                    RouterEventSource.Warning.Write("HeaderCopyFailed", static header => new { Header = header }, header);
             }
 
             return requestMessage;

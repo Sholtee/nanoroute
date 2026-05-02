@@ -37,6 +37,7 @@ NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, Syst
 NanoRoute.HttpListenerRouterConfig
 NanoRoute.HttpListenerRouterConfig.HttpListenerRouterConfig() -> void
 NanoRoute.Json.NanoRouteJsonExtensions
+NanoRoute.Json.NanoRouteJsonExtensions.extension(NanoRoute.ErrorDetails!)
 NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!)
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo, string! paramName, params System.Collections.Generic.IReadOnlyCollection<string!>! verbs) -> TBuilder!
@@ -143,6 +144,7 @@ NanoRoute.ValueParserRegistration.Parse.get -> NanoRoute.ValueParserDelegate!
 NanoRoute.ValueParserRegistration.Parse.init -> void
 NanoRoute.ValueParserRegistration.ValueParserRegistration(string! Name, NanoRoute.ValueParserDelegate! Parse, NanoRoute.BindArgumentsDelegate! BindArguments) -> void
 static NanoRoute.HttpListenerRouter.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.HttpListenerRouter!, NanoRoute.HttpListenerRouterConfig!>!
+static NanoRoute.Json.NanoRouteJsonExtensions.extension(NanoRoute.ErrorDetails!).JsonTypeInfo.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<NanoRoute.ErrorDetails!>!
 static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json(System.Net.HttpStatusCode statusCode, object? body, System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo) -> System.Net.Http.HttpResponseMessage!
 static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json<T>(System.Net.HttpStatusCode statusCode, T? body) -> System.Net.Http.HttpResponseMessage!
 static NanoRoute.Json.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json<T>(System.Net.HttpStatusCode statusCode, T? body, System.Text.Json.JsonSerializerOptions! options) -> System.Net.Http.HttpResponseMessage!
