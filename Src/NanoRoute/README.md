@@ -1,12 +1,14 @@
 # NanoRoute
 
-NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with an optional `HttpListener` adapter and focused helpers for JSON payloads and error handling.
+NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
 The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`.
 
 > Note: NanoRoute is compatible with Native AOT scenarios.
+
+For AWS Lambda integrations, use the separate `NanoRoute.AwsLambda` package.
 
 ## Quick Start
 
