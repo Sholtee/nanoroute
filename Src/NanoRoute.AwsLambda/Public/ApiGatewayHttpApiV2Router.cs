@@ -82,8 +82,6 @@ namespace NanoRoute.AwsLambda
         /// Creates a strongly typed builder for configuring an <see cref="ApiGatewayHttpApiV2Router"/>.
         /// </summary>
         /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
-        public static RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> CreateBuilder() => new RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig>(static builder => new ApiGatewayHttpApiV2Router(builder))
-            // Lambda always expects JSON responses 
-            .AddJsonErrorDetails();
+        public static RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> CreateBuilder() => new RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig>(static builder => new ApiGatewayHttpApiV2Router(builder));
     }
 }

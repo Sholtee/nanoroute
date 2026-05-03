@@ -29,6 +29,7 @@ namespace NanoRoute.TestLambda
 
         private static readonly ApiGatewayHttpApiV2Router s_router = ApiGatewayHttpApiV2Router
             .CreateBuilder()
+            .AddJsonErrorDetails(populateErrorInfo: true)
             .AddDefaultValueParsers()
             .AddQueryBindings("GET", "/items/{id:int(min=1)}", "{filter?:str(min=3)}")
             .AddJsonBody(JsonContext.Default.EchoRequest, "POST", "/echo")

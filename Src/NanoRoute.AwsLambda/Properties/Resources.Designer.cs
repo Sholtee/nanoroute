@@ -61,15 +61,6 @@ namespace NanoRoute.AwsLambda.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Host could not be determined..
-        /// </summary>
-        internal static string ERR_UNKNOWN_HOST {
-            get {
-                return ResourceManager.GetString("ERR_UNKNOWN_HOST", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Scheme could not be determined..
         /// </summary>
         internal static string ERR_UNKNOWN_SCHEME {

@@ -109,4 +109,9 @@ $endpoint = Invoke-LocalAws lambda create-function-url-config `
 if ([string]::IsNullOrWhiteSpace($endpoint)) { throw "LocalStack did not return a Lambda function URL." }
 Write-Host "OK" -ForegroundColor Green
 
+Write-Host -NoNewLine "Checking the health endpoint......"
+$health = Invoke-RestMethod -Uri "$($endpoint.TrimEnd('/'))/health" -Method Get -TimeoutSec 10 -ErrorAction Stop
+if ($health -ne "ok") { throw "Health endpoint returned unexpected response: $health" }
+Write-Host "OK" -ForegroundColor Green
+
 $endpoint

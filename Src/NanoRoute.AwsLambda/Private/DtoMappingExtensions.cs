@@ -23,17 +23,35 @@ namespace NanoRoute.AwsLambda
     {
         private static readonly Regex s_protoMatcher = new(@"(?:^|;\s*)proto=(?:""(?<proto>[^""]+)""|(?<proto>[^;]+))");
 
+        public static string GetScheme(this APIGatewayHttpApiV2ProxyRequest request)
+        {
+            if (request.Headers.TryGetValue("x-forwarded-proto" /*AWS lowercases the header names*/, out string proto))
+                return proto;
+
+            if (request.Headers.TryGetValue("forwarded", out string forwarded) && s_protoMatcher.Match(forwarded) is { Success: true } match)
+                return match.Groups["proto"].Value;
+
+            throw new InvalidOperationException(Resources.ERR_UNKNOWN_SCHEME);
+        }
+
+        public static void GetHostAndPort(this APIGatewayHttpApiV2ProxyRequest request, out string host, out int port)
+        {
+            string[] hostAndPort = request.RequestContext.DomainName.Split(':');
+            host = hostAndPort[0];
+            port = int.Parse(hostAndPort[1]);
+        }
+
         public static HttpRequestMessage CreateRequestMessage(this APIGatewayHttpApiV2ProxyRequest request)
         {
+            request.GetHostAndPort(out string host, out int port);
+
             UriBuilder uriBuilder = new()
             {
-                // https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-http-apis
-                Scheme = request.Headers.TryGetValue("forwarded" /*AWS lowercases the header names*/, out string forwarded) && s_protoMatcher.Match(forwarded) is { Success: true } match
-                    ? match.Groups["proto"].Value
-                    : throw new InvalidOperationException(Resources.ERR_UNKNOWN_SCHEME),
-                Host = request.Headers.TryGetValue("host", out string host) ? host : throw new InvalidOperationException(Resources.ERR_UNKNOWN_HOST),
+                Scheme = request.GetScheme(),
+                Host = host,
                 Path = request.RawPath,
-                Query = request.RawQueryString
+                Query = request.RawQueryString,
+                Port = port
             };
 
             HttpRequestMessage requestMessage = new(new HttpMethod(request.RequestContext.Http.Method), uriBuilder.Uri.AbsoluteUri)
