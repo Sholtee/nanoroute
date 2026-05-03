@@ -284,6 +284,20 @@ namespace NanoRoute.Json
             }
 
             /// <summary>
+            /// Creates a JSON response using the supplied type metadata.
+            /// </summary>
+            /// <param name="statusCode">The HTTP status code to assign to the response.</param>
+            /// <param name="body">The value to serialize.</param>
+            /// <param name="typeInfo">The metadata used to serialize <paramref name="body"/>.</param>
+            /// <returns>A new <see cref="HttpResponseMessage"/> with JSON content.</returns>
+            public static HttpResponseMessage Json<T>(HttpStatusCode statusCode, T? body, JsonTypeInfo<T> typeInfo)
+            {
+                Ensure.NotNull(typeInfo);
+
+                return Json(statusCode, (object?) body, typeInfo);
+            }
+
+            /// <summary>
             /// Creates a JSON response using serializer <paramref name="options"/> to resolve metadata for <typeparamref name="T"/>.
             /// </summary>
             /// <typeparam name="T">The type of the response body.</typeparam>
@@ -295,7 +309,12 @@ namespace NanoRoute.Json
             {
                 Ensure.NotNull(options);
 
-                options.TypeInfoResolver ??= new DefaultJsonTypeInfoResolver();
+                if (options.TypeInfoResolver is null)
+                    // do not change the original options
+                    options = new JsonSerializerOptions(options)
+                    {
+                        TypeInfoResolver = new DefaultJsonTypeInfoResolver()
+                    };
 
                 return Json(statusCode, body, options.GetTypeInfo(typeof(T)));
             }
