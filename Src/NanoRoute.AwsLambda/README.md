@@ -19,6 +19,7 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
 using NanoRoute.AwsLambda;
+using NanoRoute.Json;
 
 public sealed class Function
 {
@@ -26,6 +27,7 @@ public sealed class Function
 
     private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
         .CreateBuilder()
+        .AddJsonErrorDetails()
         .AddDefaultValueParsers()
         .AddHandler("GET", "/health", static async (_, _) =>
         {
@@ -63,6 +65,7 @@ using NanoRoute.Json;
 
 ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
+    .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddPrefix("/api/items/", items => items
         .AddQueryBindings("GET", "", "{filter?:str(min=3)}")
@@ -87,7 +90,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateRouter();
 ```
 
-The adapter calls `AddJsonErrorDetails()` automatically from `CreateBuilder()`, because Lambda proxy integrations expect a serializable response body even when the routing pipeline fails. You can still add your own exception handling middleware or response shaping handlers using the normal NanoRoute APIs.
+`CreateBuilder()` does not add JSON error handling automatically. Add `AddJsonErrorDetails()` yourself when you want structured JSON errors, or omit it when you want custom exception handling middleware or response shaping handlers to own failures.
 
 ## Request Mapping
 
@@ -147,6 +150,7 @@ public sealed class GetItemRequest
 
 ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
+    .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddHandler
     (
@@ -170,6 +174,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
+- `AddJsonErrorDetails(bool populateErrorInfo = false)` turns routing exceptions into JSON `ErrorDetails` responses when explicitly added.
 - `AddHandler<TRequest>()` projects `RequestContext` into a typed request object before invoking the handler.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 
