@@ -49,12 +49,12 @@
 
   <PropertyGroup>
     <PolySharpIncludeGeneratedTypes>
-      System.Index;
       System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
       System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
       System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute;
       System.Diagnostics.CodeAnalysis.NotNullWhenAttribute;
       System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute;
+      System.Index;
       System.Runtime.CompilerServices.CallerArgumentExpressionAttribute;
       System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute;
       System.Runtime.CompilerServices.IsExternalInit;

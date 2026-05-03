@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ERR_UNKNOWN_SCHEME" xml:space="preserve">
-    <value>Scheme could not be determined.</value>
+  <data name="ERR_UNKNOWN_URI" xml:space="preserve">
+    <value>URI could not be determined.</value>
   </data>
 </root>

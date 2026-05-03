@@ -23,38 +23,48 @@ namespace NanoRoute.AwsLambda
     {
         private static readonly Regex s_protoMatcher = new(@"(?:^|;\s*)proto=(?:""(?<proto>[^""]+)""|(?<proto>[^;]+))");
 
-        public static string GetScheme(this APIGatewayHttpApiV2ProxyRequest request)
+        public static Uri CreateUri(this APIGatewayHttpApiV2ProxyRequest request)
         {
-            if (request.Headers.TryGetValue("x-forwarded-proto" /*AWS lowercases the header names*/, out string proto))
-                return proto;
+            if 
+            (
+                HostAndPort(request.Headers) is not { Length: > 0 } hostAndPort ||
+                Scheme(request.Headers) is not { Length: > 0 } scheme ||
+                // Parse the base URI as a URI so host:port and IPv6 literals are handled correctly
+                !Uri.TryCreate($"{scheme}://{hostAndPort}", UriKind.Absolute, out Uri baseUri)
+            )
+                throw new InvalidOperationException(Resources.ERR_UNKNOWN_URI);
 
-            if (request.Headers.TryGetValue("forwarded", out string forwarded) && s_protoMatcher.Match(forwarded) is { Success: true } match)
-                return match.Groups["proto"].Value;
+            UriBuilder builder = new(baseUri)
+            {
+                Path = request.RawPath is { Length: > 0 } path ? path : "/",
+                Query = request.RawQueryString is { Length: > 0 } query ? query : null
+            };
 
-            throw new InvalidOperationException(Resources.ERR_UNKNOWN_SCHEME);
-        }
+            return builder.Uri;
 
-        public static void GetHostAndPort(this APIGatewayHttpApiV2ProxyRequest request, out string host, out int port)
-        {
-            string[] hostAndPort = request.RequestContext.DomainName.Split(':');
-            host = hostAndPort[0];
-            port = int.Parse(hostAndPort[1]);
+            static string? HostAndPort(IDictionary<string, string> headers)
+            {
+                if (headers.TryGetValue("host" /*AWS lowercases the header names*/, out string hostAndPort))
+                    return hostAndPort;
+
+                return null;
+            }
+
+            static string? Scheme(IDictionary<string, string> headers)
+            {
+                if (headers.TryGetValue("forwarded", out string forwarded) && s_protoMatcher.Match(forwarded) is { Success: true } match)
+                    return match.Groups["proto"].Value;
+
+                if (headers.TryGetValue("x-forwarded-proto", out string proto))
+                    return proto;
+
+                return null;
+            }
         }
 
         public static HttpRequestMessage CreateRequestMessage(this APIGatewayHttpApiV2ProxyRequest request)
         {
-            request.GetHostAndPort(out string host, out int port);
-
-            UriBuilder uriBuilder = new()
-            {
-                Scheme = request.GetScheme(),
-                Host = host,
-                Path = request.RawPath,
-                Query = request.RawQueryString,
-                Port = port
-            };
-
-            HttpRequestMessage requestMessage = new(new HttpMethod(request.RequestContext.Http.Method), uriBuilder.Uri.AbsoluteUri)
+            HttpRequestMessage requestMessage = new(new HttpMethod(request.RequestContext.Http.Method), request.CreateUri().AbsoluteUri)
             {
                 Content = request switch
                 {

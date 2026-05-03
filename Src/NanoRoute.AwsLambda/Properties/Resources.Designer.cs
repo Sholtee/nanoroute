@@ -61,11 +61,11 @@ namespace NanoRoute.AwsLambda.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scheme could not be determined..
+        ///   Looks up a localized string similar to URI could not be determined..
         /// </summary>
-        internal static string ERR_UNKNOWN_SCHEME {
+        internal static string ERR_UNKNOWN_URI {
             get {
-                return ResourceManager.GetString("ERR_UNKNOWN_SCHEME", resourceCulture);
+                return ResourceManager.GetString("ERR_UNKNOWN_URI", resourceCulture);
             }
         }
     }
