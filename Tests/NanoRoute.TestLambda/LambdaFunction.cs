@@ -31,8 +31,6 @@ namespace NanoRoute.TestLambda
             .CreateBuilder()
             .AddJsonErrorDetails(populateErrorInfo: true)
             .AddDefaultValueParsers()
-            .AddQueryBindings("GET", "/items/{id:int(min=1)}", "{filter?:str(min=3)}")
-            .AddJsonBody(JsonContext.Default.EchoRequest, "POST", "/echo")
             .AddHandler("GET", "/health", static async (_, _) =>
             {
                 await Task.Yield();
@@ -42,24 +40,28 @@ namespace NanoRoute.TestLambda
                     Content = new StringContent("ok")
                 };
             })
-            .AddHandler("GET", "/items/{id:int(min=1)}", static async (context, _) =>
-            {
-                await Task.Yield();
-
-                return HttpResponseMessage.Json(new
+            .AddPrefix("/items/{id:int(min=1)}/", item => item
+                .AddQueryBindings("GET", string.Empty, "{filter?:str(min=3)}")
+                .AddHandler("GET", string.Empty, static async (context, _) =>
                 {
-                    id = context.Parameters["id"],
-                    filter = context.Parameters.TryGetValue("filter", out object? filter)
-                        ? filter
-                        : null
-                });
-            })
-            .AddHandler("POST", "/echo", static async (context, _) =>
-            {
-                await Task.Yield();
+                    await Task.Yield();
 
-                return HttpResponseMessage.Json(context.Parameters["body"]);
-            })
+                    return HttpResponseMessage.Json(new
+                    {
+                        id = context.Parameters["id"],
+                        filter = context.Parameters.TryGetValue("filter", out object? filter)
+                            ? filter
+                            : null
+                    });
+                }))
+            .AddPrefix("/echo/", echo => echo
+                .AddJsonBody(JsonContext.Default.EchoRequest, "POST", string.Empty)
+                .AddHandler("POST", string.Empty, static async (context, _) =>
+                {
+                    await Task.Yield();
+
+                    return HttpResponseMessage.Json(context.Parameters["body"]);
+                }))
             .AddHandler("GET", "/cookies", static async (_, _) =>
             {
                 await Task.Yield();
