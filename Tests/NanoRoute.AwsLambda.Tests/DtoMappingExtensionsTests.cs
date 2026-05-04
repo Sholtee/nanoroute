@@ -5,7 +5,6 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -347,6 +346,22 @@ namespace NanoRoute.AwsLambda.Tests
 
             Assert.That(response.Headers["x-result"], Is.EqualTo("one,two"));
             Assert.That(response.Headers["content-language"], Is.EqualTo("en,hu"));
+        }
+
+        [Test]
+        public async Task CreateResponse_ShouldMergeDuplicateHeaders()
+        {
+            using HttpResponseMessage responseMessage = new(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent([])
+            };
+
+            responseMessage.Headers.TryAddWithoutValidation("x-shared", "response");
+            responseMessage.Content.Headers.TryAddWithoutValidation("X-Shared", "content");
+
+            APIGatewayHttpApiV2ProxyResponse response = await responseMessage.CreateResponse();
+
+            Assert.That(response.Headers["x-shared"], Is.EqualTo("response,content"));
         }
 
         [Test]

@@ -139,7 +139,11 @@ namespace NanoRoute.AwsLambda
                         continue;
                     }
 
-                    headers[header.Key] = string.Join(",", header.Value);
+                    string value = string.Join(",", header.Value);
+
+                    headers[header.Key] = headers.TryGetValue(header.Key, out string? existing)
+                        ? $"{existing},{value}"
+                        : value;
                 }
             }
         }
