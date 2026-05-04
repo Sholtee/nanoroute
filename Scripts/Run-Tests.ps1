@@ -33,6 +33,7 @@ function Run-Tests([Parameter(Position=0, Mandatory=$true)][string] $csproj, [Pa
 }
 
 Run-Tests 'NanoRoute.Tests.csproj' 'Regular tests (with coverage)'
+Run-Tests 'NanoRoute.AwsLambda.Tests.csproj' 'AWS Lambda tests (with coverage)'
 
 dotnet tool run reportgenerator `
   -reports:(Join-Path $ARTIFACTS 'NanoRoute.*.Coverage.xml') `

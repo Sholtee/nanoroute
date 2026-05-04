@@ -1,44 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\UnitTests.props" />
 
   <PropertyGroup>
     <AssemblyName>NanoRoute.Tests</AssemblyName>
     <RootNamespace>NanoRoute.Tests</RootNamespace>
-    <TargetFrameworks>net48;netcoreapp3.1;net10.0</TargetFrameworks>
-    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
-    <Configurations>Debug;Release</Configurations>
-    <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <NoWarn>CA1001;CA1812;CA1849;CA1861;CA1863;CA2000;CA2007;CA2201;</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('Windows'))">
-    <TargetFrameworks>netcoreapp3.1;net10.0</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <IsTestProject>true</IsTestProject>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.*" />
-    <PackageReference Include="nunit" Version="3.14.*" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.*">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.*" />
-    <PackageReference Include="nunit" Version="4.4.*" />
-    <PackageReference Include="NUnit3TestAdapter" Version="6.0.*">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="JunitXml.TestLogger" Version="8.0.*" />
     <PackageReference Include="Moq" Version="4.20.*" />
   </ItemGroup>
 

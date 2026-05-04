@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\UnitTests.props" />
+
+  <PropertyGroup>
+    <AssemblyName>NanoRoute.AwsLambda.Tests</AssemblyName>
+    <RootNamespace>NanoRoute.AwsLambda.Tests</RootNamespace>
+    <NoWarn>CA1001;CA1812;CA1849;CA1861;CA1863;CA2000;CA2007;CA2201;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\NanoRoute.AwsLambda\NanoRoute.AwsLambda.csproj" />
+  </ItemGroup>
+
+</Project>

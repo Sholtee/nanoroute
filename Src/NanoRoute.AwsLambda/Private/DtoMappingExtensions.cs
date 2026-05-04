@@ -93,34 +93,43 @@ namespace NanoRoute.AwsLambda
  
         public static async Task<APIGatewayHttpApiV2ProxyResponse> CreateResponse(this HttpResponseMessage responseMessage)
         {
-            responseMessage.GetFlattenedHeaders(out Dictionary<string, string> headers, out List<string> cookies);
+            Dictionary<string, string> headers = new(StringComparer.OrdinalIgnoreCase);
+            List<string> cookies = new();
 
-            return new APIGatewayHttpApiV2ProxyResponse
+            CopyHeaders(responseMessage.Headers, headers, cookies);
+
+            if (responseMessage.Content is not null)
+                CopyHeaders(responseMessage.Content.Headers, headers, cookies);
+
+            APIGatewayHttpApiV2ProxyResponse response = new() 
             {
                 StatusCode = (int) responseMessage.StatusCode,
-                Body = responseMessage.Content switch
-                {
-                    null => null,
-                    StringContent stringContent => await stringContent.ReadAsStringAsync(),
-                    _ => Convert.ToBase64String(await responseMessage.Content.ReadAsByteArrayAsync())
-                },
-                IsBase64Encoded = responseMessage.Content is (not null) and (not StringContent),
                 Headers = headers,
                 Cookies = cookies.ToArray()
             };
-        }
 
-        public static void GetFlattenedHeaders(this HttpResponseMessage responseMessage, out Dictionary<string, string> headers, out List<string> cookies)
-        {
-            headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            cookies = new List<string>();
+            switch (responseMessage.Content)
+            {
+                case StringContent stringContent:
+                {
+                    if (await stringContent.ReadAsStringAsync() is { Length: > 0 } body)
+                        response.Body = body;
+                    break;
+                }
+                case { } byteContent:
+                {
+                    if (await byteContent.ReadAsByteArrayAsync() is { Length: > 0 } body)
+                    {
+                        response.Body = Convert.ToBase64String(body);
+                        response.IsBase64Encoded = true;
+                    }
+                    break;
+                }
+            }
 
-            Copy(responseMessage.Headers, headers, cookies);
+            return response;
 
-            if (responseMessage.Content is not null)
-                Copy(responseMessage.Content.Headers, headers, cookies);
-
-            static void Copy(IEnumerable<KeyValuePair<string, IEnumerable<string>>> source, Dictionary<string, string> headers, List<string> cookies)
+            static void CopyHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> source, Dictionary<string, string> headers, List<string> cookies)
             {
                 foreach (KeyValuePair<string, IEnumerable<string>> header in source)
                 {
