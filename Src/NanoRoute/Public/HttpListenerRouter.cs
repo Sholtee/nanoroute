@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -25,28 +26,13 @@ namespace NanoRoute
     public class HttpListenerRouter: Router
     {
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
-        private static readonly HashSet<string> 
-            s_reservedHeaders = new(StringComparer.OrdinalIgnoreCase)
-            {
-                "Content-Length",
-                "Transfer-Encoding",
-                "Keep-Alive",
-                "Server"
-            },
-            s_contentHeaders = new(StringComparer.OrdinalIgnoreCase)
-            {
-                "Allow",
-                "Content-Disposition",
-                "Content-Encoding",
-                "Content-Language",
-                "Content-Length",
-                "Content-Location",
-                "Content-MD5",
-                "Content-Range",
-                "Content-Type",
-                "Expires",
-                "Last-Modified"
-            };
+        private static readonly FrozenSet<string> s_reservedHeaders = new List<string>
+        {
+            "Content-Length",
+            "Transfer-Encoding",
+            "Keep-Alive",
+            "Server"
+        }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
         private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
@@ -87,7 +73,7 @@ namespace NanoRoute
 
             foreach (KeyValuePair<string, string> header in request.Headers)
             {
-                if (requestMessage.Content is not null && s_contentHeaders.Contains(header.Key))
+                if (requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(header.Key))
                 {
                     requestMessage.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
                     continue;

@@ -23,21 +23,6 @@ namespace NanoRoute.AwsLambda
     {
         private static readonly Regex s_protoMatcher = new(@"(?:^|;\s*)proto=(?:""(?<proto>[^""]+)""|(?<proto>[^;]+))");
 
-        private static readonly HashSet<string> s_contentHeaders = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "Allow",
-            "Content-Disposition",
-            "Content-Encoding",
-            "Content-Language",
-            "Content-Length",
-            "Content-Location",
-            "Content-MD5",
-            "Content-Range",
-            "Content-Type",
-            "Expires",
-            "Last-Modified"
-        };
-
         public static Uri CreateUri(this APIGatewayHttpApiV2ProxyRequest request)
         {
             if 
@@ -97,7 +82,7 @@ namespace NanoRoute.AwsLambda
 
             foreach (KeyValuePair<string, string> header in request.Headers)
             {
-                if (requestMessage.Content is not null && s_contentHeaders.Contains(header.Key))
+                if (requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(header.Key))
                 {
                     requestMessage.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
                     continue;
