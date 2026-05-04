@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -94,12 +95,12 @@ namespace NanoRoute.Json
 
                     if (context.Request.Content is not { } content)
                     {
-                        HttpRequestException.Throw(HttpStatusCode.MethodNotAllowed, Resources.ERR_METHOD_NOT_ALLOWED);
+                        BadRequest(Resources.ERR_MISSING_BODY);
                         return null!;
                     }
 
                     if (!JSON_MEDIA_TYPE.Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
-                        HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_BAD_CONTENT_TYPE);
+                        BadRequest(Resources.ERR_BAD_CONTENT_TYPE);
 
                     Stream contentStream = await content.ReadAsStreamAsync();
 
@@ -111,7 +112,7 @@ namespace NanoRoute.Json
                     }
                     catch (JsonException ex)
                     {
-                        HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, ex.Message);
+                        BadRequest(ex.Message);
                     }
 
                     context.Parameters[paramName] = body;
@@ -120,6 +121,9 @@ namespace NanoRoute.Json
                 });
 
                 return routeBuilder;
+
+                [DoesNotReturn]
+                static void BadRequest(string error) => HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, error);
             }
 
             /// <summary>

@@ -25,13 +25,28 @@ namespace NanoRoute
     public class HttpListenerRouter: Router
     {
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
-        private static readonly HashSet<string> s_reservedHeaders = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "Content-Length",
-            "Transfer-Encoding",
-            "Keep-Alive",
-            "Server"
-        };
+        private static readonly HashSet<string> 
+            s_reservedHeaders = new(StringComparer.OrdinalIgnoreCase)
+            {
+                "Content-Length",
+                "Transfer-Encoding",
+                "Keep-Alive",
+                "Server"
+            },
+            s_contentHeaders = new(StringComparer.OrdinalIgnoreCase)
+            {
+                "Allow",
+                "Content-Disposition",
+                "Content-Encoding",
+                "Content-Language",
+                "Content-Length",
+                "Content-Location",
+                "Content-MD5",
+                "Content-Range",
+                "Content-Type",
+                "Expires",
+                "Last-Modified"
+            };
 
         private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
@@ -70,17 +85,19 @@ namespace NanoRoute
             if (request.HasEntityBody)
                 requestMessage.Content = new StreamContent(request.InputStream);
 
+            foreach (KeyValuePair<string, string> header in request.Headers)
+            {
+                if (requestMessage.Content is not null && s_contentHeaders.Contains(header.Key))
+                {
+                    requestMessage.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    continue;
+                }
+
+                _ = requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+
             requestMessage.Properties[ORIGINAL_REQUEST_NAME] = request;
             requestMessage.Properties[TRACE_ID_NAME] = request.RequestTraceIdentifier.ToString("N");
-
-            foreach (string header in request.Headers.AllKeys)
-            {
-                string[] values = request.Headers.GetValues(header);
-
-                _ =
-                    requestMessage.Headers.TryAddWithoutValidation(header, values) || // normal request headers
-                    requestMessage.Content?.Headers.TryAddWithoutValidation(header, values) is true; // fall back to content headers
-            }
 
             return requestMessage;
         }

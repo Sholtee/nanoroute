@@ -177,4 +177,7 @@
   <data name="ERR_SKIPPED_VALUE_SOURCE_NAME" xml:space="preserve">
     <value>Skipped value sources cannot have a binding name.</value>
   </data>
+  <data name="ERR_MISSING_BODY" xml:space="preserve">
+    <value>Missing body.</value>
+  </data>
 </root>

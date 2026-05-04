@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -215,7 +216,8 @@ namespace NanoRoute.AwsLambda.Tests
                 {
                     ["host"] = "example.com",
                     ["x-forwarded-proto"] = "https",
-                    ["content-md5"] = "digest"
+                    ["content-md5"] = "digest",
+                    ["content-type"] = "application/json"
                 },
                 RawPath = "/items/42",
                 Body = "hello",
@@ -231,6 +233,8 @@ namespace NanoRoute.AwsLambda.Tests
             using HttpRequestMessage requestMessage = request.CreateRequestMessage();
 
             Assert.That(requestMessage.Content!.Headers.GetValues("content-md5"), Is.EqualTo(new[] { "digest" }));
+            Assert.That(requestMessage.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
+            Assert.That(requestMessage.Headers.Any(header => string.Equals(header.Key, "content-type", StringComparison.OrdinalIgnoreCase)), Is.False);
         }
 
         [Test]
