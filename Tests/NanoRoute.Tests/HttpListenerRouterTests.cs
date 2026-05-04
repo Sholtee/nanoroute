@@ -246,6 +246,7 @@ namespace NanoRoute.Tests
                     Assert.That(context.Request.Content!.Headers.ContentType, Is.Not.Null);
                     Assert.That(context.Request.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
                     Assert.That(context.Request.Content.Headers.ContentType!.CharSet, Is.EqualTo("utf-8"));
+                    Assert.That(context.Request.Headers.Any(header => string.Equals(header.Key, "content-type", StringComparison.OrdinalIgnoreCase)), Is.False);
 
                     return new HttpResponseMessage(HttpStatusCode.OK)
                     {

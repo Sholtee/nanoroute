@@ -230,9 +230,9 @@ namespace NanoRoute.Tests
             HttpRequestMessage request = new(HttpMethod.Post, "https://test.test/items");
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_METHOD_NOT_ALLOWED));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.MethodNotAllowed));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.Null);
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
         }
 
         [Test]

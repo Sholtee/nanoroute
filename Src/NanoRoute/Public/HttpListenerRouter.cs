@@ -71,15 +71,14 @@ namespace NanoRoute
             if (request.HasEntityBody)
                 requestMessage.Content = new StreamContent(request.InputStream);
 
-            foreach (KeyValuePair<string, string> header in request.Headers)
+            foreach (string headerName in request.Headers.AllKeys)
             {
-                if (requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(header.Key))
-                {
-                    requestMessage.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                    continue;
-                }
+                string[] values = request.Headers.GetValues(headerName);
 
-                _ = requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                if (requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(headerName))
+                    requestMessage.Content.Headers.TryAddWithoutValidation(headerName, values);
+                else
+                    requestMessage.Headers.TryAddWithoutValidation(headerName, values);
             }
 
             requestMessage.Properties[ORIGINAL_REQUEST_NAME] = request;
