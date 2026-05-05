@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -73,12 +74,13 @@ namespace NanoRoute
 
             foreach (string headerName in request.Headers.AllKeys)
             {
-                string[] values = request.Headers.GetValues(headerName);
+                HttpHeaders headers = requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(headerName)
+                    ? requestMessage.Content.Headers
+                    : requestMessage.Headers;
 
-                if (requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(headerName))
-                    requestMessage.Content.Headers.TryAddWithoutValidation(headerName, values);
-                else
-                    requestMessage.Headers.TryAddWithoutValidation(headerName, values);
+                // Some headers (like Content-Type) has its default value. Without this line we'd just concatenate the value list
+                headers.Remove(headerName);
+                headers.TryAddWithoutValidation(headerName, request.Headers.GetValues(headerName));
             }
 
             requestMessage.Properties[ORIGINAL_REQUEST_NAME] = request;

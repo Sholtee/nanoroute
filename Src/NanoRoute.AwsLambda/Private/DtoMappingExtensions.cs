@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -82,10 +83,13 @@ namespace NanoRoute.AwsLambda
 
             foreach (KeyValuePair<string, string> header in request.Headers)
             {
-                if (requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(header.Key))
-                    requestMessage.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                else
-                    requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                HttpHeaders headers = requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(header.Key)
+                    ? requestMessage.Content.Headers
+                    : requestMessage.Headers;
+
+                // Some headers (like Content-Type) has its default value. Without this line we'd just concatenate the value list
+                headers.Remove(header.Key);
+                headers.TryAddWithoutValidation(header.Key, header.Value);
             }
 
             requestMessage.Properties[Router.ORIGINAL_REQUEST_NAME] = request;

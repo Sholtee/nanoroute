@@ -55,7 +55,7 @@ namespace NanoRoute.TestLambda
                     });
                 }))
             .AddPrefix("/echo/", echo => echo
-                .AddJsonBody(JsonContext.Default.EchoRequest, "POST", string.Empty)
+                .AddJsonBody(JsonContext.Default.EchoRequest, "body", string.Empty, "POST")
                 .AddHandler("POST", string.Empty, static async (context, _) =>
                 {
                     await Task.Yield();
