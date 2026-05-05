@@ -82,6 +82,7 @@ foreach ($stream in $streams)
   do
   {
     $previousToken = $nextToken
+
     $args = @(
       "logs",
       "get-log-events",
@@ -91,10 +92,7 @@ foreach ($stream in $streams)
       "--output", "json"
     )
 
-    if ($nextToken)
-    {
-      $args += @("--next-token", $nextToken)
-    }
+    if ($nextToken) { $args += @("--next-token", $nextToken) }
 
     $page = Invoke-LocalAws @args | ConvertFrom-Json
 
