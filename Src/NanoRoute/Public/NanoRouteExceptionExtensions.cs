@@ -71,7 +71,7 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
-            public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs, string pattern)
+            public TBuilder AddExceptionHandler(IEnumerable<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verbs);
@@ -135,7 +135,7 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
-            public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs)
+            public TBuilder AddExceptionHandler(IEnumerable<string> verbs)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verbs);
@@ -148,7 +148,7 @@ namespace NanoRoute
         /// The <see cref="Exception.Data"/> key used to store client-facing error messages.
         /// </summary>
         /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
         /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
         /// </remarks>
         public const string ERRORS_NAME = "Errors";
@@ -157,7 +157,7 @@ namespace NanoRoute
         /// The <see cref="Exception.Data"/> key used to store developer-facing diagnostic details.
         /// </summary>
         /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
         /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
         /// </remarks>
         public const string DEVELOPER_MESSAGE = "DeveloperMessage";
@@ -166,7 +166,7 @@ namespace NanoRoute
         /// The <see cref="Exception.Data"/> key used to store the HTTP status code.
         /// </summary>
         /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
         /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
         /// </remarks>
         public const string STATUS_NAME = "StatusCode";
@@ -180,7 +180,7 @@ namespace NanoRoute
             /// <param name="title">The human-readable error title.</param>
             /// <param name="errors">Optional client-facing error messages that should not contain sensitive data.</param>
             [DoesNotReturn]
-            public static void Throw(HttpStatusCode status, string title, params IReadOnlyCollection<string> errors) => Throw(status, title, null, errors, null);
+            public static void Throw(HttpStatusCode status, string title, params IEnumerable<string> errors) => Throw(status, title, null, errors, null);
 
             /// <summary>
             /// Throws an <see cref="HttpRequestException"/> enriched with routing-specific metadata.
@@ -191,17 +191,17 @@ namespace NanoRoute
             /// <param name="errors">Optional client-facing error messages that should not contain sensitive data.</param>
             /// <param name="developerMessage">Optional developer-facing messages that may contain sensitive data.</param>
             [DoesNotReturn]
-            public static void Throw(HttpStatusCode status, string title, Exception? original = null, IReadOnlyCollection<string>? errors = null, IReadOnlyCollection<string>? developerMessage = null)
+            public static void Throw(HttpStatusCode status, string title, Exception? original = null, IEnumerable<string>? errors = null, IEnumerable<string>? developerMessage = null)
             {
                 HttpRequestException ex = new(title, original);
 
                 ex.Data[STATUS_NAME] = status;
 
-                if (errors?.Count > 0)
-                    ex.Data[ERRORS_NAME] = errors.ToArray();  // On .NET FW the Data members must be serializable (string[] it is)
+                if (errors?.ToArray() is { Length: > 0 } err)
+                    ex.Data[ERRORS_NAME] = err;  // On .NET FW the Data members must be serializable (string[] it is)
 
-                if (developerMessage?.Count > 0)
-                    ex.Data[DEVELOPER_MESSAGE] = developerMessage.ToArray();
+                if (developerMessage?.ToArray() is { Length: > 0 } dev)
+                    ex.Data[DEVELOPER_MESSAGE] = dev;
 
                 throw ex;
             }

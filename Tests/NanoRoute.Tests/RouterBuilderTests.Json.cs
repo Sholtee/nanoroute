@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -172,7 +173,7 @@ namespace NanoRoute.Tests
             TestJsonPayload? body = null;
 
             TestRouter router = _routerBuilder
-                .AddJsonBody(typeof(TestJsonPayload), "payload", "POST")
+                .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items", async (context, _) =>
                 {
                     body = (TestJsonPayload) context.Parameters["payload"]!;
@@ -223,7 +224,7 @@ namespace NanoRoute.Tests
         public void AddJsonBody_ShouldRejectRequestsWithoutContent()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody(typeof(TestJsonPayload), "payload", "POST")
+                .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -239,7 +240,7 @@ namespace NanoRoute.Tests
         public void AddJsonBody_ShouldRejectNonJsonContentTypes()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody(typeof(TestJsonPayload), "payload", "POST")
+                .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -258,7 +259,7 @@ namespace NanoRoute.Tests
         public void AddJsonBody_ShouldRejectInvalidJsonPayloads()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody(typeof(TestJsonPayload), "payload", "POST")
+                .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -312,19 +313,19 @@ namespace NanoRoute.Tests
         [Test]
         public void JsonHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddJsonBody(typeof(TestJsonPayload), "payload", "POST"))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(typeInfo: null!, "payload", "POST"))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody("POST", "/", typeInfo: null!, "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("typeInfo"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(type: null!, "payload", "POST"))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody("POST", "/", type: null!, "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("type"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(typeof(TestJsonPayload), null!, "POST"))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody("POST", "/", typeof(TestJsonPayload), null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("paramName"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(typeof(TestJsonPayload), "payload", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody((IEnumerable<string>) null!, "/", typeof(TestJsonPayload), "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
             ex = Assert.Throws<ArgumentNullException>(() => HttpResponseMessage.Json(HttpStatusCode.OK, new TestJsonPayload { Name = "Spikey" }, (JsonTypeInfo) null!))!;

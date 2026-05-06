@@ -6,6 +6,7 @@
 
 - Renamed `ArgumentSourceAttribute` to `ValueSourceAttribute`, and renamed the companion `ArgumentSource` enum to `ValueSource`.
 - Removed the router timeout API. Pass a `CancellationToken` to `Router.Handle()` or `HttpListenerRouter.Route()` when request processing needs a deadline.
+- Standardized public string collection parameters on `IEnumerable<string>` instead of mixing `IEnumerable<string>` and `IReadOnlyCollection<string>`. Verb-scoped `AddJsonBody()` overloads now take `verb` or `verbs` first, matching `AddHandler()`, `AddQueryBindings()`, and `AddExceptionHandler()`.
 
 ### Added
 
