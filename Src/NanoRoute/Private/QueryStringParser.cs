@@ -20,8 +20,6 @@ namespace NanoRoute.Internals
         #region Private
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
-        private readonly ReadOnlyMemory<char> _query = GetRawQuery(context.Request.RequestUri);
-
         private char[]? _decodedBuffer;
 
         // Track only query parameters seen during this parse so required checks and duplicate detection
@@ -55,7 +53,7 @@ namespace NanoRoute.Internals
             if (source.Span.IndexOfAny('%', '+') < 0)
                 return source;
 
-            char[] decodedBuffer = _decodedBuffer ??= s_arrayPool.Rent(_query.Length);
+            char[] decodedBuffer = _decodedBuffer ??= s_arrayPool.Rent(_parameter.Original.Length);
 
             if (!UrlUtils.TryDecodeUrl(source.Span, decodedBuffer.AsSpan(_nextDecoded), UrlDecodeMode.Form, out int charsWritten))
                 ThrowBadRequest(Resources.ERR_DECODING_FAILED);
