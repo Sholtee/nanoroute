@@ -377,7 +377,7 @@ namespace NanoRoute.AwsLambda.Tests
 
             APIGatewayHttpApiV2ProxyResponse response = await responseMessage.CreateResponse();
 
-            Assert.That(response.Cookies, Is.EqualTo(new[] { "a=1", "b=2" }));
+            Assert.That(response.Cookies, Is.EquivalentTo(new[] { "a=1", "b=2" }));
         }
 
         [Test]

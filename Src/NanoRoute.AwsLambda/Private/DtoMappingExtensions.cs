@@ -87,7 +87,7 @@ namespace NanoRoute.AwsLambda
                     ? requestMessage.Content.Headers
                     : requestMessage.Headers;
 
-                // Some headers (like Content-Type) has its default value. Without this line we'd just concatenate the value list
+                // Some header (like Content-Type) has its default value. Without this line we'd just append the value list
                 headers.Remove(header.Key);
                 headers.TryAddWithoutValidation(header.Key, header.Value);
             }
