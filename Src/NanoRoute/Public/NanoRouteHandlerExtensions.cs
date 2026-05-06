@@ -190,7 +190,7 @@ namespace NanoRoute.HandlerExtensions
             );
         }
 
-        private static TBuilder AddHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IReadOnlyCollection<string> verbs, string pattern, string? queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
+        private static TBuilder AddHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IEnumerable<string> verbs, string pattern, string? queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
         {
             Ensure.NotNull(routeBuilder);
             Ensure.NotNull(verbs);
@@ -232,7 +232,7 @@ namespace NanoRoute.HandlerExtensions
             /// or from the request service provider.
             /// </para>
             /// </remarks>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
                 return AddHandlerCore(routeBuilder, verbs, pattern, null, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
@@ -261,7 +261,7 @@ namespace NanoRoute.HandlerExtensions
             /// or from the request service provider.
             /// </para>
             /// </remarks>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
                 AddHandlerCore(routeBuilder, verbs, pattern, null, handler);
 
             /// <summary>
@@ -294,7 +294,7 @@ namespace NanoRoute.HandlerExtensions
             /// or from the request service provider.
             /// </para>
             /// </remarks>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, string queryBindings, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, string queryBindings, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
                 Ensure.NotNull(queryBindings);
@@ -332,7 +332,7 @@ namespace NanoRoute.HandlerExtensions
             /// or from the request service provider.
             /// </para>
             /// </remarks>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IReadOnlyCollection<string> verbs, string pattern, string queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new()
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, string queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(queryBindings);
 

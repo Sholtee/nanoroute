@@ -38,8 +38,8 @@ namespace NanoRoute
         public IEnumerable<string>? Errors { get; init; }
 
         /// <summary>
-        /// Message to the devs (may contain sensitive information). Should NOT be set in production environment.
+        /// Messages to the devs (may contain sensitive information). Should NOT be set in production environment.
         /// </summary>
-        public IEnumerable<string>? DeveloperMessage { get; init; }
+        public IEnumerable<string>? DeveloperMessages { get; init; }
     }
 }

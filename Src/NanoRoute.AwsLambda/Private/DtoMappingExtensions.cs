@@ -92,8 +92,8 @@ namespace NanoRoute.AwsLambda
                 headers.TryAddWithoutValidation(header.Key, header.Value);
             }
 
-            requestMessage.Properties[Router.ORIGINAL_REQUEST_NAME] = request;
-            requestMessage.Properties[Router.TRACE_ID_NAME] = request.RequestContext.RequestId;
+            requestMessage.Properties[Router.OriginalRequestName] = request;
+            requestMessage.Properties[Router.TraceIdName] = request.RequestContext.RequestId;
 
             return requestMessage;
         }

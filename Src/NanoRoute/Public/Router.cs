@@ -25,12 +25,12 @@ namespace NanoRoute
         /// <summary>
         /// The request property key that stores the trace identifier associated with the current request.
         /// </summary>
-        public const string TRACE_ID_NAME = "TraceId";
+        public const string TraceIdName = "TraceId";
 
         /// <summary>
         /// The request property key that stores the original transport-specific request object.
         /// </summary>
-        public const string ORIGINAL_REQUEST_NAME = "OriginalRequest";
+        public const string OriginalRequestName = "OriginalRequest";
 
         private static RouteNode CopyRoot(RouteBuilder routeBuilder)
         {

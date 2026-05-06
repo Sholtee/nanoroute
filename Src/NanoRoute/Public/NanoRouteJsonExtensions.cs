@@ -47,31 +47,25 @@ namespace NanoRoute.Json
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for the selected HTTP methods.
             /// </summary>
-            /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
-            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <param name="verbs">The HTTP methods that should require a JSON body.</param>
             /// <param name="pattern">
             /// The route pattern where the JSON-binding middleware should be inserted. Use <c>/</c> to apply it
             /// to the whole pipeline, or a narrower prefix/exact pattern to scope body binding to selected routes.
             /// </param>
-            /// <param name="verbs">
-            /// The HTTP methods that should require a JSON body. When omitted, <c>POST</c> and <c>PUT</c> are used.
-            /// </param>
+            /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
-            /// The helper inserts a handler at the supplied <paramref name="pattern"/>. Requests without content,
-            /// requests with a non-JSON content type, and requests with invalid JSON do not produce responses on
-            /// their own. Instead, this middleware throws <see cref="HttpRequestException"/> with the appropriate
-            /// routing metadata attached.
-            /// Add <see cref="AddJsonErrorDetails"/> if you want those exceptions to be translated into structured
-            /// HTTP error responses; otherwise they continue as regular exceptions and must be handled by the caller
-            /// or by custom middleware. The deserialized body is written into
+            /// Requests without content, requests with a non-JSON content type, and requests with invalid JSON throw
+            /// <see cref="HttpRequestException"/>. Add <see cref="AddJsonErrorDetails"/> to translate those into
+            /// structured HTTP error responses. The deserialized body is written into
             /// <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
             /// </remarks>
             /// <example>
             /// <code>
             /// routerBuilder
             ///     .AddJsonErrorDetails()
-            ///     .AddJsonBody(MyJsonContext.Default.CreateUserRequest, "body", "/users/", "POST")
+            ///     .AddJsonBody("POST", "/users/", MyJsonContext.Default.CreateUserRequest, "body")
             ///     .AddHandler("POST", "/users", (context, _) =&gt;
             ///     {
             ///         CreateUserRequest body = (CreateUserRequest) context.Parameters["body"]!;
@@ -79,15 +73,13 @@ namespace NanoRoute.Json
             ///     });
             /// </code>
             /// </example>
-            public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName, string pattern, params IReadOnlyCollection<string> verbs)
+            public TBuilder AddJsonBody(IEnumerable<string> verbs, string pattern, JsonTypeInfo typeInfo, string paramName)
             {
                 Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(verbs);
+                Ensure.NotNull(pattern);
                 Ensure.NotNull(typeInfo);
                 Ensure.NotNull(paramName);
-                Ensure.NotNull(verbs);
-
-                if (verbs.Count is 0)
-                    verbs = ["POST", "PUT"];
 
                 routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
@@ -127,89 +119,179 @@ namespace NanoRoute.Json
             }
 
             /// <summary>
+            /// Deserializes JSON request bodies into a route parameter for a single HTTP method.
+            /// </summary>
+            /// <param name="verb">The HTTP method that should require a JSON body.</param>
+            /// <param name="pattern">
+            /// The route pattern where the JSON-binding middleware should be inserted. Use <c>/</c> to apply it
+            /// to the whole pipeline, or a narrower prefix/exact pattern to scope body binding to selected routes.
+            /// </param>
+            /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddJsonBody(string verb, string pattern, JsonTypeInfo typeInfo, string paramName)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(verb);
+                Ensure.NotNull(pattern);
+                Ensure.NotNull(typeInfo);
+                Ensure.NotNull(paramName);
+
+                return routeBuilder.AddJsonBody([verb], pattern, typeInfo, paramName);
+            }
+
+            /// <summary>
             /// Deserializes JSON request bodies into a route parameter for the selected HTTP methods.
+            /// </summary>
+            /// <param name="verbs">The HTTP methods that should require a JSON body.</param>
+            /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddJsonBody(IEnumerable<string> verbs, JsonTypeInfo typeInfo, string paramName)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(verbs);
+                Ensure.NotNull(typeInfo);
+                Ensure.NotNull(paramName);
+
+                return routeBuilder.AddJsonBody(verbs, "/", typeInfo, paramName);
+            }
+
+            /// <summary>
+            /// Deserializes JSON request bodies into a route parameter for <c>POST</c> and <c>PUT</c>.
+            /// </summary>
+            /// <param name="pattern">
+            /// The route pattern where the JSON-binding middleware should be inserted. Use <c>/</c> to apply it
+            /// to the whole pipeline, or a narrower prefix/exact pattern to scope body binding to selected routes.
+            /// </param>
+            /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddJsonBody(string pattern, JsonTypeInfo typeInfo, string paramName)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(pattern);
+                Ensure.NotNull(typeInfo);
+                Ensure.NotNull(paramName);
+
+                return routeBuilder.AddJsonBody(["POST", "PUT"], pattern, typeInfo, paramName);
+            }
+
+            /// <summary>
+            /// Deserializes JSON request bodies into a route parameter for <c>POST</c> and <c>PUT</c>.
             /// </summary>
             /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
-            /// <param name="verbs">
-            /// The HTTP methods that should require a JSON body. When omitted, <c>POST</c> and <c>PUT</c> are used.
-            /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
-            /// <remarks>
-            /// This overload inserts the JSON-binding middleware at <c>/</c>, so it can participate in any matching
-            /// route for the selected HTTP methods. Use the overload that also accepts a <c>pattern</c> argument if
-            /// you want to scope binding to a specific prefix or route. Requests without content, requests with a
-            /// non-JSON content type, and requests with invalid JSON throw <see cref="HttpRequestException"/>
-            /// instead of producing responses on their own. Add <see cref="AddJsonErrorDetails"/> if you want those
-            /// exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-            /// exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
-            /// into <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
-            /// </remarks>
-            /// <example>
-            /// <code>
-            /// routerBuilder
-            ///     .AddJsonErrorDetails()
-            ///     .AddJsonBody(MyJsonContext.Default.CreateUserRequest, "body", "POST")
-            ///     .AddHandler("POST", "/users", (context, _) =&gt;
-            ///     {
-            ///         CreateUserRequest body = (CreateUserRequest) context.Parameters["body"]!;
-            ///         return Task.FromResult(HttpResponseMessage.Json(HttpStatusCode.Created, body));
-            ///     });
-            /// </code>
-            /// </example>
-            public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName, params IReadOnlyCollection<string> verbs)
+            public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(typeInfo);
                 Ensure.NotNull(paramName);
-                Ensure.NotNull(verbs);
 
-                return routeBuilder.AddJsonBody(typeInfo, paramName, "/", verbs);
+                return routeBuilder.AddJsonBody(["POST", "PUT"], "/", typeInfo, paramName);
             }
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter using runtime type metadata.
             /// </summary>
+            /// <param name="verbs">The HTTP methods that should require a JSON body.</param>
+            /// <param name="pattern">
+            /// The route pattern where the JSON-binding middleware should be inserted. Use <c>/</c> to apply it
+            /// to the whole pipeline, or a narrower prefix/exact pattern to scope body binding to selected routes.
+            /// </param>
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
-            /// <param name="verbs">
-            /// The HTTP methods that should require a JSON body. When omitted, <c>POST</c> and <c>PUT</c> are used.
-            /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
-            /// <remarks>
-            /// This overload inserts the JSON-binding middleware at <c>/</c>, so it can participate in any matching
-            /// route for the selected HTTP methods. Requests without content, requests with a
-            /// non-JSON content type, and requests with invalid JSON throw <see cref="HttpRequestException"/>
-            /// instead of producing responses on their own. Add <see cref="AddJsonErrorDetails"/> if you want those
-            /// exceptions to be translated into structured HTTP error responses; otherwise they continue as regular
-            /// exceptions and must be handled by the caller or by custom middleware. The deserialized body is written
-            /// into <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
-            /// </remarks>
-            /// <example>
-            /// <code>
-            /// routerBuilder
-            ///     .AddJsonErrorDetails()
-            ///     .AddJsonBody(typeof(CreateUserRequest), "body", "POST")
-            ///     .AddHandler("POST", "/users", (context, _) =&gt;
-            ///     {
-            ///         CreateUserRequest body = (CreateUserRequest) context.Parameters["body"]!;
-            ///         return Task.FromResult(HttpResponseMessage.Json(HttpStatusCode.Created, body));
-            ///     });
-            /// </code>
-            /// </example>
-            public TBuilder AddJsonBody(Type type, string paramName, params IReadOnlyCollection<string> verbs)
+            public TBuilder AddJsonBody(IEnumerable<string> verbs, string pattern, Type type, string paramName)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(verbs);
+                Ensure.NotNull(pattern);
+                Ensure.NotNull(type);
+                Ensure.NotNull(paramName);
+
+                return routeBuilder.AddJsonBody
+                (
+                    verbs,
+                    pattern,
+                    JsonSerializerOptions.Web.GetTypeInfo(type),
+                    paramName
+                );
+            }
+
+            /// <summary>
+            /// Deserializes JSON request bodies into a route parameter using runtime type metadata.
+            /// </summary>
+            /// <param name="verb">The HTTP method that should require a JSON body.</param>
+            /// <param name="pattern">
+            /// The route pattern where the JSON-binding middleware should be inserted. Use <c>/</c> to apply it
+            /// to the whole pipeline, or a narrower prefix/exact pattern to scope body binding to selected routes.
+            /// </param>
+            /// <param name="type">The CLR type expected in the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddJsonBody(string verb, string pattern, Type type, string paramName)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(verb);
+                Ensure.NotNull(pattern);
+                Ensure.NotNull(type);
+                Ensure.NotNull(paramName);
+
+                return routeBuilder.AddJsonBody([verb], pattern, type, paramName);
+            }
+
+            /// <summary>
+            /// Deserializes JSON request bodies into a route parameter using runtime type metadata.
+            /// </summary>
+            /// <param name="verbs">The HTTP methods that should require a JSON body.</param>
+            /// <param name="type">The CLR type expected in the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddJsonBody(IEnumerable<string> verbs, Type type, string paramName)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(verbs);
+                Ensure.NotNull(type);
+                Ensure.NotNull(paramName);
+
+                return routeBuilder.AddJsonBody(verbs, "/", type, paramName);
+            }
+
+            /// <summary>
+            /// Deserializes JSON request bodies into a route parameter using runtime type metadata for <c>POST</c> and <c>PUT</c>.
+            /// </summary>
+            /// <param name="pattern">
+            /// The route pattern where the JSON-binding middleware should be inserted. Use <c>/</c> to apply it
+            /// to the whole pipeline, or a narrower prefix/exact pattern to scope body binding to selected routes.
+            /// </param>
+            /// <param name="type">The CLR type expected in the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddJsonBody(string pattern, Type type, string paramName)
+            {
+                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(pattern);
+                Ensure.NotNull(type);
+                Ensure.NotNull(paramName);
+
+                return routeBuilder.AddJsonBody(["POST", "PUT"], pattern, type, paramName);
+            }
+
+            /// <summary>
+            /// Deserializes JSON request bodies into a route parameter using runtime type metadata for <c>POST</c> and <c>PUT</c>.
+            /// </summary>
+            /// <param name="type">The CLR type expected in the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            public TBuilder AddJsonBody(Type type, string paramName)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(type);
                 Ensure.NotNull(paramName);
-                Ensure.NotNull(verbs);
 
-                return routeBuilder.AddJsonBody
-                (
-                    JsonSerializerOptions.Web.GetTypeInfo(type),
-                    paramName,
-                    verbs
-                );
+                return routeBuilder.AddJsonBody(["POST", "PUT"], "/", type, paramName);
             }
 
             /// <summary>
@@ -247,7 +329,7 @@ namespace NanoRoute.Json
                         }
                         catch (HttpRequestException ex)
                         {
-                            ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, context.Request.Properties[Router.TRACE_ID_NAME] as string);
+                            ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, context.Request.Properties[Router.TraceIdName] as string);
 
                             return HttpResponseMessage.Json
                             (

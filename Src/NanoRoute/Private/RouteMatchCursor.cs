@@ -62,7 +62,7 @@ namespace NanoRoute.Internals
         private readonly BranchOrder _branchOrder = matchingPrecedence switch
         {
             MatchingPrecedence.LiteralFirst => new BranchOrder(BranchKind.Literal, BranchKind.Parsed),
-            MatchingPrecedence.ParameterizedChildrenFirst => new BranchOrder(BranchKind.Parsed, BranchKind.Literal),
+            MatchingPrecedence.ParameterizedFirst => new BranchOrder(BranchKind.Parsed, BranchKind.Literal),
             _ => throw new ArgumentOutOfRangeException(nameof(matchingPrecedence))
         };
 

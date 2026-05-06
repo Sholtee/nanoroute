@@ -177,8 +177,8 @@ namespace NanoRoute.AwsLambda.Tests
 
             Assert.That(requestMessage.Method, Is.EqualTo(HttpMethod.Post));
             Assert.That(requestMessage.RequestUri, Is.EqualTo(new Uri("https://example.com/items/42?filter=active")));
-            Assert.That(GetProperty(requestMessage, Router.ORIGINAL_REQUEST_NAME), Is.SameAs(request));
-            Assert.That(GetProperty(requestMessage, Router.TRACE_ID_NAME), Is.EqualTo("request-id"));
+            Assert.That(GetProperty(requestMessage, Router.OriginalRequestName), Is.SameAs(request));
+            Assert.That(GetProperty(requestMessage, Router.TraceIdName), Is.EqualTo("request-id"));
         }
 
         [Test]

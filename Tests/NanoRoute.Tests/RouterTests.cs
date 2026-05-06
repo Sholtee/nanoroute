@@ -213,7 +213,7 @@ namespace NanoRoute.Tests
         }
 
         [TestCase(MatchingPrecedence.LiteralFirst)]
-        [TestCase(MatchingPrecedence.ParameterizedChildrenFirst)]
+        [TestCase(MatchingPrecedence.ParameterizedFirst)]
         public async Task Handle_ShouldRespectConfiguredMatchingPrecedence(MatchingPrecedence matchingPrecedence)
         {
             Mock<RequestHandlerDelegate>
@@ -247,7 +247,7 @@ namespace NanoRoute.Tests
 
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockLiteralHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingPrecedence == MatchingPrecedence.LiteralFirst ? Times.Once() : Times.Never());
-            mockParameterizedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingPrecedence == MatchingPrecedence.ParameterizedChildrenFirst ? Times.Once() : Times.Never());
+            mockParameterizedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingPrecedence == MatchingPrecedence.ParameterizedFirst ? Times.Once() : Times.Never());
         }
 
         [Test]

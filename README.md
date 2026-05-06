@@ -8,17 +8,18 @@ NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` 
 nanoroute/
 |-- Src/                        Main source code
 |   |-- NanoRoute/              Library project
-|       |-- Doc/                DocFX documentation sources
-|       |-- Public/             Public API surface
-|       |-- Private/            Internal implementation details
-|       |   |-- LowLevel/       Low-level path and buffer helpers
-|       |   |-- RoutePattern/   Route pattern parsing and matching
-|       |-- Properties/         Resources and generated metadata
-|       |-- Icon.png            NuGet package icon
-|       |-- NanoRoute.csproj    Project file
-|       |-- PublicAPI.*.txt     Public API analyzer baselines
-|       |-- README.md           NuGet package README
+|   |   |-- Doc/                DocFX documentation sources
+|   |   |-- Public/             Public API surface
+|   |   |-- Private/            Internal implementation details
+|   |   |   |-- LowLevel/       Low-level path and buffer helpers
+|   |   |   |-- RoutePattern/   Route pattern parsing and matching
+|   |   |-- Properties/         Resources and generated metadata
+|   |   |-- Icon.png            NuGet package icon
+|   |   |-- NanoRoute.csproj    Project file
+|   |   |-- PublicAPI.*.txt     Public API analyzer baselines
+|   |   |-- README.md           NuGet package README
 |   |-- NanoRoute.AwsLambda/    AWS Lambda adapter package
+|       |-- Doc/                DocFX documentation sources
 |       |-- Public/             Public adapter API surface
 |       |-- Private/            API Gateway DTO mapping helpers
 |       |-- Properties/         Resources and generated metadata

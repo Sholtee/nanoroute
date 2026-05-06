@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -22,6 +23,64 @@ namespace NanoRoute.Tests
 
     internal sealed partial class RouterBuilderTests
     {
+        internal delegate RouterBuilder<TestRouter, RouterConfig> ConfigureJsonBodyDelegate(RouterBuilder<TestRouter, RouterConfig> routeBuilder);
+
+        private static JsonTypeInfo TestJsonPayloadTypeInfo => JsonSerializerOptions.Web.GetTypeInfo(typeof(TestJsonPayload));
+
+        private static IEnumerable<TestCaseData> AddJsonBodyOverloadCases()
+        {
+            yield return new TestCaseData
+            (
+                "IEnumerable verbs, pattern, JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(["POST"], "/items", TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "string verb, pattern, JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody("POST", "/items", TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "IEnumerable verbs, JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(["POST"], TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "pattern, JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody("/items", TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "IEnumerable verbs, pattern, Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(["POST"], "/items", typeof(TestJsonPayload), "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "string verb, pattern, Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody("POST", "/items", typeof(TestJsonPayload), "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "IEnumerable verbs, Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(["POST"], typeof(TestJsonPayload), "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "pattern, Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody("/items", typeof(TestJsonPayload), "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(typeof(TestJsonPayload), "payload"))
+            );
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public async Task AddJsonErrorDetails_ShouldHandleNotFoundEvents(bool populateErrorInfo)
@@ -31,7 +90,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
-            request.SetProperty(Router.TRACE_ID_NAME, "trace-1");
+            request.SetProperty(Router.TraceIdName, "trace-1");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -44,7 +103,7 @@ namespace NanoRoute.Tests
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-1"));
             Assert.That(deserialized.Errors, Is.Null);
-            Assert.That(deserialized.DeveloperMessage, Is.Null);
+            Assert.That(deserialized.DeveloperMessages, Is.Null);
         }
 
         [TestCase(false)]
@@ -59,7 +118,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TRACE_ID_NAME, "trace-2");
+            request.SetProperty(Router.TraceIdName, "trace-2");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
@@ -72,7 +131,7 @@ namespace NanoRoute.Tests
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INTERNAL_ERROR));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-2"));
             Assert.That(deserialized.Errors, Is.Null);
-            Assert.That(deserialized.DeveloperMessage, populateErrorInfo ? Has.Some.Contains(ERROR_MSG) : Is.Null);
+            Assert.That(deserialized.DeveloperMessages, populateErrorInfo ? Has.Some.Contains(ERROR_MSG) : Is.Null);
         }
 
         [Test]
@@ -88,7 +147,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TRACE_ID_NAME, "trace-cancel");
+            request.SetProperty(Router.TraceIdName, "trace-cancel");
 
             using CancellationTokenSource cancellation = new();
             cancellation.Cancel();
@@ -131,7 +190,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TRACE_ID_NAME, "trace-aggregate");
+            request.SetProperty(Router.TraceIdName, "trace-aggregate");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             string resp = await response.Content.ReadAsStringAsync();
@@ -144,12 +203,12 @@ namespace NanoRoute.Tests
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-aggregate"));
             if (populateErrorInfo)
             {
-                Assert.That(deserialized.DeveloperMessage, Has.Exactly(2).Items);
-                Assert.That(deserialized.DeveloperMessage, Has.Some.Contains("first problem"));
-                Assert.That(deserialized.DeveloperMessage, Has.Some.Contains("second problem"));
+                Assert.That(deserialized.DeveloperMessages, Has.Exactly(2).Items);
+                Assert.That(deserialized.DeveloperMessages, Has.Some.Contains("first problem"));
+                Assert.That(deserialized.DeveloperMessages, Has.Some.Contains("second problem"));
             }
             else
-                Assert.That(deserialized.DeveloperMessage, Is.Null);
+                Assert.That(deserialized.DeveloperMessages, Is.Null);
         }
 
         [Test]
@@ -172,7 +231,32 @@ namespace NanoRoute.Tests
             TestJsonPayload? body = null;
 
             TestRouter router = _routerBuilder
-                .AddJsonBody(typeof(TestJsonPayload), "payload", "POST")
+                .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
+                .AddHandler("POST", "/items", async (context, _) =>
+                {
+                    body = (TestJsonPayload) context.Parameters["payload"]!;
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                })
+                .CreateRouter();
+
+            HttpRequestMessage request = new(HttpMethod.Post, "https://test.test/items")
+            {
+                Content = new StringContent("{\"name\":\"Spikey\"}", Encoding.UTF8, "application/json")
+            };
+
+            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(body, Is.Not.Null);
+            Assert.That(body!.Name, Is.EqualTo("Spikey"));
+        }
+
+        [TestCaseSource(nameof(AddJsonBodyOverloadCases))]
+        public async Task AddJsonBody_OverloadsShouldDeserializeTheRequestBodyIntoTheConfiguredParameter(string _, ConfigureJsonBodyDelegate configureJsonBody)
+        {
+            TestJsonPayload? body = null;
+
+            TestRouter router = configureJsonBody(_routerBuilder)
                 .AddHandler("POST", "/items", async (context, _) =>
                 {
                     body = (TestJsonPayload) context.Parameters["payload"]!;
@@ -223,7 +307,7 @@ namespace NanoRoute.Tests
         public void AddJsonBody_ShouldRejectRequestsWithoutContent()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody(typeof(TestJsonPayload), "payload", "POST")
+                .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -231,15 +315,15 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
         }
 
         [Test]
         public void AddJsonBody_ShouldRejectNonJsonContentTypes()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody(typeof(TestJsonPayload), "payload", "POST")
+                .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -250,15 +334,15 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
         }
 
         [Test]
         public void AddJsonBody_ShouldRejectInvalidJsonPayloads()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody(typeof(TestJsonPayload), "payload", "POST")
+                .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -269,8 +353,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.Not.Null);
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.Not.Null);
         }
 
         [Test]
@@ -312,19 +396,19 @@ namespace NanoRoute.Tests
         [Test]
         public void JsonHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddJsonBody(typeof(TestJsonPayload), "payload", "POST"))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(typeInfo: null!, "payload", "POST"))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody("POST", "/", typeInfo: null!, "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("typeInfo"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(type: null!, "payload", "POST"))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody("POST", "/", type: null!, "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("type"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(typeof(TestJsonPayload), null!, "POST"))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody("POST", "/", typeof(TestJsonPayload), null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("paramName"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody(typeof(TestJsonPayload), "payload", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody((IEnumerable<string>) null!, "/", typeof(TestJsonPayload), "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
             ex = Assert.Throws<ArgumentNullException>(() => HttpResponseMessage.Json(HttpStatusCode.OK, new TestJsonPayload { Name = "Spikey" }, (JsonTypeInfo) null!))!;

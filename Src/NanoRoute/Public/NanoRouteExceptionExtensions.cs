@@ -71,7 +71,7 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
-            public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs, string pattern)
+            public TBuilder AddExceptionHandler(IEnumerable<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verbs);
@@ -88,11 +88,11 @@ namespace NanoRoute
                         switch (ex)
                         {
                             case AggregateException aggregateException:
-                                HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessage: [..aggregateException.InnerExceptions.Select(static ex => ex.ToString())]);
+                                HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessages: [..aggregateException.InnerExceptions.Select(static ex => ex.ToString())]);
                                 break;
                         }
 
-                        HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessage: [ex.ToString()]);
+                        HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessages: [ex.ToString()]);
                         return null!;
                     }
                 });
@@ -135,7 +135,7 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
-            public TBuilder AddExceptionHandler(IReadOnlyCollection<string> verbs)
+            public TBuilder AddExceptionHandler(IEnumerable<string> verbs)
             {
                 Ensure.NotNull(routeBuilder);
                 Ensure.NotNull(verbs);
@@ -148,28 +148,28 @@ namespace NanoRoute
         /// The <see cref="Exception.Data"/> key used to store client-facing error messages.
         /// </summary>
         /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
         /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
         /// </remarks>
-        public const string ERRORS_NAME = "Errors";
+        public const string ErrorsName = "Errors";
 
         /// <summary>
         /// The <see cref="Exception.Data"/> key used to store developer-facing diagnostic details.
         /// </summary>
         /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
         /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
         /// </remarks>
-        public const string DEVELOPER_MESSAGE = "DeveloperMessage";
+        public const string DeveloperMessagesName = "DeveloperMessages";
 
         /// <summary>
         /// The <see cref="Exception.Data"/> key used to store the HTTP status code.
         /// </summary>
         /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IReadOnlyCollection{string}, IReadOnlyCollection{string})"/>
+        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
         /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
         /// </remarks>
-        public const string STATUS_NAME = "StatusCode";
+        public const string StatusName = "StatusCode";
 
         extension(HttpRequestException)
         {
@@ -180,7 +180,7 @@ namespace NanoRoute
             /// <param name="title">The human-readable error title.</param>
             /// <param name="errors">Optional client-facing error messages that should not contain sensitive data.</param>
             [DoesNotReturn]
-            public static void Throw(HttpStatusCode status, string title, params IReadOnlyCollection<string> errors) => Throw(status, title, null, errors, null);
+            public static void Throw(HttpStatusCode status, string title, params IEnumerable<string> errors) => Throw(status, title, null, errors, null);
 
             /// <summary>
             /// Throws an <see cref="HttpRequestException"/> enriched with routing-specific metadata.
@@ -189,19 +189,19 @@ namespace NanoRoute
             /// <param name="title">The human-readable error title.</param>
             /// <param name="original">The original exception, if any.</param>
             /// <param name="errors">Optional client-facing error messages that should not contain sensitive data.</param>
-            /// <param name="developerMessage">Optional developer-facing messages that may contain sensitive data.</param>
+            /// <param name="developerMessages">Optional developer-facing messages that may contain sensitive data.</param>
             [DoesNotReturn]
-            public static void Throw(HttpStatusCode status, string title, Exception? original = null, IReadOnlyCollection<string>? errors = null, IReadOnlyCollection<string>? developerMessage = null)
+            public static void Throw(HttpStatusCode status, string title, Exception? original = null, IEnumerable<string>? errors = null, IEnumerable<string>? developerMessages = null)
             {
                 HttpRequestException ex = new(title, original);
 
-                ex.Data[STATUS_NAME] = status;
+                ex.Data[StatusName] = status;
 
-                if (errors?.Count > 0)
-                    ex.Data[ERRORS_NAME] = errors.ToArray();  // On .NET FW the Data members must be serializable (string[] it is)
+                if (errors?.ToArray() is { Length: > 0 } err)
+                    ex.Data[ErrorsName] = err;  // On .NET FW the Data members must be serializable (string[] it is)
 
-                if (developerMessage?.Count > 0)
-                    ex.Data[DEVELOPER_MESSAGE] = developerMessage.ToArray();
+                if (developerMessages?.ToArray() is { Length: > 0 } dev)
+                    ex.Data[DeveloperMessagesName] = dev;
 
                 throw ex;
             }
@@ -223,7 +223,7 @@ namespace NanoRoute
 
                 return new ErrorDetails
                 {
-                    Status = requestException.Data[STATUS_NAME] switch
+                    Status = requestException.Data[StatusName] switch
                     {
                         HttpStatusCode status => status,
                         int intStatus => (HttpStatusCode) intStatus,
@@ -231,8 +231,8 @@ namespace NanoRoute
                     },
                     Title = requestException.Message,
                     TraceId = traceId ?? Guid.NewGuid().ToString("N"),
-                    Errors = requestException.Data[ERRORS_NAME] as IEnumerable<string>,
-                    DeveloperMessage = populateErrorInfo ? requestException.Data[DEVELOPER_MESSAGE] as IEnumerable<string> : null
+                    Errors = requestException.Data[ErrorsName] as IEnumerable<string>,
+                    DeveloperMessages = populateErrorInfo ? requestException.Data[DeveloperMessagesName] as IEnumerable<string> : null
                 };
             }
         }
