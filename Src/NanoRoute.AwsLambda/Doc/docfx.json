@@ -1,0 +1,32 @@
+{
+  "metadata": [{
+    "src": [{
+      "src": "%PUBLISH_DIR%",
+      "files": ["NanoRoute.AwsLambda.dll"]
+    }],
+    "dest": "../../../BIN/DOC"
+  }],
+  "build": {
+    "content": [
+      {
+        "files": ["*.yml"],
+        "src": "../../../BIN/DOC"
+      },
+      {
+        "files": ["index.md"]
+      }
+    ],
+    "dest": "../../../Artifacts/docs/NanoRoute.AwsLambda",
+    "resource": [{
+      "files": ["Icon.png"],
+      "src": "../"
+    }],
+    "globalMetadata": {
+      "_appTitle": "NanoRoute.AwsLambda",
+      "_appFaviconPath": "Icon.png",
+      "_disableNavbar": true,
+      "_disableContribution": true
+    },
+    "xrefService": ["https://xref.docs.microsoft.com/query?uid={uid}"]
+  }
+}
