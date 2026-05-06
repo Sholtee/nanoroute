@@ -36,6 +36,6 @@ Run-Tests 'NanoRoute.Tests.csproj' 'Regular tests (with coverage)'
 Run-Tests 'NanoRoute.AwsLambda.Tests.csproj' 'AWS Lambda tests (with coverage)'
 
 dotnet tool run reportgenerator `
-  -reports:(Join-Path $ARTIFACTS 'NanoRoute.*.Coverage.xml') `
+  -reports:((Get-ChildItem -Path $ARTIFACTS -File -Filter '*.Coverage.xml' | Select-Object -ExpandProperty FullName) -join ';') `
   -targetdir:(Join-Path $ARTIFACTS 'CoverageReport') `
   -reporttypes:Html_Dark
