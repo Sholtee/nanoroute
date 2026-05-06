@@ -23,6 +23,64 @@ namespace NanoRoute.Tests
 
     internal sealed partial class RouterBuilderTests
     {
+        internal delegate RouterBuilder<TestRouter, RouterConfig> ConfigureJsonBodyDelegate(RouterBuilder<TestRouter, RouterConfig> routeBuilder);
+
+        private static JsonTypeInfo TestJsonPayloadTypeInfo => JsonSerializerOptions.Web.GetTypeInfo(typeof(TestJsonPayload));
+
+        private static IEnumerable<TestCaseData> AddJsonBodyOverloadCases()
+        {
+            yield return new TestCaseData
+            (
+                "IEnumerable verbs, pattern, JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(["POST"], "/items", TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "string verb, pattern, JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody("POST", "/items", TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "IEnumerable verbs, JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(["POST"], TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "pattern, JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody("/items", TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "JsonTypeInfo",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(TestJsonPayloadTypeInfo, "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "IEnumerable verbs, pattern, Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(["POST"], "/items", typeof(TestJsonPayload), "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "string verb, pattern, Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody("POST", "/items", typeof(TestJsonPayload), "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "IEnumerable verbs, Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(["POST"], typeof(TestJsonPayload), "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "pattern, Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody("/items", typeof(TestJsonPayload), "payload"))
+            );
+            yield return new TestCaseData
+            (
+                "Type",
+                (ConfigureJsonBodyDelegate) (builder => builder.AddJsonBody(typeof(TestJsonPayload), "payload"))
+            );
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public async Task AddJsonErrorDetails_ShouldHandleNotFoundEvents(bool populateErrorInfo)
@@ -174,6 +232,31 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload")
+                .AddHandler("POST", "/items", async (context, _) =>
+                {
+                    body = (TestJsonPayload) context.Parameters["payload"]!;
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                })
+                .CreateRouter();
+
+            HttpRequestMessage request = new(HttpMethod.Post, "https://test.test/items")
+            {
+                Content = new StringContent("{\"name\":\"Spikey\"}", Encoding.UTF8, "application/json")
+            };
+
+            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(body, Is.Not.Null);
+            Assert.That(body!.Name, Is.EqualTo("Spikey"));
+        }
+
+        [TestCaseSource(nameof(AddJsonBodyOverloadCases))]
+        public async Task AddJsonBody_OverloadsShouldDeserializeTheRequestBodyIntoTheConfiguredParameter(string _, ConfigureJsonBodyDelegate configureJsonBody)
+        {
+            TestJsonPayload? body = null;
+
+            TestRouter router = configureJsonBody(_routerBuilder)
                 .AddHandler("POST", "/items", async (context, _) =>
                 {
                     body = (TestJsonPayload) context.Parameters["payload"]!;
