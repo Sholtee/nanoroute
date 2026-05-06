@@ -53,10 +53,10 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_TRACE_ID_NAME">Router.TRACE_ID_NAME</a>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_TraceIdName">Router.TraceIdName</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_ORIGINAL_REQUEST_NAME">Router.ORIGINAL_REQUEST_NAME</a>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_OriginalRequestName">Router.OriginalRequestName</a>
     </div>
     <div>
       <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_">Router.Handle(HttpRequestMessage, IServiceProvider, CancellationToken)</a>
@@ -181,7 +181,7 @@
   <h5 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_System_Threading_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Request and content headers are copied into the intermediate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>.
 The original <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerrequest">HttpListenerRequest</a> is stored in
-<a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_ORIGINAL_REQUEST_NAME">ORIGINAL_REQUEST_NAME</a> on the generated request message.
+<a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_OriginalRequestName">OriginalRequestName</a> on the generated request message.
 Response headers are copied back except for reserved <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerresponse">HttpListenerResponse</a> headers that
 must be managed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> itself. Cancellation is not translated into an HTTP error
 response by this adapter.</p>
