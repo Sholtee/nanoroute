@@ -21,7 +21,7 @@ namespace NanoRoute.Internals
                 return false;
             }
 
-            ReadOnlySpan<char> span = original.Span;
+            ReadOnlySpan<char> span = Original.Span;
 
             while (_next < span.Length && span[_next] == separator)
                 _next++;
@@ -36,12 +36,12 @@ namespace NanoRoute.Internals
             int i = span.Slice(_next).IndexOf(separator);
             if (i < 0)
             {
-                Current = original.Slice(_next);
+                Current = Original.Slice(_next);
                 _next = DONE;
             }
             else
             {
-                Current = original.Slice(_next, i);
+                Current = Original.Slice(_next, i);
                 _next += i + 1;
             }
 
@@ -49,6 +49,8 @@ namespace NanoRoute.Internals
         }
 
         public ReadOnlyMemory<char> Current { get; private set; }
+
+        public ReadOnlyMemory<char> Original { get; } = original;
 
         public readonly bool HasValue => Current.Length > 0;
     }

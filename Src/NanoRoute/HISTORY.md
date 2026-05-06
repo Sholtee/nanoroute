@@ -1,5 +1,13 @@
 # History
 
+## 1.0.0-preview3
+
+### Performance
+
+- Optimized frozen route-tree snapshots by building immutable and frozen collections directly during `RouteNode.Copy(freeze: true)`, avoiding temporary mutable collections during router creation.
+- Reduced mutable route-node copy overhead by pre-sizing copied child and handler collections.
+- Avoided duplicate raw-query extraction in `QueryStringParser`.
+
 ## 1.0.0-preview2
 
 ### Breaking Changes

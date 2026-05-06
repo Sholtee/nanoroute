@@ -54,7 +54,7 @@ namespace NanoRoute.Tests
             parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(parsedHandler, "/{id:str}")];
             root.ParsedChildren.Add(parsedChild);
 
-            RouteNode copy = root.Copy(frozen: false);
+            RouteNode copy = root.Copy(freeze: false);
 
             Assert.Multiple(() =>
             {
@@ -104,7 +104,7 @@ namespace NanoRoute.Tests
             parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(handler, "/{id:str}")];
             root.ParsedChildren.Add(parsedChild);
 
-            RouteNode copy = root.Copy(frozen: true);
+            RouteNode copy = root.Copy(freeze: true);
 
             Assert.Multiple(() =>
             {
