@@ -1,0 +1,5 @@
+NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router
+NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest! request, System.IServiceProvider! services, System.TimeSpan remainingTime) -> System.Threading.Tasks.Task<Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyResponse!>!
+NanoRoute.AwsLambda.AwsLambdaRouterConfig
+NanoRoute.AwsLambda.AwsLambdaRouterConfig.AwsLambdaRouterConfig() -> void
+static NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router!, NanoRoute.AwsLambda.AwsLambdaRouterConfig!>!

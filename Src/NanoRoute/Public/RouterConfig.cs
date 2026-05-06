@@ -16,17 +16,5 @@ namespace NanoRoute
         /// Gets or sets how NanoRoute prioritizes literal and parameterized child segments at the same depth.
         /// </summary>
         public MatchingPrecedence MatchingPrecedence { get; set; }
-
-        /// <summary>
-        /// Gets or sets the maximum time a request may spend in the router pipeline before its linked cancellation
-        /// token is canceled.
-        /// </summary>
-        /// <remarks>
-        /// The default is one minute. Handlers and asynchronous value parsers should observe the linked
-        /// cancellation token exposed through <see cref="RequestContext.Cancellation"/> and
-        /// <see cref="ValueParserContext.Cancellation"/> if they want timeout expiration to stop their work
-        /// promptly.
-        /// </remarks>
-        public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);
     }
 }

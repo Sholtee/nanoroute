@@ -12,7 +12,6 @@
     <BaseIntermediateOutputPath>$(ObjBase)</BaseIntermediateOutputPath>
     <ProjectAssetsFile>$(ObjBase)project.assets.json</ProjectAssetsFile>
     <RestoreOutputPath>$(ObjBase)</RestoreOutputPath>
-    <Product>NanoRoute</Product>
     <NuGetAudit>true</NuGetAudit>
     <NuGetAuditLevel>moderate</NuGetAuditLevel>
     <NuGetAuditMode>all</NuGetAuditMode>

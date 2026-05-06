@@ -4,10 +4,12 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,13 +27,13 @@ namespace NanoRoute
     public class HttpListenerRouter: Router
     {
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
-        private static readonly HashSet<string> s_reservedHeaders = new(StringComparer.OrdinalIgnoreCase)
+        private static readonly FrozenSet<string> s_reservedHeaders = new List<string>
         {
             "Content-Length",
             "Transfer-Encoding",
             "Keep-Alive",
             "Server"
-        };
+        }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
         private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
@@ -53,8 +55,6 @@ namespace NanoRoute
 
             void CopyResponseHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
             {
-                cancellation.ThrowIfCancellationRequested();
-
                 foreach (KeyValuePair<string, IEnumerable<string>> header in headers)
                     if (!s_reservedHeaders.Contains(header.Key))
                         response.Headers.Add(header.Key, string.Join(",", header.Value));
@@ -72,20 +72,19 @@ namespace NanoRoute
             if (request.HasEntityBody)
                 requestMessage.Content = new StreamContent(request.InputStream);
 
+            foreach (string headerName in request.Headers.AllKeys)
+            {
+                HttpHeaders headers = requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(headerName)
+                    ? requestMessage.Content.Headers
+                    : requestMessage.Headers;
+
+                // Some header (like Content-Type) has its default value. Without this line we'd just append the value list
+                headers.Remove(headerName);
+                headers.TryAddWithoutValidation(headerName, request.Headers.GetValues(headerName));
+            }
+
             requestMessage.Properties[ORIGINAL_REQUEST_NAME] = request;
             requestMessage.Properties[TRACE_ID_NAME] = request.RequestTraceIdentifier.ToString("N");
-
-            foreach (string header in request.Headers.AllKeys)
-            {
-                string[] values = request.Headers.GetValues(header);
-
-                bool headerSet =
-                    requestMessage.Headers.TryAddWithoutValidation(header, values) || // normal request headers
-                    requestMessage.Content?.Headers.TryAddWithoutValidation(header, values) is true; // fall back to content headers
-
-                if (!headerSet)
-                    RouterEventSource.Warning.Write("HeaderCopyFailed", static header => new { Header = header }, header);
-            }
 
             return requestMessage;
         }
@@ -100,8 +99,8 @@ namespace NanoRoute
         /// <param name="cancellation">A token that can cancel request processing and response streaming.</param>
         /// <returns>A task that completes after the router has finished writing the response.</returns>
         /// <exception cref="OperationCanceledException">
-        /// Thrown when the caller cancels <paramref name="cancellation"/> or when the configured router timeout
-        /// elapses. In either case the listener response is aborted before the exception is rethrown.
+        /// Thrown when the caller cancels <paramref name="cancellation"/>. The listener response is aborted before the
+        /// exception is rethrown.
         /// </exception>
         /// <remarks>
         /// Request and content headers are copied into the intermediate <see cref="HttpRequestMessage"/>.

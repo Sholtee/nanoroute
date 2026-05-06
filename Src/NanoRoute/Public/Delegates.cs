@@ -142,8 +142,8 @@ namespace NanoRoute
     /// exception types is also supported, but they are treated as unexpected failures:
     /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> converts them into internal
     /// server error responses, while without such middleware they propagate to the caller unchanged.
-    /// <see cref="OperationCanceledException"/> is left untouched so caller-driven cancellation and router timeouts
-    /// can propagate to the transport layer or hosting code.
+    /// <see cref="OperationCanceledException"/> is left untouched so caller-driven cancellation can propagate to the
+    /// transport layer or hosting code.
     /// </remarks>
     /// <example>
     /// <code>

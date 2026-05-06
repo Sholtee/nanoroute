@@ -1,6 +1,6 @@
 # NanoRoute ![Tests](https://sholtee.github.io/nanoroute/badges/tests-badge.svg) [![Coverage](https://sholtee.github.io/nanoroute/badges/coverage-badge.svg)](https://sholtee.github.io/nanoroute/CoverageReport/) ![GitHub License](https://img.shields.io/github/license/sholtee/nanoroute) [![NuGet Version](https://img.shields.io/nuget/v/nanoroute)](https://www.nuget.org/packages/nanoroute)
 
-NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` pipelines. It includes an optional `HttpListener` adapter plus focused helpers for JSON payloads, query binding, and error handling.
+NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` pipelines. It includes optional `HttpListener` and AWS Lambda adapters plus focused helpers for JSON payloads, query binding, and error handling.
 
 ## Directory Structure
 
@@ -18,6 +18,13 @@ nanoroute/
 |       |-- NanoRoute.csproj    Project file
 |       |-- PublicAPI.*.txt     Public API analyzer baselines
 |       |-- README.md           NuGet package README
+|   |-- NanoRoute.AwsLambda/    AWS Lambda adapter package
+|       |-- Public/             Public adapter API surface
+|       |-- Private/            API Gateway DTO mapping helpers
+|       |-- Properties/         Resources and generated metadata
+|       |-- NanoRoute.AwsLambda.csproj
+|       |-- PublicAPI.*.txt
+|       |-- README.md
 |-- Tests/                      Validation and benchmarks
 |   |-- NanoRoute.Tests/        Unit tests
 |   |-- NanoRoute.Perf/         Performance benchmarks

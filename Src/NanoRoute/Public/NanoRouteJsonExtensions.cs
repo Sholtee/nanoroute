@@ -5,9 +5,11 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -33,6 +35,13 @@ namespace NanoRoute.Json
     /// </remarks>
     public static class NanoRouteJsonExtensions
     {
+        private const string JSON_MEDIA_TYPE =
+#if NETSTANDARD2_1_OR_GREATER
+            MediaTypeNames.Application.Json;
+#else
+            "application/json";
+#endif
+
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder: RouteBuilder
         {
             /// <summary>
@@ -86,12 +95,12 @@ namespace NanoRoute.Json
 
                     if (context.Request.Content is not { } content)
                     {
-                        HttpRequestException.Throw(HttpStatusCode.MethodNotAllowed, Resources.ERR_METHOD_NOT_ALLOWED);
+                        BadRequest(Resources.ERR_MISSING_BODY);
                         return null!;
                     }
 
-                    if (!"application/json".Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
-                        HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_BAD_CONTENT_TYPE);
+                    if (!JSON_MEDIA_TYPE.Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
+                        BadRequest(Resources.ERR_BAD_CONTENT_TYPE);
 
                     Stream contentStream = await content.ReadAsStreamAsync();
 
@@ -103,7 +112,7 @@ namespace NanoRoute.Json
                     }
                     catch (JsonException ex)
                     {
-                        HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, ex.Message);
+                        BadRequest(ex.Message);
                     }
 
                     context.Parameters[paramName] = body;
@@ -112,6 +121,9 @@ namespace NanoRoute.Json
                 });
 
                 return routeBuilder;
+
+                [DoesNotReturn]
+                static void BadRequest(string error) => HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, error);
             }
 
             /// <summary>
@@ -241,7 +253,7 @@ namespace NanoRoute.Json
                             (
                                 errorDetails.Status,
                                 errorDetails,
-                                JsonContext.Default.ErrorDetails
+                                ErrorDetails.JsonTypeInfo
                             );
                         }
                     })
@@ -270,9 +282,23 @@ namespace NanoRoute.Json
                     (
                         JsonSerializer.Serialize(body, typeInfo),
                         Encoding.UTF8,
-                        "application/json"
+                        JSON_MEDIA_TYPE
                     )
                 };
+            }
+
+            /// <summary>
+            /// Creates a JSON response using the supplied type metadata.
+            /// </summary>
+            /// <param name="statusCode">The HTTP status code to assign to the response.</param>
+            /// <param name="body">The value to serialize.</param>
+            /// <param name="typeInfo">The metadata used to serialize <paramref name="body"/>.</param>
+            /// <returns>A new <see cref="HttpResponseMessage"/> with JSON content.</returns>
+            public static HttpResponseMessage Json<T>(HttpStatusCode statusCode, T? body, JsonTypeInfo<T> typeInfo)
+            {
+                Ensure.NotNull(typeInfo);
+
+                return Json(statusCode, (object?) body, typeInfo);
             }
 
             /// <summary>
@@ -287,7 +313,12 @@ namespace NanoRoute.Json
             {
                 Ensure.NotNull(options);
 
-                options.TypeInfoResolver ??= new DefaultJsonTypeInfoResolver();
+                if (options.TypeInfoResolver is null)
+                    // do not change the original options
+                    options = new JsonSerializerOptions(options)
+                    {
+                        TypeInfoResolver = new DefaultJsonTypeInfoResolver()
+                    };
 
                 return Json(statusCode, body, options.GetTypeInfo(typeof(T)));
             }
@@ -308,6 +339,14 @@ namespace NanoRoute.Json
             /// <param name="body">The value to serialize.</param>
             /// <returns>A new <see cref="HttpResponseMessage"/> with JSON content.</returns>
             public static HttpResponseMessage Json<T>(T? body) => Json(HttpStatusCode.OK, body);
+        }
+
+        extension(ErrorDetails)
+        {
+            /// <summary>
+            /// Provides the JSON serialization meta-data.
+            /// </summary>
+            public static JsonTypeInfo<ErrorDetails> JsonTypeInfo => JsonContext.Default.ErrorDetails;
         }
     }
 }

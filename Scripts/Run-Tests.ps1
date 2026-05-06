@@ -29,11 +29,11 @@ function Run-Tests([Parameter(Position=0, Mandatory=$true)][string] $csproj, [Pa
     --output (Join-Path $ARTIFACTS "$shortName.Coverage.xml") `
     "dotnet test $csproj --configuration:Debug --logger:`"junit;LogFilePath=$(Join-Path $ARTIFACTS "$shortName.Results.xml")`""
 
-  # "-not $?" won't work since we are using Invoke-Expression
-  if ($LASTEXITCODE -ne 0) { throw "Test session failed" }
+  if (-not $?) { throw "Test session failed" }
 }
 
 Run-Tests 'NanoRoute.Tests.csproj' 'Regular tests (with coverage)'
+Run-Tests 'NanoRoute.AwsLambda.Tests.csproj' 'AWS Lambda tests (with coverage)'
 
 dotnet tool run reportgenerator `
   -reports:(Join-Path $ARTIFACTS 'NanoRoute.*.Coverage.xml') `

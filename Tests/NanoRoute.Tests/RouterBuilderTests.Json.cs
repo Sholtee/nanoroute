@@ -97,10 +97,11 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void AddJsonErrorDetails_ShouldPropagateRouterTimeoutCancellation()
+        public void AddJsonErrorDetails_ShouldPropagateCancellationDuringHandlerExecution()
         {
+            using CancellationTokenSource cancellation = new(TimeSpan.FromMilliseconds(50));
+
             TestRouter router = _routerBuilder
-                .WithConfiguration(config => config.Timeout = TimeSpan.FromMilliseconds(50))
                 .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere", async (context, _) =>
                 {
@@ -111,7 +112,7 @@ namespace NanoRoute.Tests
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
 
-            Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
         }
 
         [TestCase(false)]
@@ -229,9 +230,9 @@ namespace NanoRoute.Tests
             HttpRequestMessage request = new(HttpMethod.Post, "https://test.test/items");
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_METHOD_NOT_ALLOWED));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.MethodNotAllowed));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.Null);
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
         }
 
         [Test]

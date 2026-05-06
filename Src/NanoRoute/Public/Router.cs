@@ -39,24 +39,6 @@ namespace NanoRoute
             return routeBuilder.GetRoot(frozen: true);
         }
 
-        private IDisposable? CreateLinkedTokenIfNecessary(ref CancellationToken cancellation)
-        {
-            if (Timeout.Equals(System.Threading.Timeout.InfiniteTimeSpan))
-                return null!;
-
-            if (cancellation.Equals(default))
-            {
-                CancellationTokenSource src = new(Timeout);
-                cancellation = src.Token;
-                return src;
-            }
-
-            CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
-            linked.CancelAfter(Timeout);
-            cancellation = linked.Token;
-            return linked;
-        }
-
         /// <summary>
         /// Initializes a router from a route builder snapshot and router configuration.
         /// </summary>
@@ -69,7 +51,6 @@ namespace NanoRoute
             Ensure.NotNull(config);
 
             MatchingPrecedence = config.MatchingPrecedence;
-            Timeout = config.Timeout;
         }
 
         /// <summary>
@@ -88,15 +69,6 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Gets the maximum time the router allows a request to remain in the matching and handler pipeline.
-        /// </summary>
-        /// <remarks>
-        /// The effective pipeline token is canceled when either the caller-supplied cancellation token is canceled
-        /// or this timeout elapses.
-        /// </remarks>
-        public TimeSpan Timeout { get; }
-
-        /// <summary>
         /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
         /// </summary>
         /// <param name="request">The request to process.</param>
@@ -113,8 +85,7 @@ namespace NanoRoute
         /// <exception cref="HttpRequestException">Thrown when no handler matches the request path.</exception>
         /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
         /// <exception cref="OperationCanceledException">
-        /// Thrown when the caller cancels the <paramref name="cancellation"/> or when the configured <see cref="Timeout"/>
-        /// elapses.
+        /// Thrown when the caller cancels the <paramref name="cancellation"/>.
         /// </exception>
         #if DEBUG
         internal
@@ -129,8 +100,6 @@ namespace NanoRoute
                 RequestUri = request.RequestUri.OriginalString,
                 Verb = request.Method.Method
             }, request);
-
-            using IDisposable? cancellationScope = CreateLinkedTokenIfNecessary(ref cancellation);
 
             await using RequestPipeline pipeline = new(_root, MatchingPrecedence, request, services, cancellation);
 

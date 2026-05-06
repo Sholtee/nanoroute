@@ -1,10 +1,15 @@
 <Solution>
   <Folder Name="/Tests/">
+    <Project Path="Tests/NanoRoute.AwsLambda.Tests/NanoRoute.AwsLambda.Tests.csproj">
+      <Build Solution="Release|*" Project="false" />
+    </Project>
     <Project Path="Tests/NanoRoute.NativeAot/NanoRoute.NativeAot.csproj" />
     <Project Path="Tests/NanoRoute.Perf/NanoRoute.Perf.csproj" />
+    <Project Path="Tests/NanoRoute.TestLambda/NanoRoute.TestLambda.csproj" />
     <Project Path="Tests/NanoRoute.Tests/NanoRoute.Tests.csproj">
       <Build Solution="Release|*" Project="false" />
     </Project>
   </Folder>
+  <Project Path="Src/NanoRoute.AwsLambda/NanoRoute.AwsLambda.csproj" />
   <Project Path="Src/NanoRoute/NanoRoute.csproj" />
 </Solution>

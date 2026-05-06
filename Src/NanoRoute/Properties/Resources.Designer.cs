@@ -151,6 +151,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Missing body..
+        /// </summary>
+        internal static string ERR_MISSING_BODY {
+            get {
+                return ResourceManager.GetString("ERR_MISSING_BODY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Missing required parameter: {0}.
         /// </summary>
         internal static string ERR_MISSING_REQUIRED_PARAMETER {

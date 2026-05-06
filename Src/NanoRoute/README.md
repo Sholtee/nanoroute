@@ -1,12 +1,14 @@
 # NanoRoute
 
-NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with an optional `HttpListener` adapter and focused helpers for JSON payloads and error handling.
+NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
 The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`.
 
 > Note: NanoRoute is compatible with Native AOT scenarios.
+
+For AWS Lambda integrations, use the separate `NanoRoute.AwsLambda` package.
 
 ## Quick Start
 
@@ -297,11 +299,9 @@ InMemoryRouter router = InMemoryRouter
 
 This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline.
 
-### Timeouts And Cancellation
+### Cancellation
 
-- `RouterConfig.Timeout` defaults to `TimeSpan.FromMinutes(1)`.
-- NanoRoute exposes a linked cancellation token to async value parsers and handlers through `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
-- That linked token is canceled when either the caller-provided cancellation token is canceled or the router timeout elapses.
+- NanoRoute exposes the caller-provided cancellation token to async value parsers and handlers through `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
 - `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
 - `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
 
@@ -313,7 +313,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
-- `AddJsonBody<TBody>()` binds JSON request content into `RequestContext.Parameters`.
+- `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 
