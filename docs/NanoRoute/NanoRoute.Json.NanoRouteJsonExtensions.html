@@ -643,6 +643,76 @@ not translated into JSON and continues to propagate to the caller unchanged.</p>
     </tbody>
   </table>
   <a id="NanoRoute_Json_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json*"></a>
+  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_Json__1_System_Net_HttpStatusCode___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo___0__" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0,System.Text.Json.Serialization.Metadata.JsonTypeInfo{``0})">Json&lt;T&gt;(HttpStatusCode, T?, JsonTypeInfo&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a JSON response using the supplied type metadata.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static HttpResponseMessage Json&lt;T&gt;(HttpStatusCode statusCode, T? body, JsonTypeInfo&lt;T&gt; typeInfo) where T : notnull</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode">HttpStatusCode</a></td>
+        <td><span class="parametername">statusCode</span></td>
+        <td><p>The HTTP status code to assign to the response.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">body</span></td>
+        <td><p>The value to serialize.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;T&gt;</td>
+        <td><span class="parametername">typeInfo</span></td>
+        <td><p>The metadata used to serialize <code class="paramref">body</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a></td>
+        <td><p>A new <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> with JSON content.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_Json_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json*"></a>
   <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_Json__1___0_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json``1(``0)">Json&lt;T&gt;(T?)</h4>
   <div class="markdown level1 summary"><p>Creates a JSON response with <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode#system-net-httpstatuscode-ok">OK</a>. This method uses <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions.web">Web</a> when creating the response.</p>
 </div>
@@ -698,6 +768,30 @@ not translated into JSON and continues to propagate to the caller unchanged.</p>
         <td><span class="parametername">T</span></td>
         <td><p>The type of the response body.</p>
 </td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_Json_NanoRouteJsonExtensions_get_JsonTypeInfo_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo*"></a>
+  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_get_JsonTypeInfo" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo">get_JsonTypeInfo()</h4>
+  <div class="markdown level1 summary"><p>Provides the JSON serialization meta-data.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static JsonTypeInfo&lt;ErrorDetails&gt; get_JsonTypeInfo()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;<a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a>&gt;</td>
+        <td></td>
       </tr>
     </tbody>
   </table>

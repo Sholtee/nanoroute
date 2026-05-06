@@ -96,8 +96,8 @@ middleware is registered, those exceptions can be translated into structured err
 exception types is also supported, but they are treated as unexpected failures:
 <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a> converts them into internal
 server error responses, while without such middleware they propagate to the caller unchanged.
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is left untouched so caller-driven cancellation and router timeouts
-can propagate to the transport layer or hosting code.</p>
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is left untouched so caller-driven cancellation can propagate to the
+transport layer or hosting code.</p>
 </div>
   <h5 id="NanoRoute_RequestHandlerDelegate_examples"><strong>Examples</strong></h5>
   <pre><code class="lang-csharp">routerBuilder.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;

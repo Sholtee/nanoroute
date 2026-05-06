@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>NanoRoute.AwsLambda | NanoRoute.AwsLambda </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="NanoRoute.AwsLambda | NanoRoute.AwsLambda ">
+    
+    
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="nanorouteawslambda">NanoRoute.AwsLambda</h1>
+
+<p>NanoRoute.AwsLambda adds AWS Lambda adapters for NanoRoute while keeping the core package transport-neutral.</p>
+<p>The API documentation for this package is generated from the XML comments in the source. The links below are the intended published locations for the generated pages.</p>
+<h2 id="core-types">Core Types</h2>
+<ul>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html">ApiGatewayHttpApiV2Router</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a></li>
+</ul>
+<h2 id="highlights">Highlights</h2>
+<ul>
+<li>Supports Amazon API Gateway HTTP APIs and Lambda Function URLs that use payload format version <code>2.0</code>.</li>
+<li>Translates <code>APIGatewayHttpApiV2ProxyRequest</code> events into <code>HttpRequestMessage</code> instances before running the normal NanoRoute pipeline.</li>
+<li>Converts produced <code>HttpResponseMessage</code> instances into <code>APIGatewayHttpApiV2ProxyResponse</code> values.</li>
+<li><code>ApiGatewayHttpApiV2Router.CreateBuilder()</code> returns the same strongly typed builder style as the core package.</li>
+<li>Pass <code>ILambdaContext.RemainingTime</code> to <code>Route()</code> so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.</li>
+<li>Request URIs are built from <code>RawPath</code>, <code>RawQueryString</code>, the <code>Host</code> header, and forwarding metadata.</li>
+<li>Plain request bodies are exposed as <code>StringContent</code>; base64-encoded request bodies are exposed as <code>StreamContent</code>.</li>
+<li>The original <code>APIGatewayHttpApiV2ProxyRequest</code> is available through the NanoRoute request context as the original request object.</li>
+<li>String responses are returned as plain bodies, while other content types are base64 encoded.</li>
+<li><code>Set-Cookie</code> values are returned through the API Gateway <code>Cookies</code> collection.</li>
+<li>Typed handlers, route parsers, query bindings, JSON body binders, prefixes, and middleware work the same way under Lambda as they do in the core package.</li>
+</ul>
+<h2 id="supported-api-gateway-model">Supported API Gateway Model</h2>
+<p>This package is intentionally narrow:</p>
+<ul>
+<li>Supported: API Gateway HTTP API events represented by <code>APIGatewayHttpApiV2ProxyRequest</code>.</li>
+<li>Supported: Lambda Function URL events represented by <code>APIGatewayHttpApiV2ProxyRequest</code>.</li>
+<li>Supported: Lambda proxy responses represented by <code>APIGatewayHttpApiV2ProxyResponse</code>.</li>
+<li>Not currently supported: REST API payload format <code>1.0</code>, Application Load Balancer events, or custom event models.</li>
+</ul>
+<p>For unsupported transports, derive a custom router from the core <code>Router</code> type and map your event model to <code>HttpRequestMessage</code> before calling <code>Handle()</code>.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

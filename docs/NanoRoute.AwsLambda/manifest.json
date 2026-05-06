@@ -1,0 +1,86 @@
+{
+  "source_base_path": "D:/a/nanoroute/nanoroute/Src/NanoRoute.AwsLambda/Doc",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.yml\" sourcestartlinenumber=\"1\">Routes API Gateway HTTP API and Lambda Function URL <xref href=\"Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest\" data-throw-if-not-resolved=\"false\"></xref> instances through a NanoRoute pipeline.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.AwsLambda.AwsLambdaRouterConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.AwsLambda.AwsLambdaRouterConfig.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.AwsLambda.AwsLambdaRouterConfig",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.AwsLambda.AwsLambdaRouterConfig.yml\" sourcestartlinenumber=\"1\">Configuration settings shared by the AWS Lambda router adapters.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.AwsLambda.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.AwsLambda.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.AwsLambda",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "../../../BIN/DOC/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "../Icon.png",
+      "output": {
+        "resource": {
+          "relative_path": "Icon.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

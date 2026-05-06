@@ -295,6 +295,24 @@ references:
   fullName.vb: NanoRoute.HttpListenerRouterConfig.New
   nameWithType: HttpListenerRouterConfig.HttpListenerRouterConfig
   nameWithType.vb: HttpListenerRouterConfig.New
+- uid: NanoRoute.HttpRequestMessageExtensions
+  name: HttpRequestMessageExtensions
+  href: NanoRoute.HttpRequestMessageExtensions.html
+  commentId: T:NanoRoute.HttpRequestMessageExtensions
+  fullName: NanoRoute.HttpRequestMessageExtensions
+  nameWithType: HttpRequestMessageExtensions
+- uid: NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders
+  name: get_ContentHeaders()
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_get_ContentHeaders
+  commentId: M:NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders
+  fullName: NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders()
+  nameWithType: HttpRequestMessageExtensions.get_ContentHeaders()
+- uid: NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders*
+  name: get_ContentHeaders
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_get_ContentHeaders_
+  commentId: Overload:NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders
+  fullName: NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders
+  nameWithType: HttpRequestMessageExtensions.get_ContentHeaders
 - uid: NanoRoute.Json
   name: NanoRoute.Json
   href: NanoRoute.Json.html
@@ -388,6 +406,15 @@ references:
   fullName.vb: NanoRoute.Json.NanoRouteJsonExtensions.Json(Of T)(System.Net.HttpStatusCode, T, System.Text.Json.JsonSerializerOptions)
   nameWithType: NanoRouteJsonExtensions.Json<T>(HttpStatusCode, T?, JsonSerializerOptions)
   nameWithType.vb: NanoRouteJsonExtensions.Json(Of T)(HttpStatusCode, T, JsonSerializerOptions)
+- uid: NanoRoute.Json.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0,System.Text.Json.Serialization.Metadata.JsonTypeInfo{``0})
+  name: Json<T>(HttpStatusCode, T?, JsonTypeInfo<T>)
+  href: NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_Json__1_System_Net_HttpStatusCode___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo___0__
+  commentId: M:NanoRoute.Json.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0,System.Text.Json.Serialization.Metadata.JsonTypeInfo{``0})
+  name.vb: Json(Of T)(HttpStatusCode, T, JsonTypeInfo(Of T))
+  fullName: NanoRoute.Json.NanoRouteJsonExtensions.Json<T>(System.Net.HttpStatusCode, T?, System.Text.Json.Serialization.Metadata.JsonTypeInfo<T>)
+  fullName.vb: NanoRoute.Json.NanoRouteJsonExtensions.Json(Of T)(System.Net.HttpStatusCode, T, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of T))
+  nameWithType: NanoRouteJsonExtensions.Json<T>(HttpStatusCode, T?, JsonTypeInfo<T>)
+  nameWithType.vb: NanoRouteJsonExtensions.Json(Of T)(HttpStatusCode, T, JsonTypeInfo(Of T))
 - uid: NanoRoute.Json.NanoRouteJsonExtensions.Json``1(``0)
   name: Json<T>(T?)
   href: NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_Json__1___0_
@@ -397,6 +424,18 @@ references:
   fullName.vb: NanoRoute.Json.NanoRouteJsonExtensions.Json(Of T)(T)
   nameWithType: NanoRouteJsonExtensions.Json<T>(T?)
   nameWithType.vb: NanoRouteJsonExtensions.Json(Of T)(T)
+- uid: NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo
+  name: get_JsonTypeInfo()
+  href: NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_get_JsonTypeInfo
+  commentId: M:NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo
+  fullName: NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo()
+  nameWithType: NanoRouteJsonExtensions.get_JsonTypeInfo()
+- uid: NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo*
+  name: get_JsonTypeInfo
+  href: NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_get_JsonTypeInfo_
+  commentId: Overload:NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo
+  fullName: NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo
+  nameWithType: NanoRouteJsonExtensions.get_JsonTypeInfo
 - uid: NanoRoute.MatchingPrecedence
   name: MatchingPrecedence
   href: NanoRoute.MatchingPrecedence.html
@@ -814,18 +853,6 @@ references:
   commentId: F:NanoRoute.Router.TRACE_ID_NAME
   fullName: NanoRoute.Router.TRACE_ID_NAME
   nameWithType: Router.TRACE_ID_NAME
-- uid: NanoRoute.Router.Timeout
-  name: Timeout
-  href: NanoRoute.Router.html#NanoRoute_Router_Timeout
-  commentId: P:NanoRoute.Router.Timeout
-  fullName: NanoRoute.Router.Timeout
-  nameWithType: Router.Timeout
-- uid: NanoRoute.Router.Timeout*
-  name: Timeout
-  href: NanoRoute.Router.html#NanoRoute_Router_Timeout_
-  commentId: Overload:NanoRoute.Router.Timeout
-  fullName: NanoRoute.Router.Timeout
-  nameWithType: Router.Timeout
 - uid: NanoRoute.RouterBuilderValueParserExtensions
   name: RouterBuilderValueParserExtensions
   href: NanoRoute.RouterBuilderValueParserExtensions.html
@@ -1130,18 +1157,6 @@ references:
   commentId: Overload:NanoRoute.RouterConfig.MatchingPrecedence
   fullName: NanoRoute.RouterConfig.MatchingPrecedence
   nameWithType: RouterConfig.MatchingPrecedence
-- uid: NanoRoute.RouterConfig.Timeout
-  name: Timeout
-  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_Timeout
-  commentId: P:NanoRoute.RouterConfig.Timeout
-  fullName: NanoRoute.RouterConfig.Timeout
-  nameWithType: RouterConfig.Timeout
-- uid: NanoRoute.RouterConfig.Timeout*
-  name: Timeout
-  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_Timeout_
-  commentId: Overload:NanoRoute.RouterConfig.Timeout
-  fullName: NanoRoute.RouterConfig.Timeout
-  nameWithType: RouterConfig.Timeout
 - uid: NanoRoute.RoutingContext
   name: RoutingContext
   href: NanoRoute.RoutingContext.html
