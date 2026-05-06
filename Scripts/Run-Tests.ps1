@@ -39,3 +39,4 @@ dotnet tool run reportgenerator `
   -reports:((Get-ChildItem -Path $ARTIFACTS -File -Filter '*.Coverage.xml' | Select-Object -ExpandProperty FullName) -join ';') `
   -targetdir:(Join-Path $ARTIFACTS 'CoverageReport') `
   -reporttypes:Html_Dark
+if (-not $?) { throw "Failed to generate the coverage report" }
