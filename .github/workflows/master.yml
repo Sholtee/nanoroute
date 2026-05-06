@@ -17,14 +17,13 @@ env:
   POWERSHELL_TELEMETRY_OPTOUT: true
 
 jobs:
-  tests-windows:
-    runs-on: windows-latest
+  test-linux:
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      # .NET Framework is part of the windows images
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -110,7 +109,7 @@ jobs:
 
   upload-artifacts:
     needs:
-      - tests-windows
+      - test-linux
       - create-api-docs
     runs-on: windows-latest
     permissions:

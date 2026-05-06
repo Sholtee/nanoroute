@@ -37,6 +37,9 @@ jobs:
              10.0.x
 
       - name: Start LocalStack Lambda
+        # GitHub-hosted Windows runners cannot run the Linux LocalStack image.
+        # Package-Lambda.ps1 still publishes linux-x64 Lambda binaries.
+        if: runner.os == 'Linux'
         shell: pwsh
         run: ./Scripts/Start-LocalStackLambda.ps1
 
