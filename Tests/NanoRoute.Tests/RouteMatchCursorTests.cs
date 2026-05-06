@@ -64,7 +64,7 @@ namespace NanoRoute.Tests
         }
 
         [TestCase(MatchingPrecedence.LiteralFirst, "/items/value")]
-        [TestCase(MatchingPrecedence.ParameterizedChildrenFirst, "/items/{id:str}")]
+        [TestCase(MatchingPrecedence.ParameterizedFirst, "/items/{id:str}")]
         public async Task MoveNextAsync_ShouldRespectMatchingPrecedence(MatchingPrecedence matchingPrecedence, string expectedPattern)
         {
             HandlerRegistration
@@ -96,7 +96,7 @@ namespace NanoRoute.Tests
             Assert.That(await cursor.MoveNextAsync(), Is.True);
             Assert.That(cursor.Current.HandlerRegistration.Pattern, Is.EqualTo(expectedPattern));
 
-            if (matchingPrecedence is MatchingPrecedence.ParameterizedChildrenFirst)
+            if (matchingPrecedence is MatchingPrecedence.ParameterizedFirst)
                 Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue("value"));
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);

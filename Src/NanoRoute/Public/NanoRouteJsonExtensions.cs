@@ -329,7 +329,7 @@ namespace NanoRoute.Json
                         }
                         catch (HttpRequestException ex)
                         {
-                            ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, context.Request.Properties[Router.TRACE_ID_NAME] as string);
+                            ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, context.Request.Properties[Router.TraceIdName] as string);
 
                             return HttpResponseMessage.Json
                             (

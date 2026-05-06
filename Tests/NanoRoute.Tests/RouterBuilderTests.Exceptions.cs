@@ -31,7 +31,7 @@ namespace NanoRoute.Tests
                 new Mock<IServiceProvider>(MockBehavior.Strict).Object
             ))!;
 
-            Assert.That(handled.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(handled.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
 
             Assert.That(async () => await router.Handle
             (
@@ -55,7 +55,7 @@ namespace NanoRoute.Tests
                 new Mock<IServiceProvider>(MockBehavior.Strict).Object
             ))!;
 
-            Assert.That(handled.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(handled.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
 
             Assert.That(async () => await router.Handle
             (
@@ -93,7 +93,7 @@ namespace NanoRoute.Tests
         public void GetErrorDetails_ShouldAcceptIntegerStatusCodes()
         {
             HttpRequestException ex = new("teapot");
-            ex.Data[NanoRouteExceptionExtensions.STATUS_NAME] = 404;
+            ex.Data[NanoRouteExceptionExtensions.StatusName] = 404;
 
             ErrorDetails details = ex.GetErrorDetails(traceId: "trace");
 

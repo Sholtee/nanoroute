@@ -120,7 +120,7 @@ using System.Threading.Tasks;
 
 using NanoRoute;
 
-RouteBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
+RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
     .CreateBuilder()
     .AddValueParser
     (

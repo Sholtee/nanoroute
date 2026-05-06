@@ -83,8 +83,8 @@ namespace NanoRoute
                 headers.TryAddWithoutValidation(headerName, request.Headers.GetValues(headerName));
             }
 
-            requestMessage.Properties[ORIGINAL_REQUEST_NAME] = request;
-            requestMessage.Properties[TRACE_ID_NAME] = request.RequestTraceIdentifier.ToString("N");
+            requestMessage.Properties[OriginalRequestName] = request;
+            requestMessage.Properties[TraceIdName] = request.RequestTraceIdentifier.ToString("N");
 
             return requestMessage;
         }
@@ -105,7 +105,7 @@ namespace NanoRoute
         /// <remarks>
         /// Request and content headers are copied into the intermediate <see cref="HttpRequestMessage"/>.
         /// The original <see cref="HttpListenerRequest"/> is stored in
-        /// <see cref="Router.ORIGINAL_REQUEST_NAME"/> on the generated request message.
+        /// <see cref="Router.OriginalRequestName"/> on the generated request message.
         /// Response headers are copied back except for reserved <see cref="HttpListenerResponse"/> headers that
         /// must be managed by <see cref="HttpListener"/> itself. Cancellation is not translated into an HTTP error
         /// response by this adapter.

@@ -18,6 +18,6 @@ namespace NanoRoute
         /// <summary>
         /// Instructs the router to select parameterized child segments before literal child segments.
         /// </summary>
-        ParameterizedChildrenFirst
+        ParameterizedFirst
     }
 }

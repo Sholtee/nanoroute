@@ -90,7 +90,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
-            request.SetProperty(Router.TRACE_ID_NAME, "trace-1");
+            request.SetProperty(Router.TraceIdName, "trace-1");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -103,7 +103,7 @@ namespace NanoRoute.Tests
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-1"));
             Assert.That(deserialized.Errors, Is.Null);
-            Assert.That(deserialized.DeveloperMessage, Is.Null);
+            Assert.That(deserialized.DeveloperMessages, Is.Null);
         }
 
         [TestCase(false)]
@@ -118,7 +118,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TRACE_ID_NAME, "trace-2");
+            request.SetProperty(Router.TraceIdName, "trace-2");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
@@ -131,7 +131,7 @@ namespace NanoRoute.Tests
             Assert.That(deserialized.Title, Is.EqualTo(Resources.ERR_INTERNAL_ERROR));
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-2"));
             Assert.That(deserialized.Errors, Is.Null);
-            Assert.That(deserialized.DeveloperMessage, populateErrorInfo ? Has.Some.Contains(ERROR_MSG) : Is.Null);
+            Assert.That(deserialized.DeveloperMessages, populateErrorInfo ? Has.Some.Contains(ERROR_MSG) : Is.Null);
         }
 
         [Test]
@@ -147,7 +147,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TRACE_ID_NAME, "trace-cancel");
+            request.SetProperty(Router.TraceIdName, "trace-cancel");
 
             using CancellationTokenSource cancellation = new();
             cancellation.Cancel();
@@ -190,7 +190,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TRACE_ID_NAME, "trace-aggregate");
+            request.SetProperty(Router.TraceIdName, "trace-aggregate");
 
             HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
             string resp = await response.Content.ReadAsStringAsync();
@@ -203,12 +203,12 @@ namespace NanoRoute.Tests
             Assert.That(deserialized.TraceId, Is.EqualTo("trace-aggregate"));
             if (populateErrorInfo)
             {
-                Assert.That(deserialized.DeveloperMessage, Has.Exactly(2).Items);
-                Assert.That(deserialized.DeveloperMessage, Has.Some.Contains("first problem"));
-                Assert.That(deserialized.DeveloperMessage, Has.Some.Contains("second problem"));
+                Assert.That(deserialized.DeveloperMessages, Has.Exactly(2).Items);
+                Assert.That(deserialized.DeveloperMessages, Has.Some.Contains("first problem"));
+                Assert.That(deserialized.DeveloperMessages, Has.Some.Contains("second problem"));
             }
             else
-                Assert.That(deserialized.DeveloperMessage, Is.Null);
+                Assert.That(deserialized.DeveloperMessages, Is.Null);
         }
 
         [Test]
@@ -315,8 +315,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
         }
 
         [Test]
@@ -334,8 +334,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
         }
 
         [Test]
@@ -353,8 +353,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.STATUS_NAME], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ERRORS_NAME], Is.Not.Null);
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.Not.Null);
         }
 
         [Test]

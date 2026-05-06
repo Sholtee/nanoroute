@@ -233,7 +233,7 @@ namespace NanoRoute.Tests
             Assert.That(body.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(body.TraceId, Is.Not.Empty);
             Assert.That(body.Errors, Is.Null);
-            Assert.That(body.DeveloperMessage, Is.Null);
+            Assert.That(body.DeveloperMessages, Is.Null);
         }
 
         [Test]
@@ -274,7 +274,7 @@ namespace NanoRoute.Tests
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("GET", "", async (context, _) =>
                 {
-                    Assert.That(context.Request.TryGetProperty(Router.ORIGINAL_REQUEST_NAME, out object? originalRequest), Is.True);
+                    Assert.That(context.Request.TryGetProperty(Router.OriginalRequestName, out object? originalRequest), Is.True);
                     Assert.That(originalRequest, Is.InstanceOf<HttpListenerRequest>());
 
                     return new HttpResponseMessage(HttpStatusCode.OK);
