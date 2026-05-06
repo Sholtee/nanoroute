@@ -65,7 +65,7 @@ jobs:
         id: coverage
         shell: pwsh
         run: |
-          $matches = [regex]::Match((Get-Content -Raw ./Artifacts/CoverageReport/Index.html), '<div\s+class="[^"]*\bcardpercentagebar\b[^"]*">\s*([^<]+)\s*</div>')
+          $matches = [regex]::Match((Get-Content -Raw ./Artifacts/CoverageReport/index.html), '<div\s+class="[^"]*\bcardpercentagebar\b[^"]*">\s*([^<]+)\s*</div>')
           $coveragePercent = [int]($matches.Groups[1].Value  -replace '%','')
           "value=$coveragePercent" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           if ($coveragePercent -lt 60) { "color=red"| Out-File -FilePath $env:GITHUB_OUTPUT -Append }

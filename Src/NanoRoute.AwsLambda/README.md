@@ -188,3 +188,14 @@ This package is intentionally narrow:
 - Not currently supported: REST API payload format `1.0`, Application Load Balancer events, or custom event models.
 
 For unsupported transports, derive a custom router from the core `Router` type and map your event model to `HttpRequestMessage` before calling `Handle()`.
+
+## Core Types
+
+- [ApiGatewayHttpApiV2Router](https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html)
+- [AwsLambdaRouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.AwsLambdaRouterConfig.html)
+
+## Documentation
+
+API documentation is generated from the XML comments in the source and published at:
+
+- <https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/>

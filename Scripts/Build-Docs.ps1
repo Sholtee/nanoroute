@@ -22,6 +22,8 @@ foreach ($csproj in (Get-ChildItem -Path $ROOT -Filter *.csproj -Recurse)) {
   if (-not (Test-Path $docfxJson)) { continue }
 
   Write-Host "`n---------Generate documentation for $($csproj.Name)---------"
+  
+  dotnet build-server shutdown
 
   foreach ($dir in "BIN", "OBJ") {
     Remove-Item (Join-Path $ROOT $dir) -Recurse -Force -ErrorAction SilentlyContinue
