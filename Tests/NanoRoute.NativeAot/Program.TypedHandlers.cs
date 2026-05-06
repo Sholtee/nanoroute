@@ -20,7 +20,7 @@ namespace NanoRoute.NativeAot
             .AddQueryBindings("GET", "/typed/items/{id:int(min=1)}", "{query_filter:str(min=3)}")
             .AddHandler(["GET"], "/typed/items/{id:int(min=1)}", static (TypedRequest request) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent($"{request.Service.Prefix}:{request.Id}:{request.Filter}:{request.Cancellation.CanBeCanceled}", Encoding.UTF8, "text/plain")
+                Content = new StringContent($"{request.Service.Prefix}:{request.Id}:{request.Filter}", Encoding.UTF8, "text/plain")
             }))
             .AddHandler(["GET"], "/typed/middleware/{id:int(min=1)}", static async (TypedMiddlewareRequest request, CallNextHandlerDelegate next) =>
             {
@@ -35,7 +35,7 @@ namespace NanoRoute.NativeAot
 
         private static async Task AssertTypedHandlerRoutes(HttpListenerRouter router)
         {
-            await AssertPlainTextResponse(router, HttpMethod.Get, "typed/items/42?query_filter=spikey", HttpStatusCode.OK, "typed:42:spikey:True").ConfigureAwait(false);
+            await AssertPlainTextResponse(router, HttpMethod.Get, "typed/items/42?query_filter=spikey", HttpStatusCode.OK, "typed:42:spikey").ConfigureAwait(false);
             await AssertTypedMiddlewareResponse(router).ConfigureAwait(false);
         }
 

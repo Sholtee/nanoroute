@@ -121,4 +121,3 @@ Set-Item -Path "ENV:$lambdaUrlEnvVar" -Value $endpoint
 if (-not [string]::IsNullOrWhiteSpace($ENV:GITHUB_ENV)) { Add-Content -Path $ENV:GITHUB_ENV -Value "$lambdaUrlEnvVar=$endpoint" }
 
 Write-Host "$lambdaUrlEnvVar=$endpoint"
-$endpoint
