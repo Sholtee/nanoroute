@@ -36,6 +36,10 @@ jobs:
              3.1.x
              10.0.x
 
+      - name: Start LocalStack Lambda
+        shell: pwsh
+        run: ./Scripts/Start-LocalStackLambda.ps1
+
       - name: Run tests
         shell: pwsh
         run: |

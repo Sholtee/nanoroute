@@ -13,6 +13,7 @@ param
   [string] $region = "us-east-1",
   [string] $containerName = "nanoroute-localstack",
   [string] $localStackImage = "localstack/localstack:4.14.0",
+  [string] $lambdaUrlEnvVar = "NANOROUTE_TEST_LAMBDA_URL",
   [int] $port = 4566,
   [int] $timeoutSeconds = 30
 )
@@ -106,6 +107,7 @@ $endpoint = Invoke-LocalAws lambda create-function-url-config `
   --auth-type NONE `
   --query FunctionUrl `
   --output text
+$endpoint = $endpoint.Trim()
 if ([string]::IsNullOrWhiteSpace($endpoint)) { throw "LocalStack did not return a Lambda function URL." }
 Write-Host "OK" -ForegroundColor Green
 
@@ -114,4 +116,9 @@ $health = Invoke-RestMethod -Uri "$($endpoint.TrimEnd('/'))/health" -Method Get 
 if ($health -ne "ok") { throw "Health endpoint returned unexpected response: $health" }
 Write-Host "OK" -ForegroundColor Green
 
+Set-Item -Path "ENV:$lambdaUrlEnvVar" -Value $endpoint
+
+if (-not [string]::IsNullOrWhiteSpace($ENV:GITHUB_ENV)) { Add-Content -Path $ENV:GITHUB_ENV -Value "$lambdaUrlEnvVar=$endpoint" }
+
+Write-Host "$lambdaUrlEnvVar=$endpoint"
 $endpoint
