@@ -202,8 +202,13 @@ namespace NanoRoute.Internals
         {
             uint value = chr;
 
-            // Latin-1 lowercase letters with simple -0x20 uppercase mapping:
-            // à-ö -> À-Ö, ø-þ -> Ø-Þ. This intentionally skips ÷ and ÿ.
+            // UnicodeData.txt defines these Latin-1 letters as simple one-to-one
+            // uppercase pairs. The lowercase ranges map by subtracting 0x20, while
+            // the matching uppercase ranges are already normalized. The split ranges
+            // intentionally skip multiplication and division signs.
+            if ((value - 0x00C0u) <= 0x0016u || (value - 0x00D8u) <= 0x0006u)
+                return chr;
+
             if ((value - 0x00E0u) <= 0x0016u || (value - 0x00F8u) <= 0x0006u)
                 return (char) (chr - 0x20);
 
