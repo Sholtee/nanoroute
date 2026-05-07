@@ -1,7 +1,7 @@
 ```
 
-BenchmarkDotNet v0.15.8, Windows 11 (10.0.26100.32522/24H2/2024Update/HudsonValley) (Hyper-V)
-AMD EPYC 9V74 2.60GHz, 1 CPU, 4 logical and 2 physical cores
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26100.32690/24H2/2024Update/HudsonValley) (Hyper-V)
+Intel Xeon Platinum 8370C CPU 2.80GHz (Max: 2.79GHz), 1 CPU, 4 logical and 2 physical cores
 .NET SDK 10.0.203
   [Host]     : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v4
   DefaultJob : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v4
@@ -10,7 +10,7 @@ AMD EPYC 9V74 2.60GHz, 1 CPU, 4 logical and 2 physical cores
 ```
 | Method | Scenario                    | Mean       | Error    | StdDev   | Gen0   | Allocated |
 |------- |---------------------------- |-----------:|---------:|---------:|-------:|----------:|
-| **Parse**  | **AllParametersProvided**       |   **284.3 ns** |  **0.54 ns** |  **0.45 ns** | **0.0329** |     **552 B** |
-| **Parse**  | **OptionalParameterMissing**    |   **149.6 ns** |  **0.98 ns** |  **0.87 ns** | **0.0296** |     **496 B** |
-| **Parse**  | **UndeclaredParametersPresent** |   **246.0 ns** |  **0.85 ns** |  **0.75 ns** | **0.0296** |     **496 B** |
-| **Parse**  | **RequiredParameterMissing**    | **2,465.7 ns** | **15.37 ns** | **12.84 ns** | **0.0687** |    **1184 B** |
+| **Parse**  | **AllParametersProvided**       |   **383.7 ns** |  **3.90 ns** |  **3.64 ns** | **0.0210** |     **536 B** |
+| **Parse**  | **OptionalParameterMissing**    |   **212.3 ns** |  **2.15 ns** |  **1.90 ns** | **0.0191** |     **480 B** |
+| **Parse**  | **UndeclaredParametersPresent** |   **323.8 ns** |  **3.16 ns** |  **2.80 ns** | **0.0191** |     **480 B** |
+| **Parse**  | **RequiredParameterMissing**    | **3,065.0 ns** | **20.48 ns** | **19.16 ns** | **0.0458** |    **1168 B** |

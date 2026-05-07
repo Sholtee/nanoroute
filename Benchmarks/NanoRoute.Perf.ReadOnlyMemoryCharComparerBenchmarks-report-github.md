@@ -1,7 +1,7 @@
 ```
 
-BenchmarkDotNet v0.15.8, Windows 11 (10.0.26100.32522/24H2/2024Update/HudsonValley) (Hyper-V)
-AMD EPYC 9V74 2.60GHz, 1 CPU, 4 logical and 2 physical cores
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26100.32690/24H2/2024Update/HudsonValley) (Hyper-V)
+Intel Xeon Platinum 8370C CPU 2.80GHz (Max: 2.79GHz), 1 CPU, 4 logical and 2 physical cores
 .NET SDK 10.0.203
   [Host]     : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v4
   DefaultJob : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v4
@@ -10,26 +10,26 @@ AMD EPYC 9V74 2.60GHz, 1 CPU, 4 logical and 2 physical cores
 ```
 | Method                   | Scenario          | Mean       | Error     | StdDev    | Ratio | RatioSD | Allocated | Alloc Ratio |
 |------------------------- |------------------ |-----------:|----------:|----------:|------:|--------:|----------:|------------:|
-| **FrameworkComputeHashCode** | **AsciiEqual**        |  **7.8544 ns** | **0.0055 ns** | **0.0049 ns** |  **1.00** |    **0.00** |         **-** |          **NA** |
-| ComputeHashCode          | AsciiEqual        | 15.7019 ns | 0.0143 ns | 0.0127 ns |  2.00 |    0.00 |         - |          NA |
+| **FrameworkComputeHashCode** | **AsciiEqual**        |  **9.3940 ns** | **0.0648 ns** | **0.0607 ns** |  **1.00** |    **0.01** |         **-** |          **NA** |
+| ComputeHashCode          | AsciiEqual        | 15.0138 ns | 0.1543 ns | 0.1443 ns |  1.60 |    0.02 |         - |          NA |
 |                          |                   |            |           |           |       |         |           |             |
-| **FrameworkComputeHashCode** | **AsciiDifferent**    |  **7.8549 ns** | **0.0359 ns** | **0.0280 ns** |  **1.00** |    **0.00** |         **-** |          **NA** |
-| ComputeHashCode          | AsciiDifferent    | 15.7841 ns | 0.0112 ns | 0.0099 ns |  2.01 |    0.01 |         - |          NA |
+| **FrameworkComputeHashCode** | **AsciiDifferent**    |  **9.4840 ns** | **0.0763 ns** | **0.0714 ns** |  **1.00** |    **0.01** |         **-** |          **NA** |
+| ComputeHashCode          | AsciiDifferent    | 15.0905 ns | 0.1099 ns | 0.0918 ns |  1.59 |    0.01 |         - |          NA |
 |                          |                   |            |           |           |       |         |           |             |
-| **FrameworkComputeHashCode** | **NonAsciiEqual**     | **12.2004 ns** | **0.0072 ns** | **0.0060 ns** |  **1.00** |    **0.00** |         **-** |          **NA** |
-| ComputeHashCode          | NonAsciiEqual     | 21.1836 ns | 0.0307 ns | 0.0256 ns |  1.74 |    0.00 |         - |          NA |
+| **FrameworkComputeHashCode** | **NonAsciiEqual**     | **12.9657 ns** | **0.1227 ns** | **0.1147 ns** |  **1.00** |    **0.01** |         **-** |          **NA** |
+| ComputeHashCode          | NonAsciiEqual     | 15.5696 ns | 0.1337 ns | 0.1186 ns |  1.20 |    0.01 |         - |          NA |
 |                          |                   |            |           |           |       |         |           |             |
-| **FrameworkComputeHashCode** | **NonAsciiDifferent** | **12.2174 ns** | **0.0294 ns** | **0.0245 ns** |  **1.00** |    **0.00** |         **-** |          **NA** |
-| ComputeHashCode          | NonAsciiDifferent | 21.2896 ns | 0.0227 ns | 0.0201 ns |  1.74 |    0.00 |         - |          NA |
+| **FrameworkComputeHashCode** | **NonAsciiDifferent** | **12.9603 ns** | **0.1418 ns** | **0.1327 ns** |  **1.00** |    **0.01** |         **-** |          **NA** |
+| ComputeHashCode          | NonAsciiDifferent | 16.1780 ns | 0.1825 ns | 0.1617 ns |  1.25 |    0.02 |         - |          NA |
 |                          |                   |            |           |           |       |         |           |             |
-| **FrameworkEquals**          | **AsciiEqual**        | **15.3764 ns** | **0.0458 ns** | **0.0383 ns** |  **1.00** |    **0.00** |         **-** |          **NA** |
-| Equals                   | AsciiEqual        | 11.9671 ns | 0.0171 ns | 0.0151 ns |  0.78 |    0.00 |         - |          NA |
+| **FrameworkEquals**          | **AsciiEqual**        | **15.3683 ns** | **0.1218 ns** | **0.1140 ns** |  **1.00** |    **0.01** |         **-** |          **NA** |
+| Equals                   | AsciiEqual        | 13.6420 ns | 0.1234 ns | 0.1155 ns |  0.89 |    0.01 |         - |          NA |
 |                          |                   |            |           |           |       |         |           |             |
-| **FrameworkEquals**          | **AsciiDifferent**    |  **0.3092 ns** | **0.0344 ns** | **0.0368 ns** |  **1.01** |    **0.16** |         **-** |          **NA** |
-| Equals                   | AsciiDifferent    |  4.0278 ns | 0.0043 ns | 0.0033 ns | 13.19 |    1.38 |         - |          NA |
+| **FrameworkEquals**          | **AsciiDifferent**    |  **0.6444 ns** | **0.0209 ns** | **0.0186 ns** |  **1.00** |    **0.04** |         **-** |          **NA** |
+| Equals                   | AsciiDifferent    |  2.9186 ns | 0.0244 ns | 0.0203 ns |  4.53 |    0.13 |         - |          NA |
 |                          |                   |            |           |           |       |         |           |             |
-| **FrameworkEquals**          | **NonAsciiEqual**     |  **8.8260 ns** | **0.1107 ns** | **0.0924 ns** |  **1.00** |    **0.01** |         **-** |          **NA** |
-| Equals                   | NonAsciiEqual     | 28.2216 ns | 0.1269 ns | 0.1060 ns |  3.20 |    0.03 |         - |          NA |
+| **FrameworkEquals**          | **NonAsciiEqual**     | **11.2526 ns** | **0.0812 ns** | **0.0760 ns** |  **1.00** |    **0.01** |         **-** |          **NA** |
+| Equals                   | NonAsciiEqual     | 15.0874 ns | 0.1187 ns | 0.1052 ns |  1.34 |    0.01 |         - |          NA |
 |                          |                   |            |           |           |       |         |           |             |
-| **FrameworkEquals**          | **NonAsciiDifferent** |  **0.2988 ns** | **0.0265 ns** | **0.0248 ns** |  **1.01** |    **0.11** |         **-** |          **NA** |
-| Equals                   | NonAsciiDifferent |  4.0264 ns | 0.0023 ns | 0.0020 ns | 13.56 |    1.02 |         - |          NA |
+| **FrameworkEquals**          | **NonAsciiDifferent** |  **0.5903 ns** | **0.0193 ns** | **0.0171 ns** |  **1.00** |    **0.04** |         **-** |          **NA** |
+| Equals                   | NonAsciiDifferent |  2.8779 ns | 0.0150 ns | 0.0126 ns |  4.88 |    0.13 |         - |          NA |
