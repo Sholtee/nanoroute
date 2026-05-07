@@ -5,11 +5,26 @@
 ********************************************************************************/
 namespace NanoRoute.AwsLambda
 {
+    using System;
+
     /// <summary>
     /// Configuration settings shared by the AWS Lambda router adapters.
     /// </summary>
-    public sealed class AwsLambdaRouterConfig : RouterConfig
+    public sealed record AwsLambdaRouterConfig : RouterConfig
     {
+        /// <summary>
+        /// Gets or sets the amount of time reserved before the Lambda invocation timeout is reached.
+        /// </summary>
+        public TimeSpan LambdaTimeoutBuffer
+        {
+            get;
+            init
+            {
+                if (value < TimeSpan.Zero)
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
+                field = value;
+            }
+        } = TimeSpan.FromSeconds(1);
     }
 }

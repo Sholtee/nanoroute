@@ -20,7 +20,8 @@ namespace NanoRoute
     /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
     /// handlers in order until one returns a response without delegating further.
     /// </remarks>
-    public abstract class Router: RoutingContext
+    [method: SuppressMessage("ApiDesign", "RS0022:Constructor make noninheritable base class inheritable")]
+    public abstract class Router(RouteBuilder routeBuilder, RouterConfig config) : RoutingContext(routeBuilder.GetRoot(freeze: true))
     {
         /// <summary>
         /// The request property key that stores the trace identifier associated with the current request.
@@ -31,42 +32,6 @@ namespace NanoRoute
         /// The request property key that stores the original transport-specific request object.
         /// </summary>
         public const string OriginalRequestName = "OriginalRequest";
-
-        private static RouteNode CopyRoot(RouteBuilder routeBuilder)
-        {
-            // The base() ctor invocation runs first so we have to do the validation here
-            Ensure.NotNull(routeBuilder);
-            return routeBuilder.GetRoot(frozen: true);
-        }
-
-        /// <summary>
-        /// Initializes a router from a route builder snapshot and router configuration.
-        /// </summary>
-        /// <param name="routeBuilder">The builder whose current route tree should be frozen into this router.</param>
-        /// <param name="config">The router configuration that controls runtime behavior.</param>
-        [SuppressMessage("ApiDesign", "RS0022:Constructor make noninheritable base class inheritable")]
-        protected Router(RouteBuilder routeBuilder, RouterConfig config): base(CopyRoot(routeBuilder))
-        {
-            //Ensure.NotNull(routeBuilder);
-            Ensure.NotNull(config);
-
-            MatchingPrecedence = config.MatchingPrecedence;
-        }
-
-        /// <summary>
-        /// Gets the configured precedence between literal and parameterized child segments.
-        /// </summary>
-        public MatchingPrecedence MatchingPrecedence
-        {
-            get;
-            private init
-            {
-                if (!Enum.IsDefined(typeof(MatchingPrecedence), value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                field = value;
-            }
-        }
 
         /// <summary>
         /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
@@ -101,7 +66,7 @@ namespace NanoRoute
                 Verb = request.Method.Method
             }, request);
 
-            await using RequestPipeline pipeline = new(_root, MatchingPrecedence, request, services, cancellation);
+            await using RequestPipeline pipeline = new(_root, config.MatchingPrecedence, request, services, cancellation);
 
             return await pipeline.RunAsync();
         }
