@@ -81,6 +81,55 @@ namespace NanoRoute.AwsLambda.Tests
         }
 
         [Test]
+        public async Task Route_ShouldRespectConfiguredLambdaTimeoutBuffer()
+        {
+            ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+                .CreateBuilder()
+                .WithConfiguration(static config => config with { LambdaTimeoutBuffer = TimeSpan.FromSeconds(5) })
+                .AddHandler("GET", "/health", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
+                .CreateRouter();
+
+            APIGatewayHttpApiV2ProxyResponse response = await router.Route
+            (
+                CreateRequest("GET", "/health"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object,
+                TimeSpan.FromSeconds(5)
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(504));
+        }
+
+        [Test]
+        public async Task Route_ShouldAllowZeroLambdaTimeoutBuffer()
+        {
+            ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+                .CreateBuilder()
+                .WithConfiguration(static config => config with { LambdaTimeoutBuffer = TimeSpan.Zero })
+                .AddHandler("GET", "/health", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
+                .CreateRouter();
+
+            APIGatewayHttpApiV2ProxyResponse response = await router.Route
+            (
+                CreateRequest("GET", "/health"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object,
+                TimeSpan.FromSeconds(1)
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(200));
+        }
+
+        [Test]
+        public void LambdaTimeoutBuffer_ShouldRejectNegativeValues()
+        {
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>
+            (
+                static () => new AwsLambdaRouterConfig { LambdaTimeoutBuffer = TimeSpan.FromTicks(-1) }
+            )!;
+
+            Assert.That(ex.ParamName, Is.EqualTo("value"));
+        }
+
+        [Test]
         public void Route_ShouldBeNullCheckedForRequest()
         {
             ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router.CreateBuilder().CreateRouter();

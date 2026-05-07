@@ -42,6 +42,25 @@ namespace NanoRoute.Tests
             Assert.That(s_comparer.GetHashCode(left.AsMemory()), Is.EqualTo(s_comparer.GetHashCode(right.AsMemory())));
         }
 
+        [TestCase("à", "À")]
+        [TestCase("ö", "Ö")]
+        [TestCase("ø", "Ø")]
+        [TestCase("þ", "Þ")]
+        public void Equals_ShouldHandleLatin1FastPathBoundaries(string left, string right)
+        {
+            Assert.That(s_comparer.Equals(left.AsMemory(), right.AsMemory()), Is.True);
+            Assert.That(s_comparer.Equals(right.AsMemory(), left.AsMemory()), Is.True);
+            Assert.That(s_comparer.GetHashCode(left.AsMemory()), Is.EqualTo(s_comparer.GetHashCode(right.AsMemory())));
+        }
+
+        [TestCase("×", "÷")]
+        [TestCase("ÿ", "ß")]
+        public void Equals_ShouldNotFoldLatin1CharactersExcludedFromTheFastPath(string left, string right)
+        {
+            Assert.That(s_comparer.Equals(left.AsMemory(), right.AsMemory()), Is.False);
+            Assert.That(s_comparer.Equals(right.AsMemory(), left.AsMemory()), Is.False);
+        }
+
 #if NET10_0_OR_GREATER
         [TestCase("κόσμος", "ΚΌΣΜΟΣ")]
         [TestCase("ς", "σ")]

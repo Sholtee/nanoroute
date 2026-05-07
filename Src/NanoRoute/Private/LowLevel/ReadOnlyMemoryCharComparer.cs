@@ -67,11 +67,10 @@ namespace NanoRoute.Internals
                         combinedIndicator = lowerIndicator ^ upperIndicator,
                         mask = (combinedIndicator & 0x0080u) >> 2;
 
-                    return (char)(chr ^ mask);
+                    return (char) (chr ^ mask);
                 }
 
-                // Slow...
-                return char.ToUpperInvariant(chr);
+                return CharToUpperNonAscii(chr);
             }
         }
 
@@ -165,6 +164,7 @@ namespace NanoRoute.Internals
         }
 
         // https://github.com/dotnet/runtime/blob/ecc8cb5bc0411e0fb0549230f70dfe8ab302c65c/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf16Utility.cs#L98
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong BlockToUpper(ulong input)
         {
             ulong
@@ -182,19 +182,37 @@ namespace NanoRoute.Internals
                 ref char resultRef = ref Unsafe.As<ulong, char>(ref asciiUpper);
 
                 if ((nonAsciiMask & 0xFF80ul) is not 0)
-                    resultRef = char.ToUpperInvariant(inputRef);
+                    resultRef = CharToUpperNonAscii(inputRef);
 
                 if ((nonAsciiMask & 0xFF80_0000ul) is not 0)
-                    Unsafe.Add(ref resultRef, 1) = char.ToUpperInvariant(Unsafe.Add(ref inputRef, 1));
+                    Unsafe.Add(ref resultRef, 1) = CharToUpperNonAscii(Unsafe.Add(ref inputRef, 1));
 
                 if ((nonAsciiMask & 0xFF80_0000_0000ul) is not 0)
-                    Unsafe.Add(ref resultRef, 2) = char.ToUpperInvariant(Unsafe.Add(ref inputRef, 2));
+                    Unsafe.Add(ref resultRef, 2) = CharToUpperNonAscii(Unsafe.Add(ref inputRef, 2));
 
                 if ((nonAsciiMask & 0xFF80_0000_0000_0000ul) is not 0)
-                    Unsafe.Add(ref resultRef, 3) = char.ToUpperInvariant(Unsafe.Add(ref inputRef, 3));
+                    Unsafe.Add(ref resultRef, 3) = CharToUpperNonAscii(Unsafe.Add(ref inputRef, 3));
             }
 
             return asciiUpper;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static char CharToUpperNonAscii(char chr)
+        {
+            uint value = chr;
+
+            // UnicodeData.txt defines these Latin-1 letters as simple one-to-one
+            // uppercase pairs. The lowercase ranges map by subtracting 0x20, while
+            // the matching uppercase ranges are already normalized. The split ranges
+            // intentionally skip multiplication and division signs.
+            if ((value - 0x00C0u) <= 0x0016u || (value - 0x00D8u) <= 0x0006u)
+                return chr;
+
+            if ((value - 0x00E0u) <= 0x0016u || (value - 0x00F8u) <= 0x0006u)
+                return (char) (chr - 0x20);
+
+            return char.ToUpperInvariant(chr);
         }
     }
 }

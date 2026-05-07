@@ -71,6 +71,28 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 
 ## Advanced Usage
 
+### Router Configuration
+
+`RouterConfig` controls runtime behavior that applies to a created router snapshot. Configuration records are immutable, so use `WithConfiguration()` with a `with` expression when you want to replace one or more settings before calling `CreateRouter()`.
+
+```csharp
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .WithConfiguration(config => config with
+    {
+        MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
+    })
+    .AddDefaultValueParsers()
+    .AddHandler("GET", "/items/{slug:str}", static async (context, _) =>
+    {
+        await Task.CompletedTask;
+        return HttpResponseMessage.Json(new { slug = context.Parameters["slug"] });
+    })
+    .CreateRouter();
+```
+
+Created routers are immutable snapshots: later route or configuration changes on the builder do not affect routers that have already been created.
+
 ### AddPrefix() and CreatePrefix()
 
 When several routes share the same prefix, `AddPrefix()` lets you define that prefix once and register child routes relative to it. If you want to hold onto a scoped child builder and add routes incrementally, use `CreatePrefix()`.

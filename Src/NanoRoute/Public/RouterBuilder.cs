@@ -141,21 +141,22 @@ namespace NanoRoute
         /// <summary>
         /// Updates the router configuration object that will be used by future router instances.
         /// </summary>
-        /// <param name="updateConfig">A callback that mutates <see cref="RouterConfig"/>.</param>
+        /// <param name="updateConfig">A callback that returns the updated <see cref="RouterConfig"/> instance.</param>
         /// <returns>The current builder.</returns>
-        public RouterBuilder<TRouter, TConfig> WithConfiguration(Action<TConfig> updateConfig)
+        public RouterBuilder<TRouter, TConfig> WithConfiguration(Func<TConfig, TConfig> updateConfig)
         {
             Ensure.NotNull(updateConfig);
 
-            updateConfig(RouterConfig);
+            RouterConfig = updateConfig(RouterConfig);
+            Ensure.NotNull(RouterConfig);
 
             return this;
         }
 
         /// <summary>
-        /// Gets the mutable configuration object applied when <see cref="CreateRouter"/> is called.
+        /// Gets the configuration object applied when <see cref="CreateRouter"/> is called.
         /// </summary>
-        public TConfig RouterConfig { get; } = new();
+        public TConfig RouterConfig { get; private set; } = new();
 
         /// <summary>
         /// Creates a router from the builder's current routes, parser registrations, and configuration.

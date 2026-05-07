@@ -22,9 +22,7 @@ namespace NanoRoute.AwsLambda
     /// </summary>
     public sealed class ApiGatewayHttpApiV2Router : Router
     {
-        private ApiGatewayHttpApiV2Router(RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> builder) : base(builder, builder.RouterConfig)
-        {
-        }
+        private ApiGatewayHttpApiV2Router(RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> builder) : base(builder, builder.RouterConfig) { }
 
         /// <summary>
         /// Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.
@@ -38,7 +36,7 @@ namespace NanoRoute.AwsLambda
             Ensure.NotNull(request, nameof(request));
             Ensure.NotNull(services, nameof(services));
 
-            TimeSpan cancellationDelay = remainingTime.Add(TimeSpan.FromSeconds(-1));
+            TimeSpan cancellationDelay = remainingTime - Config.LambdaTimeoutBuffer;
             if (cancellationDelay <= TimeSpan.Zero)
                 return Timeout();
 
@@ -77,6 +75,11 @@ namespace NanoRoute.AwsLambda
                 }
             };
         }
+
+        /// <summary>
+        /// Configuration assigned to this instance.
+        /// </summary>
+        public new AwsLambdaRouterConfig Config => (AwsLambdaRouterConfig) base.Config;
 
         /// <summary>
         /// Creates a strongly typed builder for configuring an <see cref="ApiGatewayHttpApiV2Router"/>.

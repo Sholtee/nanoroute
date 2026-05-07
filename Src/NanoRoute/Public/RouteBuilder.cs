@@ -104,7 +104,7 @@ namespace NanoRoute
         /// Creates an immutable snapshot of the current route tree.
         /// </summary>
         /// <returns>A copy of the configured root node.</returns>
-        internal RouteNode GetRoot(bool frozen) => _root.Copy(frozen);
+        internal RouteNode GetRoot(bool freeze) => _root.Copy(freeze);
 
         /// <summary>
         /// Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.

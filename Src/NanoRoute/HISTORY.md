@@ -2,11 +2,37 @@
 
 ## 1.0.0-preview3
 
+### Breaking Changes
+
+- Changed `RouterConfig` and `HttpListenerRouterConfig` to immutable records.
+- Changed `RouterBuilder.WithConfiguration()` from a mutating `Action<TConfig>` callback to a replacing `Func<TConfig, TConfig>` callback.
+- Removed the public `Router.MatchingPrecedence` snapshot property. Matching precedence is now carried by the immutable `RouterConfig` used to create the router.
+
 ### Performance
 
 - Optimized frozen route-tree snapshots by building immutable and frozen collections directly during `RouteNode.Copy(freeze: true)`, avoiding temporary mutable collections during router creation.
 - Reduced mutable route-node copy overhead by pre-sizing copied child and handler collections.
 - Avoided duplicate raw-query extraction in `QueryStringParser`.
+
+### Migration
+
+Replace mutating `WithConfiguration()` callbacks like:
+
+```csharp
+builder.WithConfiguration(config =>
+{
+    config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+});
+```
+
+with immutable record updates:
+
+```csharp
+builder.WithConfiguration(config => config with
+{
+    MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
+});
+```
 
 ## 1.0.0-preview2
 
