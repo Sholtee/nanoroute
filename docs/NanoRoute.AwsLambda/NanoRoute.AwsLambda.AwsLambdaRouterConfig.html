@@ -49,6 +49,11 @@
     <div class="level1"><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig</a></div>
     <div class="level2"><span class="xref">AwsLambdaRouterConfig</span></div>
   </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a>&gt;</div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -58,26 +63,17 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a>.<a class="xref" href="NanoRoute.AwsLambda.html">AwsLambda</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.AwsLambda.dll</h6>
   <h5 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class AwsLambdaRouterConfig : RouterConfig</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed record AwsLambdaRouterConfig : RouterConfig, IEquatable&lt;RouterConfig&gt;, IEquatable&lt;AwsLambdaRouterConfig&gt;</code></pre>
   </div>
   <h3 id="constructors">Constructors
 </h3>
@@ -88,6 +84,374 @@
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public AwsLambdaRouterConfig()</code></pre>
+  </div>
+  <h3 id="properties">Properties
+</h3>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_EqualityContract_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.EqualityContract*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_EqualityContract" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.EqualityContract">EqualityContract</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override Type EqualityContract { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig.EqualityContract</a></div>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_LambdaTimeoutBuffer_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.LambdaTimeoutBuffer*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_LambdaTimeoutBuffer" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.LambdaTimeoutBuffer">LambdaTimeoutBuffer</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the amount of time reserved before the Lambda invocation timeout is reached.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TimeSpan LambdaTimeoutBuffer { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_NanoRoute_AwsLambda_AwsLambdaRouterConfig_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.AwsLambda.AwsLambdaRouterConfig)">Equals(AwsLambdaRouterConfig?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(AwsLambdaRouterConfig? other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a></td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_NanoRoute_RouterConfig_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.RouterConfig)">Equals(RouterConfig?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed bool Equals(RouterConfig? other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig</a></td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig.Equals(RouterConfig)</a></div>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_System_Object_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(System.Object)">Equals(object?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object? obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig.Equals(object)</a></div>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_GetHashCode_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.GetHashCode*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_GetHashCode" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig.GetHashCode()</a></div>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_PrintMembers_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.PrintMembers*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_PrintMembers_System_Text_StringBuilder_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.PrintMembers(System.Text.StringBuilder)">PrintMembers(StringBuilder)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override bool PrintMembers(StringBuilder builder)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.stringbuilder">StringBuilder</a></td>
+        <td><span class="parametername">builder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig.PrintMembers(StringBuilder)</a></div>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_ToString_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.ToString*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_ToString" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterConfig.cs">RouterConfig.ToString()</a></div>
+  <h3 id="operators">Operators
+</h3>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_op_Equality_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Equality*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_op_Equality_NanoRoute_AwsLambda_AwsLambdaRouterConfig_NanoRoute_AwsLambda_AwsLambdaRouterConfig_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Equality(NanoRoute.AwsLambda.AwsLambdaRouterConfig,NanoRoute.AwsLambda.AwsLambdaRouterConfig)">operator ==(AwsLambdaRouterConfig?, AwsLambdaRouterConfig?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(AwsLambdaRouterConfig? left, AwsLambdaRouterConfig? right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a></td>
+        <td><span class="parametername">left</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a></td>
+        <td><span class="parametername">right</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_op_Inequality_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Inequality*"></a>
+  <h4 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_op_Inequality_NanoRoute_AwsLambda_AwsLambdaRouterConfig_NanoRoute_AwsLambda_AwsLambdaRouterConfig_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Inequality(NanoRoute.AwsLambda.AwsLambdaRouterConfig,NanoRoute.AwsLambda.AwsLambdaRouterConfig)">operator !=(AwsLambdaRouterConfig?, AwsLambdaRouterConfig?)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(AwsLambdaRouterConfig? left, AwsLambdaRouterConfig? right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a></td>
+        <td><span class="parametername">left</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a></td>
+        <td><span class="parametername">right</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
   </div>
 
 </article>

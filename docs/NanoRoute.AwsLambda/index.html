@@ -52,6 +52,7 @@
 <li>Converts produced <code>HttpResponseMessage</code> instances into <code>APIGatewayHttpApiV2ProxyResponse</code> values.</li>
 <li><code>ApiGatewayHttpApiV2Router.CreateBuilder()</code> returns the same strongly typed builder style as the core package.</li>
 <li>Pass <code>ILambdaContext.RemainingTime</code> to <code>Route()</code> so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.</li>
+<li><code>AwsLambdaRouterConfig.LambdaTimeoutBuffer</code> controls the safety window reserved before the Lambda timeout; the default remains one second.</li>
 <li>Request URIs are built from <code>RawPath</code>, <code>RawQueryString</code>, the <code>Host</code> header, and forwarding metadata.</li>
 <li>Plain request bodies are exposed as <code>StringContent</code>; base64-encoded request bodies are exposed as <code>StreamContent</code>.</li>
 <li>The original <code>APIGatewayHttpApiV2ProxyRequest</code> is available through the NanoRoute request context as the original request object.</li>

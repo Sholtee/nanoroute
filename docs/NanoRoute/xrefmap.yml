@@ -247,6 +247,18 @@ references:
   commentId: T:NanoRoute.HttpListenerRouter
   fullName: NanoRoute.HttpListenerRouter
   nameWithType: HttpListenerRouter
+- uid: NanoRoute.HttpListenerRouter.Config
+  name: Config
+  href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter_Config
+  commentId: P:NanoRoute.HttpListenerRouter.Config
+  fullName: NanoRoute.HttpListenerRouter.Config
+  nameWithType: HttpListenerRouter.Config
+- uid: NanoRoute.HttpListenerRouter.Config*
+  name: Config
+  href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter_Config_
+  commentId: Overload:NanoRoute.HttpListenerRouter.Config
+  fullName: NanoRoute.HttpListenerRouter.Config
+  nameWithType: HttpListenerRouter.Config
 - uid: NanoRoute.HttpListenerRouter.CreateBuilder
   name: CreateBuilder()
   href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter_CreateBuilder
@@ -880,6 +892,18 @@ references:
   fullName.vb: NanoRoute.Router.New
   nameWithType: Router.Router
   nameWithType.vb: Router.New
+- uid: NanoRoute.Router.Config
+  name: Config
+  href: NanoRoute.Router.html#NanoRoute_Router_Config
+  commentId: P:NanoRoute.Router.Config
+  fullName: NanoRoute.Router.Config
+  nameWithType: Router.Config
+- uid: NanoRoute.Router.Config*
+  name: Config
+  href: NanoRoute.Router.html#NanoRoute_Router_Config_
+  commentId: Overload:NanoRoute.Router.Config
+  fullName: NanoRoute.Router.Config
+  nameWithType: Router.Config
 - uid: NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)
   name: Handle(HttpRequestMessage, IServiceProvider, CancellationToken)
   href: NanoRoute.Router.html#NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_
@@ -892,18 +916,6 @@ references:
   commentId: Overload:NanoRoute.Router.Handle
   fullName: NanoRoute.Router.Handle
   nameWithType: Router.Handle
-- uid: NanoRoute.Router.MatchingPrecedence
-  name: MatchingPrecedence
-  href: NanoRoute.Router.html#NanoRoute_Router_MatchingPrecedence
-  commentId: P:NanoRoute.Router.MatchingPrecedence
-  fullName: NanoRoute.Router.MatchingPrecedence
-  nameWithType: Router.MatchingPrecedence
-- uid: NanoRoute.Router.MatchingPrecedence*
-  name: MatchingPrecedence
-  href: NanoRoute.Router.html#NanoRoute_Router_MatchingPrecedence_
-  commentId: Overload:NanoRoute.Router.MatchingPrecedence
-  fullName: NanoRoute.Router.MatchingPrecedence
-  nameWithType: Router.MatchingPrecedence
 - uid: NanoRoute.Router.OriginalRequestName
   name: OriginalRequestName
   href: NanoRoute.Router.html#NanoRoute_Router_OriginalRequestName
@@ -1167,15 +1179,15 @@ references:
   fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).RouterConfig
   nameWithType: RouterBuilder<TRouter, TConfig>.RouterConfig
   nameWithType.vb: RouterBuilder(Of TRouter, TConfig).RouterConfig
-- uid: NanoRoute.RouterBuilder`2.WithConfiguration(System.Action{`1})
-  name: WithConfiguration(Action<TConfig>)
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_WithConfiguration_System_Action__1__
-  commentId: M:NanoRoute.RouterBuilder`2.WithConfiguration(System.Action{`1})
-  name.vb: WithConfiguration(Action(Of TConfig))
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.WithConfiguration(System.Action<TConfig>)
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).WithConfiguration(System.Action(Of TConfig))
-  nameWithType: RouterBuilder<TRouter, TConfig>.WithConfiguration(Action<TConfig>)
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).WithConfiguration(Action(Of TConfig))
+- uid: NanoRoute.RouterBuilder`2.WithConfiguration(System.Func{`1,`1})
+  name: WithConfiguration(Func<TConfig, TConfig>)
+  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_WithConfiguration_System_Func__1__1__
+  commentId: M:NanoRoute.RouterBuilder`2.WithConfiguration(System.Func{`1,`1})
+  name.vb: WithConfiguration(Func(Of TConfig, TConfig))
+  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.WithConfiguration(System.Func<TConfig, TConfig>)
+  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).WithConfiguration(System.Func(Of TConfig, TConfig))
+  nameWithType: RouterBuilder<TRouter, TConfig>.WithConfiguration(Func<TConfig, TConfig>)
+  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).WithConfiguration(Func(Of TConfig, TConfig))
 - uid: NanoRoute.RouterBuilder`2.WithConfiguration*
   name: WithConfiguration
   href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_WithConfiguration_

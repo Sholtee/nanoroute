@@ -140,7 +140,7 @@
 </h3>
   <a id="NanoRoute_RouterBuilder_2_RouterConfig_" data-uid="NanoRoute.RouterBuilder`2.RouterConfig*"></a>
   <h4 id="NanoRoute_RouterBuilder_2_RouterConfig" data-uid="NanoRoute.RouterBuilder`2.RouterConfig">RouterConfig</h4>
-  <div class="markdown level1 summary"><p>Gets the mutable configuration object applied when <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter">CreateRouter()</a> is called.</p>
+  <div class="markdown level1 summary"><p>Gets the configuration object applied when <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter">CreateRouter()</a> is called.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -543,13 +543,13 @@ the pipeline with the next compatible handler from the already selected route br
 affect routers that have already been created.</p>
 </div>
   <a id="NanoRoute_RouterBuilder_2_WithConfiguration_" data-uid="NanoRoute.RouterBuilder`2.WithConfiguration*"></a>
-  <h4 id="NanoRoute_RouterBuilder_2_WithConfiguration_System_Action__1__" data-uid="NanoRoute.RouterBuilder`2.WithConfiguration(System.Action{`1})">WithConfiguration(Action&lt;TConfig&gt;)</h4>
+  <h4 id="NanoRoute_RouterBuilder_2_WithConfiguration_System_Func__1__1__" data-uid="NanoRoute.RouterBuilder`2.WithConfiguration(System.Func{`1,`1})">WithConfiguration(Func&lt;TConfig, TConfig&gt;)</h4>
   <div class="markdown level1 summary"><p>Updates the router configuration object that will be used by future router instances.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouterBuilder&lt;TRouter, TConfig&gt; WithConfiguration(Action&lt;TConfig&gt; updateConfig)</code></pre>
+    <pre><code class="lang-csharp hljs">public RouterBuilder&lt;TRouter, TConfig&gt; WithConfiguration(Func&lt;TConfig, TConfig&gt; updateConfig)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -562,9 +562,9 @@ affect routers that have already been created.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;TConfig&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TConfig, TConfig&gt;</td>
         <td><span class="parametername">updateConfig</span></td>
-        <td><p>A callback that mutates <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_RouterConfig">RouterConfig</a>.</p>
+        <td><p>A callback that returns the updated <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_RouterConfig">RouterConfig</a> instance.</p>
 </td>
       </tr>
     </tbody>
