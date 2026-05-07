@@ -118,9 +118,27 @@ Header values other than `Set-Cookie` are joined with commas, matching the singl
 
 ## Timeout Handling
 
-Pass `ILambdaContext.RemainingTime` to `Route()`. The adapter starts cancellation one second before the Lambda timeout so async value parsers and handlers can observe `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
+Pass `ILambdaContext.RemainingTime` to `Route()`. By default, the adapter starts cancellation one second before the Lambda timeout so async value parsers and handlers can observe `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
 
 If the invocation is already inside that safety window, the request is cancelled immediately and the adapter returns a `504 Gateway Timeout` JSON error response.
+
+Use `AwsLambdaRouterConfig.LambdaTimeoutBuffer` when your function needs a different safety window:
+
+```csharp
+ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+    .CreateBuilder()
+    .WithConfiguration(config => config with
+    {
+        LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
+    })
+    .AddJsonErrorDetails()
+    .AddHandler("GET", "/health", static async (_, _) =>
+    {
+        await Task.CompletedTask;
+        return new HttpResponseMessage(HttpStatusCode.OK);
+    })
+    .CreateRouter();
+```
 
 ## Typed Handlers
 
@@ -169,7 +187,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 ## Common Building Blocks
 
 - `ApiGatewayHttpApiV2Router.CreateBuilder()` starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.
-- `AwsLambdaRouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`.
+- `AwsLambdaRouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`, and adds `LambdaTimeoutBuffer`.
 - `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
