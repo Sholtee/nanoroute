@@ -33,6 +33,7 @@ NanoRoute.HandlerExtensions.ValueSourceAttribute.Name.init -> void
 NanoRoute.HandlerExtensions.ValueSourceAttribute.Source.get -> NanoRoute.HandlerExtensions.ValueSource
 NanoRoute.HandlerExtensions.ValueSourceAttribute.ValueSourceAttribute(NanoRoute.HandlerExtensions.ValueSource source) -> void
 NanoRoute.HttpListenerRouter
+NanoRoute.HttpListenerRouter.Config.get -> NanoRoute.HttpListenerRouterConfig!
 NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 NanoRoute.HttpListenerRouterConfig
 NanoRoute.HttpRequestMessageExtensions
@@ -92,6 +93,7 @@ NanoRoute.RouteBuilder.CreatePrefix(string! pattern) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteBuilder.ValueParsers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, NanoRoute.ValueParserRegistration!>!
 NanoRoute.Router
+NanoRoute.Router.Config.get -> NanoRoute.RouterConfig!
 NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage! request, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
 NanoRoute.Router.Router(NanoRoute.RouteBuilder! routeBuilder, NanoRoute.RouterConfig! config) -> void
 NanoRoute.RouterBuilder<TRouter, TConfig>

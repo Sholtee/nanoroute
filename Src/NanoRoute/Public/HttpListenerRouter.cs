@@ -26,6 +26,7 @@ namespace NanoRoute
     /// </remarks>
     public class HttpListenerRouter: Router
     {
+        #region Private
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
         private static readonly FrozenSet<string> s_reservedHeaders = new List<string>
         {
@@ -90,6 +91,7 @@ namespace NanoRoute
         }
 
         private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig) { }
+        #endregion
 
         /// <summary>
         /// Routes a single <see cref="HttpListener"/> request and writes the produced response.
@@ -145,6 +147,11 @@ namespace NanoRoute
                 throw;
             }
         }
+
+        /// <summary>
+        /// Configuration assigned to this instance.
+        /// </summary>
+        public new HttpListenerRouterConfig Config => (HttpListenerRouterConfig) base.Config;
 
         /// <summary>
         /// Creates a strongly typed builder for configuring an <see cref="HttpListenerRouter"/>.
