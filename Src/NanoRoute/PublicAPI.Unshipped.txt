@@ -95,6 +95,7 @@ NanoRoute.RouteBuilder.AddHandler(System.Collections.Generic.IEnumerable<string!
 NanoRoute.RouteBuilder.AddPrefix(string! pattern, System.Action<NanoRoute.RouteBuilder!>! configureRoutes) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.CreatePrefix(string! pattern) -> NanoRoute.RouteBuilder!
+NanoRoute.RouteBuilder.BasePattern.get -> string!
 NanoRoute.RouteBuilder.Metadata.get -> NanoRoute.BuilderMetadata!
 NanoRoute.RouteBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteBuilder.ValueParsers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, NanoRoute.ValueParserRegistration!>!

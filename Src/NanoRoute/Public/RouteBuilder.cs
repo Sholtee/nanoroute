@@ -27,8 +27,6 @@ namespace NanoRoute
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Dictionary<string, ValueParserRegistration> _valueParsers;
 
-        private readonly string _basePattern;
-
         /// <summary>
         /// Gets or creates the <see cref="RouteNode"/> that matches the given <paramref name="pattern"/>.
         /// </summary>
@@ -90,17 +88,17 @@ namespace NanoRoute
 
         private RouteBuilder(RouteBuilder parent, string baseUrl): base(parent.FindNode(baseUrl))
         {
-            _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);     
-            _basePattern = JoinPattern(parent._basePattern, baseUrl);
-
+            _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
+            
+            BasePattern = JoinPattern(parent.BasePattern, baseUrl);
             Metadata = parent.Metadata.CreateScope();
         }
 
         internal RouteBuilder(): base(new RouteNode())
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
-            _basePattern = string.Empty;
 
+            BasePattern = string.Empty;
             Metadata = new BuilderMetadata();
         }
 
@@ -243,7 +241,7 @@ namespace NanoRoute
 
             handlerRegistrations.Add
             (
-                new HandlerRegistration(handler, JoinPattern(_basePattern, pattern))
+                new HandlerRegistration(handler, JoinPattern(BasePattern, pattern))
             );
 
             return this;
@@ -323,6 +321,15 @@ namespace NanoRoute
         /// registrations plus any overrides added to that child scope.
         /// </remarks>
         public IReadOnlyDictionary<string, ValueParserRegistration> ValueParsers => _valueParsers;
+
+        /// <summary>
+        /// Gets the route pattern prefix for this builder branch.
+        /// </summary>
+        /// <remarks>
+        /// The root builder has an empty base pattern. Child builders created with <see cref="CreatePrefix(string)"/>
+        /// expose the accumulated prefix inherited from their parent builders.
+        /// </remarks>
+        public string BasePattern { get; }
 
         /// <summary>
         /// Gets extension-defined builder metadata visible from this builder instance.

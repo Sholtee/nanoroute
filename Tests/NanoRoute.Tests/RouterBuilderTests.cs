@@ -115,6 +115,17 @@ namespace NanoRoute.Tests
             }));
         }
 
+        [Test]
+        public void BasePattern_ShouldReflectTheBuilderBranch()
+        {
+            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/");
+            RouteBuilder nestedBuilder = childBuilder.CreatePrefix("/nested/");
+
+            Assert.That(_routerBuilder.BasePattern, Is.Empty);
+            Assert.That(childBuilder.BasePattern, Is.EqualTo("/path/to/"));
+            Assert.That(nestedBuilder.BasePattern, Is.EqualTo("/path/to/nested/"));
+        }
+
         [TestCase("")]
         [TestCase("/not-prefix")]
         [TestCase("/some/not-prefix")]
