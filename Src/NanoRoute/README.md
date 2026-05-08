@@ -305,6 +305,34 @@ Typed handlers also have middleware-style overloads that receive `CallNextHandle
 )
 ```
 
+### Exception Handling
+
+`AddExceptionHandler()` adds middleware that converts unexpected exceptions into enriched `HttpRequestException` values. Existing `HttpRequestException` values are passed through unchanged, and `OperationCanceledException` still propagates to the caller.
+
+Use `ConfigureExceptionHandling()` before registering the exception handler when you want to customize how specific exception types are normalized:
+
+```csharp
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .ConfigureExceptionHandling(config => config with
+    {
+        ExceptionNormalizers = config.ExceptionNormalizers.SetItem
+        (
+            typeof(NotSupportedException),
+            ex =>
+            {
+                HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+                return null!;
+            }
+        )
+    })
+    .AddExceptionHandler()
+    .AddHandler("GET", "/items", (_, _) => throw new NotSupportedException())
+    .CreateRouter();
+```
+
+Exception handling configuration is stored in `RouteBuilder.Metadata`, so prefix builders inherit the parent configuration when they are created and can override it locally. `AddExceptionHandler()` snapshots the configuration at registration time.
+
 ### Custom Routers
 
 If `HttpListenerRouter` is not the transport you want, you can derive from `Router` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
@@ -349,6 +377,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
+- `ConfigureExceptionHandling()` customizes exception normalization for `AddExceptionHandler()`.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
@@ -357,6 +386,7 @@ This keeps the transport-specific concerns in your own router type while still r
 
 - [RouteBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
+- [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)

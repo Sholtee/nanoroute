@@ -8,6 +8,7 @@ The API documentation for this package is generated from the XML comments in the
 
 - [RouteBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
+- [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
@@ -31,6 +32,7 @@ The API documentation for this package is generated from the XML comments in the
 - `MatchingPrecedence` lets you choose whether literal or parameterized child segments are selected first.
 - Once a child branch has been selected for a request, NanoRoute continues only within that branch.
 - `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}` and matches query keys through `Uri.Query` normalization.
+- `ConfigureExceptionHandling()` stores scoped exception-normalization settings used by `AddExceptionHandler()`.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
 - `ValueSourceAttribute` customizes typed-handler property binding with `Context`, `ServiceLocator`, and `Skip` sources.
 - `NanoRoute.Json` adds JSON request binding and JSON error/response helpers on top of the core pipeline.
