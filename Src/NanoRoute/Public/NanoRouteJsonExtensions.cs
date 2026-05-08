@@ -57,7 +57,7 @@ namespace NanoRoute.Json
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
             /// Requests without content, requests with a non-JSON content type, and requests with invalid JSON throw
-            /// <see cref="HttpRequestException"/>. Add <see cref="AddJsonErrorDetails"/> to translate those into
+            /// <see cref="HttpRequestException"/>. Add AddJsonErrorDetails to translate those into
             /// structured HTTP error responses. The deserialized body is written into
             /// <see cref="RequestContext.Parameters"/>, and an existing value with the same key is overwritten.
             /// </remarks>
@@ -295,6 +295,26 @@ namespace NanoRoute.Json
             }
 
             /// <summary>
+            /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses without propagating the error details.
+            /// </summary>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// This helper wraps <see cref="HttpRequestException"/> values into JSON responses and also installs
+            /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> so unexpected
+            /// exceptions are normalized before they reach the client. <see cref="OperationCanceledException"/> is
+            /// not translated into JSON and continues to propagate to the caller unchanged.
+            /// </remarks>
+            /// <example>
+            /// <code>
+            /// routerBuilder
+            ///     .AddJsonErrorDetails()
+            ///     .AddHandler("GET", "/items/{id:int}", (context, _) =&gt;
+            ///         throw new InvalidOperationException("Unexpected state"));
+            /// </code>
+            /// </example>
+            public TBuilder AddJsonErrorDetails() => routeBuilder.AddJsonErrorDetails(false);
+
+            /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses.
             /// </summary>
             /// <param name="populateErrorInfo">
@@ -316,9 +336,35 @@ namespace NanoRoute.Json
             ///         throw new InvalidOperationException("Unexpected state"));
             /// </code>
             /// </example>
-            public TBuilder AddJsonErrorDetails(bool populateErrorInfo = false)
+            public TBuilder AddJsonErrorDetails(bool populateErrorInfo) => routeBuilder.AddJsonErrorDetails(populateErrorInfo, ErrorDetails.JsonTypeInfo);
+
+            /// <summary>
+            /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses.
+            /// </summary>
+            /// <param name="populateErrorInfo">
+            /// <see langword="true"/> to include developer-facing diagnostic details when they are attached to the
+            /// underlying exception; otherwise <see langword="false"/>.
+            /// </param>
+            /// <param name="typeInfo"><see cref="ErrorDetails"/> serialization metadata.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// This helper wraps <see cref="HttpRequestException"/> values into JSON responses and also installs
+            /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> so unexpected
+            /// exceptions are normalized before they reach the client. <see cref="OperationCanceledException"/> is
+            /// not translated into JSON and continues to propagate to the caller unchanged.
+            /// </remarks>
+            /// <example>
+            /// <code>
+            /// routerBuilder
+            ///     .AddJsonErrorDetails()
+            ///     .AddHandler("GET", "/items/{id:int}", (context, _) =&gt;
+            ///         throw new InvalidOperationException("Unexpected state"));
+            /// </code>
+            /// </example>
+            public TBuilder AddJsonErrorDetails(bool populateErrorInfo, JsonTypeInfo<ErrorDetails> typeInfo)
             {
                 Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(typeInfo);
 
                 routeBuilder
                     .AddHandler("/", async (RequestContext context, CallNextHandlerDelegate next) =>
@@ -335,7 +381,7 @@ namespace NanoRoute.Json
                             (
                                 errorDetails.Status,
                                 errorDetails,
-                                ErrorDetails.JsonTypeInfo
+                                typeInfo
                             );
                         }
                     })

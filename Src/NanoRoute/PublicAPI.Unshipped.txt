@@ -62,7 +62,9 @@ NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBod
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(string! verb, string! pattern, System.Type! type, string! paramName) -> TBuilder!
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Text.Json.Serialization.Metadata.JsonTypeInfo! typeInfo, string! paramName) -> TBuilder!
 NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonBody(System.Type! type, string! paramName) -> TBuilder!
-NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonErrorDetails(bool populateErrorInfo = false) -> TBuilder!
+NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonErrorDetails() -> TBuilder!
+NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonErrorDetails(bool populateErrorInfo) -> TBuilder!
+NanoRoute.Json.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonErrorDetails(bool populateErrorInfo, System.Text.Json.Serialization.Metadata.JsonTypeInfo<NanoRoute.ErrorDetails!>! typeInfo) -> TBuilder!
 NanoRoute.MatchingPrecedence
 NanoRoute.MatchingPrecedence.LiteralFirst = 0 -> NanoRoute.MatchingPrecedence
 NanoRoute.MatchingPrecedence.ParameterizedFirst = 1 -> NanoRoute.MatchingPrecedence
