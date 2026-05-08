@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -61,7 +62,7 @@ namespace NanoRoute.Tests
 
         private static async ValueTask Parse(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters)
         {
-            using QueryStringParser parser = new(context, expectedParameters);
+            using QueryStringParser parser = new(context, expectedParameters.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance));
 
             await parser.Parse();
         }

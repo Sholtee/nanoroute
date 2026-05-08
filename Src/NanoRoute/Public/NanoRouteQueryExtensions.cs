@@ -169,7 +169,7 @@ namespace NanoRoute
                     );
                 }
 
-                IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindings = parsedBindingsTmp.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance);
+                FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindings = parsedBindingsTmp.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance);
 
                 routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
