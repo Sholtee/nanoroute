@@ -24,6 +24,7 @@ namespace NanoRoute
     /// </remarks>
     public class RouteBuilder : RoutingContext
     {
+        #region Private
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Dictionary<string, ValueParserRegistration> _valueParsers;
 
@@ -107,6 +108,7 @@ namespace NanoRoute
         /// </summary>
         /// <returns>A copy of the configured root node.</returns>
         internal RouteNode GetRoot(bool freeze) => _root.Copy(freeze);
+        #endregion
 
         /// <summary>
         /// Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.
