@@ -90,14 +90,18 @@ namespace NanoRoute
 
         private RouteBuilder(RouteBuilder parent, string baseUrl): base(parent.FindNode(baseUrl))
         {
-            _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
+            _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);     
             _basePattern = JoinPattern(parent._basePattern, baseUrl);
+
+            Metadata = parent.Metadata.CreateScope();
         }
 
         internal RouteBuilder(): base(new RouteNode())
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
             _basePattern = string.Empty;
+
+            Metadata = new BuilderMetadata();
         }
 
         /// <summary>
@@ -319,6 +323,16 @@ namespace NanoRoute
         /// registrations plus any overrides added to that child scope.
         /// </remarks>
         public IReadOnlyDictionary<string, ValueParserRegistration> ValueParsers => _valueParsers;
+
+        /// <summary>
+        /// Gets extension-defined builder metadata visible from this builder instance.
+        /// </summary>
+        /// <remarks>
+        /// Child builders created with <see cref="CreatePrefix(string)"/> inherit a scoped copy of their parent's
+        /// metadata. Metadata updates made after the child builder is created stay local to the builder where they
+        /// are made.
+        /// </remarks>
+        public BuilderMetadata Metadata { get; }
 
         /// <summary>
         /// Gets the distinct route patterns currently visible from this builder branch.

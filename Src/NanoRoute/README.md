@@ -93,6 +93,19 @@ HttpListenerRouter router = HttpListenerRouter
 
 Created routers are immutable snapshots: later route or configuration changes on the builder do not affect routers that have already been created.
 
+### Builder Metadata
+
+`RouteBuilder.Metadata` is a type-keyed store for extension-defined builder settings. It is intended for optional helper layers that need to remember build-time settings without adding feature-specific properties to the core builder.
+
+```csharp
+public sealed record MyExtensionOptions(bool Enabled);
+
+RouteBuilder builder = HttpListenerRouter.CreateBuilder();
+builder.Metadata.Set(new MyExtensionOptions(Enabled: true)); // Usually called from an extension method.
+```
+
+Prefix builders inherit metadata from the parent when they are created, then keep their own scoped copy. Later changes made on the parent or child remain local to that builder scope.
+
 ### AddPrefix() and CreatePrefix()
 
 When several routes share the same prefix, `AddPrefix()` lets you define that prefix once and register child routes relative to it. If you want to hold onto a scoped child builder and add routes incrementally, use `CreatePrefix()`.
@@ -333,6 +346,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `AddPrefix("/prefix/", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
+- `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
@@ -342,6 +356,7 @@ This keeps the transport-specific concerns in your own router type while still r
 ## Core Types
 
 - [RouteBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html)
+- [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)

@@ -4,6 +4,11 @@ const NanoRoute.NanoRouteExceptionExtensions.StatusName = "StatusCode" -> string
 const NanoRoute.Router.OriginalRequestName = "OriginalRequest" -> string!
 const NanoRoute.Router.TraceIdName = "TraceId" -> string!
 NanoRoute.BindArgumentsDelegate
+NanoRoute.BuilderMetadata
+NanoRoute.BuilderMetadata.GetOrDefault<T>(T defaultValue) -> T
+NanoRoute.BuilderMetadata.Remove<T>() -> bool
+NanoRoute.BuilderMetadata.Set<T>(T value) -> void
+NanoRoute.BuilderMetadata.TryGet<T>(out T? value) -> bool
 NanoRoute.CallNextHandlerDelegate
 NanoRoute.ErrorDetails
 NanoRoute.ErrorDetails.DeveloperMessages.get -> System.Collections.Generic.IEnumerable<string!>?
@@ -90,6 +95,7 @@ NanoRoute.RouteBuilder.AddHandler(System.Collections.Generic.IEnumerable<string!
 NanoRoute.RouteBuilder.AddPrefix(string! pattern, System.Action<NanoRoute.RouteBuilder!>! configureRoutes) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.CreatePrefix(string! pattern) -> NanoRoute.RouteBuilder!
+NanoRoute.RouteBuilder.Metadata.get -> NanoRoute.BuilderMetadata!
 NanoRoute.RouteBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteBuilder.ValueParsers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, NanoRoute.ValueParserRegistration!>!
 NanoRoute.Router
