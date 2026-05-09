@@ -13,6 +13,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Invoke-Git
+{
+  $output = git @args
+  if (-not $?) { throw "Git command failed" }
+
+  return $output
+}
+
 $ROOT = Join-Path $PSScriptRoot ".." | Resolve-Path
 $GH_PAGES = Join-Path $ROOT "gh-pages"
 
@@ -20,21 +28,15 @@ if ([string]::IsNullOrWhiteSpace($githubToken)) { throw "GitHub token is not ava
 
 Remove-Item $GH_PAGES -Recurse -Force -ErrorAction SilentlyContinue
 
-git config --global user.name "github-actions[bot]"
-if (!$?) { throw "Failed to configure git user name" }
-
-git config --global user.email "github-actions[bot]@users.noreply.github.com"
-if (!$?) { throw "Failed to configure git user email" }
-
-git clone --branch gh-pages "https://x-access-token:$githubToken@github.com/sholtee/nanoroute.git" $GH_PAGES
-if (!$?) { throw "Failed to clone gh-pages" }
+Invoke-Git config --global user.name "github-actions[bot]"
+Invoke-Git config --global user.email "github-actions[bot]@users.noreply.github.com"
+Invoke-Git clone --branch gh-pages "https://x-access-token:$githubToken@github.com/sholtee/nanoroute.git" $GH_PAGES
 
 & $updateContent $ROOT $GH_PAGES
 
 Set-Location $GH_PAGES
 
-git add .
-if (!$?) { throw "Failed to stage artifacts" }
+Invoke-Git add .
 
 # "git diff --quiet" returns 1 when differences are found.
 git diff --cached --quiet
@@ -44,8 +46,5 @@ if ($LASTEXITCODE -eq 0) {
 }
 if ($LASTEXITCODE -ne 1) { throw "Failed to inspect staged changes" }
 
-git commit -m "[bot] update artifacts"
-if (!$?) { throw "Failed to commit artifacts" }
-
-git push origin gh-pages
-if (!$?) { throw "Failed to push artifacts" }
+Invoke-Git commit -m "[bot] update artifacts"
+Invoke-Git push origin gh-pages
