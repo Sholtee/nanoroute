@@ -31,7 +31,7 @@ The API documentation for this package is generated from the XML comments in the
 - `RouterConfig` is immutable and can be replaced with `WithConfiguration(config => config with { ... })` before creating a router snapshot.
 - `MatchingPrecedence` lets you choose whether literal or parameterized child segments are selected first.
 - Once a child branch has been selected for a request, NanoRoute continues only within that branch.
-- `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}` and matches query keys through `Uri.Query` normalization.
+- `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}&{tag:str[]}` and matches query keys through `Uri.Query` normalization.
 - `ConfigureExceptionHandling()` stores scoped exception-normalization settings used by subsequently registered `AddExceptionHandler()` middleware.
 - `ConfigureJsonErrorDetails()` stores scoped JSON `ErrorDetails` response settings used by subsequently registered `AddJsonErrorDetails()` middleware.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
@@ -43,6 +43,8 @@ The API documentation for this package is generated from the XML comments in the
 - `{parameterName:parserName}` parses a segment and stores the parsed value under `parameterName`.
 - `{parserName}` parses a segment without storing it in `RequestContext.Parameters`.
 - `{parameterName:parserName(arg=value, text='hello')}` also passes a case-insensitive raw argument map through the parser's `BindArgumentsDelegate`.
+- Query bindings may add `[]` after the parser name, such as `{tag:str[]}`, to collect repeated query keys into a `List<object?>` in request order.
+- List parser syntax is supported for query bindings only, not route path parameters.
 - Parser arguments support `null`, `true` or `false`, numbers, and single-quoted strings with `\'` escaping.
 
 Use `AddValueParser()` to register custom parsers, or `AddDefaultValueParsers()` to register the built-in `int`, `guid`, `bool`, and `str` parsers.

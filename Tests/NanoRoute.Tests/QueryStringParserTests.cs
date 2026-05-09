@@ -27,7 +27,10 @@ namespace NanoRoute.Tests
         private static TestParser CreateParser(ValueParserDelegate parse, object? arguments = null) =>
             new(parse, arguments);
 
-        private static Dictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(params (string Name, bool Optional, TestParser Parser)[] parameters)
+        private static Dictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(params (string Name, bool Optional, TestParser Parser)[] parameters) =>
+            CreateExpectedParameters(isList: false, parameters);
+
+        private static Dictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(bool isList, params (string Name, bool Optional, TestParser Parser)[] parameters)
         {
             Dictionary<ReadOnlyMemory<char>, ParameterParser> result = new(ReadOnlyMemoryCharComparer.Instance);
 
@@ -38,6 +41,7 @@ namespace NanoRoute.Tests
                     ValueParser = new()
                     {
                         Name = "str",
+                        IsList = isList,
                         RawArguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     },
                     ParameterName = parameters[i].Name,
@@ -188,8 +192,80 @@ namespace NanoRoute.Tests
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_DUPLICATE_PARAMETER, "filter") }));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new List<string> { string.Format(Resources.Culture, Resources.ERR_QUERY_DUPLICATE_PARAMETER, "filter") }));
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Parse_ShouldCollectRepeatedDeclaredQueryKeysForListParsers()
+        {
+            Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
+
+            mockParser
+                .Setup(parser => parser.Invoke(It.IsAny<ValueParserContext>()))
+                .Returns((ValueParserContext context) => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())));
+
+            await Parse
+            (
+                CreateContext(result, new Uri("https://test.test/items?filter=foo&filter=bar&filter=baz"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(true, ("filter", false, CreateParser(mockParser.Object)))
+            );
+
+            Assert.That(result, Has.Count.EqualTo(1));
+            Assert.That(result["filter"], Is.EquivalentTo(new List<object?> { "foo", "bar", "baz" }));
+            mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Exactly(3));
+        }
+
+        [Test]
+        public async Task Parse_ShouldStoreSingleDeclaredQueryKeyAsListForListParsers()
+        {
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
+
+            await Parse
+            (
+                CreateContext(result, new Uri("https://test.test/items?filter=foo"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(true, ("filter", false, CreateParser(context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())))))
+            );
+
+            Assert.That(result["filter"], Is.EquivalentTo(new List<object?> { "foo" }));
+        }
+
+        [Test]
+        public async Task Parse_ShouldReplaceExistingNonListValueForListParsers()
+        {
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase)
+            {
+                ["filter"] = "previous"
+            };
+
+            await Parse
+            (
+                CreateContext(result, new Uri("https://test.test/items?filter=foo"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(true, ("filter", false, CreateParser(context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())))))
+            );
+
+            Assert.That(result["filter"], Is.EquivalentTo(new List<object?> { "foo" }));
+        }
+
+        [Test]
+        public async Task Parse_ShouldReplaceExistingExternalListValueForListParsers()
+        {
+            List<object?> existing = ["previous"];
+            Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase)
+            {
+                ["filter"] = existing
+            };
+
+            await Parse
+            (
+                CreateContext(result, new Uri("https://test.test/items?filter=foo&filter=bar"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(true, ("filter", false, CreateParser(context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())))))
+            );
+
+            Assert.That(result["filter"], Is.Not.SameAs(existing));
+            Assert.That(result["filter"], Is.EquivalentTo(new List<object?> { "foo", "bar" }));
+            Assert.That(existing, Is.EquivalentTo(new List<object?> { "previous" }));
         }
 
         [Test]

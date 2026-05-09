@@ -228,23 +228,27 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddPrefix("/items/", items => items
-        .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}")
+        .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str[]}")
         .AddHandler("GET", "", async (context, _) =>
         {
             return HttpResponseMessage.Json(new
             {
                 filter = context.Parameters["filter"],
-                page = context.Parameters.TryGetValue("page", out object? page) ? page : null
+                page = context.Parameters.TryGetValue("page", out object? page) ? page : null,
+                tags = context.Parameters.TryGetValue("tag", out object? tags) ? tags : null
             });
         }))
     .CreateRouter();
 ```
 
 - Add `?` to the query parameter name to make it optional, for example `{page?:int(min=1)}`.
+- Add `[]` to the query value parser name to collect repeated query keys, for example `{tag:str[]}` for `?tag=red&tag=blue`.
 - Query parameter names may contain ASCII letters, digits, and underscores.
 - Parsed values are stored in `RequestContext.Parameters` under the configured key.
+- List query bindings store a `List<object?>` containing each parsed value in request order.
 - Query keys are matched case-insensitively using the normalized key exposed by `Uri.Query`.
-- Repeated declared query parameters are rejected with `400 Bad Request`.
+- Repeated declared scalar query parameters are rejected with `400 Bad Request`.
+- List value parsers are supported only for query bindings, not route path parameters.
 - As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
 
 ### Typed Handlers

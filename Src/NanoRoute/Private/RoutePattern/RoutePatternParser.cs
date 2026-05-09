@@ -31,8 +31,12 @@ namespace NanoRoute.Internals
                 {
                     case '{':
                         ParameterDefinition parameterDefinition = ParameterDefinition.Parse(pattern, ref offset);
+
                         if (parameterDefinition.IsOptional)
                             throw new InvalidOperationException(Resources.ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED);
+
+                        if (parameterDefinition.ValueParser.IsList)
+                            throw new InvalidOperationException(Resources.ERR_LIST_PARSERS_NOT_SUPPORTED);
 
                         yield return parameterDefinition with { Index = parameterIndex++ };
                         break;

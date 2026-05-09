@@ -6,6 +6,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Frozen;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
@@ -18,6 +19,9 @@ namespace NanoRoute.Internals
     internal sealed class QueryStringParser(RequestContext context, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters): IDisposable
     {
         #region Private
+        // Extend only lists created by this parser; replace anything supplied by earlier middleware.
+        private sealed class QueryValueList : List<object?>;
+
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
         private char[]? _decodedBuffer;
@@ -45,7 +49,15 @@ namespace NanoRoute.Internals
             if (!parseResult.Success)
                 ThrowBadRequest(Resources.ERR_QUERY_INVALID_PARAMETER, parameterDefinition.ParameterName!);
 
-            context.Parameters[parameterDefinition.ParameterName!] = parseResult.Parsed;
+            if (parameterDefinition.ValueParser.IsList)
+            {
+                if (!context.Parameters.TryGetValue(parameterDefinition.ParameterName!, out object? val) || val is not QueryValueList lst)
+                    context.Parameters[parameterDefinition.ParameterName!] = lst = [];
+
+                lst.Add(parseResult.Parsed);
+            }
+            else
+                context.Parameters[parameterDefinition.ParameterName!] = parseResult.Parsed;
         }
 
         private ReadOnlyMemory<char> DecodeParameter(ReadOnlyMemory<char> source)
@@ -108,7 +120,7 @@ namespace NanoRoute.Internals
 
                 ParameterDefinition parameterDefinition = expectedParameter.Definition;
 
-                if (_visited[parameterDefinition.Index])
+                if (_visited[parameterDefinition.Index] && !parameterDefinition.ValueParser.IsList)
                     ThrowBadRequest(Resources.ERR_QUERY_DUPLICATE_PARAMETER, parameterDefinition.ParameterName!);
 
                 _visited[parameterDefinition.Index] = true;

@@ -46,17 +46,11 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void ParseRoutePattern_ShouldAllowListValueParserDefinitions()
+        public void ParseRoutePattern_ShouldRejectListValueParserDefinitions()
         {
-            object[] definitions = RoutePatternParser.ParseRoutePattern("/items/{ids:int[](min=1)}").ToArray();
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => RoutePatternParser.ParseRoutePattern("/items/{ids:int[](min=1)}").ToArray())!;
 
-            Assert.That(definitions, Has.Length.EqualTo(2));
-
-            ParameterDefinition parameter = (ParameterDefinition) definitions[1];
-            Assert.That(parameter.ParameterName, Is.EqualTo("ids"));
-            Assert.That(parameter.ValueParser.Name, Is.EqualTo("int"));
-            Assert.That(parameter.ValueParser.IsList, Is.True);
-            Assert.That(parameter.ValueParser.RawArguments["min"], Is.EqualTo("1"));
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_LIST_PARSERS_NOT_SUPPORTED));
         }
 
         [Test]
@@ -149,6 +143,18 @@ namespace NanoRoute.Tests
             Assert.That(definitions[1].ParameterName, Is.EqualTo("page"));
             Assert.That(definitions[1].IsOptional, Is.True);
             Assert.That(definitions[1].ValueParser, Is.EqualTo(ParseValue("int(min=1)")));
+        }
+
+        [Test]
+        public void ParseQueryPattern_ShouldAllowListValueParserDefinitions()
+        {
+            ParameterDefinition[] definitions = RoutePatternParser.ParseQueryPattern("{ids:int[](min=1)}").ToArray();
+
+            Assert.That(definitions, Has.Length.EqualTo(1));
+            Assert.That(definitions[0].ParameterName, Is.EqualTo("ids"));
+            Assert.That(definitions[0].ValueParser.Name, Is.EqualTo("int"));
+            Assert.That(definitions[0].ValueParser.IsList, Is.True);
+            Assert.That(definitions[0].ValueParser.RawArguments["min"], Is.EqualTo("1"));
         }
 
         [Test]
