@@ -38,7 +38,7 @@ namespace NanoRoute
 
                 return routeBuilder.AddQueryBindings
                 (
-                    Enum.GetNames(typeof(HttpVerb)),
+                    HttpVerb.Names,
                     "/",
                     bindings
                 );
@@ -90,7 +90,7 @@ namespace NanoRoute
 
                 return routeBuilder.AddQueryBindings
                 (
-                    Enum.GetNames(typeof(HttpVerb)),
+                    HttpVerb.Names,
                     pattern,
                     bindings
                 );

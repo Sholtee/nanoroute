@@ -309,29 +309,30 @@ Typed handlers also have middleware-style overloads that receive `CallNextHandle
 
 `AddExceptionHandler()` adds middleware that converts unexpected exceptions into enriched `HttpRequestException` values. Existing `HttpRequestException` values are passed through unchanged, and `OperationCanceledException` still propagates to the caller.
 
-Use `ConfigureExceptionHandling()` before registering the exception handler when you want to customize how specific exception types are normalized:
+Pass an `ExceptionHandlingConfig` to `AddExceptionHandler()` when you want to customize how specific exception types are normalized:
 
 ```csharp
+ExceptionHandlingConfig exceptionConfig = new()
+{
+    ExceptionNormalizers = ExceptionHandlingConfig.Default.ExceptionNormalizers.SetItem
+    (
+        typeof(NotSupportedException),
+        ex =>
+        {
+            HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+            return null!;
+        }
+    )
+};
+
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .ConfigureExceptionHandling(config => config with
-    {
-        ExceptionNormalizers = config.ExceptionNormalizers.SetItem
-        (
-            typeof(NotSupportedException),
-            ex =>
-            {
-                HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
-                return null!;
-            }
-        )
-    })
-    .AddExceptionHandler()
+    .AddExceptionHandler(exceptionConfig)
     .AddHandler("GET", "/items", (_, _) => throw new NotSupportedException())
     .CreateRouter();
 ```
 
-Exception handling configuration is stored in `RouteBuilder.Metadata`, so prefix builders inherit the parent configuration when they are created and can override it locally. `AddExceptionHandler()` snapshots the configuration at registration time.
+`AddExceptionHandler()` snapshots the supplied configuration at registration time.
 
 ### Custom Routers
 
@@ -377,7 +378,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
-- `ConfigureExceptionHandling()` customizes exception normalization for `AddExceptionHandler()`.
+- `AddExceptionHandler(..., ExceptionHandlingConfig)` customizes exception normalization for that handler registration.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
