@@ -27,18 +27,32 @@ namespace NanoRoute.Json
     }
 
     /// <summary>
-    /// 
+    /// Configures how <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder)"/> creates JSON
+    /// <see cref="ErrorDetails"/> responses.
     /// </summary>
+    /// <remarks>
+    /// Instances are stored in <see cref="RouteBuilder.Metadata"/> by
+    /// <see cref="NanoRouteJsonExtensions.ConfigureJsonErrorDetails{TBuilder}(TBuilder, ConfigureBuilderDelegate{JsonErrorDetailsConfig})"/>.
+    /// The configuration visible from the builder scope is captured when JSON error-detail middleware is registered.
+    /// </remarks>
     public sealed record JsonErrorDetailsConfig
     {
         /// <summary>
-        /// 
+        /// Gets a value indicating whether developer-facing diagnostic details should be included in JSON error responses.
         /// </summary>
+        /// <remarks>
+        /// Diagnostic details may contain exception messages or stack traces. Keep this value <see langword="false"/>
+        /// for production responses unless the caller is trusted to see those details.
+        /// </remarks>
         public bool PopulateErrorInfo { get; init; }
 
         /// <summary>
-        /// override it when you want to use custom formatting, etc
+        /// Gets the JSON serialization metadata used for <see cref="ErrorDetails"/> responses.
         /// </summary>
+        /// <remarks>
+        /// Replace this value to use custom source-generated metadata, property naming, converters, or other
+        /// serializer behavior for the error payload.
+        /// </remarks>
         public JsonTypeInfo<ErrorDetails> ErrorDetailsTypeInfo
         {
             get;
@@ -50,7 +64,7 @@ namespace NanoRoute.Json
         } = ErrorDetails.JsonTypeInfo;
 
         /// <summary>
-        /// 
+        /// Gets the default JSON error-detail configuration.
         /// </summary>
         public static JsonErrorDetailsConfig Default { get; } = new();
     }
@@ -257,10 +271,17 @@ namespace NanoRoute.Json
             public TBuilder AddJsonBody(Type type, string paramName) => routeBuilder.AddJsonBody(HttpVerb.HavingBody, "/", type, paramName);
 
             /// <summary>
-            /// 
+            /// Updates the JSON error-detail configuration visible from the current builder scope.
             /// </summary>
-            /// <param name="configure"></param>
-            /// <returns></returns>
+            /// <param name="configure">
+            /// A callback that receives the current configuration and returns the replacement configuration.
+            /// </param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// The configuration is stored in <see cref="RouteBuilder.Metadata"/>. Child builders created after this
+            /// method is called inherit the updated configuration; existing child builders keep their own scoped copy.
+            /// Registered JSON error-detail middleware snapshots the configuration that is current at registration time.
+            /// </remarks>
             public TBuilder ConfigureJsonErrorDetails(ConfigureBuilderDelegate<JsonErrorDetailsConfig> configure)
             {
                 Ensure.NotNull(routeBuilder);
@@ -275,47 +296,56 @@ namespace NanoRoute.Json
             }
 
             /// <summary>
-            /// 
+            /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses for all supported HTTP methods.
             /// </summary>
-            /// <returns></returns>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             public TBuilder AddJsonErrorDetails() => routeBuilder.AddJsonErrorDetails("/");
 
             /// <summary>
-            /// 
+            /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses for all supported HTTP methods.
             /// </summary>
-            /// <param name="pattern"></param>
-            /// <returns></returns>
+            /// <param name="pattern">
+            /// The route pattern where the error-detail middleware should be inserted. Use <c>/</c> to apply it to
+            /// the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.
+            /// </param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             public TBuilder AddJsonErrorDetails(string pattern) => routeBuilder.AddJsonErrorDetails(HttpVerb.Names, pattern);
 
             /// <summary>
-            /// 
+            /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses for a single HTTP method.
             /// </summary>
-            /// <param name="verb"></param>
-            /// <param name="pattern"></param>
-            /// <returns></returns>
+            /// <param name="verb">The HTTP method that should use the error-detail middleware.</param>
+            /// <param name="pattern">
+            /// The route pattern where the error-detail middleware should be inserted. Use <c>/</c> to apply it to
+            /// the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.
+            /// </param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             public TBuilder AddJsonErrorDetails(string verb, string pattern) => routeBuilder.AddJsonErrorDetails([verb], pattern);
 
             /// <summary>
-            /// 
+            /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses for the selected HTTP methods.
             /// </summary>
-            /// <param name="verbs"></param>
-            /// <returns></returns>
+            /// <param name="verbs">The HTTP methods that should use the error-detail middleware.</param>
+            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             public TBuilder AddJsonErrorDetails(IEnumerable<string> verbs) => routeBuilder.AddJsonErrorDetails(verbs, "/");
 
             /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses.
             /// </summary>
-            /// <param name="populateErrorInfo">
-            /// <see langword="true"/> to include developer-facing diagnostic details when they are attached to the
-            /// underlying exception; otherwise <see langword="false"/>.
+            /// <param name="verbs">The HTTP methods that should use the error-detail middleware.</param>
+            /// <param name="pattern">
+            /// The route pattern where the error-detail middleware should be inserted. Use <c>/</c> to apply it to
+            /// the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.
             /// </param>
-            /// <param name="typeInfo"><see cref="ErrorDetails"/> serialization metadata.</param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
             /// <remarks>
             /// This helper wraps <see cref="HttpRequestException"/> values into JSON responses and also installs
             /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> so unexpected
             /// exceptions are normalized before they reach the client. <see cref="OperationCanceledException"/> is
-            /// not translated into JSON and continues to propagate to the caller unchanged.
+            /// not translated into JSON and continues to propagate to the caller unchanged. Use
+            /// <see cref="ConfigureJsonErrorDetails{TBuilder}(TBuilder, ConfigureBuilderDelegate{JsonErrorDetailsConfig})"/> before
+            /// calling this method to include developer diagnostics or replace the <see cref="ErrorDetails"/>
+            /// serialization metadata.
             /// </remarks>
             /// <example>
             /// <code>
@@ -334,7 +364,7 @@ namespace NanoRoute.Json
                 JsonErrorDetailsConfig config = routeBuilder.Metadata.GetOrDefault(JsonErrorDetailsConfig.Default);
 
                 routeBuilder
-                    .AddHandler("/", async (RequestContext context, CallNextHandlerDelegate next) =>
+                    .AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                     {
                         try
                         {
@@ -342,7 +372,9 @@ namespace NanoRoute.Json
                         }
                         catch (HttpRequestException ex)
                         {
-                            ErrorDetails errorDetails = ex.GetErrorDetails(config.PopulateErrorInfo, context.Request.Properties[Router.TraceIdName] as string);
+                            context.Request.Properties.TryGetValue(Router.TraceIdName, out object? traceId);
+
+                            ErrorDetails errorDetails = ex.GetErrorDetails(config.PopulateErrorInfo, traceId as string);
 
                             return HttpResponseMessage.Json
                             (
@@ -352,7 +384,7 @@ namespace NanoRoute.Json
                             );
                         }
                     })
-                    .AddExceptionHandler();
+                    .AddExceptionHandler(verbs, pattern);
 
                 return routeBuilder;
             }

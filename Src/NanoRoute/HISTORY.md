@@ -6,7 +6,12 @@
 
 - Changed `RouterConfig` and `HttpListenerRouterConfig` to immutable records.
 - Changed `RouterBuilder.WithConfiguration()` from a mutating `Action<TConfig>` callback to a replacing `Func<TConfig, TConfig>` callback.
+- Changed JSON error-detail diagnostics from `AddJsonErrorDetails(populateErrorInfo: true)` to `ConfigureJsonErrorDetails(config => config with { PopulateErrorInfo = true }).AddJsonErrorDetails()`.
 - Removed the public `Router.MatchingPrecedence` snapshot property. Matching precedence is now carried by the immutable `RouterConfig` used to create the router.
+
+### Added
+
+- Added `JsonErrorDetailsConfig` and `ConfigureJsonErrorDetails()` to configure JSON error-response diagnostics and `ErrorDetails` serialization metadata.
 
 ### Performance
 

@@ -164,8 +164,10 @@ namespace NanoRoute
     /// </returns>
     /// <remarks>
     /// Handlers may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
-    /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder, bool)"/>, or equivalent custom
-    /// middleware is registered, those exceptions can be translated into structured error responses. Throwing other
+    /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder)"/>, or equivalent custom
+    /// middleware is registered, those exceptions can be translated into structured error responses. Use
+    /// <see cref="NanoRouteJsonExtensions.ConfigureJsonErrorDetails{TBuilder}(TBuilder, ConfigureBuilderDelegate{JsonErrorDetailsConfig})"/>
+    /// before registering JSON error handling when you need to include developer diagnostics. Throwing other
     /// exception types is also supported, but they are treated as unexpected failures:
     /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> converts them into internal
     /// server error responses, while without such middleware they propagate to the caller unchanged.

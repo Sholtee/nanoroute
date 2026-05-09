@@ -309,30 +309,49 @@ Typed handlers also have middleware-style overloads that receive `CallNextHandle
 
 `AddExceptionHandler()` adds middleware that converts unexpected exceptions into enriched `HttpRequestException` values. Existing `HttpRequestException` values are passed through unchanged, and `OperationCanceledException` still propagates to the caller.
 
-Pass an `ExceptionHandlingConfig` to `AddExceptionHandler()` when you want to customize how specific exception types are normalized:
+Use `ConfigureExceptionHandling()` before `AddExceptionHandler()` when you want to customize how specific exception types are normalized:
 
 ```csharp
-ExceptionHandlingConfig exceptionConfig = new()
-{
-    ExceptionNormalizers = ExceptionHandlingConfig.Default.ExceptionNormalizers.SetItem
-    (
-        typeof(NotSupportedException),
-        ex =>
-        {
-            HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
-            return null!;
-        }
-    )
-};
-
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .AddExceptionHandler(exceptionConfig)
+    .ConfigureExceptionHandling(config => config with
+    {
+        ExceptionNormalizers = config.ExceptionNormalizers.SetItem
+        (
+            typeof(NotSupportedException),
+            static ex =>
+            {
+                HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+                return null!;
+            }
+        )
+    })
+    .AddExceptionHandler()
     .AddHandler("GET", "/items", (_, _) => throw new NotSupportedException())
     .CreateRouter();
 ```
 
-`AddExceptionHandler()` snapshots the supplied configuration at registration time.
+`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
+
+### JSON Error Details
+
+`AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses. Configure the error payload before adding the middleware when you want to include developer diagnostics or customize `ErrorDetails` serialization:
+
+```csharp
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .ConfigureJsonErrorDetails(config => config with
+    {
+        PopulateErrorInfo = true
+    })
+    .AddJsonErrorDetails()
+    .AddHandler("GET", "/items", (_, _) => throw new InvalidOperationException("Boom"))
+    .CreateRouter();
+```
+
+`PopulateErrorInfo` can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details.
+
+`AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
 
 ### Custom Routers
 
@@ -378,9 +397,10 @@ This keeps the transport-specific concerns in your own router type while still r
 - `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
-- `AddExceptionHandler(..., ExceptionHandlingConfig)` customizes exception normalization for that handler registration.
+- `ConfigureExceptionHandling()` customizes exception normalization used by subsequently registered `AddExceptionHandler()` middleware.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
+- `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 
 ## Core Types

@@ -33,6 +33,7 @@ The API documentation for this package is generated from the XML comments in the
 - Once a child branch has been selected for a request, NanoRoute continues only within that branch.
 - `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}` and matches query keys through `Uri.Query` normalization.
 - `ConfigureExceptionHandling()` stores scoped exception-normalization settings used by `AddExceptionHandler()`.
+- `ConfigureJsonErrorDetails()` stores scoped JSON `ErrorDetails` response settings used by `AddJsonErrorDetails()`.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
 - `ValueSourceAttribute` customizes typed-handler property binding with `Context`, `ServiceLocator`, and `Skip` sources.
 - `NanoRoute.Json` adds JSON request binding and JSON error/response helpers on top of the core pipeline.
