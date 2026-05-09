@@ -46,6 +46,20 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void ParseRoutePattern_ShouldAllowListValueParserDefinitions()
+        {
+            object[] definitions = RoutePatternParser.ParseRoutePattern("/items/{ids:int[](min=1)}").ToArray();
+
+            Assert.That(definitions, Has.Length.EqualTo(2));
+
+            ParameterDefinition parameter = (ParameterDefinition) definitions[1];
+            Assert.That(parameter.ParameterName, Is.EqualTo("ids"));
+            Assert.That(parameter.ValueParser.Name, Is.EqualTo("int"));
+            Assert.That(parameter.ValueParser.IsList, Is.True);
+            Assert.That(parameter.ValueParser.RawArguments["min"], Is.EqualTo("1"));
+        }
+
+        [Test]
         public void ParseRoutePattern_ShouldAllowTrailingSeparator()
         {
             object[] definitions = RoutePatternParser.ParseRoutePattern("/items/{id:int}/details/").ToArray();
