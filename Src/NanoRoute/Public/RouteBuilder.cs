@@ -337,9 +337,14 @@ namespace NanoRoute
         /// Gets extension-defined builder metadata visible from this builder instance.
         /// </summary>
         /// <remarks>
+        /// Metadata is public for extension authors who need scoped build-time settings behind module-specific
+        /// configuration methods. Application code usually should prefer those module APIs instead of reading or
+        /// writing metadata directly.
+        /// <para>
         /// Child builders created with <see cref="CreatePrefix(string)"/> inherit a scoped copy of their parent's
         /// metadata. Metadata updates made after the child builder is created stay local to the builder where they
         /// are made.
+        /// </para>
         /// </remarks>
         public BuilderMetadata Metadata { get; }
 

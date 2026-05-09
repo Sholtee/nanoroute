@@ -114,6 +114,8 @@ namespace NanoRoute
     /// <remarks>
     /// Configuration delegates run during route registration, not during request processing. Extension methods that
     /// use <see cref="RouteBuilder.Metadata"/> can use this delegate shape for scoped builder settings.
+    /// A module registration should capture the configuration visible when it is registered; later
+    /// <c>ConfigureXxx()</c> calls affect later registrations, not registrations that already exist.
     /// </remarks>
     public delegate TConfig ConfigureBuilderDelegate<TConfig>(TConfig config);
 

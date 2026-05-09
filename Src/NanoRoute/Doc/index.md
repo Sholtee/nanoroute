@@ -27,13 +27,13 @@ The API documentation for this package is generated from the XML comments in the
 - Value parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as `{id:int(min=1)}` once during registration.
 - Parser-backed segments support optional parameter names. `{id:int}` stores the parsed value in `RequestContext.Parameters`, while `{int}` only validates the segment.
 - `AddPrefix()` and `CreatePrefix()` create scoped route subtrees without forcing you to repeat common prefixes.
-- `RouteBuilder.Metadata` stores type-keyed extension settings and follows the same scoped inheritance model as prefix builders.
+- `RouteBuilder.Metadata` stores type-keyed extension settings and follows the same scoped inheritance model as prefix builders. It is public for extension authors and is not the normal application configuration surface.
 - `RouterConfig` is immutable and can be replaced with `WithConfiguration(config => config with { ... })` before creating a router snapshot.
 - `MatchingPrecedence` lets you choose whether literal or parameterized child segments are selected first.
 - Once a child branch has been selected for a request, NanoRoute continues only within that branch.
 - `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}` and matches query keys through `Uri.Query` normalization.
-- `ConfigureExceptionHandling()` stores scoped exception-normalization settings used by `AddExceptionHandler()`.
-- `ConfigureJsonErrorDetails()` stores scoped JSON `ErrorDetails` response settings used by `AddJsonErrorDetails()`.
+- `ConfigureExceptionHandling()` stores scoped exception-normalization settings used by subsequently registered `AddExceptionHandler()` middleware.
+- `ConfigureJsonErrorDetails()` stores scoped JSON `ErrorDetails` response settings used by subsequently registered `AddJsonErrorDetails()` middleware.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
 - `ValueSourceAttribute` customizes typed-handler property binding with `Context`, `ServiceLocator`, and `Skip` sources.
 - `NanoRoute.Json` adds JSON request binding and JSON error/response helpers on top of the core pipeline.

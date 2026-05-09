@@ -193,7 +193,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses when explicitly added.
-- `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata before `AddJsonErrorDetails()` is registered.
+- `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.
 - `AddHandler<TRequest>()` projects `RequestContext` into a typed request object before invoking the handler.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 

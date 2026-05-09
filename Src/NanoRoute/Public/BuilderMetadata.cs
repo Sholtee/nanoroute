@@ -14,8 +14,13 @@ namespace NanoRoute
     /// Stores extension-defined builder settings keyed by their CLR type.
     /// </summary>
     /// <remarks>
+    /// This type is public so third-party builder extensions can keep scoped build-time settings behind their own
+    /// module-specific APIs. Application code usually should prefer those APIs, such as <c>ConfigureXxx()</c>
+    /// methods, instead of reading or writing metadata directly.
+    /// <para>
     /// Prefix builders receive a scoped copy of the parent metadata when they are created. Later changes made in
     /// either scope stay local to that scope.
+    /// </para>
     /// </remarks>
     public sealed class BuilderMetadata
     {

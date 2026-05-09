@@ -95,7 +95,7 @@ Created routers are immutable snapshots: later route or configuration changes on
 
 ### Builder Metadata
 
-`RouteBuilder.Metadata` is a type-keyed store for extension-defined builder settings. It is intended for optional helper layers that need to remember build-time settings without adding feature-specific properties to the core builder.
+`RouteBuilder.Metadata` is a type-keyed store for extension-defined builder settings. It is public so third-party builder extensions can offer their own `ConfigureXxx()` methods, but it is not intended as the everyday application configuration surface. Most applications should use module-specific methods such as `ConfigureExceptionHandling()` and `ConfigureJsonErrorDetails()` instead of reading or writing metadata directly.
 
 ```csharp
 public sealed record MyExtensionOptions(bool Enabled);
@@ -105,6 +105,26 @@ builder.Metadata.Set(new MyExtensionOptions(Enabled: true)); // Usually called f
 ```
 
 Prefix builders inherit metadata from the parent when they are created, then keep their own scoped copy. Later changes made on the parent or child remain local to that builder scope.
+
+### Module Configuration
+
+Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same builder scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
+
+```csharp
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .ConfigureJsonErrorDetails(config => config with
+    {
+        PopulateErrorInfo = true
+    })
+    .AddJsonErrorDetails("/api/")
+    .AddJsonErrorDetails("/admin/")
+    .CreateRouter();
+```
+
+`ConfigureXxx()` methods update the configuration visible from the current builder scope. They affect module registrations made after the configuration call. Registrations that have already been added keep the configuration they captured when they were registered.
+
+Prefix builders follow the same rule as value parsers and metadata: a child builder receives a scoped copy when it is created. Configuration changes made later on the parent do not rewrite existing child scopes, and child changes stay local to that child scope.
 
 ### AddPrefix() and CreatePrefix()
 
@@ -394,13 +414,13 @@ This keeps the transport-specific concerns in your own router type while still r
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `AddPrefix("/prefix/", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
-- `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping.
+- `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
 - `ConfigureExceptionHandling()` customizes exception normalization used by subsequently registered `AddExceptionHandler()` middleware.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
-- `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata.
+- `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 
 ## Core Types
