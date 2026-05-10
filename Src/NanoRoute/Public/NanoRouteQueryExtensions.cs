@@ -31,18 +31,7 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(string bindings)
-            {
-                Ensure.NotNull(routeBuilder);
-                Ensure.NotNull(bindings);
-
-                return routeBuilder.AddQueryBindings
-                (
-                    HttpVerb.Names,
-                    "/",
-                    bindings
-                );
-            }
+            public TBuilder AddQueryBindings(string bindings) => routeBuilder.AddQueryBindings(HttpVerb.Names, "/", bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
@@ -57,14 +46,7 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings)
-            {
-                Ensure.NotNull(routeBuilder);
-                Ensure.NotNull(verbs);
-                Ensure.NotNull(bindings);
-
-                return routeBuilder.AddQueryBindings(verbs, "/", bindings);
-            }
+            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings) => routeBuilder.AddQueryBindings(verbs, "/", bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
@@ -82,19 +64,7 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(string pattern, string bindings)
-            {
-                Ensure.NotNull(routeBuilder);
-                Ensure.NotNull(pattern);
-                Ensure.NotNull(bindings);
-
-                return routeBuilder.AddQueryBindings
-                (
-                    HttpVerb.Names,
-                    pattern,
-                    bindings
-                );
-            }
+            public TBuilder AddQueryBindings(string pattern, string bindings) => routeBuilder.AddQueryBindings(HttpVerb.Names, pattern, bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
@@ -113,15 +83,7 @@ namespace NanoRoute
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
             /// </remarks>
-            public TBuilder AddQueryBindings(string verb, string pattern, string bindings)
-            {
-                Ensure.NotNull(routeBuilder);
-                Ensure.NotNull(verb);
-                Ensure.NotNull(pattern);
-                Ensure.NotNull(bindings);
-
-                return routeBuilder.AddQueryBindings([verb], pattern, bindings);
-            }
+            public TBuilder AddQueryBindings(string verb, string pattern, string bindings) => routeBuilder.AddQueryBindings([verb /*will be null checked*/], pattern, bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.

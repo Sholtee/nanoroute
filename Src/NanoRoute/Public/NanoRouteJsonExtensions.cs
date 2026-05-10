@@ -173,7 +173,7 @@ namespace NanoRoute.Json
             /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
-            public TBuilder AddJsonBody(string verb, string pattern, JsonTypeInfo typeInfo, string paramName) => routeBuilder.AddJsonBody([verb], pattern, typeInfo, paramName);
+            public TBuilder AddJsonBody(string verb, string pattern, JsonTypeInfo typeInfo, string paramName) => routeBuilder.AddJsonBody([verb /*will be null checked*/], pattern, typeInfo, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for the selected HTTP methods.
@@ -239,7 +239,7 @@ namespace NanoRoute.Json
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
-            public TBuilder AddJsonBody(string verb, string pattern, Type type, string paramName) => routeBuilder.AddJsonBody([verb], pattern, type, paramName);
+            public TBuilder AddJsonBody(string verb, string pattern, Type type, string paramName) => routeBuilder.AddJsonBody([verb /*will be null checked*/], pattern, type, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter using runtime type metadata.
@@ -320,7 +320,7 @@ namespace NanoRoute.Json
             /// the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.
             /// </param>
             /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
-            public TBuilder AddJsonErrorDetails(string verb, string pattern) => routeBuilder.AddJsonErrorDetails([verb], pattern);
+            public TBuilder AddJsonErrorDetails(string verb, string pattern) => routeBuilder.AddJsonErrorDetails([verb /*will be null checked*/], pattern);
 
             /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses for the selected HTTP methods.

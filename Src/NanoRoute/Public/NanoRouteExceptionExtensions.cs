@@ -150,7 +150,7 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
-            public TBuilder AddExceptionHandler(string verb, string pattern) => routeBuilder.AddExceptionHandler([verb], pattern);
+            public TBuilder AddExceptionHandler(string verb, string pattern) => routeBuilder.AddExceptionHandler([verb /*will be null checked*/], pattern);
 
             /// <summary>
             /// Adds an exception-handling middleware for the selected HTTP methods.
