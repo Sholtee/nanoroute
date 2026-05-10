@@ -305,11 +305,11 @@ public sealed class GetItemRequest
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
+    .AddQueryBindings("GET", "/items/{id:int}", "{query_filter:str(min=3)}")
     .AddHandler
     (
-        ["GET"],
+        "GET",
         "/items/{id:int}",
-        "{query_filter:str(min=3)}",
         async (GetItemRequest request) =>
         {
             Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
@@ -334,6 +334,9 @@ Binding rules:
 - `[ValueSource(ValueSource.Skip)]` leaves the property untouched and does not allow `Name`.
 - Read-only properties are ignored.
 - Missing required values or services fail fast with `InvalidOperationException`.
+
+Register query bindings with `AddQueryBindings()` before the typed handler when the request object needs parsed query values.
+Typed `AddHandler()` supports the same route selection shapes as regular handlers: pattern-only for all verbs, single `verb` plus `pattern`, or an `IEnumerable<string>` of verbs plus `pattern`.
 
 Typed handlers also have middleware-style overloads that receive `CallNextHandlerDelegate`:
 
