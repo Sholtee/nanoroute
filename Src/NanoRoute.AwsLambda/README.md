@@ -127,7 +127,7 @@ Use `AwsLambdaRouterConfig.LambdaTimeoutBuffer` when your function needs a diffe
 ```csharp
 ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
-    .WithConfiguration(config => config with
+    .ConfigureRouting(config => config with
     {
         LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
     })
@@ -188,6 +188,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 
 - `ApiGatewayHttpApiV2Router.CreateBuilder()` starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.
 - `AwsLambdaRouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`, and adds `LambdaTimeoutBuffer`.
+- `ConfigureRouting()` customizes `AwsLambdaRouterConfig` before creating a router snapshot.
 - `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.

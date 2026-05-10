@@ -132,10 +132,10 @@ NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! verb, string! patte
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddPrefix(string! pattern, System.Action<NanoRoute.RouteBuilder!>! configureRoutes) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
+NanoRoute.RouterBuilder<TRouter, TConfig>.ConfigureRouting(NanoRoute.ConfigureBuilderDelegate<TConfig!>! updateConfig) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.CreateRouter() -> TRouter!
-NanoRoute.RouterBuilder<TRouter, TConfig>.RouterBuilder(System.Func<NanoRoute.RouterBuilder<TRouter!, TConfig!>!, TRouter!>! routerFactory) -> void
+NanoRoute.RouterBuilder<TRouter, TConfig>.RouterBuilder(NanoRoute.RouterFactoryDelegate<TRouter!, TConfig!>! routerFactory) -> void
 NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig.get -> TConfig!
-NanoRoute.RouterBuilder<TRouter, TConfig>.WithConfiguration(System.Func<TConfig!, TConfig!>! updateConfig) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilderValueParserExtensions
 NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddBoolParser() -> TBuilder!
@@ -150,6 +150,7 @@ NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddV
 NanoRoute.RouterConfig
 NanoRoute.RouterConfig.MatchingPrecedence.get -> NanoRoute.MatchingPrecedence
 NanoRoute.RouterConfig.MatchingPrecedence.init -> void
+NanoRoute.RouterFactoryDelegate<TRouter, TConfig>
 NanoRoute.RoutingContext
 NanoRoute.SyncValueParserDelegate
 NanoRoute.UnexpectedParameterBehavior

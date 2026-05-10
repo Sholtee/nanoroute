@@ -13,6 +13,15 @@ namespace NanoRoute
     using Json;
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TRouter"></typeparam>
+    /// <typeparam name="TConfig"></typeparam>
+    /// <param name="routerBuilder"></param>
+    /// <returns></returns>
+    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : Router where TConfig: RouterConfig, new();
+
+    /// <summary>
     /// Binds raw parser arguments to an opaque object that is cached with the route definition.
     /// </summary>
     /// <param name="rawArgs">

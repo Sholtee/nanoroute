@@ -74,6 +74,6 @@ namespace NanoRoute
         /// <summary>
         /// Configuration assigned to this instance.
         /// </summary>
-        public RouterConfig Config { get; } = config;
+        public RouterConfig Config { get; } = config with { };  // create a snapshot from the actual configuration 
     }
 }

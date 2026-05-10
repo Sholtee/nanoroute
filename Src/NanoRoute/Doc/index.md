@@ -8,6 +8,7 @@ The API documentation for this package is generated from the XML comments in the
 
 - [RouteBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
+- [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
@@ -30,7 +31,7 @@ The API documentation for this package is generated from the XML comments in the
 - Parser-backed segments support optional parameter names. `{id:int}` stores the parsed value in `RequestContext.Parameters`, while `{int}` only validates the segment.
 - `AddPrefix()` and `CreatePrefix()` create scoped route subtrees without forcing you to repeat common prefixes.
 - `RouteBuilder.Metadata` stores type-keyed extension settings and follows the same scoped inheritance model as prefix builders. It is public for extension authors and is not the normal application configuration surface.
-- `RouterConfig` is immutable and can be replaced with `WithConfiguration(config => config with { ... })` before creating a router snapshot.
+- `RouterConfig` is immutable and can be replaced with `ConfigureRouting(config => config with { ... })` before creating a router snapshot.
 - `MatchingPrecedence` lets you choose whether literal or parameterized child segments are selected first.
 - Once a child branch has been selected for a request, NanoRoute continues only within that branch.
 - `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}` and matches query keys through `Uri.Query` normalization. Undeclared query keys are ignored by default, or rejected when `ConfigureQueryParsing()` sets `UnexpectedParameterBehavior` to `Reject`.

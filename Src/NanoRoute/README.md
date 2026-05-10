@@ -73,12 +73,12 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 
 ### Router Configuration
 
-`RouterConfig` controls runtime behavior that applies to a created router snapshot. Configuration records are immutable, so use `WithConfiguration()` with a `with` expression when you want to replace one or more settings before calling `CreateRouter()`.
+`RouterConfig` controls runtime behavior that applies to a created router snapshot. Configuration records are immutable, so use `ConfigureRouting()` with a `with` expression when you want to replace one or more settings before calling `CreateRouter()`. The callback uses the same `ConfigureBuilderDelegate<TConfig>` shape as module-specific configuration methods.
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .WithConfiguration(config => config with
+    .ConfigureRouting(config => config with
     {
         MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
     })
@@ -440,6 +440,7 @@ This keeps the transport-specific concerns in your own router type while still r
 ## Common Building Blocks
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
+- `ConfigureRouting()` customizes router-level behavior such as matching precedence before creating a router snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `AddPrefix("/prefix/", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
@@ -457,6 +458,7 @@ This keeps the transport-specific concerns in your own router type while still r
 
 - [RouteBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
+- [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
