@@ -180,4 +180,7 @@
   <data name="ERR_MISSING_BODY" xml:space="preserve">
     <value>Missing body.</value>
   </data>
+  <data name="ERR_LIST_PARSERS_NOT_SUPPORTED" xml:space="preserve">
+    <value>List parsers are not supported.</value>
+  </data>
 </root>

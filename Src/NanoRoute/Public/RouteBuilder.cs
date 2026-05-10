@@ -151,10 +151,7 @@ namespace NanoRoute
 
             return AddHandler
             (
-                Enum.GetNames
-                (
-                    typeof(HttpVerb)
-                ),
+                HttpVerb.Names,
                 pattern,
                 handler
             );

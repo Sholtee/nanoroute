@@ -84,8 +84,19 @@ namespace NanoRoute.Tests
             ValueParserDefinition definition = Parse("int(min=3,text='it\\'s okay')");
 
             Assert.That(definition.Name, Is.EqualTo("int"));
+            Assert.That(definition.IsList, Is.False);
             Assert.That(definition.RawArguments["min"], Is.EqualTo("3"));
             Assert.That(definition.RawArguments["text"], Is.EqualTo("it's okay"));
+        }
+
+        [Test]
+        public void Parse_ShouldParseListValueDefinition()
+        {
+            ValueParserDefinition definition = Parse("int[](min=3)");
+
+            Assert.That(definition.Name, Is.EqualTo("int"));
+            Assert.That(definition.IsList, Is.True);
+            Assert.That(definition.RawArguments["min"], Is.EqualTo("3"));
         }
 
         [TestCase("int")]
@@ -95,6 +106,7 @@ namespace NanoRoute.Tests
             ValueParserDefinition definition = Parse(definitionText);
 
             Assert.That(definition.Name, Is.EqualTo("int"));
+            Assert.That(definition.IsList, Is.False);
             Assert.That(definition.RawArguments, Has.Count.EqualTo(0));
         }
 
@@ -139,8 +151,10 @@ namespace NanoRoute.Tests
         }
 
         [TestCase("int(min=3)", "INT(MIN=3)", true)]
+        [TestCase("int[](min=3)", "INT[](MIN=3)", true)]
         [TestCase("STR(pattern='[a-z]+',text='hello')", "str(PATTERN='[A-Z]+',TEXT='HELLO')", true)]
         [TestCase("int", "INT()", true)]
+        [TestCase("int[]", "int", false)]
         [TestCase("int(min=3,max=5)", "int(min=3)", false)]
         [TestCase("str(min=3)", "str(max=3)", false)]
         [TestCase("int(min=3)", "int(min=4)", false)]
