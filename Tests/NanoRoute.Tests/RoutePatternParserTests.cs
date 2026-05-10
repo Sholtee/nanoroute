@@ -171,7 +171,12 @@ namespace NanoRoute.Tests
             Assert.That(definitions[1].ValueParser, Is.EqualTo(ParseValue("int")));
         }
 
-        [TestCase("", 0)]
+        [Test]
+        public void ParseQueryPattern_ShouldReturnEmptyDefinitionsForEmptyPattern()
+        {
+            Assert.That(RoutePatternParser.ParseQueryPattern("").ToArray(), Is.Empty);
+        }
+
         [TestCase("{filter:str}&", 13)]
         [TestCase("{filter:str}{page:int}", 12)]
         [TestCase("{filter:str}/{page:int}", 12)]

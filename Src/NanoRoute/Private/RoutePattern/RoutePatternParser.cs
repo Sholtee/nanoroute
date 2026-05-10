@@ -52,6 +52,9 @@ namespace NanoRoute.Internals
 
         public static IEnumerable<ParameterDefinition> ParseQueryPattern(string pattern)
         {
+            if (pattern.Length is 0)
+                yield break;
+
             bool expectSeparator = false;
             int offset = 0;
 
@@ -70,7 +73,7 @@ namespace NanoRoute.Internals
                 expectSeparator = true;
             }
 
-            // the pattern is either empty or ends with '&'
+            // the pattern ends with '&'
             if (!expectSeparator)
                 throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
         }
