@@ -17,7 +17,7 @@ namespace NanoRoute
     /// <typeparam name="TConfig">The configuration type exposed by <see cref="RouterConfig"/>.</typeparam>
     public sealed class RouterBuilder<TRouter, TConfig> : RouteBuilder where TRouter : Router where TConfig: RouterConfig, new()
     {
-        private readonly Func<RouterBuilder<TRouter, TConfig>, TRouter> _routerFactory;
+        private readonly RouterFactoryDelegate<TRouter, TConfig> _routerFactory;
 
         /// <summary>
         /// Creates a builder that can produce <typeparamref name="TRouter"/> instances.
@@ -25,7 +25,7 @@ namespace NanoRoute
         /// <param name="routerFactory">
         /// A factory that receives this builder and returns a router backed by its current route snapshot.
         /// </param>
-        public RouterBuilder(Func<RouterBuilder<TRouter, TConfig>, TRouter> routerFactory): base()
+        public RouterBuilder(RouterFactoryDelegate<TRouter, TConfig> routerFactory): base()
         {
             Ensure.NotNull(routerFactory);
 
@@ -143,7 +143,7 @@ namespace NanoRoute
         /// </summary>
         /// <param name="updateConfig">A callback that returns the updated <see cref="RouterConfig"/> instance.</param>
         /// <returns>The current builder.</returns>
-        public RouterBuilder<TRouter, TConfig> WithConfiguration(Func<TConfig, TConfig> updateConfig)
+        public RouterBuilder<TRouter, TConfig> ConfigureRouting(ConfigureBuilderDelegate<TConfig> updateConfig)
         {
             Ensure.NotNull(updateConfig);
 

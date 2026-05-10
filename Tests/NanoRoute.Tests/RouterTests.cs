@@ -238,7 +238,7 @@ namespace NanoRoute.Tests
                     parsed = segment.ToString();
                     return true;
                 })
-                .WithConfiguration(config => config with { MatchingPrecedence = matchingPrecedence })
+                .ConfigureRouting(config => config with { MatchingPrecedence = matchingPrecedence })
                 .AddHandler("GET", "/items/literal", mockLiteralHandler.Object)
                 .AddHandler("GET", "/items/{value:str}", mockParameterizedHandler.Object)
                 .CreateRouter();
@@ -255,7 +255,7 @@ namespace NanoRoute.Tests
         {
             ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>
             (
-                () => _routerBuilder.WithConfiguration(config => config with { MatchingPrecedence = (MatchingPrecedence) 100 })
+                () => _routerBuilder.ConfigureRouting(config => config with { MatchingPrecedence = (MatchingPrecedence) 100 })
             )!;
 
             Assert.That(ex.ParamName, Is.EqualTo("value"));

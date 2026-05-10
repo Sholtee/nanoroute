@@ -26,7 +26,7 @@ namespace NanoRoute.Tests
 
         private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
 
-        private Mock<Func<RouterBuilder<TestRouter, RouterConfig>, TestRouter>> _mockRouterFactory = null!;
+        private Mock<RouterFactoryDelegate<TestRouter, RouterConfig>> _mockRouterFactory = null!;
 
         private sealed class TestJsonPayload
         {
@@ -36,7 +36,7 @@ namespace NanoRoute.Tests
         [SetUp]
         public void Setup()
         {
-            _mockRouterFactory = new Mock<Func<RouterBuilder<TestRouter, RouterConfig>, TestRouter>>(MockBehavior.Strict);
+            _mockRouterFactory = new Mock<RouterFactoryDelegate<TestRouter, RouterConfig>>(MockBehavior.Strict);
             _routerBuilder = new RouterBuilder<TestRouter, RouterConfig>(_mockRouterFactory.Object);
 
             _mockRouterFactory
@@ -113,6 +113,17 @@ namespace NanoRoute.Tests
             {
                 "[Get] /items"
             }));
+        }
+
+        [Test]
+        public void BasePattern_ShouldReflectTheBuilderBranch()
+        {
+            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/");
+            RouteBuilder nestedBuilder = childBuilder.CreatePrefix("/nested/");
+
+            Assert.That(_routerBuilder.BasePattern, Is.Empty);
+            Assert.That(childBuilder.BasePattern, Is.EqualTo("/path/to/"));
+            Assert.That(nestedBuilder.BasePattern, Is.EqualTo("/path/to/nested/"));
         }
 
         [TestCase("")]

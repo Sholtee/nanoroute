@@ -5,7 +5,9 @@
 ********************************************************************************/
 using System;
 using System.Buffers;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
@@ -15,9 +17,12 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class QueryStringParser(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters): IDisposable
+    internal sealed class QueryStringParser(RequestContext context, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters, QueryParsingConfig config) : IDisposable
     {
         #region Private
+        // Extend only lists created by this parser; replace anything supplied by earlier middleware.
+        private sealed class QueryValueList : List<object?>;
+
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
         private char[]? _decodedBuffer;
@@ -45,7 +50,15 @@ namespace NanoRoute.Internals
             if (!parseResult.Success)
                 ThrowBadRequest(Resources.ERR_QUERY_INVALID_PARAMETER, parameterDefinition.ParameterName!);
 
-            context.Parameters[parameterDefinition.ParameterName!] = parseResult.Parsed;
+            if (parameterDefinition.ValueParser.IsList)
+            {
+                if (!context.Parameters.TryGetValue(parameterDefinition.ParameterName!, out object? val) || val is not QueryValueList lst)
+                    context.Parameters[parameterDefinition.ParameterName!] = lst = [];
+
+                lst.Add(parseResult.Parsed);
+            }
+            else
+                context.Parameters[parameterDefinition.ParameterName!] = parseResult.Parsed;
         }
 
         private ReadOnlyMemory<char> DecodeParameter(ReadOnlyMemory<char> source)
@@ -104,11 +117,25 @@ namespace NanoRoute.Internals
                 ReadOnlyMemory<char> parameterName = DecodeParameter(_parameter.Current.Slice(0, separatorIndex));
 
                 if (!expectedParameters.TryGetValue(parameterName, out ParameterParser? expectedParameter))
-                    continue;
+                {
+                    switch (config.UnexpectedParameterBehavior)
+                    {
+                        case UnexpectedParameterBehavior.Ignore:
+                            continue;
 
-                ParameterDefinition parameterDefinition = expectedParameter.Definition;
+                        case UnexpectedParameterBehavior.Reject:
+                            ThrowBadRequest(Resources.ERR_QUERY_UNEXPECTED_PARAMETER, parameterName);
+                            break;
 
-                if (_visited[parameterDefinition.Index])
+                        default:
+                            Debug.Fail($"Unknown {nameof(UnexpectedParameterBehavior)} value: {config.UnexpectedParameterBehavior}");
+                            break;
+                    }
+                }
+
+                ParameterDefinition parameterDefinition = expectedParameter!.Definition;
+
+                if (_visited[parameterDefinition.Index] && !parameterDefinition.ValueParser.IsList)
                     ThrowBadRequest(Resources.ERR_QUERY_DUPLICATE_PARAMETER, parameterDefinition.ParameterName!);
 
                 _visited[parameterDefinition.Index] = true;
@@ -130,8 +157,6 @@ namespace NanoRoute.Internals
                 AcceptParameter(parameterDefinition, parseResult.Result);
             }
 
-            // FrozenDictionary uses ImmutableArray to access Values so accessing this property is a relative fast operation
-            // https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary-2.values?view=net-10.0#property-value
             foreach (ParameterParser expectedParameter in expectedParameters.Values)
             {
                 ParameterDefinition parameterDefinition = expectedParameter.Definition;

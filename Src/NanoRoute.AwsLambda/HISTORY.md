@@ -17,7 +17,7 @@ Configure AWS Lambda router settings through immutable record updates:
 ```csharp
 ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
-    .WithConfiguration(config => config with
+    .ConfigureRouting(config => config with
     {
         LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
     })

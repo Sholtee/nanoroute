@@ -95,6 +95,7 @@ namespace NanoRoute.HandlerExtensions
     /// </remarks>
     public static class NanoRouteHandlerExtensions
     {
+        #region Private
         private static Func<RequestContext, TRequestContext> CreateContextMapperDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>() where TRequestContext : new()
         {
             ParameterExpression
@@ -190,25 +191,74 @@ namespace NanoRoute.HandlerExtensions
             );
         }
 
-        private static TBuilder AddHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IEnumerable<string> verbs, string pattern, string? queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
+        private static TBuilder AddHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
         {
             Ensure.NotNull(routeBuilder);
             Ensure.NotNull(verbs);
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
 
-            if (queryBindings is not null)
-                routeBuilder.AddQueryBindings(verbs, pattern, queryBindings);
-
             Func<RequestContext, TRequestContext> mapContext = CreateContextMapperDelegate<TRequestContext>();
 
             routeBuilder.AddHandler(verbs, pattern, (context, next) => handler(mapContext(context), next));
 
             return routeBuilder;
-        } 
+        }
+        #endregion
 
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
         {
+            /// <summary>
+            /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
+            /// </summary>
+            /// <typeparam name="TRequestContext">
+            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+            /// </typeparam>
+            /// <param name="pattern">The route pattern to register for all supported HTTP methods.</param>
+            /// <param name="handler">The typed handler delegate.</param>
+            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <remarks>
+            /// <para>
+            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
+            /// </para>
+            /// <para>
+            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
+            /// <see cref="CancellationToken"/> receives the active request token.
+            /// </para>
+            /// <para>
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
+            /// or from the request service provider.
+            /// </para>
+            /// </remarks>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
+                routeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
+
+            /// <summary>
+            /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
+            /// </summary>
+            /// <typeparam name="TRequestContext">
+            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+            /// </typeparam>
+            /// <param name="verb">The HTTP verb handled by the route.</param>
+            /// <param name="pattern">The route pattern to register.</param>
+            /// <param name="handler">The typed handler delegate.</param>
+            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <remarks>
+            /// <para>
+            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
+            /// </para>
+            /// <para>
+            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
+            /// <see cref="CancellationToken"/> receives the active request token.
+            /// </para>
+            /// <para>
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
+            /// or from the request service provider.
+            /// </para>
+            /// </remarks>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
+                routeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
+
             /// <summary>
             /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
             /// </summary>
@@ -235,8 +285,59 @@ namespace NanoRoute.HandlerExtensions
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
-                return AddHandlerCore(routeBuilder, verbs, pattern, null, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
+                return AddHandlerCore(routeBuilder, verbs, pattern, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
             }
+
+            /// <summary>
+            /// Registers a typed middleware handler that receives a request object and the next handler in the pipeline.
+            /// </summary>
+            /// <typeparam name="TRequestContext">
+            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+            /// </typeparam>
+            /// <param name="pattern">The route pattern to register for all supported HTTP methods.</param>
+            /// <param name="handler">The typed middleware delegate.</param>
+            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <remarks>
+            /// <para>
+            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
+            /// </para>
+            /// <para>
+            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
+            /// <see cref="CancellationToken"/> receives the active request token.
+            /// </para>
+            /// <para>
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
+            /// or from the request service provider.
+            /// </para>
+            /// </remarks>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
+                routeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
+
+            /// <summary>
+            /// Registers a typed middleware handler that receives a request object and the next handler in the pipeline.
+            /// </summary>
+            /// <typeparam name="TRequestContext">
+            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+            /// </typeparam>
+            /// <param name="verb">The HTTP verb handled by the route.</param>
+            /// <param name="pattern">The route pattern to register.</param>
+            /// <param name="handler">The typed middleware delegate.</param>
+            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <remarks>
+            /// <para>
+            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
+            /// </para>
+            /// <para>
+            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
+            /// <see cref="CancellationToken"/> receives the active request token.
+            /// </para>
+            /// <para>
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
+            /// or from the request service provider.
+            /// </para>
+            /// </remarks>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
+                routeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
 
             /// <summary>
             /// Registers a typed middleware handler that receives a request object and the next handler in the pipeline.
@@ -262,82 +363,7 @@ namespace NanoRoute.HandlerExtensions
             /// </para>
             /// </remarks>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
-                AddHandlerCore(routeBuilder, verbs, pattern, null, handler);
-
-            /// <summary>
-            /// Registers a typed handler and the query-string bindings it depends on.
-            /// </summary>
-            /// <typeparam name="TRequestContext">
-            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
-            /// </typeparam>
-            /// <param name="verbs">The HTTP verbs handled by the route.</param>
-            /// <param name="pattern">The route pattern to register.</param>
-            /// <param name="queryBindings">
-            /// A query-parameter descriptor that is applied before <paramref name="handler"/> is invoked.
-            /// </param>
-            /// <param name="handler">The typed handler delegate.</param>
-            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
-            /// <remarks>
-            /// <para>
-            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
-            /// </para>
-            /// <para>
-            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
-            /// <see cref="CancellationToken"/> receives the active request token.
-            /// </para>
-            /// <para>
-            /// <paramref name="queryBindings"/> are registered before the request object is created, so their parsed values
-            /// are available through the default context binding rules.
-            /// </para>
-            /// <para>
-            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
-            /// or from the request service provider.
-            /// </para>
-            /// </remarks>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, string queryBindings, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
-            {
-                Ensure.NotNull(handler);
-                Ensure.NotNull(queryBindings);
-
-                return AddHandlerCore(routeBuilder, verbs, pattern, queryBindings, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
-            }
-
-            /// <summary>
-            /// Registers a typed middleware handler and the query-string bindings it depends on.
-            /// </summary>
-            /// <typeparam name="TRequestContext">
-            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
-            /// </typeparam>
-            /// <param name="verbs">The HTTP verbs handled by the route.</param>
-            /// <param name="pattern">The route pattern to register.</param>
-            /// <param name="queryBindings">
-            /// A query-parameter descriptor that is applied before <paramref name="handler"/> is invoked.
-            /// </param>
-            /// <param name="handler">The typed middleware delegate.</param>
-            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
-            /// <remarks>
-            /// <para>
-            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
-            /// </para>
-            /// <para>
-            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
-            /// <see cref="CancellationToken"/> receives the active request token.
-            /// </para>
-            /// <para>
-            /// <paramref name="queryBindings"/> are registered before the request object is created, so their parsed values
-            /// are available through the default context binding rules.
-            /// </para>
-            /// <para>
-            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
-            /// or from the request service provider.
-            /// </para>
-            /// </remarks>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, string queryBindings, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new()
-            {
-                Ensure.NotNull(queryBindings);
-
-                return AddHandlerCore(routeBuilder, verbs, pattern, queryBindings, handler);
-            }
+                AddHandlerCore(routeBuilder, verbs, pattern, handler);
         }
     }
 }

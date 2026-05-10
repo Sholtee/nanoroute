@@ -13,6 +13,15 @@ namespace NanoRoute
     using Json;
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TRouter"></typeparam>
+    /// <typeparam name="TConfig"></typeparam>
+    /// <param name="routerBuilder"></param>
+    /// <returns></returns>
+    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : Router where TConfig: RouterConfig, new();
+
+    /// <summary>
     /// Binds raw parser arguments to an opaque object that is cached with the route definition.
     /// </summary>
     /// <param name="rawArgs">
@@ -106,6 +115,35 @@ namespace NanoRoute
     public delegate ValueTask<ValueParseResult> ValueParserDelegate(ValueParserContext context);
 
     /// <summary>
+    /// Updates a typed builder configuration object.
+    /// </summary>
+    /// <typeparam name="TConfig">The configuration object type.</typeparam>
+    /// <param name="config">The configuration currently visible from the builder scope.</param>
+    /// <returns>The replacement configuration.</returns>
+    /// <remarks>
+    /// Configuration delegates run during route registration, not during request processing. Extension methods that
+    /// use <see cref="RouteBuilder.Metadata"/> can use this delegate shape for scoped builder settings.
+    /// A module registration should capture the configuration visible when it is registered; later
+    /// <c>ConfigureXxx()</c> calls affect later registrations, not registrations that already exist.
+    /// </remarks>
+    public delegate TConfig ConfigureBuilderDelegate<TConfig>(TConfig config);
+
+    /// <summary>
+    /// Converts an unexpected exception into an enriched <see cref="HttpRequestException"/>.
+    /// </summary>
+    /// <param name="exception">The exception thrown by a later handler in the routing pipeline.</param>
+    /// <returns>
+    /// The <see cref="HttpRequestException"/> that should be thrown by the exception-handling middleware.
+    /// </returns>
+    /// <remarks>
+    /// Normalizers are configured with <see cref="NanoRouteExceptionExtensions.ConfigureExceptionHandling{TBuilder}(TBuilder, ConfigureBuilderDelegate{ExceptionHandlingConfig})"/>.
+    /// They run only for exception types registered in <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/>.
+    /// Existing <see cref="HttpRequestException"/> and <see cref="OperationCanceledException"/> values are not
+    /// normalized by <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/>.
+    /// </remarks>
+    public delegate HttpRequestException ExceptionNormalizer(Exception exception);
+
+    /// <summary>
     /// Invokes the next compatible handler in the current routing pipeline.
     /// </summary>
     /// <returns>
@@ -137,8 +175,10 @@ namespace NanoRoute
     /// </returns>
     /// <remarks>
     /// Handlers may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
-    /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder, bool)"/>, or equivalent custom
-    /// middleware is registered, those exceptions can be translated into structured error responses. Throwing other
+    /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder)"/>, or equivalent custom
+    /// middleware is registered, those exceptions can be translated into structured error responses. Use
+    /// <see cref="NanoRouteJsonExtensions.ConfigureJsonErrorDetails{TBuilder}(TBuilder, ConfigureBuilderDelegate{JsonErrorDetailsConfig})"/>
+    /// before registering JSON error handling when you need to include developer diagnostics. Throwing other
     /// exception types is also supported, but they are treated as unexpected failures:
     /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> converts them into internal
     /// server error responses, while without such middleware they propagate to the caller unchanged.

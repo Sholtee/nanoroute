@@ -41,7 +41,7 @@ namespace NanoRoute.Internals
             ARGS_PATTERN = $@"\s*(?:{NAME_VALUE_PAIR}(?:\s*,\s*{NAME_VALUE_PAIR})*)?\s*",
 
             // Matches and captures a complete parser-backed value definition.
-            PARSER_DEFINITION_PATTERN = $@"\G(?<parserName>{IDENTIFIER})(?:\({ARGS_PATTERN}\))?";
+            PARSER_DEFINITION_PATTERN = $@"\G(?<parserName>{IDENTIFIER})(?:\({ARGS_PATTERN}\))?(?<isList>\[\])?";
 
         private static readonly Regex s_parserDefinition = new(PARSER_DEFINITION_PATTERN, RuntimeFeature.IsDynamicCodeSupported ? RegexOptions.Compiled : RegexOptions.None);
 
@@ -84,6 +84,7 @@ namespace NanoRoute.Internals
             ValueParserDefinition result = new()
             {
                 Name = parserName,
+                IsList = parsed.Groups["isList"].Success,
                 RawArguments = TryExtractArguments(parsed, out Dictionary<string, string> rawArguments)
                     ? rawArguments
                     : throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_ARGUMENTS, parserName, offset))
@@ -95,14 +96,13 @@ namespace NanoRoute.Internals
 
         public required string Name { get; init; }
 
+        public required bool IsList { get; init; }
+
         public required IReadOnlyDictionary<string, string> RawArguments { get; init; }
 
         public override bool Equals(object other)
         {
-            if (other is not ValueParserDefinition otherDef || !otherDef.Name.Equals(Name, StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            if (RawArguments.Count != otherDef.RawArguments.Count)
+            if (other is not ValueParserDefinition otherDef || otherDef.IsList != IsList || !otherDef.Name.Equals(Name, StringComparison.OrdinalIgnoreCase) || RawArguments.Count != otherDef.RawArguments.Count)
                 return false;
 
             foreach (KeyValuePair<string, string> kvp in otherDef.RawArguments)

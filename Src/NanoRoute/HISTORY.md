@@ -5,8 +5,16 @@
 ### Breaking Changes
 
 - Changed `RouterConfig` and `HttpListenerRouterConfig` to immutable records.
-- Changed `RouterBuilder.WithConfiguration()` from a mutating `Action<TConfig>` callback to a replacing `Func<TConfig, TConfig>` callback.
+- Renamed `RouterBuilder.WithConfiguration()` to `ConfigureRouting()` and changed its callback from a mutating `Action<TConfig>` shape to the replacing `ConfigureBuilderDelegate<TConfig>` shape.
+- Changed JSON error-detail diagnostics from `AddJsonErrorDetails(populateErrorInfo: true)` to `ConfigureJsonErrorDetails(config => config with { PopulateErrorInfo = true }).AddJsonErrorDetails()`.
 - Removed the public `Router.MatchingPrecedence` snapshot property. Matching precedence is now carried by the immutable `RouterConfig` used to create the router.
+- Removed inline query-binding overloads from typed `AddHandler()` APIs. Register query bindings explicitly with `AddQueryBindings()` before adding the typed handler.
+
+### Added
+
+- Added `JsonErrorDetailsConfig` and `ConfigureJsonErrorDetails()` to configure JSON error-response diagnostics and `ErrorDetails` serialization metadata.
+- Added `QueryParsingConfig`, `UnexpectedParameterBehavior`, and `ConfigureQueryParsing()` to configure how query bindings handle undeclared query-string parameters.
+- Added typed `AddHandler()` overloads for pattern-only and single-verb registration, matching the rest of the route-builder API.
 
 ### Performance
 
@@ -25,10 +33,10 @@ builder.WithConfiguration(config =>
 });
 ```
 
-with immutable record updates:
+with `ConfigureRouting()` immutable record updates:
 
 ```csharp
-builder.WithConfiguration(config => config with
+builder.ConfigureRouting(config => config with
 {
     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
 });

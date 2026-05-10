@@ -162,6 +162,9 @@
   <data name="ERR_QUERY_MISSING_PARAMETER" xml:space="preserve">
     <value>Missing query parameters: {0}</value>
   </data>
+  <data name="ERR_QUERY_UNEXPECTED_PARAMETER" xml:space="preserve">
+    <value>Unexpected query parameter: {0}</value>
+  </data>
   <data name="ERR_MISSING_REQUIRED_PARAMETER" xml:space="preserve">
     <value>Missing required parameter: {0}</value>
   </data>
@@ -179,5 +182,8 @@
   </data>
   <data name="ERR_MISSING_BODY" xml:space="preserve">
     <value>Missing body.</value>
+  </data>
+  <data name="ERR_LIST_PARSERS_NOT_SUPPORTED" xml:space="preserve">
+    <value>List parsers are not supported.</value>
   </data>
 </root>

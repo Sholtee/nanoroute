@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
@@ -86,7 +87,11 @@ namespace NanoRoute.Tests
         public async Task AddJsonErrorDetails_ShouldHandleNotFoundEvents(bool populateErrorInfo)
         {
             TestRouter router = _routerBuilder
-                .AddJsonErrorDetails(populateErrorInfo)
+                .ConfigureJsonErrorDetails(config => config with
+                {
+                    PopulateErrorInfo = populateErrorInfo
+                })
+                .AddJsonErrorDetails()
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
@@ -113,7 +118,11 @@ namespace NanoRoute.Tests
             const string ERROR_MSG = "Oooops";
 
             TestRouter router = _routerBuilder
-                .AddJsonErrorDetails(populateErrorInfo)
+                .ConfigureJsonErrorDetails(config => config with
+                {
+                    PopulateErrorInfo = populateErrorInfo
+                })
+                .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere", (_, _) => throw new Exception(ERROR_MSG))
                 .CreateRouter();
 
@@ -185,7 +194,11 @@ namespace NanoRoute.Tests
             );
 
             TestRouter router = _routerBuilder
-                .AddJsonErrorDetails(populateErrorInfo)
+                .ConfigureJsonErrorDetails(config => config with
+                {
+                    PopulateErrorInfo = populateErrorInfo
+                })
+                .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere", (_, _) => throw aggregate)
                 .CreateRouter();
 
@@ -223,6 +236,43 @@ namespace NanoRoute.Tests
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("Hello"));
+        }
+
+        [Test]
+        public async Task ConfigureJsonErrorDetails_ShouldConfigureErrorDetailsSerialization()
+        {
+            TestRouter router = _routerBuilder
+                .ConfigureJsonErrorDetails(config => config with
+                {
+                    ErrorDetailsTypeInfo = SnakeCaseErrorDetailsJsonContext.Default.ErrorDetails
+                })
+                .AddJsonErrorDetails()
+                .CreateRouter();
+
+            HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
+            request.SetProperty(Router.TraceIdName, "trace-snake");
+
+            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(await response.Content.ReadAsStringAsync(), Does.Contain("\"trace_id\":\"trace-snake\""));
+        }
+
+        [Test]
+        public async Task AddJsonErrorDetails_ShouldHonorConfiguredVerbsAndPattern()
+        {
+            TestRouter router = _routerBuilder
+                .AddJsonErrorDetails("GET", "/api/")
+                .AddHandler("GET", "/api/fail", (_, _) => throw new InvalidOperationException("handled"))
+                .AddHandler("POST", "/api/fail", (_, _) => throw new InvalidOperationException("unhandled verb"))
+                .AddHandler("GET", "/other/fail", (_, _) => throw new InvalidOperationException("unhandled path"))
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/fail"), new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(async () => await router.Handle(new HttpRequestMessage(HttpMethod.Post, "https://test.test/api/fail"), new Mock<IServiceProvider>(MockBehavior.Strict).Object), Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(async () => await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/other/fail"), new Mock<IServiceProvider>(MockBehavior.Strict).Object), Throws.InstanceOf<InvalidOperationException>());
         }
 
         [Test]
@@ -416,6 +466,24 @@ namespace NanoRoute.Tests
 
             ex = Assert.Throws<ArgumentNullException>(() => HttpResponseMessage.Json(HttpStatusCode.OK, new TestJsonPayload { Name = "Spikey" }, (JsonSerializerOptions) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("options"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).ConfigureJsonErrorDetails(config => config))!;
+            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureJsonErrorDetails(null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("configure"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureJsonErrorDetails(_ => null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("config"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => new JsonErrorDetailsConfig { ErrorDetailsTypeInfo = null! })!;
+            Assert.That(ex.ParamName, Is.EqualTo("value"));
         });
+    }
+
+    [JsonSerializable(typeof(ErrorDetails))]
+    [JsonSourceGenerationOptions(JsonSerializerDefaults.Web, PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    internal partial class SnakeCaseErrorDetailsJsonContext : JsonSerializerContext
+    {
     }
 }

@@ -142,6 +142,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to List parsers are not supported..
+        /// </summary>
+        internal static string ERR_LIST_PARSERS_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("ERR_LIST_PARSERS_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Method not allowed..
         /// </summary>
         internal static string ERR_METHOD_NOT_ALLOWED {
@@ -237,6 +246,15 @@ namespace NanoRoute.Properties {
         internal static string ERR_QUERY_MISSING_PARAMETER {
             get {
                 return ResourceManager.GetString("ERR_QUERY_MISSING_PARAMETER", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected query parameter: {0}.
+        /// </summary>
+        internal static string ERR_QUERY_UNEXPECTED_PARAMETER {
+            get {
+                return ResourceManager.GetString("ERR_QUERY_UNEXPECTED_PARAMETER", resourceCulture);
             }
         }
         

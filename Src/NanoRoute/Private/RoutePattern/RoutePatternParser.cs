@@ -31,8 +31,12 @@ namespace NanoRoute.Internals
                 {
                     case '{':
                         ParameterDefinition parameterDefinition = ParameterDefinition.Parse(pattern, ref offset);
+
                         if (parameterDefinition.IsOptional)
                             throw new InvalidOperationException(Resources.ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED);
+
+                        if (parameterDefinition.ValueParser.IsList)
+                            throw new InvalidOperationException(Resources.ERR_LIST_PARSERS_NOT_SUPPORTED);
 
                         yield return parameterDefinition with { Index = parameterIndex++ };
                         break;
@@ -48,6 +52,9 @@ namespace NanoRoute.Internals
 
         public static IEnumerable<ParameterDefinition> ParseQueryPattern(string pattern)
         {
+            if (pattern.Length is 0)
+                yield break;
+
             bool expectSeparator = false;
             int offset = 0;
 
@@ -66,7 +73,7 @@ namespace NanoRoute.Internals
                 expectSeparator = true;
             }
 
-            // the pattern is either empty or ends with '&'
+            // the pattern ends with '&'
             if (!expectSeparator)
                 throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
         }

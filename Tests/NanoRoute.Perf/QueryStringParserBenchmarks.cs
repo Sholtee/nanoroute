@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
@@ -29,7 +30,7 @@ namespace NanoRoute.Perf
 
         private static readonly IServiceProvider s_services = new NoopServiceProvider();
 
-        private IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> _expected = null!;
+        private FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> _expected = null!;
 
         private Uri _uri = null!;
 
@@ -43,7 +44,7 @@ namespace NanoRoute.Perf
         {
             (_uri, _expected, _expectBadRequest) = Scenario switch
             {
-                ScenarioKind.AllParametersProvided => new ValueTuple<Uri, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
+                ScenarioKind.AllParametersProvided => new ValueTuple<Uri, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
                 (
                     new Uri("https://www.example.com/items?filter=active&page=2&optional=extra", UriKind.Absolute),
                     CreateExpectedParameters
@@ -55,7 +56,7 @@ namespace NanoRoute.Perf
                     false
                 ),
 
-                ScenarioKind.OptionalParameterMissing => new ValueTuple<Uri, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
+                ScenarioKind.OptionalParameterMissing => new ValueTuple<Uri, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
                 (
                     new Uri("https://www.example.com/items?filter=active", UriKind.Absolute),
                     CreateExpectedParameters
@@ -66,7 +67,7 @@ namespace NanoRoute.Perf
                     false
                 ),
 
-                ScenarioKind.UndeclaredParametersPresent => new ValueTuple<Uri, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
+                ScenarioKind.UndeclaredParametersPresent => new ValueTuple<Uri, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
                 (
                     new Uri("https://www.example.com/items?filter=active&extra=1&debug=true&trace=abc", UriKind.Absolute),
                     CreateExpectedParameters
@@ -77,7 +78,7 @@ namespace NanoRoute.Perf
                     false
                 ),
 
-                ScenarioKind.RequiredParameterMissing => new ValueTuple<Uri, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
+                ScenarioKind.RequiredParameterMissing => new ValueTuple<Uri, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser>, bool>
                 (
                     new Uri("https://www.example.com/items?filter=active", UriKind.Absolute),
                     CreateExpectedParameters
@@ -97,7 +98,7 @@ namespace NanoRoute.Perf
         {
             try
             {
-                using QueryStringParser parser = new(CreateContext(_uri), _expected);
+                using QueryStringParser parser = new(CreateContext(_uri), _expected, QueryParsingConfig.Default);
 
                 await parser.Parse().ConfigureAwait(false);
             }
@@ -106,7 +107,7 @@ namespace NanoRoute.Perf
             }
         }
 
-        private static Dictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(params (string Name, bool Optional)[] parameters)
+        private static FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> CreateExpectedParameters(params (string Name, bool Optional)[] parameters)
         {
             Dictionary<ReadOnlyMemory<char>, ParameterParser> result = new(ReadOnlyMemoryCharComparer.Instance);
 
@@ -117,6 +118,7 @@ namespace NanoRoute.Perf
                     ValueParser = new()
                     {
                         Name = "str",
+                        IsList = false,
                         RawArguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     },
                     ParameterName = parameters[i].Name,
@@ -136,7 +138,7 @@ namespace NanoRoute.Perf
                 );
             }
 
-            return result;
+            return result.ToFrozenDictionary();
         }
 
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "The request has no body to dispose")]

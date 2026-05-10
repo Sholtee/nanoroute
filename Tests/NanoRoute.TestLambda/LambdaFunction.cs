@@ -29,7 +29,11 @@ namespace NanoRoute.TestLambda
 
         private static readonly ApiGatewayHttpApiV2Router s_router = ApiGatewayHttpApiV2Router
             .CreateBuilder()
-            .AddJsonErrorDetails(populateErrorInfo: true)
+            .ConfigureJsonErrorDetails(config => config with
+            {
+                PopulateErrorInfo = true
+            })
+            .AddJsonErrorDetails()
             .AddDefaultValueParsers()
             .AddHandler("GET", "/health", static async (_, _) =>
             {

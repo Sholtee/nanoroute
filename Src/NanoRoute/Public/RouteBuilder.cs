@@ -24,10 +24,9 @@ namespace NanoRoute
     /// </remarks>
     public class RouteBuilder : RoutingContext
     {
+        #region Private
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Dictionary<string, ValueParserRegistration> _valueParsers;
-
-        private readonly string _basePattern;
 
         /// <summary>
         /// Gets or creates the <see cref="RouteNode"/> that matches the given <paramref name="pattern"/>.
@@ -91,13 +90,17 @@ namespace NanoRoute
         private RouteBuilder(RouteBuilder parent, string baseUrl): base(parent.FindNode(baseUrl))
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
-            _basePattern = JoinPattern(parent._basePattern, baseUrl);
+            
+            BasePattern = JoinPattern(parent.BasePattern, baseUrl);
+            Metadata = parent.Metadata.CreateScope();
         }
 
         internal RouteBuilder(): base(new RouteNode())
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
-            _basePattern = string.Empty;
+
+            BasePattern = string.Empty;
+            Metadata = new BuilderMetadata();
         }
 
         /// <summary>
@@ -105,6 +108,7 @@ namespace NanoRoute
         /// </summary>
         /// <returns>A copy of the configured root node.</returns>
         internal RouteNode GetRoot(bool freeze) => _root.Copy(freeze);
+        #endregion
 
         /// <summary>
         /// Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.
@@ -147,10 +151,7 @@ namespace NanoRoute
 
             return AddHandler
             (
-                Enum.GetNames
-                (
-                    typeof(HttpVerb)
-                ),
+                HttpVerb.Names,
                 pattern,
                 handler
             );
@@ -239,7 +240,7 @@ namespace NanoRoute
 
             handlerRegistrations.Add
             (
-                new HandlerRegistration(handler, JoinPattern(_basePattern, pattern))
+                new HandlerRegistration(handler, JoinPattern(BasePattern, pattern))
             );
 
             return this;
@@ -319,6 +320,30 @@ namespace NanoRoute
         /// registrations plus any overrides added to that child scope.
         /// </remarks>
         public IReadOnlyDictionary<string, ValueParserRegistration> ValueParsers => _valueParsers;
+
+        /// <summary>
+        /// Gets the route pattern prefix for this builder branch.
+        /// </summary>
+        /// <remarks>
+        /// The root builder has an empty base pattern. Child builders created with <see cref="CreatePrefix(string)"/>
+        /// expose the accumulated prefix inherited from their parent builders.
+        /// </remarks>
+        public string BasePattern { get; }
+
+        /// <summary>
+        /// Gets extension-defined builder metadata visible from this builder instance.
+        /// </summary>
+        /// <remarks>
+        /// Metadata is public for extension authors who need scoped build-time settings behind module-specific
+        /// configuration methods. Application code usually should prefer those module APIs instead of reading or
+        /// writing metadata directly.
+        /// <para>
+        /// Child builders created with <see cref="CreatePrefix(string)"/> inherit a scoped copy of their parent's
+        /// metadata. Metadata updates made after the child builder is created stay local to the builder where they
+        /// are made.
+        /// </para>
+        /// </remarks>
+        public BuilderMetadata Metadata { get; }
 
         /// <summary>
         /// Gets the distinct route patterns currently visible from this builder branch.
