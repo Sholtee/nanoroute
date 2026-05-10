@@ -95,6 +95,7 @@ namespace NanoRoute.HandlerExtensions
     /// </remarks>
     public static class NanoRouteHandlerExtensions
     {
+        #region Private
         private static Func<RequestContext, TRequestContext> CreateContextMapperDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>() where TRequestContext : new()
         {
             ParameterExpression
@@ -202,7 +203,8 @@ namespace NanoRoute.HandlerExtensions
             routeBuilder.AddHandler(verbs, pattern, (context, next) => handler(mapContext(context), next));
 
             return routeBuilder;
-        } 
+        }
+        #endregion
 
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
         {
