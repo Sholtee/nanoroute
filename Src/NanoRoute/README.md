@@ -228,7 +228,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddPrefix("/items/", items => items
-        .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str[]}")
+        .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}")
         .AddHandler("GET", "", async (context, _) =>
         {
             return HttpResponseMessage.Json(new
@@ -242,7 +242,7 @@ HttpListenerRouter router = HttpListenerRouter
 ```
 
 - Add `?` to the query parameter name to make it optional, for example `{page?:int(min=1)}`.
-- Add `[]` to the query value parser name to collect repeated query keys, for example `{tag:str[]}` for `?tag=red&tag=blue`.
+- Add `[]` after the query value parser definition to collect repeated query keys, for example `{tag:str[]}` or `{tag:str(min=2)[]}` for `?tag=red&tag=blue`.
 - Query parameter names may contain ASCII letters, digits, and underscores.
 - Parsed values are stored in `RequestContext.Parameters` under the configured key.
 - List query bindings store a `List<object?>` containing each parsed value in request order.

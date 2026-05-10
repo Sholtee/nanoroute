@@ -92,7 +92,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Parse_ShouldParseListValueDefinition()
         {
-            ValueParserDefinition definition = Parse("int[](min=3)");
+            ValueParserDefinition definition = Parse("int(min=3)[]");
 
             Assert.That(definition.Name, Is.EqualTo("int"));
             Assert.That(definition.IsList, Is.True);
@@ -151,7 +151,7 @@ namespace NanoRoute.Tests
         }
 
         [TestCase("int(min=3)", "INT(MIN=3)", true)]
-        [TestCase("int[](min=3)", "INT[](MIN=3)", true)]
+        [TestCase("int(min=3)[]", "INT(MIN=3)[]", true)]
         [TestCase("STR(pattern='[a-z]+',text='hello')", "str(PATTERN='[A-Z]+',TEXT='HELLO')", true)]
         [TestCase("int", "INT()", true)]
         [TestCase("int[]", "int", false)]

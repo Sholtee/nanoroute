@@ -41,7 +41,7 @@ namespace NanoRoute.Internals
             ARGS_PATTERN = $@"\s*(?:{NAME_VALUE_PAIR}(?:\s*,\s*{NAME_VALUE_PAIR})*)?\s*",
 
             // Matches and captures a complete parser-backed value definition.
-            PARSER_DEFINITION_PATTERN = $@"\G(?<parserName>{IDENTIFIER})(?<isList>\[\])?(?:\({ARGS_PATTERN}\))?";
+            PARSER_DEFINITION_PATTERN = $@"\G(?<parserName>{IDENTIFIER})(?:\({ARGS_PATTERN}\))?(?<isList>\[\])?";
 
         private static readonly Regex s_parserDefinition = new(PARSER_DEFINITION_PATTERN, RuntimeFeature.IsDynamicCodeSupported ? RegexOptions.Compiled : RegexOptions.None);
 

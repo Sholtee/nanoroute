@@ -48,7 +48,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseRoutePattern_ShouldRejectListValueParserDefinitions()
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => RoutePatternParser.ParseRoutePattern("/items/{ids:int[](min=1)}").ToArray())!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => RoutePatternParser.ParseRoutePattern("/items/{ids:int(min=1)[]}").ToArray())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_LIST_PARSERS_NOT_SUPPORTED));
         }
@@ -148,7 +148,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseQueryPattern_ShouldAllowListValueParserDefinitions()
         {
-            ParameterDefinition[] definitions = RoutePatternParser.ParseQueryPattern("{ids:int[](min=1)}").ToArray();
+            ParameterDefinition[] definitions = RoutePatternParser.ParseQueryPattern("{ids:int(min=1)[]}").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(1));
             Assert.That(definitions[0].ParameterName, Is.EqualTo("ids"));
