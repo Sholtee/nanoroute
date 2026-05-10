@@ -44,8 +44,15 @@
     <h3 id="classes">
 Classes
 </h3>
+      <h4><a class="xref" href="NanoRoute.BuilderMetadata.html">BuilderMetadata</a></h4>
+      <section><p>Stores extension-defined builder settings keyed by their CLR type.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a></h4>
       <section><p>Describes an HTTP error in a structured, serializer-agnostic format.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.ExceptionHandlingConfig.html">ExceptionHandlingConfig</a></h4>
+      <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a> normalizes
+unexpected exceptions.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></h4>
       <section><p>Routes <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenercontext">HttpListenerContext</a> instances through a NanoRoute pipeline.</p>
@@ -61,6 +68,9 @@ Classes
 </section>
       <h4><a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html">NanoRouteQueryExtensions</a></h4>
       <section><p>Adds query-parameter binding helpers to NanoRoute.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a></h4>
+      <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</a> parses query strings.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></h4>
       <section><p>Builder responsible for route configuration.</p>
@@ -101,6 +111,9 @@ Enums
       <h4><a class="xref" href="NanoRoute.MatchingPrecedence.html">MatchingPrecedence</a></h4>
       <section><p>Defines how the router prioritizes literal and parameterized child segments during matching.</p>
 </section>
+      <h4><a class="xref" href="NanoRoute.UnexpectedParameterBehavior.html">UnexpectedParameterBehavior</a></h4>
+      <section><p>Defines how query-binding middleware handles query-string parameters that are not declared in the binding descriptor.</p>
+</section>
     <h3 id="delegates">
 Delegates
 </h3>
@@ -110,9 +123,17 @@ Delegates
       <h4><a class="xref" href="NanoRoute.CallNextHandlerDelegate.html">CallNextHandlerDelegate</a></h4>
       <section><p>Invokes the next compatible handler in the current routing pipeline.</p>
 </section>
+      <h4><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate&lt;TConfig&gt;</a></h4>
+      <section><p>Updates a typed builder configuration object.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.ExceptionNormalizer.html">ExceptionNormalizer</a></h4>
+      <section><p>Converts an unexpected exception into an enriched <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></h4>
       <section><p>Represents a request handler in the router pipeline.</p>
 </section>
+      <h4><a class="xref" href="NanoRoute.RouterFactoryDelegate-2.html">RouterFactoryDelegate&lt;TRouter, TConfig&gt;</a></h4>
+      <section></section>
       <h4><a class="xref" href="NanoRoute.SyncValueParserDelegate.html">SyncValueParserDelegate</a></h4>
       <section><p>Represents a synchronous value parser.</p>
 </section>

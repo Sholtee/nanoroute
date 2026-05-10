@@ -88,6 +88,68 @@ trailing slash must match the full path exactly.</p>
 </div>
   <h3 id="properties">Properties
 </h3>
+  <a id="NanoRoute_RouteBuilder_BasePattern_" data-uid="NanoRoute.RouteBuilder.BasePattern*"></a>
+  <h4 id="NanoRoute_RouteBuilder_BasePattern" data-uid="NanoRoute.RouteBuilder.BasePattern">BasePattern</h4>
+  <div class="markdown level1 summary"><p>Gets the route pattern prefix for this builder branch.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string BasePattern { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_BasePattern_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The root builder has an empty base pattern. Child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a>
+expose the accumulated prefix inherited from their parent builders.</p>
+</div>
+  <a id="NanoRoute_RouteBuilder_Metadata_" data-uid="NanoRoute.RouteBuilder.Metadata*"></a>
+  <h4 id="NanoRoute_RouteBuilder_Metadata" data-uid="NanoRoute.RouteBuilder.Metadata">Metadata</h4>
+  <div class="markdown level1 summary"><p>Gets extension-defined builder metadata visible from this builder instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BuilderMetadata Metadata { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.BuilderMetadata.html">BuilderMetadata</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteBuilder_Metadata_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Metadata is public for extension authors who need scoped build-time settings behind module-specific
+configuration methods. Application code usually should prefer those module APIs instead of reading or
+writing metadata directly.</p>
+<p>
+Child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a> inherit a scoped copy of their parent's
+metadata. Metadata updates made after the child builder is created stay local to the builder where they
+are made.
+</p>
+</div>
   <a id="NanoRoute_RouteBuilder_Patterns_" data-uid="NanoRoute.RouteBuilder.Patterns*"></a>
   <h4 id="NanoRoute_RouteBuilder_Patterns" data-uid="NanoRoute.RouteBuilder.Patterns">Patterns</h4>
   <div class="markdown level1 summary"><p>Gets the distinct route patterns currently visible from this builder branch.</p>
@@ -566,10 +628,16 @@ registered yet.</p>
       <a class="xref" href="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+      <a class="xref" href="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+      <a class="xref" href="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html#NanoRoute_HandlerExtensions_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_">NanoRouteJsonExtensions.AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, JsonTypeInfo, string)</a>
@@ -602,7 +670,22 @@ registered yet.</p>
       <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Type_System_String_">NanoRouteJsonExtensions.AddJsonBody&lt;TBuilder&gt;(TBuilder, Type, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Boolean_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, bool)</a>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_Json_JsonErrorDetailsConfig__">NanoRouteJsonExtensions.ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a>
@@ -620,10 +703,16 @@ registered yet.</p>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string, string)</a>
   </div>
   <div>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig__">NanoRouteExceptionExtensions.ConfigureExceptionHandling&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;ExceptionHandlingConfig&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</a>
@@ -633,6 +722,9 @@ registered yet.</p>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__">NanoRouteQueryExtensions.ConfigureQueryParsing&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html#NanoRoute_RouterBuilderValueParserExtensions_AddBoolParser__1___0_">RouterBuilderValueParserExtensions.AddBoolParser&lt;TBuilder&gt;(TBuilder)</a>

@@ -43,10 +43,15 @@
 <h2 id="core-types">Core Types</h2>
 <ul>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html">RouteBuilder</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html">BuilderMetadata</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate`1</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html">ExceptionHandlingConfig</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html">Router</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html">RouterBuilder`2</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html">RequestContext</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.UnexpectedParameterBehavior.html">UnexpectedParameterBehavior</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html">ErrorDetails</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></li>
@@ -61,10 +66,14 @@
 <li>Value parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as <code>{id:int(min=1)}</code> once during registration.</li>
 <li>Parser-backed segments support optional parameter names. <code>{id:int}</code> stores the parsed value in <code>RequestContext.Parameters</code>, while <code>{int}</code> only validates the segment.</li>
 <li><code>AddPrefix()</code> and <code>CreatePrefix()</code> create scoped route subtrees without forcing you to repeat common prefixes.</li>
-<li><code>RouterConfig</code> is immutable and can be replaced with <code>WithConfiguration(config =&gt; config with { ... })</code> before creating a router snapshot.</li>
+<li><code>RouteBuilder.Metadata</code> stores type-keyed extension settings and follows the same scoped inheritance model as prefix builders. It is public for extension authors and is not the normal application configuration surface.</li>
+<li><code>RouterConfig</code> is immutable and can be replaced with <code>ConfigureRouting(config =&gt; config with { ... })</code> before creating a router snapshot.</li>
 <li><code>MatchingPrecedence</code> lets you choose whether literal or parameterized child segments are selected first.</li>
 <li>Once a child branch has been selected for a request, NanoRoute continues only within that branch.</li>
-<li><code>AddQueryBindings()</code> uses query descriptors such as <code>{filter:str(min=3)}&amp;{page?:int(min=1)}</code> and matches query keys through <code>Uri.Query</code> normalization.</li>
+<li><code>AddQueryBindings()</code> uses query descriptors such as <code>{filter:str(min=3)}&amp;{page?:int(min=1)}&amp;{tag:str(min=2)[]}</code> and matches query keys through <code>Uri.Query</code> normalization. Undeclared query keys are ignored by default, or rejected when <code>ConfigureQueryParsing()</code> sets <code>UnexpectedParameterBehavior</code> to <code>Reject</code>.</li>
+<li><code>ConfigureQueryParsing()</code> stores scoped query-binding settings used by subsequently registered <code>AddQueryBindings()</code> middleware.</li>
+<li><code>ConfigureExceptionHandling()</code> stores scoped exception-normalization settings used by subsequently registered <code>AddExceptionHandler()</code> middleware.</li>
+<li><code>ConfigureJsonErrorDetails()</code> stores scoped JSON <code>ErrorDetails</code> response settings used by subsequently registered <code>AddJsonErrorDetails()</code> middleware.</li>
 <li><code>AddHandler&lt;TRequestContext&gt;()</code> can project route parameters, query bindings, services, keyed services, <code>RequestContext</code>, and <code>CancellationToken</code> into typed request objects.</li>
 <li><code>ValueSourceAttribute</code> customizes typed-handler property binding with <code>Context</code>, <code>ServiceLocator</code>, and <code>Skip</code> sources.</li>
 <li><code>NanoRoute.Json</code> adds JSON request binding and JSON error/response helpers on top of the core pipeline.</li>
@@ -74,6 +83,8 @@
 <li><code>{parameterName:parserName}</code> parses a segment and stores the parsed value under <code>parameterName</code>.</li>
 <li><code>{parserName}</code> parses a segment without storing it in <code>RequestContext.Parameters</code>.</li>
 <li><code>{parameterName:parserName(arg=value, text='hello')}</code> also passes a case-insensitive raw argument map through the parser's <code>BindArgumentsDelegate</code>.</li>
+<li>Query bindings may add <code>[]</code> after the parser definition, such as <code>{tag:str[]}</code> or <code>{tag:str(min=2)[]}</code>, to collect repeated query keys into a <code>List&lt;object?&gt;</code> in request order.</li>
+<li>List parser syntax is supported for query bindings only, not route path parameters.</li>
 <li>Parser arguments support <code>null</code>, <code>true</code> or <code>false</code>, numbers, and single-quoted strings with <code>\'</code> escaping.</li>
 </ul>
 <p>Use <code>AddValueParser()</code> to register custom parsers, or <code>AddDefaultValueParsers()</code> to register the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code> parsers.</p>

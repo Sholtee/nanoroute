@@ -18,6 +18,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.BuilderMetadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.BuilderMetadata.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.BuilderMetadata",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.BuilderMetadata.yml\" sourcestartlinenumber=\"1\">Stores extension-defined builder settings keyed by their CLR type.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.CallNextHandlerDelegate.yml",
       "output": {
         ".html": {
@@ -32,6 +46,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ConfigureBuilderDelegate-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.ConfigureBuilderDelegate-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.ConfigureBuilderDelegate<TConfig>",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ConfigureBuilderDelegate-1.yml\" sourcestartlinenumber=\"1\">Updates a typed builder configuration object.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.ErrorDetails.yml",
       "output": {
         ".html": {
@@ -43,6 +71,34 @@
       "IsMRef": true,
       "Title": "NanoRoute.ErrorDetails",
       "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ErrorDetails.yml\" sourcestartlinenumber=\"1\">Describes an HTTP error in a structured, serializer-agnostic format.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ExceptionHandlingConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.ExceptionHandlingConfig.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.ExceptionHandlingConfig",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ExceptionHandlingConfig.yml\" sourcestartlinenumber=\"1\">Configures how <xref href=\"NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler%60%601(%60%600)\" data-throw-if-not-resolved=\"false\"></xref> normalizes\nunexpected exceptions.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ExceptionNormalizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.ExceptionNormalizer.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.ExceptionNormalizer",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ExceptionNormalizer.yml\" sourcestartlinenumber=\"1\">Converts an unexpected exception into an enriched <xref href=\"System.Net.Http.HttpRequestException\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -144,6 +200,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.Json.JsonErrorDetailsConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.Json.JsonErrorDetailsConfig.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.Json.JsonErrorDetailsConfig",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Json.JsonErrorDetailsConfig.yml\" sourcestartlinenumber=\"1\">Configures how <xref href=\"NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails%60%601(%60%600)\" data-throw-if-not-resolved=\"false\"></xref> creates JSON\n<xref href=\"NanoRoute.ErrorDetails\" data-throw-if-not-resolved=\"false\"></xref> responses.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.Json.NanoRouteJsonExtensions.yml",
       "output": {
         ".html": {
@@ -211,6 +281,20 @@
       "IsMRef": true,
       "Title": "NanoRoute.NanoRouteQueryExtensions",
       "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteQueryExtensions.yml\" sourcestartlinenumber=\"1\">Adds query-parameter binding helpers to NanoRoute.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.QueryParsingConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.QueryParsingConfig.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.QueryParsingConfig",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.QueryParsingConfig.yml\" sourcestartlinenumber=\"1\">Configures how <xref href=\"NanoRoute.NanoRouteQueryExtensions.AddQueryBindings%60%601(%60%600%2cSystem.String)\" data-throw-if-not-resolved=\"false\"></xref> parses query strings.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -312,6 +396,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouterFactoryDelegate-2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.RouterFactoryDelegate-2.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.RouterFactoryDelegate<TRouter, TConfig>",
+      "Summary": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.RoutingContext.yml",
       "output": {
         ".html": {
@@ -337,6 +435,20 @@
       "IsMRef": true,
       "Title": "NanoRoute.SyncValueParserDelegate",
       "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SyncValueParserDelegate.yml\" sourcestartlinenumber=\"1\">Represents a synchronous value parser.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.UnexpectedParameterBehavior.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.UnexpectedParameterBehavior.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.UnexpectedParameterBehavior",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.UnexpectedParameterBehavior.yml\" sourcestartlinenumber=\"1\">Defines how query-binding middleware handles query-string parameters that are not declared in the binding descriptor.</p>\n"
     },
     {
       "type": "ManagedReference",

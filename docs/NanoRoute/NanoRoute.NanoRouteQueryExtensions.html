@@ -154,6 +154,22 @@
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
   <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string)</h4>
   <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
@@ -235,6 +251,128 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.String,NanoRoute.ConfigureBuilderDelegate{NanoRoute.QueryParsingConfig})">AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</h4>
+  <div class="markdown level1 summary"><p>Parses configured query parameters with a one-off configuration override and stores their values in
+<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, string bindings, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt; oneOffConfigOverride) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that activate the query-binding middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the query-binding middleware should be inserted. Use <code>/</code> to apply it to
+the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">bindings</span></td>
+        <td><p>A query-parameter descriptor such as <code>{filter:str(min=3)}&amp;{page?:int(min=1)}</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate</a>&lt;<a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a>&gt;</td>
+        <td><span class="parametername">oneOffConfigOverride</span></td>
+        <td><p>A callback that receives the current <a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a> and returns the configuration
+captured by this query-binding middleware only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Use this overload when one query-binding registration should differ from the builder-scope
+configuration set by <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__">ConfigureQueryParsing&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</a>.
+The returned configuration is captured at registration time and does not update
+<a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata">Metadata</a>.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
   <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String)">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</h4>
   <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
@@ -303,6 +441,22 @@ query binding overwrites the existing value.</p>
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
   <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String)">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string)</h4>
   <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
@@ -378,6 +532,22 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
   <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_String_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String,System.String)">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string, string)</h4>
   <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
@@ -458,6 +628,90 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
   <div class="markdown level1 remarks"><p>Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing_" data-uid="NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing*"></a>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__" data-uid="NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.QueryParsingConfig})">ConfigureQueryParsing&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</h4>
+  <div class="markdown level1 summary"><p>Updates the query-parsing configuration visible from the current builder scope.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder ConfigureQueryParsing&lt;TBuilder&gt;(this TBuilder routeBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt; configure) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate</a>&lt;<a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>A callback that receives the current configuration and returns the replacement configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata">Metadata</a>. Child builders created after this
+method is called inherit the updated configuration; existing child builders keep their own scoped copy.
+Registered query-binding middleware snapshots the configuration that is current at registration time.</p>
 </div>
 
 </article>

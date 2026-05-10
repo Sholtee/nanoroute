@@ -517,6 +517,74 @@ with normalized status codes and diagnostic payloads. Existing <a class="xref" h
 values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
 not normalized so caller-driven cancellation can propagate unchanged.</p>
 </div>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling_" data-uid="NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig__" data-uid="NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.ExceptionHandlingConfig})">ConfigureExceptionHandling&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;ExceptionHandlingConfig&gt;)</h4>
+  <div class="markdown level1 summary"><p>Updates the exception-handling configuration visible from the current builder scope.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder ConfigureExceptionHandling&lt;TBuilder&gt;(this TBuilder routeBuilder, ConfigureBuilderDelegate&lt;ExceptionHandlingConfig&gt; configure) where TBuilder : notnull, RouteBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate</a>&lt;<a class="xref" href="NanoRoute.ExceptionHandlingConfig.html">ExceptionHandlingConfig</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>A callback that receives the current configuration and returns the replacement configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata">Metadata</a>. Child builders created after this
+method is called inherit the updated configuration; existing child builders keep their own scoped copy.
+Registered exception handlers snapshot the configuration that is current at registration time.</p>
+</div>
   <a id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_" data-uid="NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails(System.Net.Http.HttpRequestException,System.Boolean,System.String)">GetErrorDetails(HttpRequestException, bool, string?)</h4>
   <div class="markdown level1 summary"><p>Converts an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> into an <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> payload.</p>
