@@ -118,6 +118,7 @@ namespace NanoRoute.Perf
                     ValueParser = new()
                     {
                         Name = "str",
+                        IsList = false,
                         RawArguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     },
                     ParameterName = parameters[i].Name,
