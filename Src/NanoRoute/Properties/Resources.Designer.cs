@@ -248,6 +248,15 @@ namespace NanoRoute.Properties {
                 return ResourceManager.GetString("ERR_QUERY_MISSING_PARAMETER", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected query parameter: {0}.
+        /// </summary>
+        internal static string ERR_QUERY_UNEXPECTED_PARAMETER {
+            get {
+                return ResourceManager.GetString("ERR_QUERY_UNEXPECTED_PARAMETER", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Skipped value sources cannot have a binding name..

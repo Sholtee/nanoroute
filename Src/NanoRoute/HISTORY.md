@@ -12,6 +12,7 @@
 ### Added
 
 - Added `JsonErrorDetailsConfig` and `ConfigureJsonErrorDetails()` to configure JSON error-response diagnostics and `ErrorDetails` serialization metadata.
+- Added `QueryParsingConfig`, `UnexpectedParameterBehavior`, and `ConfigureQueryParsing()` to configure how query bindings handle undeclared query-string parameters.
 
 ### Performance
 

@@ -7,6 +7,7 @@ using System;
 using System.Buffers;
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
@@ -16,7 +17,7 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class QueryStringParser(RequestContext context, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters): IDisposable
+    internal sealed class QueryStringParser(RequestContext context, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters, QueryParsingConfig config) : IDisposable
     {
         #region Private
         // Extend only lists created by this parser; replace anything supplied by earlier middleware.
@@ -116,9 +117,23 @@ namespace NanoRoute.Internals
                 ReadOnlyMemory<char> parameterName = DecodeParameter(_parameter.Current.Slice(0, separatorIndex));
 
                 if (!expectedParameters.TryGetValue(parameterName, out ParameterParser? expectedParameter))
-                    continue;
+                {
+                    switch (config.UnexpectedParameterBehavior)
+                    {
+                        case UnexpectedParameterBehavior.Ignore:
+                            continue;
 
-                ParameterDefinition parameterDefinition = expectedParameter.Definition;
+                        case UnexpectedParameterBehavior.Reject:
+                            ThrowBadRequest(Resources.ERR_QUERY_UNEXPECTED_PARAMETER, parameterName);
+                            break;
+
+                        default:
+                            Debug.Fail($"Unknown {nameof(UnexpectedParameterBehavior)} value: {config.UnexpectedParameterBehavior}");
+                            break;
+                    }
+                }
+
+                ParameterDefinition parameterDefinition = expectedParameter!.Definition;
 
                 if (_visited[parameterDefinition.Index] && !parameterDefinition.ValueParser.IsList)
                     ThrowBadRequest(Resources.ERR_QUERY_DUPLICATE_PARAMETER, parameterDefinition.ParameterName!);

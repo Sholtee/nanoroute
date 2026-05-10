@@ -95,7 +95,7 @@ Created routers are immutable snapshots: later route or configuration changes on
 
 ### Builder Metadata
 
-`RouteBuilder.Metadata` is a type-keyed store for extension-defined builder settings. It is public so third-party builder extensions can offer their own `ConfigureXxx()` methods, but it is not intended as the everyday application configuration surface. Most applications should use module-specific methods such as `ConfigureExceptionHandling()` and `ConfigureJsonErrorDetails()` instead of reading or writing metadata directly.
+`RouteBuilder.Metadata` is a type-keyed store for extension-defined builder settings. It is public so third-party builder extensions can offer their own `ConfigureXxx()` methods, but it is not intended as the everyday application configuration surface. Most applications should use module-specific methods such as `ConfigureQueryParsing()`, `ConfigureExceptionHandling()`, and `ConfigureJsonErrorDetails()` instead of reading or writing metadata directly.
 
 ```csharp
 public sealed record MyExtensionOptions(bool Enabled);
@@ -248,8 +248,30 @@ HttpListenerRouter router = HttpListenerRouter
 - List query bindings store a `List<object?>` containing each parsed value in request order.
 - Query keys are matched case-insensitively using the normalized key exposed by `Uri.Query`.
 - Repeated declared scalar query parameters are rejected with `400 Bad Request`.
+- Undeclared query parameters are ignored by default. Use `ConfigureQueryParsing()` to reject them instead.
 - List value parsers are supported only for query bindings, not route path parameters.
 - As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
+
+Use `ConfigureQueryParsing()` before `AddQueryBindings()` when you want later query-binding registrations in the same builder scope to reject query keys that were not declared in their binding descriptor:
+
+```csharp
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .AddDefaultValueParsers()
+    .ConfigureQueryParsing(config => config with
+    {
+        UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+    })
+    .AddQueryBindings("GET", "/items", "{filter:str(min=3)}")
+    .AddHandler("GET", "/items", static async (context, _) =>
+    {
+        await Task.CompletedTask;
+        return HttpResponseMessage.Json(new { filter = context.Parameters["filter"] });
+    })
+    .CreateRouter();
+```
+
+`AddQueryBindings()` snapshots the current `QueryParsingConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. The overload that accepts a `ConfigureBuilderDelegate<QueryParsingConfig>` applies a one-off override to that query-binding registration without changing builder metadata.
 
 ### Typed Handlers
 
@@ -420,6 +442,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
 - `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
+- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` middleware.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
 - `ConfigureExceptionHandling()` customizes exception normalization used by subsequently registered `AddExceptionHandler()` middleware.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
@@ -436,6 +459,8 @@ This keeps the transport-specific concerns in your own router type while still r
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
+- [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
+- [UnexpectedParameterBehavior](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.UnexpectedParameterBehavior.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)

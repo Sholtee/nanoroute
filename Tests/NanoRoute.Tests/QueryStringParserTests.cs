@@ -64,9 +64,9 @@ namespace NanoRoute.Tests
                 Cancellation = cancellation
             };
 
-        private static async ValueTask Parse(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters)
+        private static async ValueTask Parse(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters, QueryParsingConfig? config = null)
         {
-            using QueryStringParser parser = new(context, expectedParameters.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance));
+            using QueryStringParser parser = new(context, expectedParameters.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance), config ?? QueryParsingConfig.Default);
 
             await parser.Parse();
         }
@@ -339,6 +339,42 @@ namespace NanoRoute.Tests
 
             Assert.That(result, Is.Empty);
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Never);
+        }
+
+        [Test]
+        public void Parse_ShouldRejectUnexpectedParametersWhenConfigured()
+        {
+            Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+
+            mockParser
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")))
+                .Returns(new ValueTask<ValueParseResult>(new ValueParseResult(true, "abc")));
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => Parse
+            (
+                CreateContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase), new Uri("https://test.test/items?filter=abc&unexpected=value"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
+                CreateExpectedParameters(("filter", false, CreateParser(mockParser.Object))),
+                new QueryParsingConfig
+                {
+                    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+                }
+            ).AsTask())!;
+
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+            mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
+        }
+
+        [Test]
+        public void QueryParsingConfig_ShouldRejectUnknownUnexpectedParameterBehavior()
+        {
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => new QueryParsingConfig
+            {
+                UnexpectedParameterBehavior = (UnexpectedParameterBehavior) 42
+            })!;
+
+            Assert.That(ex.ParamName, Is.EqualTo("value"));
         }
 
         [Test]

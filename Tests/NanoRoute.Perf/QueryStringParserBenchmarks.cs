@@ -98,7 +98,7 @@ namespace NanoRoute.Perf
         {
             try
             {
-                using QueryStringParser parser = new(CreateContext(_uri), _expected);
+                using QueryStringParser parser = new(CreateContext(_uri), _expected, QueryParsingConfig.Default);
 
                 await parser.Parse().ConfigureAwait(false);
             }

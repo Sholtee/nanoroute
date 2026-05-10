@@ -191,6 +191,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 - `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
+- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` middleware.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses when explicitly added.
 - `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.

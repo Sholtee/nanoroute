@@ -217,6 +217,104 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void AddQueryBindings_ShouldRejectUnexpectedParametersWhenConfigured()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .ConfigureQueryParsing(config => config with
+                {
+                    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+                })
+                .AddQueryBindings("GET", "/items", "{filter:str(min=3)}")
+                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .CreateRouter();
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey&unexpected=value"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            ))!;
+
+            Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+        }
+
+        [Test]
+        public async Task AddQueryBindings_ShouldUseOneOffConfigurationOverride()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .ConfigureQueryParsing(config => config with
+                {
+                    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+                })
+                .AddQueryBindings(["GET"], "/items", "{filter:str(min=3)}", config => config with
+                {
+                    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Ignore
+                })
+                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                {
+                    Content = new StringContent((string) context.Parameters["filter"]!)
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey&unexpected=value"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
+        }
+
+        [Test]
+        public async Task ConfigureQueryParsing_ShouldUseScopedBuilderMetadata()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .ConfigureQueryParsing(config => config with
+                {
+                    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+                })
+                .AddPrefix("/strict/", strict => strict
+                    .AddQueryBindings("GET", "", "{filter:str(min=3)}")
+                    .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
+                .AddPrefix("/loose/", loose => loose
+                    .ConfigureQueryParsing(config => config with
+                    {
+                        UnexpectedParameterBehavior = UnexpectedParameterBehavior.Ignore
+                    })
+                    .AddQueryBindings("GET", "", "{filter:str(min=3)}")
+                    .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted)))
+                .CreateRouter();
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/strict?filter=spikey&unexpected=value"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            ))!;
+
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/loose?filter=spikey&unexpected=value"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Accepted));
+        }
+
+        [Test]
+        public void ConfigureQueryParsing_ShouldReturnTheOriginalBuilder()
+        {
+            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.ConfigureQueryParsing(static config => config);
+
+            Assert.That(result, Is.SameAs(_routerBuilder));
+        }
+
+        [Test]
         public void QueryHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddQueryBindings(""))!;
@@ -245,6 +343,21 @@ namespace NanoRoute.Tests
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", "/", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).ConfigureQueryParsing(static config => config))!;
+            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureQueryParsing(null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("configure"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureQueryParsing(_ => null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("config"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings(["GET"], "/", "", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("oneOffConfigOverride"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings(["GET"], "/", "", _ => null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("config"));
         });
     }
 }

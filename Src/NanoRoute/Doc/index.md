@@ -13,6 +13,8 @@ The API documentation for this package is generated from the XML comments in the
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
+- [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
+- [UnexpectedParameterBehavior](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.UnexpectedParameterBehavior.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
@@ -31,7 +33,8 @@ The API documentation for this package is generated from the XML comments in the
 - `RouterConfig` is immutable and can be replaced with `WithConfiguration(config => config with { ... })` before creating a router snapshot.
 - `MatchingPrecedence` lets you choose whether literal or parameterized child segments are selected first.
 - Once a child branch has been selected for a request, NanoRoute continues only within that branch.
-- `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}&{tag:str[]}` and matches query keys through `Uri.Query` normalization.
+- `AddQueryBindings()` uses query descriptors such as `{filter:str(min=3)}&{page?:int(min=1)}&{tag:str[]}` and matches query keys through `Uri.Query` normalization. Undeclared query keys are ignored by default, or rejected when `ConfigureQueryParsing()` sets `UnexpectedParameterBehavior` to `Reject`.
+- `ConfigureQueryParsing()` stores scoped query-binding settings used by subsequently registered `AddQueryBindings()` middleware.
 - `ConfigureExceptionHandling()` stores scoped exception-normalization settings used by subsequently registered `AddExceptionHandler()` middleware.
 - `ConfigureJsonErrorDetails()` stores scoped JSON `ErrorDetails` response settings used by subsequently registered `AddJsonErrorDetails()` middleware.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
