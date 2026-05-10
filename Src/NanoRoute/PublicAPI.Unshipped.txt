@@ -29,10 +29,12 @@ NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers.init -> void
 NanoRoute.ExceptionNormalizer
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!)
-NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, string! queryBindings, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate!, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
-NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, string! queryBindings, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate!, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
 NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
+NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(string! pattern, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate!, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
+NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(string! pattern, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
+NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(string! verb, string! pattern, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate!, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
+NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(string! verb, string! pattern, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
 NanoRoute.HandlerExtensions.ValueSource
 NanoRoute.HandlerExtensions.ValueSource.Context = 1 -> NanoRoute.HandlerExtensions.ValueSource
 NanoRoute.HandlerExtensions.ValueSource.ServiceLocator = 2 -> NanoRoute.HandlerExtensions.ValueSource
