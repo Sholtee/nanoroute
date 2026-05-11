@@ -12,19 +12,12 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
-namespace NanoRoute.Json
+namespace NanoRoute
 {
     using Internals;
     using Properties;
-
-    [JsonSerializable(typeof(ErrorDetails))]
-    [JsonSourceGenerationOptions(JsonSerializerDefaults.Web, WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, UseStringEnumConverter = false)]
-    internal partial class JsonContext : JsonSerializerContext  // cannot be nested =(
-    {
-    }
 
     /// <summary>
     /// Configures how <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder)"/> creates JSON

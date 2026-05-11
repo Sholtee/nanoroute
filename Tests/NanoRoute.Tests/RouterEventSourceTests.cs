@@ -32,7 +32,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload([ValueSource(nameof(ESWriters))] EventSourceWriter writer)
+        public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload([NUnit.Framework.ValueSource(nameof(ESWriters))] EventSourceWriter writer)
         {
             using DebugEventListener listener = new(EventLevel.LogAlways);
 
@@ -50,7 +50,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload_DoubleParam([ValueSource(nameof(ESWriters))] EventSourceWriter writer)
+        public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload_DoubleParam([NUnit.Framework.ValueSource(nameof(ESWriters))] EventSourceWriter writer)
         {
             using DebugEventListener listener = new(EventLevel.LogAlways);
 

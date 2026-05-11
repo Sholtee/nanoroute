@@ -1,5 +1,5 @@
 /********************************************************************************
-* ApiGatewayHttpApiV2Router.cs                                                  *
+* ApiGatewayV2Router.cs                                                         *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -15,14 +15,12 @@ using Amazon.Lambda.APIGatewayEvents;
 
 namespace NanoRoute.AwsLambda
 {
-    using Json;
-
     /// <summary>
     /// Routes API Gateway HTTP API and Lambda Function URL <see cref="APIGatewayHttpApiV2ProxyRequest"/> instances through a NanoRoute pipeline.
     /// </summary>
-    public sealed class ApiGatewayHttpApiV2Router : Router
+    public sealed class ApiGatewayV2Router : Router
     {
-        private ApiGatewayHttpApiV2Router(RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> builder) : base(builder, builder.RouterConfig) { }
+        private ApiGatewayV2Router(RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> builder) : base(builder, builder.RouterConfig) { }
 
         /// <summary>
         /// Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.
@@ -79,12 +77,12 @@ namespace NanoRoute.AwsLambda
         /// <summary>
         /// Configuration assigned to this instance.
         /// </summary>
-        public new AwsLambdaRouterConfig Config => (AwsLambdaRouterConfig) base.Config;
+        public new ApiGatewayV2RouterConfig Config => (ApiGatewayV2RouterConfig) base.Config;
 
         /// <summary>
-        /// Creates a strongly typed builder for configuring an <see cref="ApiGatewayHttpApiV2Router"/>.
+        /// Creates a strongly typed builder for configuring an <see cref="ApiGatewayV2Router"/>.
         /// </summary>
         /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
-        public static RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> CreateBuilder() => new RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig>(static builder => new ApiGatewayHttpApiV2Router(builder));
+        public static RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> CreateBuilder() => new RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig>(static builder => new ApiGatewayV2Router(builder));
     }
 }

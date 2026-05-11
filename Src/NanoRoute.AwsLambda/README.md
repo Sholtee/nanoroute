@@ -19,7 +19,6 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
 using NanoRoute.AwsLambda;
-using NanoRoute.Json;
 
 public sealed class Function
 {
@@ -61,7 +60,6 @@ using System.Net.Http;
 
 using NanoRoute;
 using NanoRoute.AwsLambda;
-using NanoRoute.Json;
 
 ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
@@ -150,8 +148,6 @@ using System.Threading;
 
 using NanoRoute;
 using NanoRoute.AwsLambda;
-using NanoRoute.HandlerExtensions;
-using NanoRoute.Json;
 
 public sealed class GetItemRequest
 {

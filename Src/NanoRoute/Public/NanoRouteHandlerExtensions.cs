@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NanoRoute.HandlerExtensions
+namespace NanoRoute
 {
     using Internals;
     using Properties;

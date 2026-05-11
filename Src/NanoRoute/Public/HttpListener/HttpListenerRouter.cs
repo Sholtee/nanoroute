@@ -13,7 +13,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NanoRoute
+namespace NanoRoute.Transports.HttpListener
 {
     using Internals;
 
@@ -24,7 +24,7 @@ namespace NanoRoute
     /// This adapter converts incoming <see cref="HttpListener"/> traffic into the core
     /// <see cref="HttpRequestMessage"/>/<see cref="HttpResponseMessage"/> pipeline used by NanoRoute.
     /// </remarks>
-    public class HttpListenerRouter: Router
+    public sealed class HttpListenerRouter: Router
     {
         #region Private
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks

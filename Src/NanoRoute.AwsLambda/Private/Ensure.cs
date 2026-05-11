@@ -6,7 +6,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace NanoRoute.AwsLambda
+namespace NanoRoute.Internals
 {
     /// <summary>
     /// Guard.

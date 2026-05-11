@@ -18,9 +18,12 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 
+using HttpListenerRouter = NanoRoute.HttpListener.HttpListenerRouter;
+using HttpListenerRouterConfig = NanoRoute.HttpListener.HttpListenerRouterConfig;
+using SystemHttpListener = System.Net.HttpListener;
+
 namespace NanoRoute.Tests
 {
-    using Json;
     using Properties;
 
     [TestFixture]
@@ -28,7 +31,7 @@ namespace NanoRoute.Tests
     {
         private static readonly JsonSerializerOptions s_caseInsensitiveJson = new() { PropertyNameCaseInsensitive = true };
 
-        private HttpListener _listener = null!;
+        private SystemHttpListener _listener = null!;
 
         private HttpClient _client = null!;
 
@@ -50,7 +53,7 @@ namespace NanoRoute.Tests
         {
             Uri baseAddress = new ($"http://localhost:{GetFreePort()}/");
 
-            _listener = new HttpListener();
+            _listener = new SystemHttpListener();
             _listener.Prefixes.Add(baseAddress.AbsoluteUri);
             _listener.Start();
 

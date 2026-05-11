@@ -16,7 +16,6 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
-    using HandlerExtensions;
     using Properties;
 
     internal sealed partial class RouterBuilderTests

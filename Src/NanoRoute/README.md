@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
-using NanoRoute.Json;
+using NanoRoute.HttpListener;
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
@@ -93,19 +93,6 @@ HttpListenerRouter router = HttpListenerRouter
 
 Created routers are immutable snapshots: later route or configuration changes on the builder do not affect routers that have already been created.
 
-### Builder Metadata
-
-`RouteBuilder.Metadata` is a type-keyed store for extension-defined builder settings. It is public so third-party builder extensions can offer their own `ConfigureXxx()` methods, but it is not intended as the everyday application configuration surface. Most applications should use module-specific methods such as `ConfigureQueryParsing()`, `ConfigureExceptionHandling()`, and `ConfigureJsonErrorDetails()` instead of reading or writing metadata directly.
-
-```csharp
-public sealed record MyExtensionOptions(bool Enabled);
-
-RouteBuilder builder = HttpListenerRouter.CreateBuilder();
-builder.Metadata.Set(new MyExtensionOptions(Enabled: true)); // Usually called from an extension method.
-```
-
-Prefix builders inherit metadata from the parent when they are created, then keep their own scoped copy. Later changes made on the parent or child remain local to that builder scope.
-
 ### Module Configuration
 
 Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same builder scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
@@ -174,6 +161,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 
 using NanoRoute;
+using NanoRoute.HttpListener;
 
 RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
     .CreateBuilder()
@@ -284,7 +272,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using NanoRoute;
-using NanoRoute.HandlerExtensions;
 
 public sealed class GetItemRequest
 {
@@ -462,16 +449,16 @@ This keeps the transport-specific concerns in your own router type while still r
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
-- [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
+- [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute.HttpListener/NanoRoute.HttpListener.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
 - [UnexpectedParameterBehavior](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.UnexpectedParameterBehavior.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
-- [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html)
-- [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSource.html)
-- [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSourceAttribute.html)
+- [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html)
+- [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html)
+- [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSourceAttribute.html)
 
 ## Documentation
 

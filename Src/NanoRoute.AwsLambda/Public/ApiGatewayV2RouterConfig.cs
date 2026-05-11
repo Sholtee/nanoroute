@@ -1,16 +1,16 @@
 /********************************************************************************
-* AwsLambdaRouterConfig.cs                                                      *
+* ApiGatewayV2RouterConfig.cs                                                   *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
+using System;
+
 namespace NanoRoute.AwsLambda
 {
-    using System;
-
     /// <summary>
     /// Configuration settings shared by the AWS Lambda router adapters.
     /// </summary>
-    public sealed record AwsLambdaRouterConfig : RouterConfig
+    public sealed record ApiGatewayV2RouterConfig : RouterConfig
     {
         /// <summary>
         /// Gets or sets the amount of time reserved before the Lambda invocation timeout is reached.

@@ -11,8 +11,6 @@ using System.Threading.Tasks;
 
 namespace NanoRoute.NativeAot
 {
-    using HandlerExtensions;
-
     internal static partial class Program
     {
         private static void ConfigureTypedHandlerRoutes(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) => builder

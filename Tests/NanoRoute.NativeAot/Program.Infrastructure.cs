@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
+using SystemHttpListener = System.Net.HttpListener;
+
 namespace NanoRoute.NativeAot
 {
     internal static partial class Program
@@ -20,7 +22,7 @@ namespace NanoRoute.NativeAot
         {
             Uri baseAddress = new($"http://localhost:{GetFreePort()}/");
 
-            using HttpListener listener = new();
+            using SystemHttpListener listener = new();
             listener.Prefixes.Add(baseAddress.AbsoluteUri);
             listener.Start();
 

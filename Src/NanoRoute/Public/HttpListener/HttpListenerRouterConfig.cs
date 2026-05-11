@@ -3,7 +3,7 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
-namespace NanoRoute
+namespace NanoRoute.Transports.HttpListener
 {
     /// <summary>
     /// Configuration settings for <see cref="HttpListenerRouter"/>.

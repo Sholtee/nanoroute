@@ -19,7 +19,6 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
-    using Json;
     using Properties;
 
     internal sealed partial class RouterBuilderTests
