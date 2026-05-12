@@ -13,7 +13,7 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class RequestPipeline(RouteNode root, MatchingPrecedence matchingPrecedence, HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation) : IAsyncDisposable
+    internal sealed class RequestPipeline(RouteNode root, RouterConfig routerConfig, HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation) : IAsyncDisposable
     {
         #region Private
         private readonly RouteMatchCursor _matches = new
@@ -22,7 +22,7 @@ namespace NanoRoute.Internals
             ParseVerb(request),
             request.RequestUri,
             services,
-            matchingPrecedence,
+            routerConfig,
             cancellation
         );
 

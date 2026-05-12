@@ -80,7 +80,8 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .ConfigureRouting(config => config with
     {
-        MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
+        MatchingPrecedence = MatchingPrecedence.ParameterizedFirst,
+        ParametersCapacity = 8
     })
     .AddDefaultValueParsers()
     .AddHandler("GET", "/items/{slug:str}", static async (context, _) =>
@@ -93,18 +94,7 @@ HttpListenerRouter router = HttpListenerRouter
 
 Created routers are immutable snapshots: later route or configuration changes on the builder do not affect routers that have already been created.
 
-### Builder Metadata
-
-`RouteBuilder.Metadata` is a type-keyed store for extension-defined builder settings. It is public so third-party builder extensions can offer their own `ConfigureXxx()` methods, but it is not intended as the everyday application configuration surface. Most applications should use module-specific methods such as `ConfigureQueryParsing()`, `ConfigureExceptionHandling()`, and `ConfigureJsonErrorDetails()` instead of reading or writing metadata directly.
-
-```csharp
-public sealed record MyExtensionOptions(bool Enabled);
-
-RouteBuilder builder = HttpListenerRouter.CreateBuilder();
-builder.Metadata.Set(new MyExtensionOptions(Enabled: true)); // Usually called from an extension method.
-```
-
-Prefix builders inherit metadata from the parent when they are created, then keep their own scoped copy. Later changes made on the parent or child remain local to that builder scope.
+`ParametersCapacity` sets the initial capacity of the per-request `RequestContext.Parameters` dictionary. Raise it when most requests collect several route parameters, query bindings, or middleware-added values and you want to avoid resizing.
 
 ### Module Configuration
 
@@ -440,7 +430,7 @@ This keeps the transport-specific concerns in your own router type while still r
 ## Common Building Blocks
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
-- `ConfigureRouting()` customizes router-level behavior such as matching precedence before creating a router snapshot.
+- `ConfigureRouting()` customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `AddPrefix("/prefix/", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
@@ -461,6 +451,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
+- [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)

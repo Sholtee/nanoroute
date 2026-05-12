@@ -23,7 +23,7 @@ namespace NanoRoute.Internals
         public required Dictionary<string, object?> AttachedParameters { get; init; }
     }
 
-    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, MatchingPrecedence matchingPrecedence, CancellationToken cancellation): IAsyncEnumerator<RouteMatch>
+    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation): IAsyncEnumerator<RouteMatch>
     {
         #region Private
         private enum BranchKind
@@ -59,14 +59,14 @@ namespace NanoRoute.Internals
 
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
-        private readonly BranchOrder _branchOrder = matchingPrecedence switch
+        private readonly BranchOrder _branchOrder = routerConfig.MatchingPrecedence switch
         {
             MatchingPrecedence.LiteralFirst => new BranchOrder(BranchKind.Literal, BranchKind.Parsed),
             MatchingPrecedence.ParameterizedFirst => new BranchOrder(BranchKind.Parsed, BranchKind.Literal),
-            _ => throw new ArgumentOutOfRangeException(nameof(matchingPrecedence))
+            _ => default  // dead code
         };
 
-        private readonly Dictionary<string, object?> _parameters = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, object?> _parameters = new(routerConfig.ParametersCapacity, StringComparer.OrdinalIgnoreCase);
 
         private char[]? _decodedSegmentBuffer;
 
