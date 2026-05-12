@@ -1,5 +1,5 @@
 /********************************************************************************
-* RouterBuilderValueParserExtensions.cs                                         *
+* NanoRouteValueParserExtensions.cs                                             *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -17,8 +17,9 @@ namespace NanoRoute
     /// <summary>
     /// Provides convenience methods for registering value parsers.
     /// </summary>
-    public static class RouterBuilderValueParserExtensions
+    public static class NanoRouteValueParserExtensions
     {
+        #region Private
         private readonly record struct IntParserArguments(int? Min, int? Max);
 
         private readonly record struct StringParserArguments(int? Min, int? Max, Regex? Pattern);
@@ -52,6 +53,7 @@ namespace NanoRoute
                 throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, paramName, ex);
             }
         }
+        #endregion
 
         extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
         {

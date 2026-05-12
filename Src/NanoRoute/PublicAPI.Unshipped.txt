@@ -93,6 +93,17 @@ NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindin
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, string! bindings) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, string! bindings, NanoRoute.ConfigureBuilderDelegate<NanoRoute.QueryParsingConfig!>! oneOffConfigOverride) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).ConfigureQueryParsing(NanoRoute.ConfigureBuilderDelegate<NanoRoute.QueryParsingConfig!>! configure) -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!)
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddBoolParser() -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddDefaultValueParsers() -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddGuidParser() -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddIntParser() -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddStringParser() -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.SyncValueParserDelegate! tryParseDelegate) -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.SyncValueParserDelegate! tryParseDelegate) -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.ValueParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.QueryParsingConfig
 NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior.get -> NanoRoute.UnexpectedParameterBehavior
 NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior.init -> void
@@ -126,17 +137,6 @@ NanoRoute.RouterBuilder<TRouter, TConfig>.ConfigureRouting(NanoRoute.ConfigureBu
 NanoRoute.RouterBuilder<TRouter, TConfig>.CreateRouter() -> TRouter!
 NanoRoute.RouterBuilder<TRouter, TConfig>.RouterBuilder(NanoRoute.RouterFactoryDelegate<TRouter!, TConfig!>! routerFactory) -> void
 NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig.get -> TConfig!
-NanoRoute.RouterBuilderValueParserExtensions
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!)
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddBoolParser() -> TBuilder!
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddDefaultValueParsers() -> TBuilder!
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddGuidParser() -> TBuilder!
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddIntParser() -> TBuilder!
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddStringParser() -> TBuilder!
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.SyncValueParserDelegate! tryParseDelegate) -> TBuilder!
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> TBuilder!
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.SyncValueParserDelegate! tryParseDelegate) -> TBuilder!
-NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.ValueParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.RouterConfig
 NanoRoute.RouterConfig.MatchingPrecedence.get -> NanoRoute.MatchingPrecedence
 NanoRoute.RouterConfig.MatchingPrecedence.init -> void

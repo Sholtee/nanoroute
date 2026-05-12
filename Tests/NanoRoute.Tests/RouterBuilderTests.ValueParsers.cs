@@ -93,7 +93,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddValueParser_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter, RouterConfig> result = RouterBuilderValueParserExtensions.AddValueParser
+            RouterBuilder<TestRouter, RouterConfig> result = NanoRouteValueParserExtensions.AddValueParser
             (
                 _routerBuilder,
                 "value",
@@ -320,10 +320,10 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddValueParser("any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, (ValueParserDelegate) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => RouterBuilderValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => RouterBuilderValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
         });
     }
