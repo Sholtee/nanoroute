@@ -47,6 +47,7 @@
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate`1</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html">ExceptionHandlingConfig</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html">Router</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html">RouterConfig</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html">RouterBuilder`2</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html">RequestContext</a></li>
@@ -69,6 +70,7 @@
 <li><code>RouteBuilder.Metadata</code> stores type-keyed extension settings and follows the same scoped inheritance model as prefix builders. It is public for extension authors and is not the normal application configuration surface.</li>
 <li><code>RouterConfig</code> is immutable and can be replaced with <code>ConfigureRouting(config =&gt; config with { ... })</code> before creating a router snapshot.</li>
 <li><code>MatchingPrecedence</code> lets you choose whether literal or parameterized child segments are selected first.</li>
+<li><code>ParametersCapacity</code> sets the initial capacity of the per-request <code>RequestContext.Parameters</code> dictionary.</li>
 <li>Once a child branch has been selected for a request, NanoRoute continues only within that branch.</li>
 <li><code>AddQueryBindings()</code> uses query descriptors such as <code>{filter:str(min=3)}&amp;{page?:int(min=1)}&amp;{tag:str(min=2)[]}</code> and matches query keys through <code>Uri.Query</code> normalization. Undeclared query keys are ignored by default, or rejected when <code>ConfigureQueryParsing()</code> sets <code>UnexpectedParameterBehavior</code> to <code>Reject</code>.</li>
 <li><code>ConfigureQueryParsing()</code> stores scoped query-binding settings used by subsequently registered <code>AddQueryBindings()</code> middleware.</li>
