@@ -129,67 +129,6 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Registers a handler for all supported HTTP methods.
-        /// </summary>
-        /// <param name="pattern">
-        /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
-        /// invalid, and patterns without a trailing slash match only the exact path.
-        /// </param>
-        /// <param name="handler">The handler to execute when the pattern matches.</param>
-        /// <returns>The current router instance.</returns>
-        /// <example>
-        /// <code>
-        /// builder.AddHandler("/health", (context, next) =&gt; Results.Ok());
-        /// </code>
-        /// </example>
-        public RouteBuilder AddHandler(string pattern, RequestHandlerDelegate handler)
-        {
-            Ensure.NotNull(pattern);
-            Ensure.NotNull(handler);
-
-            return AddHandler
-            (
-                HttpVerb.Names,
-                pattern,
-                handler
-            );
-        }
-
-        /// <summary>
-        /// Registers the same handler for multiple HTTP methods.
-        /// </summary>
-        /// <param name="verbs">The HTTP methods that should use the handler.</param>
-        /// <param name="pattern">
-        /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
-        /// invalid, and patterns without a trailing slash match only the exact path.
-        /// </param>
-        /// <param name="handler">The handler to execute when the route matches.</param>
-        /// <returns>The current router instance.</returns>
-        /// <example>
-        /// <code>
-        /// builder.AddHandler(
-        ///     ["GET", "POST"],
-        ///     "/api/items/{id:int}",
-        ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
-        /// </code>
-        /// </example>
-        public RouteBuilder AddHandler(IEnumerable<string> verbs, string pattern, RequestHandlerDelegate handler)
-        {
-            Ensure.NotNull(verbs);
-            Ensure.NotNull(pattern);
-            Ensure.NotNull(handler);
-
-            foreach (string verb in verbs)
-                AddHandler(verb, pattern, handler);
-
-            return this;
-        }
-
-        /// <summary>
         /// Registers a handler for a single HTTP method.
         /// </summary>
         /// <param name="verb">The HTTP method that activates the handler.</param>
@@ -277,39 +216,6 @@ namespace NanoRoute
                 throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
 
             return new RouteBuilder(this, pattern);
-        }
-
-        /// <summary>
-        /// Creates a child builder for the given prefix, invokes a configuration callback, and returns the current builder.
-        /// </summary>
-        /// <param name="pattern">
-        /// The base prefix. It must be a valid route pattern ending in <c>/</c> so child routes can be appended to it.
-        /// </param>
-        /// <param name="configureRoutes">A callback that configures routes on the child builder.</param>
-        /// <returns>The current builder.</returns>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/</c>.</exception>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
-        /// registered yet.
-        /// </exception>
-        /// <example>
-        /// <code>
-        /// builder.AddPrefix("/api/", api =&gt; api
-        ///     .AddHandler("GET", "/health", (context, _) =&gt; Results.Ok())
-        ///     .AddHandler("GET", "/users", (context, _) =&gt; Results.Ok()));
-        /// </code>
-        /// </example>
-        public RouteBuilder AddPrefix(string pattern, Action<RouteBuilder> configureRoutes)
-        {
-            Ensure.NotNull(pattern);
-            Ensure.NotNull(configureRoutes);
-
-            configureRoutes
-            (
-                CreatePrefix(pattern)
-            );
-
-            return this;
         }
 
         /// <summary>

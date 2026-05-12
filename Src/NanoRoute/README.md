@@ -274,7 +274,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using NanoRoute;
-using NanoRoute.HandlerExtensions;
 
 public sealed class GetItemRequest
 {
@@ -460,9 +459,10 @@ This keeps the transport-specific concerns in your own router type while still r
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
-- [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html)
-- [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSource.html)
-- [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSourceAttribute.html)
+- [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html)
+- [NanoRoutePrefixExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html)
+- [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html)
+- [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSourceAttribute.html)
 
 ## Documentation
 

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NanoRoute.HandlerExtensions
+namespace NanoRoute
 {
     using Internals;
     using Properties;
@@ -191,7 +191,7 @@ namespace NanoRoute.HandlerExtensions
             );
         }
 
-        private static TBuilder AddHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
+        private static TBuilder AddTypedHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
         {
             Ensure.NotNull(routeBuilder);
             Ensure.NotNull(verbs);
@@ -285,7 +285,7 @@ namespace NanoRoute.HandlerExtensions
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
-                return AddHandlerCore(routeBuilder, verbs, pattern, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
+                return AddTypedHandlerCore(routeBuilder, verbs, pattern, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
             }
 
             /// <summary>
@@ -363,7 +363,55 @@ namespace NanoRoute.HandlerExtensions
             /// </para>
             /// </remarks>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
-                AddHandlerCore(routeBuilder, verbs, pattern, handler);
+                AddTypedHandlerCore(routeBuilder, verbs, pattern, handler);
+
+            /// <summary>
+            /// Registers a handler for all supported HTTP methods.
+            /// </summary>
+            /// <param name="pattern">
+            /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
+            /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
+            /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
+            /// invalid, and patterns without a trailing slash match only the exact path.
+            /// </param>
+            /// <param name="handler">The handler to execute when the pattern matches.</param>
+            /// <returns>The current router instance.</returns>
+            /// <example>
+            /// <code>
+            /// builder.AddHandler("/health", (context, next) =&gt; Results.Ok());
+            /// </code>
+            /// </example>
+            public TBuilder AddHandler(string pattern, RequestHandlerDelegate handler) => routeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
+
+            /// <summary>
+            /// Registers the same handler for multiple HTTP methods.
+            /// </summary>
+            /// <param name="verbs">The HTTP methods that should use the handler.</param>
+            /// <param name="pattern">
+            /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
+            /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
+            /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
+            /// invalid, and patterns without a trailing slash match only the exact path.
+            /// </param>
+            /// <param name="handler">The handler to execute when the route matches.</param>
+            /// <returns>The current router instance.</returns>
+            /// <example>
+            /// <code>
+            /// builder.AddHandler(
+            ///     ["GET", "POST"],
+            ///     "/api/items/{id:int}",
+            ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
+            /// </code>
+            /// </example>
+            public TBuilder AddHandler(IEnumerable<string> verbs, string pattern, RequestHandlerDelegate handler)
+            {
+                Ensure.NotNull(verbs);
+
+                foreach (string verb in verbs)
+                    routeBuilder.AddHandler(verb, pattern, handler);
+
+                return routeBuilder;
+            }
         }
     }
 }

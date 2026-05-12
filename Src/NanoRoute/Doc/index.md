@@ -20,9 +20,10 @@ The API documentation for this package is generated from the XML comments in the
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
-- [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html)
-- [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSource.html)
-- [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSourceAttribute.html)
+- [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html)
+- [NanoRoutePrefixExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html)
+- [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html)
+- [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSourceAttribute.html)
 
 ## Highlights
 
@@ -40,6 +41,7 @@ The API documentation for this package is generated from the XML comments in the
 - `ConfigureQueryParsing()` stores scoped query-binding settings used by subsequently registered `AddQueryBindings()` middleware.
 - `ConfigureExceptionHandling()` stores scoped exception-normalization settings used by subsequently registered `AddExceptionHandler()` middleware.
 - `ConfigureJsonErrorDetails()` stores scoped JSON `ErrorDetails` response settings used by subsequently registered `AddJsonErrorDetails()` middleware.
+- Handler convenience overloads such as pattern-only registration, multi-verb registration, and `AddHandler<TRequestContext>()` are extension methods in the `NanoRoute` namespace.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
 - `ValueSourceAttribute` customizes typed-handler property binding with `Context`, `ServiceLocator`, and `Skip` sources.
 - `NanoRoute.Json` adds JSON request binding and JSON error/response helpers on top of the core pipeline.
