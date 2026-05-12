@@ -66,7 +66,7 @@ namespace NanoRoute
                 Verb = request.Method.Method
             }, request);
 
-            await using RequestPipeline pipeline = new(_root, Config.MatchingPrecedence, request, services, cancellation);
+            await using RequestPipeline pipeline = new(_root, Config, request, services, cancellation);
 
             return await pipeline.RunAsync();
         }
@@ -74,6 +74,6 @@ namespace NanoRoute
         /// <summary>
         /// Configuration assigned to this instance.
         /// </summary>
-        public RouterConfig Config { get; } = config with { };  // create a snapshot from the actual configuration 
+        public RouterConfig Config { get; } = config;
     }
 }

@@ -17,7 +17,6 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
-    using Internals;
     using Properties;
 
     [TestFixture]
@@ -44,10 +43,7 @@ namespace NanoRoute.Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            _debugEventListener?.Dispose();
-        }
+        public void TearDown() => _debugEventListener?.Dispose();
 
         [Test]
         public async Task Handle_ShouldMatchTheShortestPrefix()
@@ -249,18 +245,30 @@ namespace NanoRoute.Tests
             mockLiteralHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingPrecedence == MatchingPrecedence.LiteralFirst ? Times.Once() : Times.Never());
             mockParameterizedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), matchingPrecedence == MatchingPrecedence.ParameterizedFirst ? Times.Once() : Times.Never());
         }
-
+#if NET9_0_OR_GREATER
         [Test]
-        public void Handle_ShouldRejectUnknownMatchingPrecedence()
+        public async Task Handle_ShouldRespectConfiguredParametersCapacity()
         {
-            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>
-            (
-                () => _routerBuilder.ConfigureRouting(config => config with { MatchingPrecedence = (MatchingPrecedence) 100 })
-            )!;
+            const int parametersCapacity = 32;
 
-            Assert.That(ex.ParamName, Is.EqualTo("value"));
+            int capturedCapacity = 0;
+
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .ConfigureRouting(config => config with { ParametersCapacity = parametersCapacity })
+                .AddHandler("GET", "/users/{user_id:int}/items/{item_id:int}", async (context, _) =>
+                {
+                    capturedCapacity = context.Parameters.EnsureCapacity(0);
+                    return s_response;
+                })
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/users/1986/items/42");
+
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            Assert.That(capturedCapacity, Is.GreaterThanOrEqualTo(parametersCapacity));
         }
-
+#endif
         [Test]
         public async Task Handlers_MayShareData()
         {

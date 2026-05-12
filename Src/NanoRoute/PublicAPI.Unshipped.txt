@@ -150,6 +150,8 @@ NanoRoute.RouterBuilderValueParserExtensions.extension<TBuilder>(TBuilder!).AddV
 NanoRoute.RouterConfig
 NanoRoute.RouterConfig.MatchingPrecedence.get -> NanoRoute.MatchingPrecedence
 NanoRoute.RouterConfig.MatchingPrecedence.init -> void
+NanoRoute.RouterConfig.ParametersCapacity.get -> int
+NanoRoute.RouterConfig.ParametersCapacity.init -> void
 NanoRoute.RouterFactoryDelegate<TRouter, TConfig>
 NanoRoute.RoutingContext
 NanoRoute.SyncValueParserDelegate
