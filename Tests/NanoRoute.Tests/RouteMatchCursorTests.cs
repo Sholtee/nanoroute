@@ -36,7 +36,7 @@ namespace NanoRoute.Tests
             HttpVerb.Get,
             new Uri($"https://www.example.com{path}", UriKind.Absolute),
             new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-            matchingPrecedence,
+            new RouterConfig { MatchingPrecedence = matchingPrecedence },
             CancellationToken.None
         );
 
@@ -255,16 +255,6 @@ namespace NanoRoute.Tests
 
             mockIntParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")), Times.Once);
             mockStringParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Never);
-        }
-
-        [Test]
-        public void Ctor_ShouldThrowOnUnknownMatchingPrecedence()
-        {
-            RouteNode root = new();
-
-            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => CreateCursor(root, "/api", (MatchingPrecedence) 99))!;
-
-            Assert.That(ex.ParamName, Is.EqualTo("matchingPrecedence"));
         }
     }
 }

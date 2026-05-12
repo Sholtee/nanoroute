@@ -43,6 +43,6 @@ namespace NanoRoute
                     throw new ArgumentOutOfRangeException(nameof(value));
                 field = value;
             }
-        }
+        } = 4;
     }
 }
