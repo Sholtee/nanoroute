@@ -59,7 +59,8 @@ In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs befor
 
 - A trailing `/` makes a route a prefix match.
 - Without a trailing `/`, the route matches only the exact normalized request path.
-- Route patterns must start with `/`, except for the empty string `""`, which matches the current scoped path exactly.
+- Route patterns must start with `/`, except for `RouteBuilder.CurrentExact`, which matches the current scoped path exactly.
+- Use `RouteBuilder.CurrentPrefix` when a handler or middleware should match the current scoped path as a prefix.
 - Repeated `/` separators in route patterns, such as `//` or `/items//details`, are invalid.
 - Literal segments are matched case-insensitively.
 - Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
@@ -217,8 +218,8 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddPrefix("/items/", items => items
-        .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}")
-        .AddHandler("GET", "", async (context, _) =>
+        .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}")
+        .AddHandler("GET", RouteBuilder.CurrentExact, async (context, _) =>
         {
             return HttpResponseMessage.Json(new
             {

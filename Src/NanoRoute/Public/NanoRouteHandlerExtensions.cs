@@ -420,16 +420,16 @@ namespace NanoRoute
             /// <param name="handler">The handler to execute when a matching request enters this builder scope.</param>
             /// <returns>The current router instance.</returns>
             /// <remarks>
-            /// This overload uses <c>/</c> as the route pattern. Because <c>/</c> is a prefix pattern, the handler is
-            /// bound to the whole current builder scope. If the handler calls <c>next</c>, routing continues with the
-            /// next compatible handler on the selected branch.
+            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the handler is
+            /// bound to the whole current builder scope. If the handler calls <c>next</c>, routing continues with
+            /// the next compatible handler on the selected branch.
             /// </remarks>
             /// <example>
             /// <code>
             /// builder.AddHandler(["GET", "POST"], (context, next) =&gt; next());
             /// </code>
             /// </example>
-            public TBuilder AddHandler(IEnumerable<string> verbs, RequestHandlerDelegate handler) => routeBuilder.AddHandler(verbs, "/", handler);
+            public TBuilder AddHandler(IEnumerable<string> verbs, RequestHandlerDelegate handler) => routeBuilder.AddHandler(verbs, RouteBuilder.CurrentPrefix, handler);
         }
     }
 }

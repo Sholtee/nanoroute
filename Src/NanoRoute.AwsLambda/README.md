@@ -66,8 +66,8 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddPrefix("/api/items/", items => items
-        .AddQueryBindings("GET", "", "{filter?:str(min=3)}")
-        .AddHandler("GET", "", static async (context, _) =>
+        .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter?:str(min=3)}")
+        .AddHandler("GET", RouteBuilder.CurrentExact, static async (context, _) =>
         {
             await Task.CompletedTask;
 
@@ -167,11 +167,11 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddPrefix("/items/{id:int}/", items => items
-      .AddQueryBindings(["GET"], "", "{filter?:str(min=3)}")
+      .AddQueryBindings(["GET"], RouteBuilder.CurrentExact, "{filter?:str(min=3)}")
       .AddHandler
       (
           ["GET"],
-          "",
+          RouteBuilder.CurrentExact,
           static async (GetItemRequest request) =>
           {
               Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);

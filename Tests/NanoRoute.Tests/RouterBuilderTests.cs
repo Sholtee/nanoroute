@@ -44,6 +44,13 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void CurrentRoutePatternConstants_ShouldExposeExistingRouteSemantics()
+        {
+            Assert.That(RouteBuilder.CurrentExact, Is.EqualTo(string.Empty));
+            Assert.That(RouteBuilder.CurrentPrefix, Is.EqualTo("/"));
+        }
+
+        [Test]
         public void CreateRouter_ShouldPassTheBuilderIntoTheRouterFactory()
         {
             TestRouter router = _routerBuilder.CreateRouter();
@@ -85,12 +92,12 @@ namespace NanoRoute.Tests
         {
             _routerBuilder
                 .AddValueParser("any", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .AddHandler("GET", "/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", RouteBuilder.CurrentPrefix, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/somewhere/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/{some_str_1:any}/not-prefix", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
 
             RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/")
-                .AddHandler("GET", "", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", RouteBuilder.CurrentExact, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/{some_str_2:any}/something/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/explicit/something/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/not-prefix", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);

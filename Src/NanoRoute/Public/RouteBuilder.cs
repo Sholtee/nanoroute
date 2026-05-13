@@ -24,6 +24,16 @@ namespace NanoRoute
     /// </remarks>
     public class RouteBuilder : RoutingContext
     {
+        /// <summary>
+        /// The route pattern that matches the current builder scope exactly.
+        /// </summary>
+        public const string CurrentExact = "";
+
+        /// <summary>
+        /// The route pattern that matches the current builder scope as a prefix.
+        /// </summary>
+        public const string CurrentPrefix = "/";
+
         #region Private
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Dictionary<string, ValueParserRegistration> _valueParsers;
