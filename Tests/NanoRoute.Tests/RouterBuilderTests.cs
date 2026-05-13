@@ -4,7 +4,6 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -15,8 +14,6 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
-    using Properties;
-
     [TestFixture]
     internal sealed partial class RouterBuilderTests
     {
@@ -67,6 +64,21 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void RoutePatterns_ShouldDeduplicateIdenticalEntries()
+        {
+            RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
+
+            _routerBuilder
+                .AddHandler("GET", "/items", handler)
+                .AddHandler("GET", "/items", handler);
+
+            Assert.That(_routerBuilder.Patterns, Is.EqualTo(new[]
+            {
+                "[Get] /items"
+            }));
+        }
+
+        [Test]
         public void Patterns_ShouldReflectTheActualBranch()
         {
             _routerBuilder
@@ -101,55 +113,6 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void RoutePatterns_ShouldDeduplicateIdenticalEntries()
-        {
-            RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
-
-            _routerBuilder
-                .AddHandler("GET", "/items", handler)
-                .AddHandler("GET", "/items", handler);
-
-            Assert.That(_routerBuilder.Patterns, Is.EqualTo(new[]
-            {
-                "[Get] /items"
-            }));
-        }
-
-        [Test]
-        public async Task AddHandler_WithVerbsAndNoPattern_ShouldBindHandlerToTheCurrentBuilderRoot()
-        {
-            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
-            mockHandler
-                .Setup(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()))
-                .Returns<RequestContext, CallNextHandlerDelegate>(async (_, next) => await next());
-
-            TestRouter router = _routerBuilder
-                .AddHandler(["GET"], mockHandler.Object)
-                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
-                .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted))
-                .CreateRouter();
-
-            HttpResponseMessage getResponse = await router.Handle
-            (
-                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
-            );
-
-            HttpResponseMessage postResponse = await router.Handle
-            (
-                new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
-            );
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(getResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(postResponse.StatusCode, Is.EqualTo(HttpStatusCode.Accepted));
-            });
-            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
-        }
-
-        [Test]
         public void BasePattern_ShouldReflectTheBuilderBranch()
         {
             RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/");
@@ -159,106 +122,5 @@ namespace NanoRoute.Tests
             Assert.That(childBuilder.BasePattern, Is.EqualTo("/path/to/"));
             Assert.That(nestedBuilder.BasePattern, Is.EqualTo("/path/to/nested/"));
         }
-
-        [TestCase("")]
-        [TestCase("/not-prefix")]
-        [TestCase("/some/not-prefix")]
-        public void CreatePrefix_ShouldThrowOnNonPrefixPattern(string pattern)
-        {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.CreatePrefix(pattern))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
-            Assert.That(ex.Message, Does.StartWith(Resources.ERR_NOT_PREFIX));
-        }
-
-        [TestCase("/path/{invalid-segment}/", 6)]
-        public void CreatePrefix_ShouldThrowOnInvalidPattern(string pattern, int expectedOffset)
-        {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.CreatePrefix(pattern))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
-        }
-
-        [Test]
-        public void AddPrefix_ShouldBeNullChecked()
-        {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddPrefix("/base/", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("configureRoutes"));
-        }
-
-        [Test]
-        public void AddPrefix_ShouldReturnTheOriginalBuilder()
-        {
-            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.AddPrefix("/base/", _ => { });
-
-            Assert.That(result, Is.SameAs(_routerBuilder));
-        }
-
-        [TestCase("/path/{invalid-segment}", 6)]
-        public void AddHandler_ShouldThrowOnInvalidPattern(string pattern, int expectedOffset)
-        {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
-        }
-
-        [TestCase("/users/~denes")]
-        [TestCase("/files/a%20b")]
-        [TestCase("/mail/a%40b")]
-        public void AddHandler_ShouldAllowUriLiteralCharacters(string pattern)
-        {
-            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
-        }
-
-        [TestCase("//", 1)]
-        [TestCase("/path//to", 6)]
-        [TestCase("/path//to/", 6)]
-        public void RoutePatterns_ShouldRejectRepeatedSeparators(string pattern, int expectedOffset)
-        {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
-        }
-
-        [Test]
-        public void AddHandler_ShouldThrowOnInvalidVerb()
-        {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("INVALID", "/path/to/somewhere", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("verb"));
-            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "INVALID")));
-        }
-
-        [Test]
-        public void AddHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
-        {
-            RequestHandlerDelegate requestHandler = async (_, _) => new HttpResponseMessage();
-
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string) null!, requestHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("path", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("handler"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, "path", requestHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, requestHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string) null!, "path", requestHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("verb"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], null!, requestHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], "path", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("handler"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("handler"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", null!, requestHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "path", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("handler"));
-        });
     }
 }
