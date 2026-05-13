@@ -13,8 +13,6 @@ using System.Threading.Tasks;
 
 namespace NanoRoute.NativeAot
 {
-    using Json;
-
     internal static partial class Program
     {
         private static void ConfigureJsonRoutes(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) => builder

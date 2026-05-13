@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
-using NanoRoute.Json;
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()

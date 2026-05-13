@@ -44,7 +44,6 @@ The API documentation for this package is generated from the XML comments in the
 - Handler convenience overloads such as pattern-only registration, multi-verb registration, and `AddHandler<TRequestContext>()` are extension methods in the `NanoRoute` namespace.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
 - `ValueSourceAttribute` customizes typed-handler property binding with `Context`, `ServiceLocator`, and `Skip` sources.
-- `NanoRoute.Json` adds JSON request binding and JSON error/response helpers on top of the core pipeline.
 
 ## Value Parser Syntax
 

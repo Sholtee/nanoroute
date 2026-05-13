@@ -18,7 +18,6 @@ using Amazon.Lambda.Serialization.SystemTextJson;
 namespace NanoRoute.TestLambda
 {
     using AwsLambda;
-    using Json;
 
     /// <summary>
     /// Lambda function fixture for future NanoRoute.AwsLambda integration tests.
