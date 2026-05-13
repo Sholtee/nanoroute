@@ -116,6 +116,40 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task AddHandler_WithVerbsAndNoPattern_ShouldBindHandlerToTheCurrentBuilderRoot()
+        {
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
+            mockHandler
+                .Setup(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()))
+                .Returns<RequestContext, CallNextHandlerDelegate>(async (_, next) => await next());
+
+            TestRouter router = _routerBuilder
+                .AddHandler(["GET"], mockHandler.Object)
+                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted))
+                .CreateRouter();
+
+            HttpResponseMessage getResponse = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            HttpResponseMessage postResponse = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
+                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+            );
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(getResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(postResponse.StatusCode, Is.EqualTo(HttpStatusCode.Accepted));
+            });
+            mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
+        }
+
+        [Test]
         public void BasePattern_ShouldReflectTheBuilderBranch()
         {
             RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/");
@@ -191,19 +225,21 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "INVALID")));
         }
 
-
         [Test]
         public void AddHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             RequestHandlerDelegate requestHandler = async (_, _) => new HttpResponseMessage();
 
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, requestHandler))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string) null!, requestHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("path", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, "path", requestHandler))!;
+            Assert.That(ex.ParamName, Is.EqualTo("verbs"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, requestHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string) null!, "path", requestHandler))!;
@@ -213,6 +249,9 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], "path", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("handler"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", null!, requestHandler))!;

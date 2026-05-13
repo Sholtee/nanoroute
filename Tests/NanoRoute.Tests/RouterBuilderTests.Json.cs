@@ -327,7 +327,8 @@ namespace NanoRoute.Tests
 
         [TestCase("POST")]
         [TestCase("PUT")]
-        public async Task AddJsonBody_ShouldDefaultToPostAndPut(string verb)
+        [TestCase("PATCH")]
+        public async Task AddJsonBody_ShouldDefaultToVerbsHavingBody(string verb)
         {
             TestJsonPayload? body = null;
 

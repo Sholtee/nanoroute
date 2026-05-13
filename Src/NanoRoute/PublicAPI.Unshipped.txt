@@ -54,6 +54,7 @@ NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).ConfigureE
 NanoRoute.NanoRouteHandlerExtensions
 NanoRoute.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler(string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> TBuilder!
+NanoRoute.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, NanoRoute.RequestHandlerDelegate! handler) -> TBuilder!
 NanoRoute.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> TBuilder!
 NanoRoute.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(string! pattern, System.Func<TRequestContext, NanoRoute.CallNextHandlerDelegate!, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
 NanoRoute.NanoRouteHandlerExtensions.extension<TBuilder>(TBuilder!).AddHandler<TRequestContext>(string! pattern, System.Func<TRequestContext, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!>! handler) -> TBuilder!
