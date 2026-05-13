@@ -19,6 +19,117 @@ namespace NanoRoute.Tests
     internal sealed partial class RouterBuilderTests
     {
         [Test]
+        public async Task AddHandler_WithSingleVerbAndPattern_ShouldBindHandlerToMatchingRouteAndVerb()
+        {
+            TestRouter router = _routerBuilder
+                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("items")
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                s_services
+            );
+
+            HttpRequestException wrongVerb = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
+                s_services
+            ))!;
+
+            HttpRequestException wrongPath = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/1"),
+                s_services
+            ))!;
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("items"));
+            Assert.That(wrongVerb.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(wrongPath.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task AddHandler_WithRouteParameters_ShouldPopulateTheRequestContext()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddHandler("GET", "/items/{id:int}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(context.Parameters["id"]!.ToString()!)
+                })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
+                s_services
+            );
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("42"));
+        }
+
+        [Test]
+        public async Task AddHandler_WithMultipleVerbsAndPattern_ShouldRegisterTheHandlerForEachVerb()
+        {
+            TestRouter router = _routerBuilder
+                .AddHandler(["GET", "POST"], "/items", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(context.Request.Method.Method)
+                })
+                .CreateRouter();
+
+            HttpResponseMessage getResponse = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                s_services
+            );
+
+            HttpResponseMessage postResponse = await router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
+                s_services
+            );
+
+            HttpRequestException deleteResponse = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Delete, "https://test.test/items"),
+                s_services
+            ))!;
+
+            Assert.That(await getResponse.Content.ReadAsStringAsync(), Is.EqualTo("GET"));
+            Assert.That(await postResponse.Content.ReadAsStringAsync(), Is.EqualTo("POST"));
+            Assert.That(deleteResponse.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task AddHandler_WithPatternOnlyOverload_ShouldRegisterTheHandlerForAllVerbs()
+        {
+            TestRouter router = _routerBuilder
+                .AddHandler("/items", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(context.Request.Method.Method)
+                })
+                .CreateRouter();
+
+            foreach (string verb in new[] { "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE" })
+            {
+                HttpResponseMessage response = await router.Handle
+                (
+                    new HttpRequestMessage(new HttpMethod(verb), "https://test.test/items"),
+                    s_services
+                );
+
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo(verb));
+            }
+        }
+
+        [Test]
         public async Task AddHandler_WithVerbsAndNoPattern_ShouldBindHandlerToTheCurrentBuilderRoot()
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
@@ -35,13 +146,13 @@ namespace NanoRoute.Tests
             HttpResponseMessage getResponse = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             HttpResponseMessage postResponse = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.Multiple(() =>

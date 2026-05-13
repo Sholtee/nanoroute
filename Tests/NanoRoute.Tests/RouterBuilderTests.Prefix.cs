@@ -31,18 +31,17 @@ namespace NanoRoute.Tests
                 });
 
             TestRouter router = _routerBuilder.CreateRouter();
-            Mock<IServiceProvider> services = new(MockBehavior.Strict);
 
             HttpResponseMessage prefixedResponse = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/users"),
-                services.Object
+                s_services
             );
 
             HttpResponseMessage rootResponse = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/users"),
-                services.Object
+                s_services
             );
 
             Assert.Multiple(() =>
@@ -78,18 +77,17 @@ namespace NanoRoute.Tests
                     }));
 
             TestRouter router = _routerBuilder.CreateRouter();
-            Mock<IServiceProvider> services = new(MockBehavior.Strict);
 
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/status"),
-                services.Object
+                s_services
             );
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/status"),
-                services.Object
+                s_services
             ))!;
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -115,7 +113,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));

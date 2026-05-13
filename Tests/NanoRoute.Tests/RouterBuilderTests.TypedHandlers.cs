@@ -192,7 +192,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -261,7 +261,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Post, "https://test.test/items/42"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -290,7 +290,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -312,7 +312,7 @@ namespace NanoRoute.Tests
             InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_MISSING_REQUIRED_PARAMETER, "Name")));
@@ -401,7 +401,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -441,7 +441,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));

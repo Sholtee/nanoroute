@@ -19,6 +19,8 @@ namespace NanoRoute.Tests
     {
         private static readonly JsonSerializerOptions s_caseInsensitiveJson = new() { PropertyNameCaseInsensitive = true };
 
+        private static readonly IServiceProvider s_services = new Mock<IServiceProvider>(MockBehavior.Strict).Object;
+
         internal sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> routerBuilder) : Router(routerBuilder, routerBuilder.RouterConfig) { }
 
         private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
@@ -59,7 +61,7 @@ namespace NanoRoute.Tests
 
             _routerBuilder.AddHandler("GET", "/after", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/after") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/after") }, s_services))!;
             Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
         }
 
