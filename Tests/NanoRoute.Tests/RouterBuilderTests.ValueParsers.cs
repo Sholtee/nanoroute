@@ -52,7 +52,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/items/{id:value}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(context.Parameters["id"]!.ToString()!) })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/items/42") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/items/42") }, s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("second:42"));
@@ -69,7 +69,7 @@ namespace NanoRoute.Tests
                 })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"), new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"), s_services);
 
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("async:42"));
         }
@@ -85,7 +85,7 @@ namespace NanoRoute.Tests
                 })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"), new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"), s_services);
 
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("bound:42"));
         }
@@ -93,7 +93,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddValueParser_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter, RouterConfig> result = RouterBuilderValueParserExtensions.AddValueParser
+            RouterBuilder<TestRouter, RouterConfig> result = NanoRouteValueParserExtensions.AddValueParser
             (
                 _routerBuilder,
                 "value",
@@ -123,8 +123,8 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder.CreateRouter();
 
             HttpResponseMessage
-                parentResponse = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/42") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object),
-                childResponse = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/child/42") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+                parentResponse = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/42") }, s_services),
+                childResponse = await router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/child/42") }, s_services);
 
             Assert.That(await parentResponse.Content.ReadAsStringAsync(), Is.EqualTo("parent:42"));
             Assert.That(await childResponse.Content.ReadAsStringAsync(), Is.EqualTo("child:42"));
@@ -235,7 +235,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", $"/items/{{value:{parserName}}}", async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["value"]!.ToString()!) })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri($"https://test.test/items/{expectedValue}") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri($"https://test.test/items/{expectedValue}") }, s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo(expectedValue.ToString()));
@@ -320,10 +320,10 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddValueParser("any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, (ValueParserDelegate) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => RouterBuilderValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => RouterBuilderValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
         });
     }

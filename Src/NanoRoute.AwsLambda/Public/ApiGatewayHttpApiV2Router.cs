@@ -15,8 +15,6 @@ using Amazon.Lambda.APIGatewayEvents;
 
 namespace NanoRoute.AwsLambda
 {
-    using Json;
-
     /// <summary>
     /// Routes API Gateway HTTP API and Lambda Function URL <see cref="APIGatewayHttpApiV2ProxyRequest"/> instances through a NanoRoute pipeline.
     /// </summary>

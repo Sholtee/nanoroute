@@ -9,7 +9,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Moq;
 using NUnit.Framework;
 
 namespace NanoRoute.Tests
@@ -44,7 +43,7 @@ namespace NanoRoute.Tests
             HttpRequestException handled = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.That(handled.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
@@ -52,7 +51,7 @@ namespace NanoRoute.Tests
             Assert.That(async () => await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/other"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ), Throws.InstanceOf<InvalidOperationException>());
         }
 
@@ -68,7 +67,7 @@ namespace NanoRoute.Tests
             HttpRequestException handled = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.That(handled.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
@@ -76,7 +75,7 @@ namespace NanoRoute.Tests
             Assert.That(async () => await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ), Throws.InstanceOf<InvalidOperationException>());
         }
 
@@ -95,7 +94,7 @@ namespace NanoRoute.Tests
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.Multiple(() =>
@@ -127,7 +126,7 @@ namespace NanoRoute.Tests
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
@@ -157,12 +156,12 @@ namespace NanoRoute.Tests
                 parentEx = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
                 (
                     new HttpRequestMessage(HttpMethod.Get, "https://test.test/parent"),
-                    new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                    s_services
                 ))!,
                 childEx = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
                 (
                     new HttpRequestMessage(HttpMethod.Get, "https://test.test/child/items"),
-                    new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                    s_services
                 ))!;
 
             Assert.Multiple(() =>
@@ -189,7 +188,7 @@ namespace NanoRoute.Tests
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.Multiple(() =>

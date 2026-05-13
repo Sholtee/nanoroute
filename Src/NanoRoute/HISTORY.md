@@ -9,12 +9,15 @@
 - Changed JSON error-detail diagnostics from `AddJsonErrorDetails(populateErrorInfo: true)` to `ConfigureJsonErrorDetails(config => config with { PopulateErrorInfo = true }).AddJsonErrorDetails()`.
 - Removed the public `Router.MatchingPrecedence` snapshot property. Matching precedence is now carried by the immutable `RouterConfig` used to create the router.
 - Removed inline query-binding overloads from typed `AddHandler()` APIs. Register query bindings explicitly with `AddQueryBindings()` before adding the typed handler.
+- Removed the `NanoRoute.HandlerExtensions` namespace. `ValueSource`, `ValueSourceAttribute`, and typed-handler `AddHandler()` extension methods now live directly in the `NanoRoute` namespace.
+- Moved pattern-only and multi-verb `AddHandler()` overloads from builder instance methods to extension methods in the `NanoRoute` namespace. The single-verb `AddHandler(string verb, string pattern, ...)` overload remains on `RouteBuilder` and strongly typed router builders.
 
 ### Added
 
 - Added `JsonErrorDetailsConfig` and `ConfigureJsonErrorDetails()` to configure JSON error-response diagnostics and `ErrorDetails` serialization metadata.
 - Added `QueryParsingConfig`, `UnexpectedParameterBehavior`, and `ConfigureQueryParsing()` to configure how query bindings handle undeclared query-string parameters.
 - Added typed `AddHandler()` overloads for pattern-only and single-verb registration, matching the rest of the route-builder API.
+- Added `NanoRoutePrefixExtensions` as the extension-method home for `AddPrefix()`.
 
 ### Performance
 
@@ -40,6 +43,34 @@ builder.ConfigureRouting(config => config with
 {
     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
 });
+```
+
+Remove the old typed-handler namespace import:
+
+```csharp
+using NanoRoute.HandlerExtensions;
+```
+
+and keep the normal package namespace import instead:
+
+```csharp
+using NanoRoute;
+```
+
+If a typed handler needs query-string values, register query bindings before the handler:
+
+```csharp
+builder
+    .AddQueryBindings(["GET"], "/items/{id:int}", "{filter?:str(min=3)}")
+    .AddHandler
+    (
+        ["GET"],
+        "/items/{id:int}",
+        static async (GetItemRequest request) =>
+        {
+            return await Handle(request);
+        }
+    );
 ```
 
 ## 1.0.0-preview2

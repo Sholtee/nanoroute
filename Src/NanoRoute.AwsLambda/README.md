@@ -19,7 +19,6 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
 using NanoRoute.AwsLambda;
-using NanoRoute.Json;
 
 public sealed class Function
 {
@@ -61,15 +60,14 @@ using System.Net.Http;
 
 using NanoRoute;
 using NanoRoute.AwsLambda;
-using NanoRoute.Json;
 
 ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddPrefix("/api/items/", items => items
-        .AddQueryBindings("GET", "", "{filter?:str(min=3)}")
-        .AddHandler("GET", "", static async (context, _) =>
+        .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter?:str(min=3)}")
+        .AddHandler("GET", RouteBuilder.CurrentExact, static async (context, _) =>
         {
             await Task.CompletedTask;
 
@@ -150,8 +148,6 @@ using System.Threading;
 
 using NanoRoute;
 using NanoRoute.AwsLambda;
-using NanoRoute.HandlerExtensions;
-using NanoRoute.Json;
 
 public sealed class GetItemRequest
 {
@@ -170,17 +166,18 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
-    .AddHandler
-    (
-        ["GET"],
-        "/items/{id:int}",
-        "{filter?:str(min=3)}",
-        static async (GetItemRequest request) =>
-        {
-            Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
-            return HttpResponseMessage.Json(item);
-        }
-    )
+    .AddPrefix("/items/{id:int}/", items => items
+      .AddQueryBindings(["GET"], RouteBuilder.CurrentExact, "{filter?:str(min=3)}")
+      .AddHandler
+      (
+          ["GET"],
+          RouteBuilder.CurrentExact,
+          static async (GetItemRequest request) =>
+          {
+              Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
+              return HttpResponseMessage.Json(item);
+          }
+      ))
     .CreateRouter();
 ```
 

@@ -14,12 +14,10 @@ using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Moq;
 using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
-    using Json;
     using Properties;
 
     internal sealed partial class RouterBuilderTests
@@ -97,7 +95,7 @@ namespace NanoRoute.Tests
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
             request.SetProperty(Router.TraceIdName, "trace-1");
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(request, s_services);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
 
             string resp = await response.Content.ReadAsStringAsync();
@@ -129,7 +127,7 @@ namespace NanoRoute.Tests
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
             request.SetProperty(Router.TraceIdName, "trace-2");
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(request, s_services);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
 
             string resp = await response.Content.ReadAsStringAsync();
@@ -161,7 +159,7 @@ namespace NanoRoute.Tests
             using CancellationTokenSource cancellation = new();
             cancellation.Cancel();
 
-            Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await router.Handle(request, s_services, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
         }
 
         [Test]
@@ -180,7 +178,7 @@ namespace NanoRoute.Tests
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
 
-            Assert.That(async () => await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await router.Handle(request, s_services, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
         }
 
         [TestCase(false)]
@@ -205,7 +203,7 @@ namespace NanoRoute.Tests
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
             request.SetProperty(Router.TraceIdName, "trace-aggregate");
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(request, s_services);
             string resp = await response.Content.ReadAsStringAsync();
 
             ErrorDetails deserialized = JsonSerializer.Deserialize<ErrorDetails>(resp, s_caseInsensitiveJson)!;
@@ -232,7 +230,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/somewhere", async (_, _) => new HttpResponseMessage { Content = new StringContent("Hello") })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/somewhere") }, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/somewhere") }, s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("Hello"));
@@ -252,7 +250,7 @@ namespace NanoRoute.Tests
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
             request.SetProperty(Router.TraceIdName, "trace-snake");
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(request, s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
             Assert.That(await response.Content.ReadAsStringAsync(), Does.Contain("\"trace_id\":\"trace-snake\""));
@@ -268,11 +266,11 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/other/fail", (_, _) => throw new InvalidOperationException("unhandled path"))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/fail"), new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/fail"), s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
-            Assert.That(async () => await router.Handle(new HttpRequestMessage(HttpMethod.Post, "https://test.test/api/fail"), new Mock<IServiceProvider>(MockBehavior.Strict).Object), Throws.InstanceOf<InvalidOperationException>());
-            Assert.That(async () => await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/other/fail"), new Mock<IServiceProvider>(MockBehavior.Strict).Object), Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(async () => await router.Handle(new HttpRequestMessage(HttpMethod.Post, "https://test.test/api/fail"), s_services), Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(async () => await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/other/fail"), s_services), Throws.InstanceOf<InvalidOperationException>());
         }
 
         [Test]
@@ -294,7 +292,7 @@ namespace NanoRoute.Tests
                 Content = new StringContent("{\"name\":\"Spikey\"}", Encoding.UTF8, "application/json")
             };
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(request, s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
             Assert.That(body, Is.Not.Null);
@@ -319,7 +317,7 @@ namespace NanoRoute.Tests
                 Content = new StringContent("{\"name\":\"Spikey\"}", Encoding.UTF8, "application/json")
             };
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(request, s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
             Assert.That(body, Is.Not.Null);
@@ -328,7 +326,8 @@ namespace NanoRoute.Tests
 
         [TestCase("POST")]
         [TestCase("PUT")]
-        public async Task AddJsonBody_ShouldDefaultToPostAndPut(string verb)
+        [TestCase("PATCH")]
+        public async Task AddJsonBody_ShouldDefaultToVerbsHavingBody(string verb)
         {
             TestJsonPayload? body = null;
 
@@ -346,7 +345,7 @@ namespace NanoRoute.Tests
                 Content = new StringContent("{\"name\":\"Spikey\"}", Encoding.UTF8, "application/json")
             };
 
-            HttpResponseMessage response = await router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object);
+            HttpResponseMessage response = await router.Handle(request, s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
             Assert.That(body, Is.Not.Null);
@@ -363,7 +362,7 @@ namespace NanoRoute.Tests
 
             HttpRequestMessage request = new(HttpMethod.Post, "https://test.test/items");
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, s_services))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
@@ -382,7 +381,7 @@ namespace NanoRoute.Tests
                 Content = new StringContent("Spikey", Encoding.UTF8, "text/plain")
             };
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, s_services))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
@@ -401,7 +400,7 @@ namespace NanoRoute.Tests
                 Content = new StringContent("{", Encoding.UTF8, "application/json")
             };
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, new Mock<IServiceProvider>(MockBehavior.Strict).Object))!;
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(request, s_services))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
             Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.Not.Null);

@@ -9,7 +9,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Moq;
 using NUnit.Framework;
 
 namespace NanoRoute.Tests
@@ -38,7 +37,7 @@ namespace NanoRoute.Tests
                     Method = HttpMethod.Get,
                     RequestUri = new Uri("https://test.test/items?filter=spikey&page=2")
                 },
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -64,7 +63,7 @@ namespace NanoRoute.Tests
                     Method = HttpMethod.Get,
                     RequestUri = new Uri("https://test.test/items")
                 },
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -88,7 +87,7 @@ namespace NanoRoute.Tests
                     Method = HttpMethod.Get,
                     RequestUri = new Uri("https://test.test/items")
                 },
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
@@ -133,7 +132,7 @@ namespace NanoRoute.Tests
                     Method = HttpMethod.Get,
                     RequestUri = new Uri("https://test.test/items?query%5Ffilter=spikey")
                 },
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
@@ -156,7 +155,7 @@ namespace NanoRoute.Tests
                     Method = HttpMethod.Get,
                     RequestUri = new Uri("https://test.test/items")
                 },
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
@@ -168,7 +167,7 @@ namespace NanoRoute.Tests
                     Method = HttpMethod.Post,
                     RequestUri = new Uri("https://test.test/items")
                 },
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -189,7 +188,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
@@ -210,7 +209,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
@@ -232,7 +231,7 @@ namespace NanoRoute.Tests
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey&unexpected=value"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
@@ -262,7 +261,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey&unexpected=value"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
@@ -292,7 +291,7 @@ namespace NanoRoute.Tests
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/strict?filter=spikey&unexpected=value"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             ))!;
 
             Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
@@ -300,7 +299,7 @@ namespace NanoRoute.Tests
             HttpResponseMessage response = await router.Handle
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/loose?filter=spikey&unexpected=value"),
-                new Mock<IServiceProvider>(MockBehavior.Strict).Object
+                s_services
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Accepted));

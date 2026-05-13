@@ -4,7 +4,6 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Collections.Generic;
 
 namespace NanoRoute
 {
@@ -46,54 +45,6 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Registers a handler for all supported HTTP methods.
-        /// </summary>
-        /// <param name="pattern">
-        /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
-        /// </param>
-        /// <param name="handler">The handler to execute when the pattern matches.</param>
-        /// <returns>The current <see cref="RouterBuilder{TRouter, TConfig}"/> instance.</returns>
-        /// <example>
-        /// <code>
-        /// builder.AddHandler("/health", (context, next) =&gt; Results.Ok());
-        /// </code>
-        /// </example>
-        public new RouterBuilder<TRouter, TConfig> AddHandler(string pattern, RequestHandlerDelegate handler)
-        {
-            base.AddHandler(pattern, handler);
-            return this;
-        }
-
-        /// <summary>
-        /// Registers the same handler for multiple HTTP methods.
-        /// </summary>
-        /// <param name="verbs">The HTTP methods that should use the handler.</param>
-        /// <param name="pattern">
-        /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
-        /// </param>
-        /// <param name="handler">The handler to execute when the route matches.</param>
-        /// <returns>The current <see cref="RouterBuilder{TRouter, TConfig}"/> instance.</returns>
-        /// <exception cref="ArgumentException">Thrown when some of the <paramref name="verbs"/> represent a not supported HTTP method.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a value parser that has not been registered yet.</exception>
-        /// <example>
-        /// <code>
-        /// builder.AddHandler(
-        ///     ["GET", "POST"],
-        ///     "/api/items/{id:int}",
-        ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
-        /// </code>
-        /// </example>
-        public new RouterBuilder<TRouter, TConfig> AddHandler(IEnumerable<string> verbs, string pattern, RequestHandlerDelegate handler)
-        {
-            base.AddHandler(verbs, pattern, handler);
-            return this;
-        }
-
-        /// <summary>
         /// Registers a handler for a single HTTP method.
         /// </summary>
         /// <param name="verb">The HTTP method that activates the handler.</param>
@@ -121,20 +72,6 @@ namespace NanoRoute
         public new RouterBuilder<TRouter, TConfig> AddHandler(string verb, string pattern, RequestHandlerDelegate handler)
         {
             base.AddHandler(verb, pattern, handler);
-            return this;
-        }
-
-        /// <summary>
-        /// Creates a scoped child builder under the given base prefix, invokes a configuration callback, and returns this builder.
-        /// </summary>
-        /// <param name="pattern">The base prefix that child routes will be registered under.</param>
-        /// <param name="configureRoutes">A callback that configures routes on the child builder.</param>
-        /// <returns>The current builder.</returns>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> is not a valid route <paramref name="pattern"/> or does not end with <c>/</c>.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a value parser that has not been registered yet.</exception>
-        public new RouterBuilder<TRouter, TConfig> AddPrefix(string pattern, Action<RouteBuilder> configureRoutes)
-        {
-            base.AddPrefix(pattern, configureRoutes);
             return this;
         }
 

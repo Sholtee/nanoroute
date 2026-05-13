@@ -107,11 +107,13 @@ namespace NanoRoute
             /// Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
+            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the query-binding
+            /// middleware is bound to the whole current builder scope for all supported HTTP methods.
             /// </remarks>
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            public TBuilder AddQueryBindings(string bindings) => routeBuilder.AddQueryBindings(HttpVerb.Names, "/", bindings);
+            public TBuilder AddQueryBindings(string bindings) => routeBuilder.AddQueryBindings(HttpVerb.Names, RouteBuilder.CurrentPrefix, bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
@@ -125,11 +127,13 @@ namespace NanoRoute
             /// Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
+            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the query-binding
+            /// middleware is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings) => routeBuilder.AddQueryBindings(verbs, "/", bindings);
+            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings) => routeBuilder.AddQueryBindings(verbs, RouteBuilder.CurrentPrefix, bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.

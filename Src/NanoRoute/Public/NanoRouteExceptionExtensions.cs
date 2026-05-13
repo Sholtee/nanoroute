@@ -116,8 +116,10 @@ namespace NanoRoute
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
+            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the middleware
+            /// is bound to the whole current builder scope for all supported HTTP methods.
             /// </remarks>
-            public TBuilder AddExceptionHandler() => routeBuilder.AddExceptionHandler("/");
+            public TBuilder AddExceptionHandler() => routeBuilder.AddExceptionHandler(RouteBuilder.CurrentPrefix);
 
             /// <summary>
             /// Adds an exception-handling middleware for all supported HTTP methods.
@@ -162,8 +164,10 @@ namespace NanoRoute
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
+            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the middleware
+            /// is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
-            public TBuilder AddExceptionHandler(IEnumerable<string> verbs) => routeBuilder.AddExceptionHandler(verbs, "/");
+            public TBuilder AddExceptionHandler(IEnumerable<string> verbs) => routeBuilder.AddExceptionHandler(verbs, RouteBuilder.CurrentPrefix);
 
             /// <summary>
             /// Adds an exception-handling middleware for the selected HTTP methods.
