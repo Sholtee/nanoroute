@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Class RouterBuilderValueParserExtensions | NanoRoute </title>
+      <title>Class NanoRouteValueParserExtensions | NanoRoute </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Class RouterBuilderValueParserExtensions | NanoRoute ">
+      <meta name="title" content="Class NanoRouteValueParserExtensions | NanoRoute ">
     
     <meta name="description" content="Provides convenience methods for registering value parsers.">
       <link rel="shortcut icon" href="Icon.png">
@@ -35,18 +35,18 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.RouterBuilderValueParserExtensions">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.NanoRouteValueParserExtensions">
 
 
 
-  <h1 id="NanoRoute_RouterBuilderValueParserExtensions" data-uid="NanoRoute.RouterBuilderValueParserExtensions" class="text-break">Class RouterBuilderValueParserExtensions</h1>
+  <h1 id="NanoRoute_NanoRouteValueParserExtensions" data-uid="NanoRoute.NanoRouteValueParserExtensions" class="text-break">Class NanoRouteValueParserExtensions</h1>
   <div class="markdown level0 summary"><p>Provides convenience methods for registering value parsers.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">RouterBuilderValueParserExtensions</span></div>
+    <div class="level1"><span class="xref">NanoRouteValueParserExtensions</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -74,14 +74,14 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_RouterBuilderValueParserExtensions_syntax">Syntax</h5>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class RouterBuilderValueParserExtensions</code></pre>
+    <pre><code class="lang-csharp hljs">public static class NanoRouteValueParserExtensions</code></pre>
   </div>
   <h3 id="methods">Methods
 </h3>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddBoolParser_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddBoolParser*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddBoolParser__1___0_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddBoolParser``1(``0)">AddBoolParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddBoolParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddBoolParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddBoolParser__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddBoolParser``1(``0)">AddBoolParser&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in <code>bool</code> value parser.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -137,11 +137,11 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouterBuilderValueParserExtensions_AddBoolParser__1___0__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddBoolParser__1___0__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This parser does not support any arguments.</p>
 </div>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddDefaultValueParsers_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddDefaultValueParsers*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddDefaultValueParsers__1___0_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddDefaultValueParsers``1(``0)">AddDefaultValueParsers&lt;TBuilder&gt;(TBuilder)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddDefaultValueParsers*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddDefaultValueParsers``1(``0)">AddDefaultValueParsers&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in value parsers for common scalar route segments.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -197,11 +197,11 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouterBuilderValueParserExtensions_AddDefaultValueParsers__1___0__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers__1___0__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This convenience method registers parsers named <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code>.
 Existing registrations with the same names are overwritten.</p>
 </div>
-  <h5 id="NanoRoute_RouterBuilderValueParserExtensions_AddDefaultValueParsers__1___0__examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers__1___0__examples">Examples</h5>
   <pre><code class="lang-csharp">builder
     .AddDefaultValueParsers()
     .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
@@ -222,8 +222,8 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddGuidParser_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddGuidParser*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddGuidParser__1___0_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddGuidParser``1(``0)">AddGuidParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddGuidParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddGuidParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddGuidParser__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddGuidParser``1(``0)">AddGuidParser&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in <code>guid</code> value parser.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -279,11 +279,11 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouterBuilderValueParserExtensions_AddGuidParser__1___0__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddGuidParser__1___0__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This parser does not support any arguments.</p>
 </div>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddIntParser_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddIntParser*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddIntParser__1___0_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddIntParser``1(``0)">AddIntParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddIntParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddIntParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddIntParser__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddIntParser``1(``0)">AddIntParser&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in <code>int</code> value parser.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -339,12 +339,12 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouterBuilderValueParserExtensions_AddIntParser__1___0__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddIntParser__1___0__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Supported arguments:
 <code>min</code>, <code>max</code>.</p>
 </div>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddStringParser_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddStringParser*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddStringParser__1___0_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddStringParser``1(``0)">AddStringParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddStringParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddStringParser``1(``0)">AddStringParser&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in <code>str</code> value parser.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -400,12 +400,12 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouterBuilderValueParserExtensions_AddStringParser__1___0__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser__1___0__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Supported arguments:
 <code>min</code>, <code>max</code>, <code>pattern</code>.</p>
 </div>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddValueParser_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddValueParser*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncValueParserDelegate_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SyncValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SyncValueParserDelegate)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncValueParserDelegate_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SyncValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SyncValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a synchronous parser by adapting it to <a class="xref" href="NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a> and binding parser arguments once during route registration.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -479,8 +479,8 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddValueParser_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddValueParser*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, ValueParserDelegate)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, ValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers an asynchronous parser and binds parser arguments once during route registration.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -554,8 +554,8 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddValueParser_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddValueParser*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_SyncValueParserDelegate_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.SyncValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, SyncValueParserDelegate)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_SyncValueParserDelegate_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.SyncValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, SyncValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a synchronous parser by adapting it to <a class="xref" href="NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -623,8 +623,8 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouterBuilderValueParserExtensions_AddValueParser_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddValueParser*"></a>
-  <h4 id="NanoRoute_RouterBuilderValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.RouterBuilderValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.ValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, ValueParserDelegate)</h4>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.ValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, ValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers an asynchronous parser without route-template arguments.</p>
 </div>
   <div class="markdown level1 conceptual"></div>

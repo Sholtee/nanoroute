@@ -35,11 +35,11 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.Json.NanoRouteJsonExtensions">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.NanoRouteJsonExtensions">
 
 
 
-  <h1 id="NanoRoute_Json_NanoRouteJsonExtensions" data-uid="NanoRoute.Json.NanoRouteJsonExtensions" class="text-break">Class NanoRouteJsonExtensions</h1>
+  <h1 id="NanoRoute_NanoRouteJsonExtensions" data-uid="NanoRoute.NanoRouteJsonExtensions" class="text-break">Class NanoRouteJsonExtensions</h1>
   <div class="markdown level0 summary"><p>Adds JSON-focused helpers for request body binding, structured error responses, and JSON responses.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -72,20 +72,20 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a>.<a class="xref" href="NanoRoute.Json.html">Json</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_syntax">Syntax</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static class NanoRouteJsonExtensions</code></pre>
   </div>
-  <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_remarks"><strong>Remarks</strong></h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>These helpers are optional conveniences on top of the core routing pipeline. They are implemented as
 extension methods on <a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>.</p>
 </div>
   <h3 id="methods">Methods
 </h3>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, JsonTypeInfo, string)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, JsonTypeInfo, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter for the selected HTTP methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -166,13 +166,13 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Requests without content, requests with a non-JSON content type, and requests with invalid JSON throw
 <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>. Add AddJsonErrorDetails to translate those into
 structured HTTP error responses. The deserialized body is written into
 <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>, and an existing value with the same key is overwritten.</p>
 </div>
-  <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__examples">Examples</h5>
   <pre><code class="lang-csharp">routerBuilder
     .AddJsonErrorDetails()
     .AddJsonBody("POST", "/users/", MyJsonContext.Default.CreateUserRequest, "body")
@@ -182,8 +182,8 @@ structured HTTP error responses. The deserialized body is written into
         return Task.FromResult(HttpResponseMessage.Json(HttpStatusCode.Created, body));
     });</code></pre>
 
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Type_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Type, string)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Type_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Type, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter using runtime type metadata.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -264,8 +264,8 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, JsonTypeInfo, string)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, JsonTypeInfo, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter for the selected HTTP methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -339,8 +339,12 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_Type_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, Type, string)</h4>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the JSON-binding
+middleware is bound to the whole current builder scope for the selected HTTP methods.</p>
+</div>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_Type_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, Type, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter using runtime type metadata.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -414,8 +418,12 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_String_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.String,System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, string, string, JsonTypeInfo, string)</h4>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_Type_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the JSON-binding
+middleware is bound to the whole current builder scope for the selected HTTP methods.</p>
+</div>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_String_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.String,System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, string, string, JsonTypeInfo, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter for a single HTTP method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -496,8 +504,8 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_String_System_String_System_Type_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.String,System.String,System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, string, string, Type, string)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_String_System_String_System_Type_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.String,System.String,System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, string, string, Type, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter using runtime type metadata.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -578,9 +586,9 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, string, JsonTypeInfo, string)</h4>
-  <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter for <code>POST</code> and <code>PUT</code>.</p>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, string, JsonTypeInfo, string)</h4>
+  <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter for <code>POST</code>, <code>PUT</code>, and <code>PATCH</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -654,9 +662,9 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_String_System_Type_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.String,System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, string, Type, string)</h4>
-  <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter using runtime type metadata for <code>POST</code> and <code>PUT</code>.</p>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_String_System_Type_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.String,System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, string, Type, string)</h4>
+  <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter using runtime type metadata for <code>POST</code>, <code>PUT</code>, and <code>PATCH</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -730,9 +738,9 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, JsonTypeInfo, string)</h4>
-  <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter for <code>POST</code> and <code>PUT</code>.</p>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, JsonTypeInfo, string)</h4>
+  <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter for <code>POST</code>, <code>PUT</code>, and <code>PATCH</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -799,9 +807,13 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Type_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, Type, string)</h4>
-  <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter using runtime type metadata for <code>POST</code> and <code>PUT</code>.</p>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the JSON-binding
+middleware is bound to the whole current builder scope for <code>POST</code>, <code>PUT</code>, and <code>PATCH</code>.</p>
+</div>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Type_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonBody``1(``0,System.Type,System.String)">AddJsonBody&lt;TBuilder&gt;(TBuilder, Type, string)</h4>
+  <div class="markdown level1 summary"><p>Deserializes JSON request bodies into a route parameter using runtime type metadata for <code>POST</code>, <code>PUT</code>, and <code>PATCH</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -868,8 +880,12 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</h4>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Type_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the JSON-binding
+middleware is bound to the whole current builder scope for <code>POST</code>, <code>PUT</code>, and <code>PATCH</code>.</p>
+</div>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for all supported HTTP methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -925,8 +941,12 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String})">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;)</h4>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the error-detail
+middleware is bound to the whole current builder scope for all supported HTTP methods.</p>
+</div>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String})">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;)</h4>
   <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for the selected HTTP methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -988,8 +1008,12 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope body binding 
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</h4>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the error-detail
+middleware is bound to the whole current builder scope for the selected HTTP methods.</p>
+</div>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</h4>
   <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1058,23 +1082,23 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This helper wraps <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> values into JSON responses and also installs
 <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a> so unexpected
 exceptions are normalized before they reach the client. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is
 not translated into JSON and continues to propagate to the caller unchanged. Use
-<a class="xref" href="NanoRoute.Json.NanoRouteJsonExtensions.html#NanoRoute_Json_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_Json_JsonErrorDetailsConfig__">ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a> before
+<a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__">ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a> before
 calling this method to include developer diagnostics or replace the <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a>
 serialization metadata.</p>
 </div>
-  <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String__examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String__examples">Examples</h5>
   <pre><code class="lang-csharp">routerBuilder
     .AddJsonErrorDetails()
     .AddHandler("GET", "/items/{id:int}", (context, _) =&gt;
         throw new InvalidOperationException("Unexpected state"));</code></pre>
 
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string)</h4>
   <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for all supported HTTP methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1137,8 +1161,8 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.String)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, string)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.String)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, string)</h4>
   <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for a single HTTP method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1207,8 +1231,8 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_ConfigureJsonErrorDetails_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.ConfigureJsonErrorDetails*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_Json_JsonErrorDetailsConfig__" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.ConfigureJsonErrorDetails``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.Json.JsonErrorDetailsConfig})">ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__" data-uid="NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.JsonErrorDetailsConfig})">ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</h4>
   <div class="markdown level1 summary"><p>Updates the JSON error-detail configuration visible from the current builder scope.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1232,7 +1256,7 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate</a>&lt;<a class="xref" href="NanoRoute.Json.JsonErrorDetailsConfig.html">JsonErrorDetailsConfig</a>&gt;</td>
+        <td><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate</a>&lt;<a class="xref" href="NanoRoute.JsonErrorDetailsConfig.html">JsonErrorDetailsConfig</a>&gt;</td>
         <td><span class="parametername">configure</span></td>
         <td><p>A callback that receives the current configuration and returns the replacement configuration.</p>
 </td>
@@ -1270,13 +1294,13 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_Json_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_Json_JsonErrorDetailsConfig___remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata">Metadata</a>. Child builders created after this
 method is called inherit the updated configuration; existing child builders keep their own scoped copy.
 Registered JSON error-detail middleware snapshots the configuration that is current at registration time.</p>
 </div>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_Json_System_Net_HttpStatusCode_System_Object_System_Text_Json_Serialization_Metadata_JsonTypeInfo_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json(System.Net.HttpStatusCode,System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">Json(HttpStatusCode, object?, JsonTypeInfo)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_Json_System_Net_HttpStatusCode_System_Object_System_Text_Json_Serialization_Metadata_JsonTypeInfo_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json(System.Net.HttpStatusCode,System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">Json(HttpStatusCode, object?, JsonTypeInfo)</h4>
   <div class="markdown level1 summary"><p>Creates a JSON response using the supplied type metadata.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1330,14 +1354,14 @@ Registered JSON error-detail middleware snapshots the configuration that is curr
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_Json__1_System_Net_HttpStatusCode___0_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0)">Json&lt;T&gt;(HttpStatusCode, T?)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_Json__1_System_Net_HttpStatusCode___0_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0)">Json&lt;T&gt;(HttpStatusCode, T?)</h4>
   <div class="markdown level1 summary"><p>Creates a JSON response using <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions.web">Web</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static HttpResponseMessage Json&lt;T&gt;(HttpStatusCode statusCode, T? body) where T : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public static HttpResponseMessage Json&lt;T&gt;(HttpStatusCode statusCode, T? body)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1395,8 +1419,8 @@ Registered JSON error-detail middleware snapshots the configuration that is curr
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_Json__1_System_Net_HttpStatusCode___0_System_Text_Json_JsonSerializerOptions_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0,System.Text.Json.JsonSerializerOptions)">Json&lt;T&gt;(HttpStatusCode, T?, JsonSerializerOptions)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_Json__1_System_Net_HttpStatusCode___0_System_Text_Json_JsonSerializerOptions_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0,System.Text.Json.JsonSerializerOptions)">Json&lt;T&gt;(HttpStatusCode, T?, JsonSerializerOptions)</h4>
   <div class="markdown level1 summary"><p>Creates a JSON response using serializer <code class="paramref">options</code> to resolve metadata for <code class="typeparamref">T</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1466,14 +1490,14 @@ Registered JSON error-detail middleware snapshots the configuration that is curr
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_Json__1_System_Net_HttpStatusCode___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo___0__" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0,System.Text.Json.Serialization.Metadata.JsonTypeInfo{``0})">Json&lt;T&gt;(HttpStatusCode, T?, JsonTypeInfo&lt;T&gt;)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_Json__1_System_Net_HttpStatusCode___0_System_Text_Json_Serialization_Metadata_JsonTypeInfo___0__" data-uid="NanoRoute.NanoRouteJsonExtensions.Json``1(System.Net.HttpStatusCode,``0,System.Text.Json.Serialization.Metadata.JsonTypeInfo{``0})">Json&lt;T&gt;(HttpStatusCode, T?, JsonTypeInfo&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Creates a JSON response using the supplied type metadata.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static HttpResponseMessage Json&lt;T&gt;(HttpStatusCode statusCode, T? body, JsonTypeInfo&lt;T&gt; typeInfo) where T : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public static HttpResponseMessage Json&lt;T&gt;(HttpStatusCode statusCode, T? body, JsonTypeInfo&lt;T&gt; typeInfo)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1536,14 +1560,14 @@ Registered JSON error-detail middleware snapshots the configuration that is curr
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_Json__1___0_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.Json``1(``0)">Json&lt;T&gt;(T?)</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_Json_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_Json__1___0_" data-uid="NanoRoute.NanoRouteJsonExtensions.Json``1(``0)">Json&lt;T&gt;(T?)</h4>
   <div class="markdown level1 summary"><p>Creates a JSON response with <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode#system-net-httpstatuscode-ok">OK</a>. This method uses <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions.web">Web</a> when creating the response.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static HttpResponseMessage Json&lt;T&gt;(T? body) where T : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public static HttpResponseMessage Json&lt;T&gt;(T? body)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1595,8 +1619,8 @@ Registered JSON error-detail middleware snapshots the configuration that is curr
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_Json_NanoRouteJsonExtensions_get_JsonTypeInfo_" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo*"></a>
-  <h4 id="NanoRoute_Json_NanoRouteJsonExtensions_get_JsonTypeInfo" data-uid="NanoRoute.Json.NanoRouteJsonExtensions.get_JsonTypeInfo">get_JsonTypeInfo()</h4>
+  <a id="NanoRoute_NanoRouteJsonExtensions_get_JsonTypeInfo_" data-uid="NanoRoute.NanoRouteJsonExtensions.get_JsonTypeInfo*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_get_JsonTypeInfo" data-uid="NanoRoute.NanoRouteJsonExtensions.get_JsonTypeInfo">get_JsonTypeInfo()</h4>
   <div class="markdown level1 summary"><p>Provides the JSON serialization meta-data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>

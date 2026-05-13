@@ -102,62 +102,6 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.yml\" sourcestartlinenumber=\"1\">Adds typed handler overloads that project a <xref href=\"NanoRoute.RequestContext\" data-throw-if-not-resolved=\"false\"></xref> into a request object.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.HandlerExtensions.ValueSource.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.HandlerExtensions.ValueSource.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.HandlerExtensions.ValueSource",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HandlerExtensions.ValueSource.yml\" sourcestartlinenumber=\"1\">Describes how a typed handler property is populated.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.HandlerExtensions.ValueSourceAttribute.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.HandlerExtensions.ValueSourceAttribute.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.HandlerExtensions.ValueSourceAttribute",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HandlerExtensions.ValueSourceAttribute.yml\" sourcestartlinenumber=\"1\">Overrides the default binding behavior for a typed handler request property.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.HandlerExtensions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.HandlerExtensions.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.HandlerExtensions",
-      "Summary": null
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.HttpListenerRouter.yml",
       "output": {
         ".html": {
@@ -200,45 +144,17 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.Json.JsonErrorDetailsConfig.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.JsonErrorDetailsConfig.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.Json.JsonErrorDetailsConfig.html"
+          "relative_path": "NanoRoute.JsonErrorDetailsConfig.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.Json.JsonErrorDetailsConfig",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Json.JsonErrorDetailsConfig.yml\" sourcestartlinenumber=\"1\">Configures how <xref href=\"NanoRoute.Json.NanoRouteJsonExtensions.AddJsonErrorDetails%60%601(%60%600)\" data-throw-if-not-resolved=\"false\"></xref> creates JSON\n<xref href=\"NanoRoute.ErrorDetails\" data-throw-if-not-resolved=\"false\"></xref> responses.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.Json.NanoRouteJsonExtensions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.Json.NanoRouteJsonExtensions.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.Json.NanoRouteJsonExtensions",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Json.NanoRouteJsonExtensions.yml\" sourcestartlinenumber=\"1\">Adds JSON-focused helpers for request body binding, structured error responses, and JSON responses.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.Json.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.Json.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.Json",
-      "Summary": null
+      "Title": "NanoRoute.JsonErrorDetailsConfig",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.JsonErrorDetailsConfig.yml\" sourcestartlinenumber=\"1\">Configures how <xref href=\"NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails%60%601(%60%600)\" data-throw-if-not-resolved=\"false\"></xref> creates JSON\n<xref href=\"NanoRoute.ErrorDetails\" data-throw-if-not-resolved=\"false\"></xref> responses.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -270,6 +186,48 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteHandlerExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.NanoRouteHandlerExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.NanoRouteHandlerExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteHandlerExtensions.yml\" sourcestartlinenumber=\"1\">Adds typed handler overloads that project a <xref href=\"NanoRoute.RequestContext\" data-throw-if-not-resolved=\"false\"></xref> into a request object.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteJsonExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.NanoRouteJsonExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.NanoRouteJsonExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteJsonExtensions.yml\" sourcestartlinenumber=\"1\">Adds JSON-focused helpers for request body binding, structured error responses, and JSON responses.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRoutePrefixExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.NanoRoutePrefixExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.NanoRoutePrefixExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRoutePrefixExtensions.yml\" sourcestartlinenumber=\"1\">Adds prefix-routing helpers that configure child route builders under a shared base pattern.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteQueryExtensions.yml",
       "output": {
         ".html": {
@@ -281,6 +239,20 @@
       "IsMRef": true,
       "Title": "NanoRoute.NanoRouteQueryExtensions",
       "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteQueryExtensions.yml\" sourcestartlinenumber=\"1\">Adds query-parameter binding helpers to NanoRoute.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteValueParserExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.NanoRouteValueParserExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.NanoRouteValueParserExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteValueParserExtensions.yml\" sourcestartlinenumber=\"1\">Provides convenience methods for registering value parsers.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -365,20 +337,6 @@
       "IsMRef": true,
       "Title": "NanoRoute.RouterBuilder<TRouter, TConfig>",
       "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBuilder-2.yml\" sourcestartlinenumber=\"1\">Builds a concrete <xref href=\"NanoRoute.Router\" data-throw-if-not-resolved=\"false\"></xref> type together with its strongly typed configuration object.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouterBuilderValueParserExtensions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.RouterBuilderValueParserExtensions.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.RouterBuilderValueParserExtensions",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBuilderValueParserExtensions.yml\" sourcestartlinenumber=\"1\">Provides convenience methods for registering value parsers.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -505,6 +463,34 @@
       "IsMRef": true,
       "Title": "NanoRoute.ValueParserRegistration",
       "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ValueParserRegistration.yml\" sourcestartlinenumber=\"1\">Stores a named value parser together with its argument binder.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ValueSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.ValueSource.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.ValueSource",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ValueSource.yml\" sourcestartlinenumber=\"1\">Describes how a typed handler property is populated.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.ValueSourceAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.ValueSourceAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.ValueSourceAttribute",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.ValueSourceAttribute.yml\" sourcestartlinenumber=\"1\">Overrides the default binding behavior for a typed handler request property.</p>\n"
     },
     {
       "type": "ManagedReference",

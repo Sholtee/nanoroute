@@ -56,9 +56,10 @@
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html">ErrorDetails</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.NanoRouteHandlerExtensions.html">NanoRouteHandlerExtensions</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSource.html">ValueSource</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HandlerExtensions.ValueSourceAttribute.html">ValueSourceAttribute</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html">NanoRouteHandlerExtensions</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html">NanoRoutePrefixExtensions</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html">ValueSource</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a></li>
 </ul>
 <h2 id="highlights">Highlights</h2>
 <ul>
@@ -76,9 +77,9 @@
 <li><code>ConfigureQueryParsing()</code> stores scoped query-binding settings used by subsequently registered <code>AddQueryBindings()</code> middleware.</li>
 <li><code>ConfigureExceptionHandling()</code> stores scoped exception-normalization settings used by subsequently registered <code>AddExceptionHandler()</code> middleware.</li>
 <li><code>ConfigureJsonErrorDetails()</code> stores scoped JSON <code>ErrorDetails</code> response settings used by subsequently registered <code>AddJsonErrorDetails()</code> middleware.</li>
+<li>Handler convenience overloads such as pattern-only registration, multi-verb registration, and <code>AddHandler&lt;TRequestContext&gt;()</code> are extension methods in the <code>NanoRoute</code> namespace.</li>
 <li><code>AddHandler&lt;TRequestContext&gt;()</code> can project route parameters, query bindings, services, keyed services, <code>RequestContext</code>, and <code>CancellationToken</code> into typed request objects.</li>
 <li><code>ValueSourceAttribute</code> customizes typed-handler property binding with <code>Context</code>, <code>ServiceLocator</code>, and <code>Skip</code> sources.</li>
-<li><code>NanoRoute.Json</code> adds JSON request binding and JSON error/response helpers on top of the core pipeline.</li>
 </ul>
 <h2 id="value-parser-syntax">Value Parser Syntax</h2>
 <ul>

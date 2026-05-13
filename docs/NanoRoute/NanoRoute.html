@@ -63,11 +63,27 @@ unexpected exceptions.</p>
       <h4><a class="xref" href="NanoRoute.HttpRequestMessageExtensions.html">HttpRequestMessageExtensions</a></h4>
       <section><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> extensions.</p>
 </section>
+      <h4><a class="xref" href="NanoRoute.JsonErrorDetailsConfig.html">JsonErrorDetailsConfig</a></h4>
+      <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</a> creates JSON
+<a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html">NanoRouteExceptionExtensions</a></h4>
       <section><p>Adds helpers for normalizing exceptions and extracting structured error details.</p>
 </section>
+      <h4><a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html">NanoRouteHandlerExtensions</a></h4>
+      <section><p>Adds typed handler overloads that project a <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> into a request object.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html">NanoRouteJsonExtensions</a></h4>
+      <section><p>Adds JSON-focused helpers for request body binding, structured error responses, and JSON responses.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.NanoRoutePrefixExtensions.html">NanoRoutePrefixExtensions</a></h4>
+      <section><p>Adds prefix-routing helpers that configure child route builders under a shared base pattern.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html">NanoRouteQueryExtensions</a></h4>
       <section><p>Adds query-parameter binding helpers to NanoRoute.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.NanoRouteValueParserExtensions.html">NanoRouteValueParserExtensions</a></h4>
+      <section><p>Provides convenience methods for registering value parsers.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a></h4>
       <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</a> parses query strings.</p>
@@ -77,9 +93,6 @@ unexpected exceptions.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.Router.html">Router</a></h4>
       <section><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>.</p>
-</section>
-      <h4><a class="xref" href="NanoRoute.RouterBuilderValueParserExtensions.html">RouterBuilderValueParserExtensions</a></h4>
-      <section><p>Provides convenience methods for registering value parsers.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a></h4>
       <section><p>Builds a concrete <a class="xref" href="NanoRoute.Router.html">Router</a> type together with its strongly typed configuration object.</p>
@@ -92,6 +105,9 @@ unexpected exceptions.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.ValueParserRegistration.html">ValueParserRegistration</a></h4>
       <section><p>Stores a named value parser together with its argument binder.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a></h4>
+      <section><p>Overrides the default binding behavior for a typed handler request property.</p>
 </section>
     <h3 id="structs">
 Structs
@@ -113,6 +129,9 @@ Enums
 </section>
       <h4><a class="xref" href="NanoRoute.UnexpectedParameterBehavior.html">UnexpectedParameterBehavior</a></h4>
       <section><p>Defines how query-binding middleware handles query-string parameters that are not declared in the binding descriptor.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.ValueSource.html">ValueSource</a></h4>
+      <section><p>Describes how a typed handler property is populated.</p>
 </section>
     <h3 id="delegates">
 Delegates
