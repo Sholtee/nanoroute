@@ -53,7 +53,7 @@ namespace NanoRoute.NativeAot
     {
         public int Id { get; set; }
 
-        [ValueSource(ValueSource.Context, Name = "query_filter")]
+        [ValueSource(ValueSource.Parameter, Name = "query_filter")]
         public string Filter { get; set; } = null!;
 
         [ValueSource(ValueSource.ServiceLocator)]

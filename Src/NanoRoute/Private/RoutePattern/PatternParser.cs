@@ -1,5 +1,5 @@
 /********************************************************************************
-* RoutePatternParser.cs                                                         *
+* PatternParser.cs                                                              *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -10,22 +10,20 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal static class RoutePatternParser
+    internal static class PatternParser
     {
+        /// <summary>
+        /// Valid patterns: <c>/</c>, <c>/segment/</c>, <c>/*</c>, <c>/segment/*</c>
+        /// Invalid patterns: <c></c>, <c>/segment*</c>, <c>/segment/*/[another_segment]</c>
+        /// </summary>
         public static IEnumerable<object> ParseRoutePattern(string pattern)
         {
-            bool expectSeparator = true;
+            int offset = 0;
 
-            for (int offset = 0, parameterIndex = 0; offset < pattern.Length; offset++)
+            for (int parameterIndex = 0; offset < pattern.Length && pattern[offset] is '/'; offset++)
             {
-                if (expectSeparator)
-                {
-                    if (pattern[offset] is not '/')
-                        throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
-
-                    expectSeparator = false;
-                    continue;
-                }
+                if (++offset == pattern.Length)
+                    yield break;
 
                 switch (pattern[offset])
                 {
@@ -41,41 +39,34 @@ namespace NanoRoute.Internals
                         yield return parameterDefinition with { Index = parameterIndex++ };
                         break;
 
+                    case '*' when offset == pattern.Length - 1:
+                        yield break;
+
                     default:
                         yield return LiteralSegmentDefinition.Parse(pattern, ref offset);
                         break;
                 }
-
-                expectSeparator = true;
             }
+
+            throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
         }
 
         public static IEnumerable<ParameterDefinition> ParseQueryPattern(string pattern)
         {
-            if (pattern.Length is 0)
-                yield break;
-
-            bool expectSeparator = false;
             int offset = 0;
 
             for (int parameterIndex = 0; offset < pattern.Length; offset++)
             {
-                if (expectSeparator)
-                {
-                    if (pattern[offset] is not '&')
-                        throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
-
-                    expectSeparator = false;
-                    continue;
-                }
-
                 yield return ParameterDefinition.Parse(pattern, ref offset) with { Index = parameterIndex++ };
-                expectSeparator = true;
+
+                if (++offset == pattern.Length)
+                    yield break;
+
+                if (pattern[offset] is not '&')
+                    break;
             }
 
-            // the pattern ends with '&'
-            if (!expectSeparator)
-                throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
+            throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
         }
     }
 }

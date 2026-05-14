@@ -236,7 +236,7 @@ namespace NanoRoute
 
                 Dictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindingsTmp = new(ReadOnlyMemoryCharComparer.Instance);
 
-                foreach (ParameterDefinition parameterDefinition in RoutePatternParser.ParseQueryPattern(bindings))
+                foreach (ParameterDefinition parameterDefinition in PatternParser.ParseQueryPattern(bindings))
                 {
                     if (!routeBuilder.ValueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration? parserRegistration))
                         throw new InvalidOperationException

@@ -45,7 +45,7 @@ namespace NanoRoute
         {
             RouteNode target = _root;
 
-            foreach(object definition in RoutePatternParser.ParseRoutePattern(pattern))
+            foreach(object definition in PatternParser.ParseRoutePattern(pattern))
             {
                 switch (definition)
                 {
