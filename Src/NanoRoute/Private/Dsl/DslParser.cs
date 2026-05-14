@@ -1,5 +1,5 @@
 /********************************************************************************
-* PatternParser.cs                                                              *
+* DslParser.cs                                                                  *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -10,7 +10,7 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal static class PatternParser
+    internal static class DslParser
     {
         /// <summary>
         /// Valid patterns: <c>/</c>, <c>/segment/</c>, <c>/*</c>, <c>/segment/*</c>

@@ -49,7 +49,7 @@ namespace NanoRoute.Perf
         {
             int count = 0;
 
-            foreach (object definition in PatternParser.ParseRoutePattern(_pattern))
+            foreach (object definition in DslParser.ParseRoutePattern(_pattern))
             {
                 _ = definition;
                 count++;
@@ -97,7 +97,7 @@ namespace NanoRoute.Perf
         {
             int count = 0;
 
-            foreach (ParameterDefinition definition in PatternParser.ParseQueryPattern(_pattern))
+            foreach (ParameterDefinition definition in DslParser.ParseQueryPattern(_pattern))
             {
                 _ = definition;
                 count++;

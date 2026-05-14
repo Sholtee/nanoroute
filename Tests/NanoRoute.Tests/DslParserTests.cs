@@ -1,5 +1,5 @@
 /********************************************************************************
-* PatternParserTests.cs                                                         *
+* DslParserTests.cs                                                             *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -14,7 +14,7 @@ namespace NanoRoute.Tests
     using Properties;
 
     [TestFixture]
-    internal sealed class PatternParserTests
+    internal sealed class DslParserTests
     {
         private static ValueParserDefinition ParseValue(string definition)
         {
@@ -28,7 +28,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseRoutePattern_ShouldReturnLiteralAndParameterDefinitions()
         {
-            object[] definitions = PatternParser.ParseRoutePattern("/items/{id:int(min=1)}/details/").ToArray();
+            object[] definitions = DslParser.ParseRoutePattern("/items/{id:int(min=1)}/details/").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(3));
             Assert.That(definitions[0], Is.InstanceOf<ReadOnlyMemory<char>>());
@@ -48,7 +48,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseRoutePattern_ShouldRejectListValueParserDefinitions()
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => PatternParser.ParseRoutePattern("/items/{ids:int(min=1)[]}").ToArray())!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern("/items/{ids:int(min=1)[]}").ToArray())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_LIST_PARSERS_NOT_SUPPORTED));
         }
@@ -56,7 +56,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseRoutePattern_ShouldIgnoreSeparatorsInsideParserArguments()
         {
-            object[] definitions = PatternParser.ParseRoutePattern("/{value:str(pattern='/')}/cica/").ToArray();
+            object[] definitions = DslParser.ParseRoutePattern("/{value:str(pattern='/')}/cica/").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(2));
             Assert.That(definitions[0], Is.InstanceOf<ParameterDefinition>());
@@ -73,13 +73,13 @@ namespace NanoRoute.Tests
         [TestCase("/items/{id:int}/*", 2)]
         public void ParseRoutePattern_ShouldSkipTrailingAsterisks(string pattern, int expectedLength)
         {
-            Assert.That(PatternParser.ParseRoutePattern(pattern).Count(), Is.EqualTo(expectedLength));
+            Assert.That(DslParser.ParseRoutePattern(pattern).Count(), Is.EqualTo(expectedLength));
         }
 
         [Test]
         public void ParseRoutePattern_ShouldReturnEmptyDefinitionsForEmptyRoutes()
         {
-            Assert.That(PatternParser.ParseRoutePattern("/").ToArray(), Is.Empty);
+            Assert.That(DslParser.ParseRoutePattern("/").ToArray(), Is.Empty);
         }
 
         [TestCase("")]
@@ -87,7 +87,7 @@ namespace NanoRoute.Tests
         [TestCase("items/{id:int}")]
         public void ParseRoutePattern_ShouldRejectPatternsWithoutLeadingSeparator(string pattern)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => PatternParser.ParseRoutePattern(pattern).ToArray())!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, 0)));
         }
@@ -98,7 +98,7 @@ namespace NanoRoute.Tests
         [TestCase("/items/{id:int}*/", 15)]
         public void ParseRoutePattern_ShouldRejectInvalidAsterisks(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => PatternParser.ParseRoutePattern(pattern).ToArray())!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
@@ -108,7 +108,7 @@ namespace NanoRoute.Tests
         [TestCase("/items/{id:int}//details/", 16)]
         public void ParseRoutePattern_ShouldRejectRepeatedSeparators(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => PatternParser.ParseRoutePattern(pattern).ToArray())!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
@@ -120,7 +120,7 @@ namespace NanoRoute.Tests
         [TestCase("/items/{id:int}tail", 15)]
         public void ParseRoutePattern_ShouldRejectInvalidSeparatorsAfterDefinitions(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => PatternParser.ParseRoutePattern(pattern).ToArray())!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
@@ -128,7 +128,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseRoutePattern_ShouldRejectOptionalParameters()
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => PatternParser.ParseRoutePattern("/items/{id?:int}").ToArray())!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern("/items/{id?:int}").ToArray())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED));
         }
@@ -136,7 +136,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseQueryPattern_ShouldReturnParameterDefinitions()
         {
-            ParameterDefinition[] definitions = PatternParser.ParseQueryPattern("{filter:str(pattern='[a-z]+')}&{page?:int(min=1)}").ToArray();
+            ParameterDefinition[] definitions = DslParser.ParseQueryPattern("{filter:str(pattern='[a-z]+')}&{page?:int(min=1)}").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(2));
 
@@ -152,7 +152,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseQueryPattern_ShouldAllowListValueParserDefinitions()
         {
-            ParameterDefinition[] definitions = PatternParser.ParseQueryPattern("{ids:int(min=1)[]}").ToArray();
+            ParameterDefinition[] definitions = DslParser.ParseQueryPattern("{ids:int(min=1)[]}").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(1));
             Assert.That(definitions[0].ParameterName, Is.EqualTo("ids"));
@@ -164,7 +164,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseQueryPattern_ShouldIgnoreSeparatorsInsideParserArguments()
         {
-            ParameterDefinition[] definitions = PatternParser.ParseQueryPattern("{filter:str(pattern='a&b')}&{page:int}").ToArray();
+            ParameterDefinition[] definitions = DslParser.ParseQueryPattern("{filter:str(pattern='a&b')}&{page:int}").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(2));
 
@@ -180,7 +180,7 @@ namespace NanoRoute.Tests
         [TestCase("{filter:str}/{page:int}", 12)]
         public void ParseQueryPattern_ShouldRejectInvalidQueryPatternStructure(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => PatternParser.ParseQueryPattern(pattern).ToArray())!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseQueryPattern(pattern).ToArray())!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
