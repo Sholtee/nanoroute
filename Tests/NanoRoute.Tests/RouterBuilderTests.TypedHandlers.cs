@@ -34,7 +34,7 @@ namespace NanoRoute.Tests
         {
             public int Id { get; set; }
 
-            [ValueSource(ValueSource.Context, Name = "query_filter")]
+            [ValueSource(ValueSource.Parameter, Name = "query_filter")]
             public string Filter { get; set; } = null!;
 
             [ValueSource(ValueSource.ServiceLocator)]
@@ -72,7 +72,7 @@ namespace NanoRoute.Tests
 
         private sealed class ReadOnlyPropertyRequest
         {
-            [ValueSource(ValueSource.Context, Name = "id")]
+            [ValueSource(ValueSource.Parameter, Name = "id")]
             public int Id { get; }
 
             public RequestContext RequestContext { get; set; }

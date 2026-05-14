@@ -178,7 +178,7 @@ NanoRoute.ValueParserRegistration.Parse.get -> NanoRoute.ValueParserDelegate!
 NanoRoute.ValueParserRegistration.Parse.init -> void
 NanoRoute.ValueParserRegistration.ValueParserRegistration(string! Name, NanoRoute.ValueParserDelegate! Parse, NanoRoute.BindArgumentsDelegate! BindArguments) -> void
 NanoRoute.ValueSource
-NanoRoute.ValueSource.Context = 1 -> NanoRoute.ValueSource
+NanoRoute.ValueSource.Parameter = 1 -> NanoRoute.ValueSource
 NanoRoute.ValueSource.ServiceLocator = 2 -> NanoRoute.ValueSource
 NanoRoute.ValueSource.Skip = 0 -> NanoRoute.ValueSource
 NanoRoute.ValueSourceAttribute

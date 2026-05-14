@@ -34,7 +34,7 @@ namespace NanoRoute
         /// <summary>
         /// Reads the value from <see cref="RequestContext.Parameters"/>.
         /// </summary>
-        Context,
+        Parameter,
 
         /// <summary>
         /// Resolves the value from <see cref="RequestContext.Services"/>.
@@ -58,7 +58,7 @@ namespace NanoRoute
         /// Gets or sets an optional binding name.
         /// </summary>
         /// <remarks>
-        /// For <see cref="ValueSource.Context"/>, this overrides the key looked up in
+        /// For <see cref="ValueSource.Parameter"/>, this overrides the key looked up in
         /// <see cref="RequestContext.Parameters"/>. For <see cref="ValueSource.ServiceLocator"/>,
         /// this is treated as the keyed service name. <see cref="ValueSource.Skip"/> does not allow
         /// a name because no value is read.
@@ -135,7 +135,7 @@ namespace NanoRoute
                         );
                         continue;
                     }
-                    case ValueSource.Context:
+                    case ValueSource.Parameter:
                     {
                         string name = valueSource?.Name ?? prop.Name;
                         SetProperty
@@ -157,7 +157,7 @@ namespace NanoRoute
                                 SetProperty(static context => context.Cancellation);
                                 continue;                 
                         }
-                        goto case ValueSource.Context;
+                        goto case ValueSource.Parameter;
                     default:
                         Debug.Fail($"Unknown source: {valueSource.Source}");
                         break;
@@ -185,10 +185,16 @@ namespace NanoRoute
             propSetters.Add(result);  // return result;
 
             // In native AOT context this will be interpreted rather than compiled
-            return Expression.Lambda<Func<RequestContext, TRequestContext>>(Expression.Block([result], propSetters), source).Compile
-            (
-                preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported
-            );
+            return Expression
+                .Lambda<Func<RequestContext, TRequestContext>>
+                (
+                    Expression.Block([result], propSetters),
+                    source
+                ).
+                Compile
+                (
+                    preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported
+                );
         }
 
         private static TBuilder AddTypedHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
