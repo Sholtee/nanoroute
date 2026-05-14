@@ -25,6 +25,11 @@ namespace NanoRoute
     public class RouteBuilder : RoutingContext
     {
         /// <summary>
+        /// 
+        /// </summary>
+        public const string PrefixTail = "/*";
+
+        /// <summary>
         /// The route pattern that matches the current builder scope exactly.
         /// </summary>
         public const string CurrentExact = "";
@@ -41,7 +46,7 @@ namespace NanoRoute
         /// <summary>
         /// Gets or creates the <see cref="RouteNode"/> that matches the given <paramref name="pattern"/>.
         /// </summary>
-        private RouteNode FindNode(string pattern)
+        private RouteNode GetOrCreateNode(string pattern)
         {
             RouteNode target = _root;
 
@@ -95,13 +100,13 @@ namespace NanoRoute
             return target;
         }
 
-        private static string JoinPattern(string a, string b) => $"{a.TrimEnd('/')}/{b.TrimStart('/')}";
+        private static string JoinPattern(string @base, string extensions) => @base.TrimEnd('*') + extensions.TrimStart('/');
 
-        private RouteBuilder(RouteBuilder parent, string baseUrl): base(parent.FindNode(baseUrl))
+        private RouteBuilder(RouteBuilder parent, string pattern): base(parent.GetOrCreateNode(pattern))
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
             
-            BasePattern = JoinPattern(parent.BasePattern, baseUrl);
+            BasePattern = JoinPattern(parent.BasePattern, pattern);
             Metadata = parent.Metadata.CreateScope();
         }
 
@@ -109,7 +114,7 @@ namespace NanoRoute
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
 
-            BasePattern = string.Empty;
+            BasePattern = PrefixTail;
             Metadata = new BuilderMetadata();
         }
 
@@ -179,7 +184,7 @@ namespace NanoRoute
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, verb), nameof(verb)
                 );
 
-            RouteNode target = FindNode(pattern);
+            RouteNode target = GetOrCreateNode(pattern);
 
             if (!target.HandlerRegistrations.TryGetValue(v, out IList<HandlerRegistration> handlerRegistrations))
             {
@@ -222,7 +227,7 @@ namespace NanoRoute
         {
             Ensure.NotNull(pattern);
 
-            if (!pattern.EndsWith("/"))
+            if (!pattern.EndsWith(PrefixTail))
                 throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
 
             return new RouteBuilder(this, pattern);
