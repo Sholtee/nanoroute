@@ -27,11 +27,6 @@ namespace NanoRoute.Tests
 
         private Mock<RouterFactoryDelegate<TestRouter, RouterConfig>> _mockRouterFactory = null!;
 
-        private sealed class TestJsonPayload
-        {
-            public string Name { get; set; } = null!;
-        }
-
         [SetUp]
         public void Setup()
         {

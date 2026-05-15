@@ -419,11 +419,16 @@ namespace NanoRoute
         extension(EndPointBuilder endPointBuilder)
         {
             /// <summary>
-            /// 
+            /// Deserializes JSON request bodies into an endpoint parameter using source-generated or custom JSON metadata.
             /// </summary>
-            /// <param name="typeInfo"></param>
-            /// <param name="paramName"></param>
-            /// <returns></returns>
+            /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
+            /// <remarks>
+            /// The JSON-binding middleware is registered for the endpoint's captured HTTP methods and route match
+            /// kind. The deserialized body is written into <see cref="RequestContext.Parameters"/>, and an existing
+            /// value with the same key is overwritten.
+            /// </remarks>
             public EndPointBuilder WithJsonBody(JsonTypeInfo typeInfo, string paramName)
             {
                 Ensure.NotNull(endPointBuilder);
@@ -435,11 +440,11 @@ namespace NanoRoute
             }
 
             /// <summary>
-            /// 
+            /// Deserializes JSON request bodies into an endpoint parameter using runtime type metadata.
             /// </summary>
-            /// <param name="type"></param>
-            /// <param name="paramName"></param>
-            /// <returns></returns>
+            /// <param name="type">The CLR type expected in the request body.</param>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
             public EndPointBuilder WithJsonBody(Type type, string paramName)
             {
                 Ensure.NotNull(type);
@@ -452,11 +457,11 @@ namespace NanoRoute
             }
 
             /// <summary>
-            /// 
+            /// Deserializes JSON request bodies into an endpoint parameter using runtime type metadata.
             /// </summary>
-            /// <typeparam name="T"></typeparam>
-            /// <param name="paramName"></param>
-            /// <returns></returns>
+            /// <typeparam name="T">The CLR type expected in the request body.</typeparam>
+            /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
+            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
             public EndPointBuilder WithJsonBody<T>(string paramName) => endPointBuilder.WithJsonBody(typeof(T), paramName);
         }
 
