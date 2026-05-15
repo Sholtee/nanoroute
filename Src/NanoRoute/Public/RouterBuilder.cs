@@ -14,7 +14,7 @@ namespace NanoRoute
     /// </summary>
     /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter"/>.</typeparam>
     /// <typeparam name="TConfig">The configuration type exposed by <see cref="RouterConfig"/>.</typeparam>
-    public sealed class RouterBuilder<TRouter, TConfig> : RouteBuilder where TRouter : Router where TConfig: RouterConfig, new()
+    public sealed class RouterBuilder<TRouter, TConfig> : RouteScopeBuilder where TRouter : Router where TConfig: RouterConfig, new()
     {
         private readonly RouterFactoryDelegate<TRouter, TConfig> _routerFactory;
 

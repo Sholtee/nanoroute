@@ -23,7 +23,7 @@ namespace NanoRoute.Tests
         [Test]
         public void WithBase_ShouldInheritTheParentValueParsers()
         {
-            RouteBuilder childBuilder = _routerBuilder
+            RouteScopeBuilder childBuilder = _routerBuilder
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .CreatePrefix("/to/*")
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
@@ -107,7 +107,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task WithBase_ShouldKeepChildParserOverridesLocal()
         {
-            RouteBuilder childBuilder = _routerBuilder
+            RouteScopeBuilder childBuilder = _routerBuilder
                 .AddValueParser("value", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = $"parent:{segment}"; return true; })
                 .CreatePrefix("/child/*")
                 .AddValueParser("value", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = $"child:{segment}"; return true; });
@@ -133,7 +133,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ValueParsers_ShouldReflectTheCurrentScope()
         {
-            RouteBuilder childBuilder = _routerBuilder
+            RouteScopeBuilder childBuilder = _routerBuilder
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .CreatePrefix("/child/*")
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
@@ -321,10 +321,10 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
 
             ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
         });
     }
 }

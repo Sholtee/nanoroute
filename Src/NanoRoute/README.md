@@ -2,7 +2,7 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
-The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+The core library is centered around `RouteScopeBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`.
 
@@ -97,7 +97,7 @@ Created routers are immutable snapshots: later route or configuration changes on
 
 ### Module Configuration
 
-Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same builder scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
+Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same route scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
@@ -111,13 +111,13 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`ConfigureXxx()` methods update the configuration visible from the current builder scope. They affect module registrations made after the configuration call. Registrations that have already been added keep the configuration they captured when they were registered.
+`ConfigureXxx()` methods update the configuration visible from the current route scope. They affect module registrations made after the configuration call. Registrations that have already been added keep the configuration they captured when they were registered.
 
-Prefix builders follow the same rule as value parsers and metadata: a child builder receives a scoped copy when it is created. Configuration changes made later on the parent do not rewrite existing child scopes, and child changes stay local to that child scope.
+Prefix scopes follow the same rule as value parsers and metadata: a child scope receives a scoped copy when it is created. Configuration changes made later on the parent do not rewrite existing child scopes, and child changes stay local to that child scope.
 
 ### AddPrefix() and CreatePrefix()
 
-When several routes share the same prefix, `AddPrefix()` lets you define that prefix once and register child routes relative to it. If you want to hold onto a scoped child builder and add routes incrementally, use `CreatePrefix()`.
+When several routes share the same prefix, `AddPrefix()` lets you define that prefix once and register child routes relative to it. If you want to hold onto a child `RouteScopeBuilder` and add routes incrementally, use `CreatePrefix()`.
 
 ```csharp
 RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
@@ -217,8 +217,8 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddPrefix("/items/*", items => items
-        .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}")
-        .AddHandler("GET", RouteBuilder.CurrentExact, async (context, _) =>
+        .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}")
+        .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (context, _) =>
         {
             return HttpResponseMessage.Json(new
             {
@@ -241,7 +241,7 @@ HttpListenerRouter router = HttpListenerRouter
 - List value parsers are supported only for query bindings, not route path parameters.
 - As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
 
-Use `ConfigureQueryParsing()` before `AddQueryBindings()` when you want later query-binding registrations in the same builder scope to reject query keys that were not declared in their binding descriptor:
+Use `ConfigureQueryParsing()` before `AddQueryBindings()` when you want later query-binding registrations in the same route scope to reject query keys that were not declared in their binding descriptor:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
@@ -260,7 +260,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`AddQueryBindings()` snapshots the current `QueryParsingConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. The overload that accepts a `ConfigureBuilderDelegate<QueryParsingConfig>` applies a one-off override to that query-binding registration without changing builder metadata.
+`AddQueryBindings()` snapshots the current `QueryParsingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. The overload that accepts a `ConfigureBuilderDelegate<QueryParsingConfig>` applies a one-off override to that query-binding registration without changing builder metadata.
 
 ### Typed Handlers
 
@@ -368,7 +368,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
+`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
 
 ### JSON Error Details
 
@@ -388,7 +388,7 @@ HttpListenerRouter router = HttpListenerRouter
 
 `PopulateErrorInfo` can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details.
 
-`AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
+`AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
 
 ### Custom Routers
 
@@ -432,7 +432,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/*")` creates a scoped child builder for a route subtree.
-- `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
+- `RouteScopeBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` middleware.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
@@ -444,7 +444,7 @@ This keeps the transport-specific concerns in your own router type while still r
 
 ## Core Types
 
-- [RouteBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html)
+- [RouteScopeBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteScopeBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
 - [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)

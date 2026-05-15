@@ -271,7 +271,7 @@ namespace NanoRoute.Tests
         {
             CreateRouter(bldr => bldr
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .AddHandler("GET", RouteBuilder.CurrentExact, async (context, _) =>
+                .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (context, _) =>
                 {
                     Assert.That(context.Request.TryGetProperty(Router.OriginalRequestName, out object? originalRequest), Is.True);
                     Assert.That(originalRequest, Is.InstanceOf<HttpListenerRequest>());
@@ -292,7 +292,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldIgnoreReservedResponseHeaders()
         {
             CreateRouter(bldr => bldr
-                .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) =>
+                .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) =>
                 {
                     HttpResponseMessage resp = new(HttpStatusCode.OK) { Content = new StringContent("Hello") };
 
@@ -355,7 +355,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldHandleResponsesWithoutContent()
         {
             CreateRouter(bldr => bldr
-                .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.NoContent)));
+                .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.NoContent)));
 
             Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
 
@@ -407,7 +407,7 @@ namespace NanoRoute.Tests
             CreateRouter(bldr => bldr
                 .AddDefaultValueParsers()
                 .AddPrefix("/api/users/{user_id:int}/*", users => users
-                    .AddHandler("GET", RouteBuilder.CurrentPrefix, async (context, next) =>
+                    .AddHandler("GET", RouteScopeBuilder.CurrentPrefix, async (context, next) =>
                     {
                         context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
                         return await next();

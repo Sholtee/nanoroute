@@ -55,17 +55,17 @@ namespace NanoRoute
         }
         #endregion
 
-        extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
+        extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
             /// <summary>
             /// Registers a synchronous parser by adapting it to <see cref="ValueParserDelegate"/>.
             /// </summary>
             /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
             /// <param name="tryParseDelegate">The synchronous parser to adapt.</param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             public TBuilder AddValueParser(string parserName, SyncValueParserDelegate tryParseDelegate)
             {
-                return routeBuilder.AddValueParser(parserName, NoArgs, tryParseDelegate);
+                return routeScopeBuilder.AddValueParser(parserName, NoArgs, tryParseDelegate);
             }
 
             /// <summary>
@@ -74,21 +74,21 @@ namespace NanoRoute
             /// <param name="parserName">The name used in route patterns such as <c>{id:int(min=1)}</c>.</param>
             /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
             /// <param name="tryParseDelegate">The synchronous parser to adapt.</param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             public TBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, SyncValueParserDelegate tryParseDelegate)
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(parserName);
                 Ensure.NotNull(bindArguments);
                 Ensure.NotNull(tryParseDelegate);
 
-                routeBuilder.AddValueParser(parserName, bindArguments, context =>
+                routeScopeBuilder.AddValueParser(parserName, bindArguments, context =>
                 {
                     bool success = tryParseDelegate(context.Segment, context.Arguments, out object? parsed);
                     return new ValueTask<ValueParseResult>(new ValueParseResult(success, parsed));
                 });
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
 
             /// <summary>
@@ -96,16 +96,16 @@ namespace NanoRoute
             /// </summary>
             /// <param name="parserName">The name used in route patterns such as <c>{id:user}</c>.</param>
             /// <param name="tryParseDelegate">The asynchronous parser to register.</param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             public TBuilder AddValueParser(string parserName, ValueParserDelegate tryParseDelegate)
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(parserName);
                 Ensure.NotNull(tryParseDelegate);
 
-                routeBuilder.AddValueParser(parserName, NoArgs, tryParseDelegate);
+                routeScopeBuilder.AddValueParser(parserName, NoArgs, tryParseDelegate);
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
 
             /// <summary>
@@ -114,32 +114,32 @@ namespace NanoRoute
             /// <param name="parserName">The name used in route patterns such as <c>{id:user(scope='admins')}</c>.</param>
             /// <param name="bindArguments">Converts raw parser arguments into a parser-specific payload.</param>
             /// <param name="tryParseDelegate">The asynchronous parser to register.</param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             public TBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(parserName);
                 Ensure.NotNull(bindArguments);
                 Ensure.NotNull(tryParseDelegate);
 
-                routeBuilder.AddValueParser(parserName, bindArguments, tryParseDelegate);
+                routeScopeBuilder.AddValueParser(parserName, bindArguments, tryParseDelegate);
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
 
             /// <summary>
             /// Registers the built-in <c>int</c> value parser.
             /// </summary>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Supported arguments:
             /// <c>min</c>, <c>max</c>.
             /// </remarks>
             public TBuilder AddIntParser()
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
 
-                routeBuilder.AddValueParser
+                routeScopeBuilder.AddValueParser
                 (
                     "int",
                     bindArguments: static (IReadOnlyDictionary<string, string> args) =>
@@ -190,17 +190,17 @@ namespace NanoRoute
                     }
                 );
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
 
             /// <summary>
             /// Registers the built-in <c>guid</c> value parser.
             /// </summary>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// This parser does not support any arguments.
             /// </remarks>
-            public TBuilder AddGuidParser() => routeBuilder.AddValueParser
+            public TBuilder AddGuidParser() => routeScopeBuilder.AddValueParser
             (
                 "guid",
                 static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
@@ -219,11 +219,11 @@ namespace NanoRoute
             /// <summary>
             /// Registers the built-in <c>bool</c> value parser.
             /// </summary>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// This parser does not support any arguments.
             /// </remarks>
-            public TBuilder AddBoolParser() => routeBuilder.AddValueParser
+            public TBuilder AddBoolParser() => routeScopeBuilder.AddValueParser
             (
                 "bool",
                 static (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
@@ -242,16 +242,16 @@ namespace NanoRoute
             /// <summary>
             /// Registers the built-in <c>str</c> value parser.
             /// </summary>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Supported arguments:
             /// <c>min</c>, <c>max</c>, <c>pattern</c>.
             /// </remarks>
             public TBuilder AddStringParser()
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
 
-                routeBuilder.AddValueParser
+                routeScopeBuilder.AddValueParser
                 (
                     "str",
                     bindArguments: static (IReadOnlyDictionary<string, string> args) =>
@@ -303,18 +303,18 @@ namespace NanoRoute
                     }
                 );
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
 
             /// <summary>
             /// Registers the built-in value parsers for common scalar route segments.
             /// </summary>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// This convenience method registers parsers named <c>int</c>, <c>guid</c>, <c>bool</c>, and <c>str</c>.
             /// Existing registrations with the same names are overwritten.
             /// </remarks>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeBuilder"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
             /// <example>
             /// <code>
             /// builder
@@ -324,15 +324,15 @@ namespace NanoRoute
             /// </example>
             public TBuilder AddDefaultValueParsers()
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
 
-                routeBuilder
+                routeScopeBuilder
                     .AddIntParser()
                     .AddGuidParser()
                     .AddBoolParser()
                     .AddStringParser();
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
         }
     }

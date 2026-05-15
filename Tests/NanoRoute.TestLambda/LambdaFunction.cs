@@ -44,8 +44,8 @@ namespace NanoRoute.TestLambda
                 };
             })
             .AddPrefix("/items/{id:int(min=1)}/*", item => item
-                .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter?:str(min=3)}")
-                .AddHandler("GET", RouteBuilder.CurrentExact, static async (context, _) =>
+                .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter?:str(min=3)}")
+                .AddHandler("GET", RouteScopeBuilder.CurrentExact, static async (context, _) =>
                 {
                     await Task.Yield();
 
@@ -58,8 +58,8 @@ namespace NanoRoute.TestLambda
                     });
                 }))
             .AddPrefix("/echo/*", echo => echo
-                .AddJsonBody("POST", RouteBuilder.CurrentExact, JsonContext.Default.EchoRequest, "body")
-                .AddHandler("POST", RouteBuilder.CurrentExact, static async (context, _) =>
+                .AddJsonBody("POST", RouteScopeBuilder.CurrentExact, JsonContext.Default.EchoRequest, "body")
+                .AddHandler("POST", RouteScopeBuilder.CurrentExact, static async (context, _) =>
                 {
                     await Task.Yield();
 

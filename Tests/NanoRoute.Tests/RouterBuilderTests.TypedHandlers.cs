@@ -490,7 +490,7 @@ namespace NanoRoute.Tests
             Func<TypedRouteRequest, CallNextHandlerDelegate, Task<HttpResponseMessage>> middlewareHandler = (_, next) => next();
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler("/items/", handler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
@@ -508,7 +508,7 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", handler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, "/items/", handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
@@ -520,7 +520,7 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler("/items/", middlewareHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, middlewareHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
@@ -538,7 +538,7 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", middlewareHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, "/items/", middlewareHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));

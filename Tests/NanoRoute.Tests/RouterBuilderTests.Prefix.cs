@@ -54,7 +54,7 @@ namespace NanoRoute.Tests
         [Test]
         public void CreatePrefix_ShouldKeepChildValueParsersScopedToTheChildBranch()
         {
-            RouteBuilder api = _routerBuilder.CreatePrefix("/api/*");
+            RouteScopeBuilder api = _routerBuilder.CreatePrefix("/api/*");
 
             api
                 .AddValueParser("name", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })

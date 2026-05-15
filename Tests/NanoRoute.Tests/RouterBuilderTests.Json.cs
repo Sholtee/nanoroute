@@ -22,7 +22,7 @@ namespace NanoRoute.Tests
 
     internal sealed partial class RouterBuilderTests
     {
-        internal delegate RouterBuilder<TestRouter, RouterConfig> ConfigureJsonBodyDelegate(RouterBuilder<TestRouter, RouterConfig> routeBuilder);
+        internal delegate RouterBuilder<TestRouter, RouterConfig> ConfigureJsonBodyDelegate(RouterBuilder<TestRouter, RouterConfig> builder);
 
         private static JsonTypeInfo TestJsonPayloadTypeInfo => JsonSerializerOptions.Web.GetTypeInfo(typeof(TestJsonPayload));
 
@@ -279,7 +279,7 @@ namespace NanoRoute.Tests
             TestJsonPayload? body = null;
 
             TestRouter router = _routerBuilder
-                .AddJsonBody("POST", RouteBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
+                .AddJsonBody("POST", RouteScopeBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items/", async (context, _) =>
                 {
                     body = (TestJsonPayload) context.Parameters["payload"]!;
@@ -356,7 +356,7 @@ namespace NanoRoute.Tests
         public void AddJsonBody_ShouldRejectRequestsWithoutContent()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody("POST", RouteBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
+                .AddJsonBody("POST", RouteScopeBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -372,7 +372,7 @@ namespace NanoRoute.Tests
         public void AddJsonBody_ShouldRejectNonJsonContentTypes()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody("POST", RouteBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
+                .AddJsonBody("POST", RouteScopeBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -391,7 +391,7 @@ namespace NanoRoute.Tests
         public void AddJsonBody_ShouldRejectInvalidJsonPayloads()
         {
             TestRouter router = _routerBuilder
-                .AddJsonBody("POST", RouteBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
+                .AddJsonBody("POST", RouteScopeBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -446,7 +446,7 @@ namespace NanoRoute.Tests
         public void JsonHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload"))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody("POST", "/", typeInfo: null!, "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("typeInfo"));
@@ -467,7 +467,7 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("options"));
 
             ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).ConfigureJsonErrorDetails(config => config))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureJsonErrorDetails(null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("configure"));

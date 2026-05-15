@@ -84,7 +84,7 @@ NanoRoute.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).AddJsonErrorDet
 NanoRoute.NanoRouteJsonExtensions.extension<TBuilder>(TBuilder!).ConfigureJsonErrorDetails(NanoRoute.ConfigureBuilderDelegate<NanoRoute.JsonErrorDetailsConfig!>! configure) -> TBuilder!
 NanoRoute.NanoRoutePrefixExtensions
 NanoRoute.NanoRoutePrefixExtensions.extension<TBuilder>(TBuilder!)
-NanoRoute.NanoRoutePrefixExtensions.extension<TBuilder>(TBuilder!).AddPrefix(string! pattern, System.Action<NanoRoute.RouteBuilder!>! configureRoutes) -> TBuilder!
+NanoRoute.NanoRoutePrefixExtensions.extension<TBuilder>(TBuilder!).AddPrefix(string! pattern, System.Action<NanoRoute.RouteScopeBuilder!>! configureRoutes) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(string! bindings) -> TBuilder!
@@ -119,20 +119,20 @@ NanoRoute.RequestContext.RequestContext() -> void
 NanoRoute.RequestContext.Services.get -> System.IServiceProvider!
 NanoRoute.RequestContext.Services.init -> void
 NanoRoute.RequestHandlerDelegate
-NanoRoute.RouteBuilder
-NanoRoute.RouteBuilder.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteBuilder!
-NanoRoute.RouteBuilder.AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> NanoRoute.RouteBuilder!
-NanoRoute.RouteBuilder.BasePattern.get -> string!
-const NanoRoute.RouteBuilder.CurrentExact = "/" -> string!
-const NanoRoute.RouteBuilder.CurrentPrefix = "/*" -> string!
-NanoRoute.RouteBuilder.CreatePrefix(string! pattern) -> NanoRoute.RouteBuilder!
-NanoRoute.RouteBuilder.Metadata.get -> NanoRoute.BuilderMetadata!
-NanoRoute.RouteBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
-NanoRoute.RouteBuilder.ValueParsers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, NanoRoute.ValueParserRegistration!>!
+NanoRoute.RouteScopeBuilder
+NanoRoute.RouteScopeBuilder.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteScopeBuilder!
+NanoRoute.RouteScopeBuilder.AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> NanoRoute.RouteScopeBuilder!
+NanoRoute.RouteScopeBuilder.BasePattern.get -> string!
+const NanoRoute.RouteScopeBuilder.CurrentExact = "/" -> string!
+const NanoRoute.RouteScopeBuilder.CurrentPrefix = "/*" -> string!
+NanoRoute.RouteScopeBuilder.CreatePrefix(string! pattern) -> NanoRoute.RouteScopeBuilder!
+NanoRoute.RouteScopeBuilder.Metadata.get -> NanoRoute.BuilderMetadata!
+NanoRoute.RouteScopeBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
+NanoRoute.RouteScopeBuilder.ValueParsers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, NanoRoute.ValueParserRegistration!>!
 NanoRoute.Router
 NanoRoute.Router.Config.get -> NanoRoute.RouterConfig!
 NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage! request, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
-NanoRoute.Router.Router(NanoRoute.RouteBuilder! routeBuilder, NanoRoute.RouterConfig! config) -> void
+NanoRoute.Router.Router(NanoRoute.RouteScopeBuilder! routeScopeBuilder, NanoRoute.RouterConfig! config) -> void
 NanoRoute.RouterBuilder<TRouter, TConfig>
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!

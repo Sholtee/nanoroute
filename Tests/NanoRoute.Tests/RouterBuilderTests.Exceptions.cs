@@ -216,7 +216,7 @@ namespace NanoRoute.Tests
         public void ExceptionHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddExceptionHandler())!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((string) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
@@ -237,7 +237,7 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
             ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).ConfigureExceptionHandling(static config => config))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureExceptionHandling(null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("configure"));

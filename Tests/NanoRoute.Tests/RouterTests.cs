@@ -349,7 +349,7 @@ namespace NanoRoute.Tests
                     return false;
                 })
                 .AddPrefix("/api/users/{user_id:int}/*", routerBuilder => routerBuilder
-                    .AddHandler("GET", RouteBuilder.CurrentPrefix, mockGetUser.Object)
+                    .AddHandler("GET", RouteScopeBuilder.CurrentPrefix, mockGetUser.Object)
                     .AddHandler("GET", "/dosomething/", mockDoSomethingWithUser.Object))
                 .CreateRouter();
 

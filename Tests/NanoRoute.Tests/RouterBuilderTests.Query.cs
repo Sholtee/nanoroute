@@ -23,8 +23,8 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddPrefix("/items/*", items => items
-                    .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}")
-                    .AddHandler("GET", RouteBuilder.CurrentExact, async (context, _) => new HttpResponseMessage
+                    .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}")
+                    .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (context, _) => new HttpResponseMessage
                     {
                         Content = new StringContent($"{context.Parameters["filter"]}:{context.Parameters["page"]}")
                     }))
@@ -76,8 +76,8 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddPrefix("/items/*", items => items
-                    .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}")
-                    .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
+                    .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}")
+                    .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
@@ -277,15 +277,15 @@ namespace NanoRoute.Tests
                     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
                 })
                 .AddPrefix("/strict/*", strict => strict
-                    .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}")
-                    .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
+                    .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}")
+                    .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .AddPrefix("/loose/*", loose => loose
                     .ConfigureQueryParsing(config => config with
                     {
                         UnexpectedParameterBehavior = UnexpectedParameterBehavior.Ignore
                     })
-                    .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}")
-                    .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted)))
+                    .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}")
+                    .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted)))
                 .CreateRouter();
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
@@ -319,7 +319,7 @@ namespace NanoRoute.Tests
             _routerBuilder.AddDefaultValueParsers();
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddQueryBindings(""))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
@@ -346,7 +346,7 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
 
             ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).ConfigureQueryParsing(static config => config))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureQueryParsing(null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("configure"));

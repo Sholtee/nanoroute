@@ -6,7 +6,7 @@ The API documentation for this package is generated from the XML comments in the
 
 ## Core Types
 
-- [RouteBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html)
+- [RouteScopeBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteScopeBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
 - [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
@@ -32,7 +32,7 @@ The API documentation for this package is generated from the XML comments in the
 - Value parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as `{id:int(min=1)}` once during registration.
 - Parser-backed segments support optional parameter names. `{id:int}` stores the parsed value in `RequestContext.Parameters`, while `{int}` only validates the segment.
 - `AddPrefix()` and `CreatePrefix()` create scoped route subtrees without forcing you to repeat common prefixes.
-- `RouteBuilder.Metadata` stores type-keyed extension settings and follows the same scoped inheritance model as prefix builders. It is public for extension authors and is not the normal application configuration surface.
+- `RouteScopeBuilder.Metadata` stores type-keyed extension settings and follows the same scoped inheritance model as prefix scopes. It is public for extension authors and is not the normal application configuration surface.
 - `RouterConfig` is immutable and can be replaced with `ConfigureRouting(config => config with { ... })` before creating a router snapshot.
 - `MatchingPrecedence` lets you choose whether literal or parameterized child segments are selected first.
 - `ParametersCapacity` sets the initial capacity of the per-request `RequestContext.Parameters` dictionary.

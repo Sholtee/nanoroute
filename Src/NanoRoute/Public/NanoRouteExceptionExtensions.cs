@@ -22,7 +22,7 @@ namespace NanoRoute
     /// unexpected exceptions.
     /// </summary>
     /// <remarks>
-    /// The configuration is stored in <see cref="RouteBuilder.Metadata"/> and follows normal builder scoping rules.
+    /// The configuration is stored in <see cref="RouteScopeBuilder.Metadata"/> and follows normal builder scoping rules.
     /// </remarks>
     public sealed record ExceptionHandlingConfig
     {
@@ -82,44 +82,44 @@ namespace NanoRoute
     /// </summary>
     public static class NanoRouteExceptionExtensions
     {
-        extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
+        extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
             /// <summary>
             /// Updates the exception-handling configuration visible from the current builder scope.
             /// </summary>
             /// <param name="configure">A callback that receives the current configuration and returns the replacement configuration.</param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
-            /// The configuration is stored in <see cref="RouteBuilder.Metadata"/>. Child builders created after this
+            /// The configuration is stored in <see cref="RouteScopeBuilder.Metadata"/>. Child builders created after this
             /// method is called inherit the updated configuration; existing child builders keep their own scoped copy.
             /// Registered exception handlers snapshot the configuration that is current at registration time.
             /// </remarks>
             public TBuilder ConfigureExceptionHandling(ConfigureBuilderDelegate<ExceptionHandlingConfig> configure)
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(configure);
 
-                ExceptionHandlingConfig config = configure(routeBuilder.Metadata.GetOrDefault(ExceptionHandlingConfig.Default));
+                ExceptionHandlingConfig config = configure(routeScopeBuilder.Metadata.GetOrDefault(ExceptionHandlingConfig.Default));
                 Ensure.NotNull(config);
 
-                routeBuilder.Metadata.Set(config);
+                routeScopeBuilder.Metadata.Set(config);
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
 
             /// <summary>
             /// Adds an exception-handling middleware for all supported HTTP methods.
             /// </summary>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
-            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the middleware
+            /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the middleware
             /// is bound to the whole current builder scope for all supported HTTP methods.
             /// </remarks>
-            public TBuilder AddExceptionHandler() => routeBuilder.AddExceptionHandler(RouteBuilder.CurrentPrefix);
+            public TBuilder AddExceptionHandler() => routeScopeBuilder.AddExceptionHandler(RouteScopeBuilder.CurrentPrefix);
 
             /// <summary>
             /// Adds an exception-handling middleware for all supported HTTP methods.
@@ -128,14 +128,14 @@ namespace NanoRoute
             /// The route pattern where the exception-handling middleware should be inserted. Use <c>/</c> to apply it
             /// to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
-            public TBuilder AddExceptionHandler(string pattern) => routeBuilder.AddExceptionHandler(HttpVerb.Names, pattern);
+            public TBuilder AddExceptionHandler(string pattern) => routeScopeBuilder.AddExceptionHandler(HttpVerb.Names, pattern);
 
             /// <summary>
             /// Adds an exception-handling middleware for a single HTTP method.
@@ -145,29 +145,29 @@ namespace NanoRoute
             /// The route pattern where the exception-handling middleware should be inserted. Use <c>/</c> to apply it
             /// to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
-            public TBuilder AddExceptionHandler(string verb, string pattern) => routeBuilder.AddExceptionHandler([verb /*will be null checked*/], pattern);
+            public TBuilder AddExceptionHandler(string verb, string pattern) => routeScopeBuilder.AddExceptionHandler([verb /*will be null checked*/], pattern);
 
             /// <summary>
             /// Adds an exception-handling middleware for the selected HTTP methods.
             /// </summary>
             /// <param name="verbs">The HTTP methods that should use the exception-handling middleware.</param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
-            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the middleware
+            /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the middleware
             /// is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
-            public TBuilder AddExceptionHandler(IEnumerable<string> verbs) => routeBuilder.AddExceptionHandler(verbs, RouteBuilder.CurrentPrefix);
+            public TBuilder AddExceptionHandler(IEnumerable<string> verbs) => routeScopeBuilder.AddExceptionHandler(verbs, RouteScopeBuilder.CurrentPrefix);
 
             /// <summary>
             /// Adds an exception-handling middleware for the selected HTTP methods.
@@ -177,7 +177,7 @@ namespace NanoRoute
             /// The route pattern where the exception-handling middleware should be inserted. Use <c>/</c> to apply it
             /// to the whole pipeline, or a narrower prefix/exact pattern to scope normalization to selected routes.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// The inserted middleware converts unexpected exceptions into <see cref="HttpRequestException"/> values
             /// with normalized status codes and diagnostic payloads. Existing <see cref="HttpRequestException"/>
@@ -186,17 +186,17 @@ namespace NanoRoute
             /// </remarks>
             public TBuilder AddExceptionHandler(IEnumerable<string> verbs, string pattern)
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(verbs);
                 Ensure.NotNull(pattern);
 
-                FrozenDictionary<Type, ExceptionNormalizer> exceptionNormalizers = routeBuilder
+                FrozenDictionary<Type, ExceptionNormalizer> exceptionNormalizers = routeScopeBuilder
                     .Metadata
                     .GetOrDefault(ExceptionHandlingConfig.Default)
                     .ExceptionNormalizers
                     .ToFrozenDictionary();
 
-                routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
+                routeScopeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
                     try
                     {
@@ -212,7 +212,7 @@ namespace NanoRoute
                     }
                 });
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
         }
 
