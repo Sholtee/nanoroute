@@ -71,7 +71,7 @@ composition. When the current handler does not call it, the pipeline stops at th
 continues only within the route branch already selected for the request; sibling branches are not revisited.</p>
 </div>
   <h5 id="NanoRoute_CallNextHandlerDelegate_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">routerBuilder.AddHandler("GET", "/api/users/{id:int}", async (requestContext, callNext) =&gt;
+  <pre><code class="lang-csharp">routerBuilder.AddHandler("GET", "/api/users/{id:int}/", async (requestContext, callNext) =&gt;
 {
     requestContext.Parameters["StartTime"] = DateTimeOffset.UtcNow;
     return await callNext();

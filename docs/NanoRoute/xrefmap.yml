@@ -871,15 +871,15 @@ references:
   commentId: Overload:NanoRoute.NanoRoutePrefixExtensions.AddPrefix
   fullName: NanoRoute.NanoRoutePrefixExtensions.AddPrefix
   nameWithType: NanoRoutePrefixExtensions.AddPrefix
-- uid: NanoRoute.NanoRoutePrefixExtensions.AddPrefix``1(``0,System.String,System.Action{NanoRoute.RouteBuilder})
-  name: AddPrefix<TBuilder>(TBuilder, string, Action<RouteBuilder>)
-  href: NanoRoute.NanoRoutePrefixExtensions.html#NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteBuilder__
-  commentId: M:NanoRoute.NanoRoutePrefixExtensions.AddPrefix``1(``0,System.String,System.Action{NanoRoute.RouteBuilder})
-  name.vb: AddPrefix(Of TBuilder)(TBuilder, String, Action(Of RouteBuilder))
-  fullName: NanoRoute.NanoRoutePrefixExtensions.AddPrefix<TBuilder>(TBuilder, string, System.Action<NanoRoute.RouteBuilder>)
-  fullName.vb: NanoRoute.NanoRoutePrefixExtensions.AddPrefix(Of TBuilder)(TBuilder, String, System.Action(Of NanoRoute.RouteBuilder))
-  nameWithType: NanoRoutePrefixExtensions.AddPrefix<TBuilder>(TBuilder, string, Action<RouteBuilder>)
-  nameWithType.vb: NanoRoutePrefixExtensions.AddPrefix(Of TBuilder)(TBuilder, String, Action(Of RouteBuilder))
+- uid: NanoRoute.NanoRoutePrefixExtensions.AddPrefix``1(``0,System.String,System.Action{NanoRoute.RouteScopeBuilder})
+  name: AddPrefix<TBuilder>(TBuilder, string, Action<RouteScopeBuilder>)
+  href: NanoRoute.NanoRoutePrefixExtensions.html#NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteScopeBuilder__
+  commentId: M:NanoRoute.NanoRoutePrefixExtensions.AddPrefix``1(``0,System.String,System.Action{NanoRoute.RouteScopeBuilder})
+  name.vb: AddPrefix(Of TBuilder)(TBuilder, String, Action(Of RouteScopeBuilder))
+  fullName: NanoRoute.NanoRoutePrefixExtensions.AddPrefix<TBuilder>(TBuilder, string, System.Action<NanoRoute.RouteScopeBuilder>)
+  fullName.vb: NanoRoute.NanoRoutePrefixExtensions.AddPrefix(Of TBuilder)(TBuilder, String, System.Action(Of NanoRoute.RouteScopeBuilder))
+  nameWithType: NanoRoutePrefixExtensions.AddPrefix<TBuilder>(TBuilder, string, Action<RouteScopeBuilder>)
+  nameWithType.vb: NanoRoutePrefixExtensions.AddPrefix(Of TBuilder)(TBuilder, String, Action(Of RouteScopeBuilder))
 - uid: NanoRoute.NanoRouteQueryExtensions
   name: NanoRouteQueryExtensions
   href: NanoRoute.NanoRouteQueryExtensions.html
@@ -1192,132 +1192,132 @@ references:
   commentId: T:NanoRoute.RequestHandlerDelegate
   fullName: NanoRoute.RequestHandlerDelegate
   nameWithType: RequestHandlerDelegate
-- uid: NanoRoute.RouteBuilder
-  name: RouteBuilder
-  href: NanoRoute.RouteBuilder.html
-  commentId: T:NanoRoute.RouteBuilder
-  fullName: NanoRoute.RouteBuilder
-  nameWithType: RouteBuilder
-- uid: NanoRoute.RouteBuilder.AddHandler(System.String,System.String,NanoRoute.RequestHandlerDelegate)
+- uid: NanoRoute.RouteScopeBuilder
+  name: RouteScopeBuilder
+  href: NanoRoute.RouteScopeBuilder.html
+  commentId: T:NanoRoute.RouteScopeBuilder
+  fullName: NanoRoute.RouteScopeBuilder
+  nameWithType: RouteScopeBuilder
+- uid: NanoRoute.RouteScopeBuilder.AddHandler(System.String,System.String,NanoRoute.RequestHandlerDelegate)
   name: AddHandler(string, string, RequestHandlerDelegate)
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate_
-  commentId: M:NanoRoute.RouteBuilder.AddHandler(System.String,System.String,NanoRoute.RequestHandlerDelegate)
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate_
+  commentId: M:NanoRoute.RouteScopeBuilder.AddHandler(System.String,System.String,NanoRoute.RequestHandlerDelegate)
   name.vb: AddHandler(String, String, RequestHandlerDelegate)
-  fullName: NanoRoute.RouteBuilder.AddHandler(string, string, NanoRoute.RequestHandlerDelegate)
-  fullName.vb: NanoRoute.RouteBuilder.AddHandler(String, String, NanoRoute.RequestHandlerDelegate)
-  nameWithType: RouteBuilder.AddHandler(string, string, RequestHandlerDelegate)
-  nameWithType.vb: RouteBuilder.AddHandler(String, String, RequestHandlerDelegate)
-- uid: NanoRoute.RouteBuilder.AddHandler*
+  fullName: NanoRoute.RouteScopeBuilder.AddHandler(string, string, NanoRoute.RequestHandlerDelegate)
+  fullName.vb: NanoRoute.RouteScopeBuilder.AddHandler(String, String, NanoRoute.RequestHandlerDelegate)
+  nameWithType: RouteScopeBuilder.AddHandler(string, string, RequestHandlerDelegate)
+  nameWithType.vb: RouteScopeBuilder.AddHandler(String, String, RequestHandlerDelegate)
+- uid: NanoRoute.RouteScopeBuilder.AddHandler*
   name: AddHandler
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddHandler_
-  commentId: Overload:NanoRoute.RouteBuilder.AddHandler
-  fullName: NanoRoute.RouteBuilder.AddHandler
-  nameWithType: RouteBuilder.AddHandler
-- uid: NanoRoute.RouteBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_AddHandler_
+  commentId: Overload:NanoRoute.RouteScopeBuilder.AddHandler
+  fullName: NanoRoute.RouteScopeBuilder.AddHandler
+  nameWithType: RouteScopeBuilder.AddHandler
+- uid: NanoRoute.RouteScopeBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)
   name: AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_
-  commentId: M:NanoRoute.RouteBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_
+  commentId: M:NanoRoute.RouteScopeBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)
   name.vb: AddValueParser(String, BindArgumentsDelegate, ValueParserDelegate)
-  fullName: NanoRoute.RouteBuilder.AddValueParser(string, NanoRoute.BindArgumentsDelegate, NanoRoute.ValueParserDelegate)
-  fullName.vb: NanoRoute.RouteBuilder.AddValueParser(String, NanoRoute.BindArgumentsDelegate, NanoRoute.ValueParserDelegate)
-  nameWithType: RouteBuilder.AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)
-  nameWithType.vb: RouteBuilder.AddValueParser(String, BindArgumentsDelegate, ValueParserDelegate)
-- uid: NanoRoute.RouteBuilder.AddValueParser*
+  fullName: NanoRoute.RouteScopeBuilder.AddValueParser(string, NanoRoute.BindArgumentsDelegate, NanoRoute.ValueParserDelegate)
+  fullName.vb: NanoRoute.RouteScopeBuilder.AddValueParser(String, NanoRoute.BindArgumentsDelegate, NanoRoute.ValueParserDelegate)
+  nameWithType: RouteScopeBuilder.AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)
+  nameWithType.vb: RouteScopeBuilder.AddValueParser(String, BindArgumentsDelegate, ValueParserDelegate)
+- uid: NanoRoute.RouteScopeBuilder.AddValueParser*
   name: AddValueParser
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_AddValueParser_
-  commentId: Overload:NanoRoute.RouteBuilder.AddValueParser
-  fullName: NanoRoute.RouteBuilder.AddValueParser
-  nameWithType: RouteBuilder.AddValueParser
-- uid: NanoRoute.RouteBuilder.BasePattern
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_AddValueParser_
+  commentId: Overload:NanoRoute.RouteScopeBuilder.AddValueParser
+  fullName: NanoRoute.RouteScopeBuilder.AddValueParser
+  nameWithType: RouteScopeBuilder.AddValueParser
+- uid: NanoRoute.RouteScopeBuilder.BasePattern
   name: BasePattern
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_BasePattern
-  commentId: P:NanoRoute.RouteBuilder.BasePattern
-  fullName: NanoRoute.RouteBuilder.BasePattern
-  nameWithType: RouteBuilder.BasePattern
-- uid: NanoRoute.RouteBuilder.BasePattern*
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_BasePattern
+  commentId: P:NanoRoute.RouteScopeBuilder.BasePattern
+  fullName: NanoRoute.RouteScopeBuilder.BasePattern
+  nameWithType: RouteScopeBuilder.BasePattern
+- uid: NanoRoute.RouteScopeBuilder.BasePattern*
   name: BasePattern
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_BasePattern_
-  commentId: Overload:NanoRoute.RouteBuilder.BasePattern
-  fullName: NanoRoute.RouteBuilder.BasePattern
-  nameWithType: RouteBuilder.BasePattern
-- uid: NanoRoute.RouteBuilder.CreatePrefix(System.String)
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_BasePattern_
+  commentId: Overload:NanoRoute.RouteScopeBuilder.BasePattern
+  fullName: NanoRoute.RouteScopeBuilder.BasePattern
+  nameWithType: RouteScopeBuilder.BasePattern
+- uid: NanoRoute.RouteScopeBuilder.CreatePrefix(System.String)
   name: CreatePrefix(string)
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_
-  commentId: M:NanoRoute.RouteBuilder.CreatePrefix(System.String)
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CreatePrefix_System_String_
+  commentId: M:NanoRoute.RouteScopeBuilder.CreatePrefix(System.String)
   name.vb: CreatePrefix(String)
-  fullName: NanoRoute.RouteBuilder.CreatePrefix(string)
-  fullName.vb: NanoRoute.RouteBuilder.CreatePrefix(String)
-  nameWithType: RouteBuilder.CreatePrefix(string)
-  nameWithType.vb: RouteBuilder.CreatePrefix(String)
-- uid: NanoRoute.RouteBuilder.CreatePrefix*
+  fullName: NanoRoute.RouteScopeBuilder.CreatePrefix(string)
+  fullName.vb: NanoRoute.RouteScopeBuilder.CreatePrefix(String)
+  nameWithType: RouteScopeBuilder.CreatePrefix(string)
+  nameWithType.vb: RouteScopeBuilder.CreatePrefix(String)
+- uid: NanoRoute.RouteScopeBuilder.CreatePrefix*
   name: CreatePrefix
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_
-  commentId: Overload:NanoRoute.RouteBuilder.CreatePrefix
-  fullName: NanoRoute.RouteBuilder.CreatePrefix
-  nameWithType: RouteBuilder.CreatePrefix
-- uid: NanoRoute.RouteBuilder.CurrentExact
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CreatePrefix_
+  commentId: Overload:NanoRoute.RouteScopeBuilder.CreatePrefix
+  fullName: NanoRoute.RouteScopeBuilder.CreatePrefix
+  nameWithType: RouteScopeBuilder.CreatePrefix
+- uid: NanoRoute.RouteScopeBuilder.CurrentExact
   name: CurrentExact
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentExact
-  commentId: F:NanoRoute.RouteBuilder.CurrentExact
-  fullName: NanoRoute.RouteBuilder.CurrentExact
-  nameWithType: RouteBuilder.CurrentExact
-- uid: NanoRoute.RouteBuilder.CurrentPrefix
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentExact
+  commentId: F:NanoRoute.RouteScopeBuilder.CurrentExact
+  fullName: NanoRoute.RouteScopeBuilder.CurrentExact
+  nameWithType: RouteScopeBuilder.CurrentExact
+- uid: NanoRoute.RouteScopeBuilder.CurrentPrefix
   name: CurrentPrefix
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix
-  commentId: F:NanoRoute.RouteBuilder.CurrentPrefix
-  fullName: NanoRoute.RouteBuilder.CurrentPrefix
-  nameWithType: RouteBuilder.CurrentPrefix
-- uid: NanoRoute.RouteBuilder.Metadata
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix
+  commentId: F:NanoRoute.RouteScopeBuilder.CurrentPrefix
+  fullName: NanoRoute.RouteScopeBuilder.CurrentPrefix
+  nameWithType: RouteScopeBuilder.CurrentPrefix
+- uid: NanoRoute.RouteScopeBuilder.Metadata
   name: Metadata
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata
-  commentId: P:NanoRoute.RouteBuilder.Metadata
-  fullName: NanoRoute.RouteBuilder.Metadata
-  nameWithType: RouteBuilder.Metadata
-- uid: NanoRoute.RouteBuilder.Metadata*
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata
+  commentId: P:NanoRoute.RouteScopeBuilder.Metadata
+  fullName: NanoRoute.RouteScopeBuilder.Metadata
+  nameWithType: RouteScopeBuilder.Metadata
+- uid: NanoRoute.RouteScopeBuilder.Metadata*
   name: Metadata
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata_
-  commentId: Overload:NanoRoute.RouteBuilder.Metadata
-  fullName: NanoRoute.RouteBuilder.Metadata
-  nameWithType: RouteBuilder.Metadata
-- uid: NanoRoute.RouteBuilder.Patterns
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata_
+  commentId: Overload:NanoRoute.RouteScopeBuilder.Metadata
+  fullName: NanoRoute.RouteScopeBuilder.Metadata
+  nameWithType: RouteScopeBuilder.Metadata
+- uid: NanoRoute.RouteScopeBuilder.Patterns
   name: Patterns
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Patterns
-  commentId: P:NanoRoute.RouteBuilder.Patterns
-  fullName: NanoRoute.RouteBuilder.Patterns
-  nameWithType: RouteBuilder.Patterns
-- uid: NanoRoute.RouteBuilder.Patterns*
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Patterns
+  commentId: P:NanoRoute.RouteScopeBuilder.Patterns
+  fullName: NanoRoute.RouteScopeBuilder.Patterns
+  nameWithType: RouteScopeBuilder.Patterns
+- uid: NanoRoute.RouteScopeBuilder.Patterns*
   name: Patterns
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Patterns_
-  commentId: Overload:NanoRoute.RouteBuilder.Patterns
-  fullName: NanoRoute.RouteBuilder.Patterns
-  nameWithType: RouteBuilder.Patterns
-- uid: NanoRoute.RouteBuilder.ValueParsers
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Patterns_
+  commentId: Overload:NanoRoute.RouteScopeBuilder.Patterns
+  fullName: NanoRoute.RouteScopeBuilder.Patterns
+  nameWithType: RouteScopeBuilder.Patterns
+- uid: NanoRoute.RouteScopeBuilder.ValueParsers
   name: ValueParsers
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_ValueParsers
-  commentId: P:NanoRoute.RouteBuilder.ValueParsers
-  fullName: NanoRoute.RouteBuilder.ValueParsers
-  nameWithType: RouteBuilder.ValueParsers
-- uid: NanoRoute.RouteBuilder.ValueParsers*
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_ValueParsers
+  commentId: P:NanoRoute.RouteScopeBuilder.ValueParsers
+  fullName: NanoRoute.RouteScopeBuilder.ValueParsers
+  nameWithType: RouteScopeBuilder.ValueParsers
+- uid: NanoRoute.RouteScopeBuilder.ValueParsers*
   name: ValueParsers
-  href: NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_ValueParsers_
-  commentId: Overload:NanoRoute.RouteBuilder.ValueParsers
-  fullName: NanoRoute.RouteBuilder.ValueParsers
-  nameWithType: RouteBuilder.ValueParsers
+  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_ValueParsers_
+  commentId: Overload:NanoRoute.RouteScopeBuilder.ValueParsers
+  fullName: NanoRoute.RouteScopeBuilder.ValueParsers
+  nameWithType: RouteScopeBuilder.ValueParsers
 - uid: NanoRoute.Router
   name: Router
   href: NanoRoute.Router.html
   commentId: T:NanoRoute.Router
   fullName: NanoRoute.Router
   nameWithType: Router
-- uid: NanoRoute.Router.#ctor(NanoRoute.RouteBuilder,NanoRoute.RouterConfig)
-  name: Router(RouteBuilder, RouterConfig)
-  href: NanoRoute.Router.html#NanoRoute_Router__ctor_NanoRoute_RouteBuilder_NanoRoute_RouterConfig_
-  commentId: M:NanoRoute.Router.#ctor(NanoRoute.RouteBuilder,NanoRoute.RouterConfig)
-  name.vb: New(RouteBuilder, RouterConfig)
-  fullName: NanoRoute.Router.Router(NanoRoute.RouteBuilder, NanoRoute.RouterConfig)
-  fullName.vb: NanoRoute.Router.New(NanoRoute.RouteBuilder, NanoRoute.RouterConfig)
-  nameWithType: Router.Router(RouteBuilder, RouterConfig)
-  nameWithType.vb: Router.New(RouteBuilder, RouterConfig)
+- uid: NanoRoute.Router.#ctor(NanoRoute.RouteScopeBuilder,NanoRoute.RouterConfig)
+  name: Router(RouteScopeBuilder, RouterConfig)
+  href: NanoRoute.Router.html#NanoRoute_Router__ctor_NanoRoute_RouteScopeBuilder_NanoRoute_RouterConfig_
+  commentId: M:NanoRoute.Router.#ctor(NanoRoute.RouteScopeBuilder,NanoRoute.RouterConfig)
+  name.vb: New(RouteScopeBuilder, RouterConfig)
+  fullName: NanoRoute.Router.Router(NanoRoute.RouteScopeBuilder, NanoRoute.RouterConfig)
+  fullName.vb: NanoRoute.Router.New(NanoRoute.RouteScopeBuilder, NanoRoute.RouterConfig)
+  nameWithType: Router.Router(RouteScopeBuilder, RouterConfig)
+  nameWithType.vb: Router.New(RouteScopeBuilder, RouterConfig)
 - uid: NanoRoute.Router.#ctor*
   name: Router
   href: NanoRoute.Router.html#NanoRoute_Router__ctor_
@@ -1734,12 +1734,12 @@ references:
   commentId: T:NanoRoute.ValueSource
   fullName: NanoRoute.ValueSource
   nameWithType: ValueSource
-- uid: NanoRoute.ValueSource.Context
-  name: Context
-  href: NanoRoute.ValueSource.html#NanoRoute_ValueSource_Context
-  commentId: F:NanoRoute.ValueSource.Context
-  fullName: NanoRoute.ValueSource.Context
-  nameWithType: ValueSource.Context
+- uid: NanoRoute.ValueSource.Parameter
+  name: Parameter
+  href: NanoRoute.ValueSource.html#NanoRoute_ValueSource_Parameter
+  commentId: F:NanoRoute.ValueSource.Parameter
+  fullName: NanoRoute.ValueSource.Parameter
+  nameWithType: ValueSource.Parameter
 - uid: NanoRoute.ValueSource.ServiceLocator
   name: ServiceLocator
   href: NanoRoute.ValueSource.html#NanoRoute_ValueSource_ServiceLocator

@@ -5,11 +5,11 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Class RouteBuilder | NanoRoute </title>
+      <title>Class RouteScopeBuilder | NanoRoute </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Class RouteBuilder | NanoRoute ">
+      <meta name="title" content="Class RouteScopeBuilder | NanoRoute ">
     
-    <meta name="description" content="Builder responsible for route configuration.">
+    <meta name="description" content="Builder responsible for configuring a route scope and its child route tree.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -35,19 +35,19 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.RouteBuilder">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.RouteScopeBuilder">
 
 
 
-  <h1 id="NanoRoute_RouteBuilder" data-uid="NanoRoute.RouteBuilder" class="text-break">Class RouteBuilder</h1>
-  <div class="markdown level0 summary"><p>Builder responsible for route configuration.</p>
+  <h1 id="NanoRoute_RouteScopeBuilder" data-uid="NanoRoute.RouteScopeBuilder" class="text-break">Class RouteScopeBuilder</h1>
+  <div class="markdown level0 summary"><p>Builder responsible for configuring a route scope and its child route tree.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="NanoRoute.RoutingContext.html">RoutingContext</a></div>
-    <div class="level2"><span class="xref">RouteBuilder</span></div>
+    <div class="level2"><span class="xref">RouteScopeBuilder</span></div>
       <div class="level3"><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a></div>
   </div>
   <div class="inheritedMembers">
@@ -76,25 +76,24 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_RouteBuilder_syntax">Syntax</h5>
+  <h5 id="NanoRoute_RouteScopeBuilder_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class RouteBuilder : RoutingContext</code></pre>
+    <pre><code class="lang-csharp hljs">public class RouteScopeBuilder : RoutingContext</code></pre>
   </div>
-  <h5 id="NanoRoute_RouteBuilder_remarks"><strong>Remarks</strong></h5>
+  <h5 id="NanoRoute_RouteScopeBuilder_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Route patterns support literal segments and parser-backed parameter segments such as
-<code>/users/{id:int}</code>. Patterns must start with <code>/</code>, and repeated <code>/</code> separators such as
-<code>//</code> are invalid. A trailing <code>/</code> marks the pattern as a prefix match, while patterns without a
-trailing slash must match the full path exactly.</p>
+<code>/users/{id:int}/</code>. Patterns must start with <code>/</code>, exact patterns must end with <code>/</code>,
+prefix patterns must end with <code>/*</code>, and repeated <code>/</code> separators such as <code>//</code> are invalid.</p>
 </div>
   <h3 id="fields">Fields
 </h3>
-  <h4 id="NanoRoute_RouteBuilder_CurrentExact" data-uid="NanoRoute.RouteBuilder.CurrentExact">CurrentExact</h4>
-  <div class="markdown level1 summary"><p>The route pattern that matches the current builder scope exactly.</p>
+  <h4 id="NanoRoute_RouteScopeBuilder_CurrentExact" data-uid="NanoRoute.RouteScopeBuilder.CurrentExact">CurrentExact</h4>
+  <div class="markdown level1 summary"><p>The route pattern that matches the current route scope exactly.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public const string CurrentExact = &quot;&quot;</code></pre>
+    <pre><code class="lang-csharp hljs">public const string CurrentExact = &quot;/&quot;</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-condensed">
@@ -111,13 +110,13 @@ trailing slash must match the full path exactly.</p>
       </tr>
     </tbody>
   </table>
-  <h4 id="NanoRoute_RouteBuilder_CurrentPrefix" data-uid="NanoRoute.RouteBuilder.CurrentPrefix">CurrentPrefix</h4>
-  <div class="markdown level1 summary"><p>The route pattern that matches the current builder scope as a prefix.</p>
+  <h4 id="NanoRoute_RouteScopeBuilder_CurrentPrefix" data-uid="NanoRoute.RouteScopeBuilder.CurrentPrefix">CurrentPrefix</h4>
+  <div class="markdown level1 summary"><p>The route pattern that matches the current route scope as a prefix.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public const string CurrentPrefix = &quot;/&quot;</code></pre>
+    <pre><code class="lang-csharp hljs">public const string CurrentPrefix = &quot;/*&quot;</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-condensed">
@@ -136,9 +135,9 @@ trailing slash must match the full path exactly.</p>
   </table>
   <h3 id="properties">Properties
 </h3>
-  <a id="NanoRoute_RouteBuilder_BasePattern_" data-uid="NanoRoute.RouteBuilder.BasePattern*"></a>
-  <h4 id="NanoRoute_RouteBuilder_BasePattern" data-uid="NanoRoute.RouteBuilder.BasePattern">BasePattern</h4>
-  <div class="markdown level1 summary"><p>Gets the route pattern prefix for this builder branch.</p>
+  <a id="NanoRoute_RouteScopeBuilder_BasePattern_" data-uid="NanoRoute.RouteScopeBuilder.BasePattern*"></a>
+  <h4 id="NanoRoute_RouteScopeBuilder_BasePattern" data-uid="NanoRoute.RouteScopeBuilder.BasePattern">BasePattern</h4>
+  <div class="markdown level1 summary"><p>Gets the route pattern prefix for this route scope.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -160,13 +159,13 @@ trailing slash must match the full path exactly.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouteBuilder_BasePattern_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The root builder has an empty base pattern. Child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a>
-expose the accumulated prefix inherited from their parent builders.</p>
+  <h5 id="NanoRoute_RouteScopeBuilder_BasePattern_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The root scope exposes <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a>. Child scopes created with
+<a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a> expose the accumulated prefix inherited from their parent scopes.</p>
 </div>
-  <a id="NanoRoute_RouteBuilder_Metadata_" data-uid="NanoRoute.RouteBuilder.Metadata*"></a>
-  <h4 id="NanoRoute_RouteBuilder_Metadata" data-uid="NanoRoute.RouteBuilder.Metadata">Metadata</h4>
-  <div class="markdown level1 summary"><p>Gets extension-defined builder metadata visible from this builder instance.</p>
+  <a id="NanoRoute_RouteScopeBuilder_Metadata_" data-uid="NanoRoute.RouteScopeBuilder.Metadata*"></a>
+  <h4 id="NanoRoute_RouteScopeBuilder_Metadata" data-uid="NanoRoute.RouteScopeBuilder.Metadata">Metadata</h4>
+  <div class="markdown level1 summary"><p>Gets extension-defined builder metadata visible from this route scope.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -188,19 +187,19 @@ expose the accumulated prefix inherited from their parent builders.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouteBuilder_Metadata_remarks">Remarks</h5>
+  <h5 id="NanoRoute_RouteScopeBuilder_Metadata_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Metadata is public for extension authors who need scoped build-time settings behind module-specific
 configuration methods. Application code usually should prefer those module APIs instead of reading or
 writing metadata directly.</p>
 <p>
-Child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a> inherit a scoped copy of their parent's
-metadata. Metadata updates made after the child builder is created stay local to the builder where they
+Child scopes created with <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a> inherit a scoped copy of their parent's
+metadata. Metadata updates made after the child scope is created stay local to the scope where they
 are made.
 </p>
 </div>
-  <a id="NanoRoute_RouteBuilder_Patterns_" data-uid="NanoRoute.RouteBuilder.Patterns*"></a>
-  <h4 id="NanoRoute_RouteBuilder_Patterns" data-uid="NanoRoute.RouteBuilder.Patterns">Patterns</h4>
-  <div class="markdown level1 summary"><p>Gets the distinct route patterns currently visible from this builder branch.</p>
+  <a id="NanoRoute_RouteScopeBuilder_Patterns_" data-uid="NanoRoute.RouteScopeBuilder.Patterns*"></a>
+  <h4 id="NanoRoute_RouteScopeBuilder_Patterns" data-uid="NanoRoute.RouteScopeBuilder.Patterns">Patterns</h4>
+  <div class="markdown level1 summary"><p>Gets the distinct route patterns currently visible from this route scope.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -222,13 +221,13 @@ are made.
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouteBuilder_Patterns_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Each entry is formatted as <code>[Verb] Pattern</code>. Child builders list only the routes reachable from
-their base path, while the root builder lists the whole configured tree.</p>
+  <h5 id="NanoRoute_RouteScopeBuilder_Patterns_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Each entry is formatted as <code>[Verb] Pattern</code>. Child scopes list only the routes reachable from
+their base path, while the root scope lists the whole configured tree.</p>
 </div>
-  <a id="NanoRoute_RouteBuilder_ValueParsers_" data-uid="NanoRoute.RouteBuilder.ValueParsers*"></a>
-  <h4 id="NanoRoute_RouteBuilder_ValueParsers" data-uid="NanoRoute.RouteBuilder.ValueParsers">ValueParsers</h4>
-  <div class="markdown level1 summary"><p>Gets the value parser registrations currently visible from this builder instance.</p>
+  <a id="NanoRoute_RouteScopeBuilder_ValueParsers_" data-uid="NanoRoute.RouteScopeBuilder.ValueParsers*"></a>
+  <h4 id="NanoRoute_RouteScopeBuilder_ValueParsers" data-uid="NanoRoute.RouteScopeBuilder.ValueParsers">ValueParsers</h4>
+  <div class="markdown level1 summary"><p>Gets the value parser registrations currently visible from this route scope.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -250,20 +249,20 @@ their base path, while the root builder lists the whole configured tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouteBuilder_ValueParsers_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>For child builders created with <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a>, this dictionary reflects the inherited
+  <h5 id="NanoRoute_RouteScopeBuilder_ValueParsers_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>For child scopes created with <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a>, this dictionary reflects the inherited
 registrations plus any overrides added to that child scope.</p>
 </div>
   <h3 id="methods">Methods
 </h3>
-  <a id="NanoRoute_RouteBuilder_AddHandler_" data-uid="NanoRoute.RouteBuilder.AddHandler*"></a>
-  <h4 id="NanoRoute_RouteBuilder_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.RouteBuilder.AddHandler(System.String,System.String,NanoRoute.RequestHandlerDelegate)">AddHandler(string, string, RequestHandlerDelegate)</h4>
+  <a id="NanoRoute_RouteScopeBuilder_AddHandler_" data-uid="NanoRoute.RouteScopeBuilder.AddHandler*"></a>
+  <h4 id="NanoRoute_RouteScopeBuilder_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.RouteScopeBuilder.AddHandler(System.String,System.String,NanoRoute.RequestHandlerDelegate)">AddHandler(string, string, RequestHandlerDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a handler for a single HTTP method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouteBuilder AddHandler(string verb, string pattern, RequestHandlerDelegate handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public RouteScopeBuilder AddHandler(string verb, string pattern, RequestHandlerDelegate handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -285,9 +284,8 @@ registrations plus any overrides added to that child scope.</p>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><span class="parametername">pattern</span></td>
         <td><p>The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-registered parsers in the form <code>{parameterName:parserName}</code>, and a trailing <code>/</code> turns the
-pattern into a prefix match. Patterns must start with <code>/</code>, repeated <code>/</code> separators are
-invalid, and patterns without a trailing slash match only the exact path.</p>
+registered parsers in the form <code>{parameterName:parserName}</code>. Exact patterns must end with
+<code>/</code>, prefix patterns must end with <code>/*</code>, and repeated <code>/</code> separators are invalid.</p>
 </td>
       </tr>
       <tr>
@@ -309,14 +307,14 @@ the pipeline with the next compatible handler from the already selected route br
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
-        <td><p>The current router instance.</p>
+        <td><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></td>
+        <td><p>The current route scope builder instance.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouteBuilder_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
-  <pre><code class="lang-csharp">builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
+  <h5 id="NanoRoute_RouteScopeBuilder_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler("GET", "/files/{path:any}/*", (context, next) =&gt;
 {
     string path = (string) context.Parameters["path"]!;
     return ServeFile(path);
@@ -344,14 +342,14 @@ registered yet.</p>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouteBuilder_AddValueParser_" data-uid="NanoRoute.RouteBuilder.AddValueParser*"></a>
-  <h4 id="NanoRoute_RouteBuilder_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.RouteBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)">AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)</h4>
+  <a id="NanoRoute_RouteScopeBuilder_AddValueParser_" data-uid="NanoRoute.RouteScopeBuilder.AddValueParser*"></a>
+  <h4 id="NanoRoute_RouteScopeBuilder_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.RouteScopeBuilder.AddValueParser(System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.ValueParserDelegate)">AddValueParser(string, BindArgumentsDelegate, ValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a parser that can convert a route segment into a typed value and bind parser arguments once during route registration.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouteBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)</code></pre>
+    <pre><code class="lang-csharp hljs">public RouteScopeBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -393,20 +391,20 @@ registered yet.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
+        <td><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></td>
         <td><p>The current instance.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouteBuilder_CreatePrefix_" data-uid="NanoRoute.RouteBuilder.CreatePrefix*"></a>
-  <h4 id="NanoRoute_RouteBuilder_CreatePrefix_System_String_" data-uid="NanoRoute.RouteBuilder.CreatePrefix(System.String)">CreatePrefix(string)</h4>
-  <div class="markdown level1 summary"><p>Creates a child builder whose routes are rooted under the given prefix.</p>
+  <a id="NanoRoute_RouteScopeBuilder_CreatePrefix_" data-uid="NanoRoute.RouteScopeBuilder.CreatePrefix*"></a>
+  <h4 id="NanoRoute_RouteScopeBuilder_CreatePrefix_System_String_" data-uid="NanoRoute.RouteScopeBuilder.CreatePrefix(System.String)">CreatePrefix(string)</h4>
+  <div class="markdown level1 summary"><p>Creates a child route scope whose routes are rooted under the given prefix.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouteBuilder CreatePrefix(string pattern)</code></pre>
+    <pre><code class="lang-csharp hljs">public RouteScopeBuilder CreatePrefix(string pattern)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -421,7 +419,7 @@ registered yet.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><span class="parametername">pattern</span></td>
-        <td><p>The base prefix. It must be a valid route pattern ending in <code>/</code> so child routes can be appended to it.</p>
+        <td><p>The base prefix. It must be a valid route pattern ending in <code>/*</code> so child routes can be appended to it.</p>
 </td>
       </tr>
     </tbody>
@@ -436,20 +434,20 @@ registered yet.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
-        <td><p>A child builder that shares the current route tree but has its own parser registration scope.</p>
+        <td><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></td>
+        <td><p>A child route scope builder that shares the current route tree but has its own parser registration scope.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_RouteBuilder_CreatePrefix_System_String__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Child builders inherit the parent's registered value parsers at creation time. Additional parser
-registrations or overrides made on the child builder stay local to that branch.</p>
+  <h5 id="NanoRoute_RouteScopeBuilder_CreatePrefix_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Child route scopes inherit the parent's registered value parsers at creation time. Additional parser
+registrations or overrides made on the child scope stay local to that branch.</p>
 </div>
-  <h5 id="NanoRoute_RouteBuilder_CreatePrefix_System_String__examples">Examples</h5>
-  <pre><code class="lang-csharp">RouteBuilder api = builder.CreatePrefix("/api/");
+  <h5 id="NanoRoute_RouteScopeBuilder_CreatePrefix_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">RouteScopeBuilder api = builder.CreatePrefix("/api/*");
 
-api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());</code></pre>
+api.AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok());</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -462,7 +460,7 @@ api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>Thrown when <code class="paramref">pattern</code> does not end with <code>/</code>.</p>
+        <td><p>Thrown when <code class="paramref">pattern</code> does not end with <code>/*</code>.</p>
 </td>
       </tr>
       <tr>
@@ -568,7 +566,7 @@ registered yet.</p>
       <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__">NanoRouteJsonExtensions.ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRoutePrefixExtensions.html#NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteBuilder__">NanoRoutePrefixExtensions.AddPrefix&lt;TBuilder&gt;(TBuilder, string, Action&lt;RouteBuilder&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRoutePrefixExtensions.html#NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteScopeBuilder__">NanoRoutePrefixExtensions.AddPrefix&lt;TBuilder&gt;(TBuilder, string, Action&lt;RouteScopeBuilder&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</a>

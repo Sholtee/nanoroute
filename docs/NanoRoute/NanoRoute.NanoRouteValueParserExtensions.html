@@ -87,7 +87,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddBoolParser&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddBoolParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -101,7 +101,7 @@
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -117,7 +117,7 @@
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -147,7 +147,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddDefaultValueParsers&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddDefaultValueParsers&lt;TBuilder&gt;(this TBuilder routeScopeBuilder) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -161,7 +161,7 @@
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -177,7 +177,7 @@
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -204,7 +204,7 @@ Existing registrations with the same names are overwritten.</p>
   <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers__1___0__examples">Examples</h5>
   <pre><code class="lang-csharp">builder
     .AddDefaultValueParsers()
-    .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
+    .AddHandler("GET", "/users/{id:int}/", (context, next) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -217,7 +217,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">routeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -229,7 +229,7 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddGuidParser&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddGuidParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -243,7 +243,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -259,7 +259,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -289,7 +289,7 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddIntParser&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddIntParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -303,7 +303,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -319,7 +319,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -350,7 +350,7 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddStringParser&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddStringParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -364,7 +364,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -380,7 +380,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -411,7 +411,7 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddValueParser&lt;TBuilder&gt;(this TBuilder routeBuilder, string parserName, BindArgumentsDelegate bindArguments, SyncValueParserDelegate tryParseDelegate) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddValueParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string parserName, BindArgumentsDelegate bindArguments, SyncValueParserDelegate tryParseDelegate) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -425,7 +425,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -459,7 +459,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -486,7 +486,7 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddValueParser&lt;TBuilder&gt;(this TBuilder routeBuilder, string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddValueParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -500,7 +500,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -534,7 +534,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -561,7 +561,7 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddValueParser&lt;TBuilder&gt;(this TBuilder routeBuilder, string parserName, SyncValueParserDelegate tryParseDelegate) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddValueParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string parserName, SyncValueParserDelegate tryParseDelegate) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -575,7 +575,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -603,7 +603,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -630,7 +630,7 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddValueParser&lt;TBuilder&gt;(this TBuilder routeBuilder, string parserName, ValueParserDelegate tryParseDelegate) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddValueParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string parserName, ValueParserDelegate tryParseDelegate) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -644,7 +644,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -672,7 +672,7 @@ Existing registrations with the same names are overwritten.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>

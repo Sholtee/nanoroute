@@ -47,31 +47,31 @@
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="NanoRoute.RoutingContext.html">RoutingContext</a></div>
-    <div class="level2"><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></div>
+    <div class="level2"><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></div>
     <div class="level3"><span class="xref">RouterBuilder&lt;TRouter, TConfig&gt;</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentExact">RouteBuilder.CurrentExact</a>
+      <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentExact">RouteScopeBuilder.CurrentExact</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">RouteBuilder.CurrentPrefix</a>
+      <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">RouteScopeBuilder.CurrentPrefix</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CreatePrefix_System_String_">RouteBuilder.CreatePrefix(string)</a>
+      <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CreatePrefix_System_String_">RouteScopeBuilder.CreatePrefix(string)</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_ValueParsers">RouteBuilder.ValueParsers</a>
+      <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_ValueParsers">RouteScopeBuilder.ValueParsers</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_BasePattern">RouteBuilder.BasePattern</a>
+      <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_BasePattern">RouteScopeBuilder.BasePattern</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata">RouteBuilder.Metadata</a>
+      <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata">RouteScopeBuilder.Metadata</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Patterns">RouteBuilder.Patterns</a>
+      <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Patterns">RouteScopeBuilder.Patterns</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
@@ -96,7 +96,7 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_RouterBuilder_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class RouterBuilder&lt;TRouter, TConfig&gt; : RouteBuilder where TRouter : Router where TConfig : RouterConfig, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class RouterBuilder&lt;TRouter, TConfig&gt; : RouteScopeBuilder where TRouter : Router where TConfig : RouterConfig, new()</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -205,8 +205,8 @@
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><span class="parametername">pattern</span></td>
         <td><p>The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-registered parsers in the form <code>{parameterName:parserName}</code>, and a trailing <code>/</code> turns the
-pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.</p>
+registered parsers in the form <code>{parameterName:parserName}</code>. Exact patterns must end with
+<code>/</code>, and prefix patterns must end with <code>/*</code>.</p>
 </td>
       </tr>
       <tr>
@@ -235,7 +235,7 @@ the pipeline with the next compatible handler from the already selected route br
     </tbody>
   </table>
   <h5 id="NanoRoute_RouterBuilder_2_AddHandler_System_String_System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
-  <pre><code class="lang-csharp">builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
+  <pre><code class="lang-csharp">builder.AddHandler("GET", "/files/{path:any}/*", (context, next) =&gt;
 {
     string path = (string) context.Parameters["path"]!;
     return ServeFile(path);
@@ -484,7 +484,7 @@ affect routers that have already been created.</p>
       <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__">NanoRouteJsonExtensions.ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRoutePrefixExtensions.html#NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteBuilder__">NanoRoutePrefixExtensions.AddPrefix&lt;TBuilder&gt;(TBuilder, string, Action&lt;RouteBuilder&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRoutePrefixExtensions.html#NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteScopeBuilder__">NanoRoutePrefixExtensions.AddPrefix&lt;TBuilder&gt;(TBuilder, string, Action&lt;RouteScopeBuilder&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</a>

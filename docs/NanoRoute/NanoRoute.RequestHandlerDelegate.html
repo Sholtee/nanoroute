@@ -102,7 +102,7 @@ server error responses, while without such middleware they propagate to the call
 transport layer or hosting code.</p>
 </div>
   <h5 id="NanoRoute_RequestHandlerDelegate_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">routerBuilder.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
+  <pre><code class="lang-csharp">routerBuilder.AddHandler("GET", "/api/users/{user_id:int}/*", (requestContext, callNext) =&gt;
 {
     requestContext.Parameters["User"] = LoadUser((int) requestContext.Parameters["user_id"]!);
     return callNext();

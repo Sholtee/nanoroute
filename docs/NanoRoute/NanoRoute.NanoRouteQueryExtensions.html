@@ -87,7 +87,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string bindings) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -101,7 +101,7 @@
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -129,7 +129,7 @@
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -153,7 +153,7 @@
   <div class="markdown level1 remarks"><p>Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.
-This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the query-binding
+This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the query-binding
 middleware is bound to the whole current builder scope for the selected HTTP methods.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
@@ -179,7 +179,7 @@ middleware is bound to the whole current builder scope for the selected HTTP met
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, string bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, string bindings) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -193,7 +193,7 @@ middleware is bound to the whole current builder scope for the selected HTTP met
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -228,7 +228,7 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -277,7 +277,7 @@ query binding overwrites the existing value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, string bindings, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt; oneOffConfigOverride) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, string bindings, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt; oneOffConfigOverride) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -291,7 +291,7 @@ query binding overwrites the existing value.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -333,7 +333,7 @@ captured by this query-binding middleware only.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -357,7 +357,7 @@ captured by this query-binding middleware only.</p>
   <div class="markdown level1 remarks"><p>Use this overload when one query-binding registration should differ from the builder-scope
 configuration set by <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__">ConfigureQueryParsing&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</a>.
 The returned configuration is captured at registration time and does not update
-<a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata">Metadata</a>.</p>
+<a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata">Metadata</a>.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -382,7 +382,7 @@ The returned configuration is captured at registration time and does not update
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, string bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string bindings) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -396,7 +396,7 @@ The returned configuration is captured at registration time and does not update
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -418,7 +418,7 @@ The returned configuration is captured at registration time and does not update
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -442,7 +442,7 @@ The returned configuration is captured at registration time and does not update
   <div class="markdown level1 remarks"><p>Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.
-This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the query-binding
+This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the query-binding
 middleware is bound to the whole current builder scope for all supported HTTP methods.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
@@ -468,7 +468,7 @@ middleware is bound to the whole current builder scope for all supported HTTP me
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, string pattern, string bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string pattern, string bindings) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -482,7 +482,7 @@ middleware is bound to the whole current builder scope for all supported HTTP me
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -511,7 +511,7 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -559,7 +559,7 @@ query binding overwrites the existing value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeBuilder, string verb, string pattern, string bindings) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, string bindings) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -573,7 +573,7 @@ query binding overwrites the existing value.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -608,7 +608,7 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -656,7 +656,7 @@ query binding overwrites the existing value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder ConfigureQueryParsing&lt;TBuilder&gt;(this TBuilder routeBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt; configure) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder ConfigureQueryParsing&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt; configure) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -670,7 +670,7 @@ query binding overwrites the existing value.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -692,7 +692,7 @@ query binding overwrites the existing value.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -713,7 +713,7 @@ query binding overwrites the existing value.</p>
     </tbody>
   </table>
   <h5 id="NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata">Metadata</a>. Child builders created after this
+  <div class="markdown level1 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata">Metadata</a>. Child builders created after this
 method is called inherit the updated configuration; existing child builders keep their own scoped copy.
 Registered query-binding middleware snapshots the configuration that is current at registration time.</p>
 </div>

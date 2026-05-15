@@ -40,7 +40,7 @@
 
 
   <h1 id="NanoRoute_Router" data-uid="NanoRoute.Router" class="text-break">Class Router</h1>
-  <div class="markdown level0 summary"><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>.</p>
+  <div class="markdown level0 summary"><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -87,13 +87,13 @@ handlers in order until one returns a response without delegating further.</p>
   <h3 id="constructors">Constructors
 </h3>
   <a id="NanoRoute_Router__ctor_" data-uid="NanoRoute.Router.#ctor*"></a>
-  <h4 id="NanoRoute_Router__ctor_NanoRoute_RouteBuilder_NanoRoute_RouterConfig_" data-uid="NanoRoute.Router.#ctor(NanoRoute.RouteBuilder,NanoRoute.RouterConfig)">Router(RouteBuilder, RouterConfig)</h4>
-  <div class="markdown level1 summary"><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>.</p>
+  <h4 id="NanoRoute_Router__ctor_NanoRoute_RouteScopeBuilder_NanoRoute_RouterConfig_" data-uid="NanoRoute.Router.#ctor(NanoRoute.RouteScopeBuilder,NanoRoute.RouterConfig)">Router(RouteScopeBuilder, RouterConfig)</h4>
+  <div class="markdown level1 summary"><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected Router(RouteBuilder routeBuilder, RouterConfig config)</code></pre>
+    <pre><code class="lang-csharp hljs">protected Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -106,8 +106,8 @@ handlers in order until one returns a response without delegating further.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -117,7 +117,7 @@ handlers in order until one returns a response without delegating further.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_Router__ctor_NanoRoute_RouteBuilder_NanoRoute_RouterConfig__remarks">Remarks</h5>
+  <h5 id="NanoRoute_Router__ctor_NanoRoute_RouteScopeBuilder_NanoRoute_RouterConfig__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
 handlers in order until one returns a response without delegating further.</p>
 </div>

@@ -170,7 +170,7 @@ and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#Na
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeScopeBuilder) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -184,7 +184,7 @@ and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#Na
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -200,7 +200,7 @@ and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#Na
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -225,7 +225,7 @@ and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#Na
 with normalized status codes and diagnostic payloads. Existing <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
 values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
 not normalized so caller-driven cancellation can propagate unchanged.
-This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the middleware
+This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the middleware
 is bound to the whole current builder scope for all supported HTTP methods.</p>
 </div>
   <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
@@ -235,7 +235,7 @@ is bound to the whole current builder scope for all supported HTTP methods.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -249,7 +249,7 @@ is bound to the whole current builder scope for all supported HTTP methods.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -271,7 +271,7 @@ is bound to the whole current builder scope for all supported HTTP methods.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -296,7 +296,7 @@ is bound to the whole current builder scope for all supported HTTP methods.</p>
 with normalized status codes and diagnostic payloads. Existing <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>
 values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
 not normalized so caller-driven cancellation can propagate unchanged.
-This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the middleware
+This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the middleware
 is bound to the whole current builder scope for the selected HTTP methods.</p>
 </div>
   <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
@@ -306,7 +306,7 @@ is bound to the whole current builder scope for the selected HTTP methods.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string pattern) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -320,7 +320,7 @@ is bound to the whole current builder scope for the selected HTTP methods.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -349,7 +349,7 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope normalization
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -382,7 +382,7 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, string pattern) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string pattern) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -396,7 +396,7 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -419,7 +419,7 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope normalization
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -452,7 +452,7 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, string verb, string pattern) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddExceptionHandler&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string verb, string pattern) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -466,7 +466,7 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -495,7 +495,7 @@ to the whole pipeline, or a narrower prefix/exact pattern to scope normalization
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -528,7 +528,7 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder ConfigureExceptionHandling&lt;TBuilder&gt;(this TBuilder routeBuilder, ConfigureBuilderDelegate&lt;ExceptionHandlingConfig&gt; configure) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder ConfigureExceptionHandling&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, ConfigureBuilderDelegate&lt;ExceptionHandlingConfig&gt; configure) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -542,7 +542,7 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -564,7 +564,7 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code> instance.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -585,7 +585,7 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
     </tbody>
   </table>
   <h5 id="NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_Metadata">Metadata</a>. Child builders created after this
+  <div class="markdown level1 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata">Metadata</a>. Child builders created after this
 method is called inherit the updated configuration; existing child builders keep their own scoped copy.
 Registered exception handlers snapshot the configuration that is current at registration time.</p>
 </div>

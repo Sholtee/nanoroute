@@ -224,7 +224,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.NanoRoutePrefixExtensions",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRoutePrefixExtensions.yml\" sourcestartlinenumber=\"1\">Adds prefix-routing helpers that configure child route builders under a shared base pattern.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRoutePrefixExtensions.yml\" sourcestartlinenumber=\"1\">Adds prefix-routing helpers that configure child route scopes under a shared base pattern.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -298,17 +298,17 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouteBuilder.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouteScopeBuilder.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.RouteBuilder.html"
+          "relative_path": "NanoRoute.RouteScopeBuilder.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.RouteBuilder",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouteBuilder.yml\" sourcestartlinenumber=\"1\">Builder responsible for route configuration.</p>\n"
+      "Title": "NanoRoute.RouteScopeBuilder",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouteScopeBuilder.yml\" sourcestartlinenumber=\"1\">Builder responsible for configuring a route scope and its child route tree.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -322,7 +322,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.Router",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Router.yml\" sourcestartlinenumber=\"1\">Executes the route matching pipeline built by <xref href=\"NanoRoute.RouteBuilder\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Router.yml\" sourcestartlinenumber=\"1\">Executes the route matching pipeline built by <xref href=\"NanoRoute.RouteScopeBuilder\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
     },
     {
       "type": "ManagedReference",

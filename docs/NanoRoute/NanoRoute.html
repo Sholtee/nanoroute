@@ -77,7 +77,7 @@ unexpected exceptions.</p>
       <section><p>Adds JSON-focused helpers for request body binding, structured error responses, and JSON responses.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.NanoRoutePrefixExtensions.html">NanoRoutePrefixExtensions</a></h4>
-      <section><p>Adds prefix-routing helpers that configure child route builders under a shared base pattern.</p>
+      <section><p>Adds prefix-routing helpers that configure child route scopes under a shared base pattern.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html">NanoRouteQueryExtensions</a></h4>
       <section><p>Adds query-parameter binding helpers to NanoRoute.</p>
@@ -88,11 +88,11 @@ unexpected exceptions.</p>
       <h4><a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a></h4>
       <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</a> parses query strings.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a></h4>
-      <section><p>Builder responsible for route configuration.</p>
+      <h4><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></h4>
+      <section><p>Builder responsible for configuring a route scope and its child route tree.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.Router.html">Router</a></h4>
-      <section><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>.</p>
+      <section><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a>.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a></h4>
       <section><p>Builds a concrete <a class="xref" href="NanoRoute.Router.html">Router</a> type together with its strongly typed configuration object.</p>

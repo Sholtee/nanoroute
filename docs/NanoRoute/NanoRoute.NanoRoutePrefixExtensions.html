@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width">
       <meta name="title" content="Class NanoRoutePrefixExtensions | NanoRoute ">
     
-    <meta name="description" content="Adds prefix-routing helpers that configure child route builders under a shared base pattern.">
+    <meta name="description" content="Adds prefix-routing helpers that configure child route scopes under a shared base pattern.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -40,7 +40,7 @@
 
 
   <h1 id="NanoRoute_NanoRoutePrefixExtensions" data-uid="NanoRoute.NanoRoutePrefixExtensions" class="text-break">Class NanoRoutePrefixExtensions</h1>
-  <div class="markdown level0 summary"><p>Adds prefix-routing helpers that configure child route builders under a shared base pattern.</p>
+  <div class="markdown level0 summary"><p>Adds prefix-routing helpers that configure child route scopes under a shared base pattern.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -80,20 +80,20 @@
   </div>
   <h5 id="NanoRoute_NanoRoutePrefixExtensions_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>
-Prefix builders inherit the value parsers and metadata visible when the child builder is created. Later
+Prefix scopes inherit the value parsers and metadata visible when the child scope is created. Later
 changes made inside the prefix scope stay local to that child branch.
 </p>
 </div>
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_NanoRoutePrefixExtensions_AddPrefix_" data-uid="NanoRoute.NanoRoutePrefixExtensions.AddPrefix*"></a>
-  <h4 id="NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteBuilder__" data-uid="NanoRoute.NanoRoutePrefixExtensions.AddPrefix``1(``0,System.String,System.Action{NanoRoute.RouteBuilder})">AddPrefix&lt;TBuilder&gt;(TBuilder, string, Action&lt;RouteBuilder&gt;)</h4>
-  <div class="markdown level1 summary"><p>Creates a child builder for the given prefix, invokes a configuration callback, and returns the current builder.</p>
+  <h4 id="NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteScopeBuilder__" data-uid="NanoRoute.NanoRoutePrefixExtensions.AddPrefix``1(``0,System.String,System.Action{NanoRoute.RouteScopeBuilder})">AddPrefix&lt;TBuilder&gt;(TBuilder, string, Action&lt;RouteScopeBuilder&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a child route scope for the given prefix, invokes a configuration callback, and returns the current builder.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddPrefix&lt;TBuilder&gt;(this TBuilder routeBuilder, string pattern, Action&lt;RouteBuilder&gt; configureRoutes) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddPrefix&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string pattern, Action&lt;RouteScopeBuilder&gt; configureRoutes) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -107,19 +107,19 @@ changes made inside the prefix scope stay local to that child branch.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><span class="parametername">pattern</span></td>
-        <td><p>The base prefix. It must be a valid route pattern ending in <code>/</code> so child routes can be appended to it.</p>
+        <td><p>The base prefix. It must be a valid route pattern ending in <code>/*</code> so child routes can be appended to it.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.RouteBuilder.html">RouteBuilder</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a>&gt;</td>
         <td><span class="parametername">configureRoutes</span></td>
-        <td><p>A callback that configures routes on the child builder.</p>
+        <td><p>A callback that configures routes on the child route scope.</p>
 </td>
       </tr>
     </tbody>
@@ -155,10 +155,10 @@ changes made inside the prefix scope stay local to that child branch.
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteBuilder___examples">Examples</h5>
-  <pre><code class="lang-csharp">builder.AddPrefix("/api/", api =&gt; api
-    .AddHandler("GET", "/health", (context, _) =&gt; Results.Ok())
-    .AddHandler("GET", "/users", (context, _) =&gt; Results.Ok()));</code></pre>
+  <h5 id="NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteScopeBuilder___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddPrefix("/api/*", api =&gt; api
+    .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+    .AddHandler("GET", "/users/", (context, _) =&gt; Results.Ok()));</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -171,7 +171,7 @@ changes made inside the prefix scope stay local to that child branch.
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>Thrown when <code class="paramref">pattern</code> does not end with <code>/</code>.</p>
+        <td><p>Thrown when <code class="paramref">pattern</code> does not end with <code>/*</code>.</p>
 </td>
       </tr>
       <tr>

@@ -42,7 +42,7 @@
 <p>The API documentation for this package is generated from the XML comments in the source. The links below are the intended published locations for the generated pages.</p>
 <h2 id="core-types">Core Types</h2>
 <ul>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html">RouteBuilder</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html">BuilderMetadata</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate`1</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html">ExceptionHandlingConfig</a></li>
@@ -63,12 +63,12 @@
 </ul>
 <h2 id="highlights">Highlights</h2>
 <ul>
-<li>Routes can be exact matches or prefix matches depending on whether the pattern ends with <code>/</code>.</li>
-<li>Route patterns must start with <code>/</code>, and repeated <code>/</code> separators such as <code>//</code> are invalid.</li>
+<li>Exact route patterns must start and end with <code>/</code>; prefix route patterns must start with <code>/</code> and end with <code>/*</code>.</li>
+<li>Repeated <code>/</code> separators such as <code>//</code> are invalid.</li>
 <li>Value parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as <code>{id:int(min=1)}</code> once during registration.</li>
 <li>Parser-backed segments support optional parameter names. <code>{id:int}</code> stores the parsed value in <code>RequestContext.Parameters</code>, while <code>{int}</code> only validates the segment.</li>
 <li><code>AddPrefix()</code> and <code>CreatePrefix()</code> create scoped route subtrees without forcing you to repeat common prefixes.</li>
-<li><code>RouteBuilder.Metadata</code> stores type-keyed extension settings and follows the same scoped inheritance model as prefix builders. It is public for extension authors and is not the normal application configuration surface.</li>
+<li><code>RouteScopeBuilder.Metadata</code> stores type-keyed extension settings and follows the same scoped inheritance model as prefix scopes. It is public for extension authors and is not the normal application configuration surface.</li>
 <li><code>RouterConfig</code> is immutable and can be replaced with <code>ConfigureRouting(config =&gt; config with { ... })</code> before creating a router snapshot.</li>
 <li><code>MatchingPrecedence</code> lets you choose whether literal or parameterized child segments are selected first.</li>
 <li><code>ParametersCapacity</code> sets the initial capacity of the per-request <code>RequestContext.Parameters</code> dictionary.</li>
@@ -79,7 +79,7 @@
 <li><code>ConfigureJsonErrorDetails()</code> stores scoped JSON <code>ErrorDetails</code> response settings used by subsequently registered <code>AddJsonErrorDetails()</code> middleware.</li>
 <li>Handler convenience overloads such as pattern-only registration, multi-verb registration, and <code>AddHandler&lt;TRequestContext&gt;()</code> are extension methods in the <code>NanoRoute</code> namespace.</li>
 <li><code>AddHandler&lt;TRequestContext&gt;()</code> can project route parameters, query bindings, services, keyed services, <code>RequestContext</code>, and <code>CancellationToken</code> into typed request objects.</li>
-<li><code>ValueSourceAttribute</code> customizes typed-handler property binding with <code>Context</code>, <code>ServiceLocator</code>, and <code>Skip</code> sources.</li>
+<li><code>ValueSourceAttribute</code> customizes typed-handler property binding with <code>Parameter</code>, <code>ServiceLocator</code>, and <code>Skip</code> sources.</li>
 </ul>
 <h2 id="value-parser-syntax">Value Parser Syntax</h2>
 <ul>

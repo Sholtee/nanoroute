@@ -88,8 +88,8 @@ Properties of type <a class="xref" href="NanoRoute.RequestContext.html">RequestC
 automatically from the current request.
 </p>
 <p>
-Use <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a> to bind a property from a specific context key or service.
-Missing required context values and services throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a>.
+Use <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a> to bind a property from a specific parameter key or service.
+Missing required parameter values and services throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a>.
 </p>
 </div>
   <h3 id="methods">Methods
@@ -101,7 +101,7 @@ Missing required context values and services throw <a class="xref" href="https:/
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, RequestHandlerDelegate handler) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, RequestHandlerDelegate handler) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -115,7 +115,7 @@ Missing required context values and services throw <a class="xref" href="https:/
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -164,7 +164,7 @@ Missing required context values and services throw <a class="xref" href="https:/
     </tbody>
   </table>
   <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_Collections_Generic_IEnumerable_System_String__NanoRoute_RequestHandlerDelegate__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This overload uses <a class="xref" href="NanoRoute.RouteBuilder.html#NanoRoute_RouteBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the handler is
+  <div class="markdown level1 remarks"><p>This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the handler is
 bound to the whole current builder scope. If the handler calls <code>next</code>, routing continues with
 the next compatible handler on the selected branch.</p>
 </div>
@@ -178,7 +178,7 @@ the next compatible handler on the selected branch.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, RequestHandlerDelegate handler) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, RequestHandlerDelegate handler) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -192,7 +192,7 @@ the next compatible handler on the selected branch.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -205,9 +205,8 @@ the next compatible handler on the selected branch.</p>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><span class="parametername">pattern</span></td>
         <td><p>The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-registered parsers in the form <code>{parameterName:parserName}</code>, and a trailing <code>/</code> turns the
-pattern into a prefix match. Patterns must start with <code>/</code>, repeated <code>/</code> separators are
-invalid, and patterns without a trailing slash match only the exact path.</p>
+registered parsers in the form <code>{parameterName:parserName}</code>. Exact patterns must end with
+<code>/</code>, prefix patterns must end with <code>/*</code>, and repeated <code>/</code> separators are invalid.</p>
 </td>
       </tr>
       <tr>
@@ -252,7 +251,7 @@ invalid, and patterns without a trailing slash match only the exact path.</p>
   <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
   <pre><code class="lang-csharp">builder.AddHandler(
     ["GET", "POST"],
-    "/api/items/{id:int}",
+    "/api/items/{id:int}/",
     (context, next) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
 
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
@@ -262,7 +261,7 @@ invalid, and patterns without a trailing slash match only the exact path.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder&gt;(this TBuilder routeBuilder, string pattern, RequestHandlerDelegate handler) where TBuilder : notnull, RouteBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string pattern, RequestHandlerDelegate handler) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -276,16 +275,15 @@ invalid, and patterns without a trailing slash match only the exact path.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><span class="parametername">pattern</span></td>
         <td><p>The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-registered parsers in the form <code>{parameterName:parserName}</code>, and a trailing <code>/</code> turns the
-pattern into a prefix match. Patterns must start with <code>/</code>, repeated <code>/</code> separators are
-invalid, and patterns without a trailing slash match only the exact path.</p>
+registered parsers in the form <code>{parameterName:parserName}</code>. Exact patterns must end with
+<code>/</code>, prefix patterns must end with <code>/*</code>, and repeated <code>/</code> separators are invalid.</p>
 </td>
       </tr>
       <tr>
@@ -328,7 +326,7 @@ invalid, and patterns without a trailing slash match only the exact path.</p>
     </tbody>
   </table>
   <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
-  <pre><code class="lang-csharp">builder.AddHandler("/health", (context, next) =&gt; Results.Ok());</code></pre>
+  <pre><code class="lang-csharp">builder.AddHandler("/health/", (context, next) =&gt; Results.Ok());</code></pre>
 
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
   <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
@@ -337,7 +335,7 @@ invalid, and patterns without a trailing slash match only the exact path.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -351,7 +349,7 @@ invalid, and patterns without a trailing slash match only the exact path.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -385,7 +383,7 @@ invalid, and patterns without a trailing slash match only the exact path.</p>
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
 </td>
       </tr>
     </tbody>
@@ -430,7 +428,7 @@ or from the request service provider.
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -444,7 +442,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -478,7 +476,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
 </td>
       </tr>
     </tbody>
@@ -523,7 +521,7 @@ or from the request service provider.
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -537,7 +535,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -565,7 +563,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
 </td>
       </tr>
     </tbody>
@@ -610,7 +608,7 @@ or from the request service provider.
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -624,7 +622,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -652,7 +650,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
 </td>
       </tr>
     </tbody>
@@ -697,7 +695,7 @@ or from the request service provider.
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, string verb, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -711,7 +709,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -745,7 +743,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
 </td>
       </tr>
     </tbody>
@@ -790,7 +788,7 @@ or from the request service provider.
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeBuilder, string verb, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -804,7 +802,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -838,7 +836,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeBuilder</code>.</p>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
 </td>
       </tr>
     </tbody>
