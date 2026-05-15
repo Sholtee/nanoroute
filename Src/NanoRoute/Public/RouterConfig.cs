@@ -15,6 +15,7 @@ namespace NanoRoute
         /// <summary>
         /// Gets or sets how NanoRoute prioritizes literal and parameterized child segments at the same depth.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is not a defined <see cref="MatchingPrecedence"/> value.</exception>
         public MatchingPrecedence MatchingPrecedence
         {
             get;
@@ -34,6 +35,7 @@ namespace NanoRoute
         /// Increase this value when typical requests add many route, query, or handler-shared values to
         /// <see cref="RequestContext.Parameters"/> and you want to reduce dictionary resizing.
         /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is negative.</exception>
         public int ParametersCapacity
         {
             get;

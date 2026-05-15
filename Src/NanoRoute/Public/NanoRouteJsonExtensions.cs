@@ -46,6 +46,7 @@ namespace NanoRoute
         /// Replace this value to use custom source-generated metadata, property naming, converters, or other
         /// serializer behavior for the error payload.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when the assigned value is <see langword="null"/>.</exception>
         public JsonTypeInfo<ErrorDetails> ErrorDetailsTypeInfo
         {
             get;
@@ -149,6 +150,18 @@ namespace NanoRoute
             ///     });
             /// </code>
             /// </example>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>,
+            /// <paramref name="pattern"/>, <paramref name="typeInfo"/>, or <paramref name="paramName"/> is
+            /// <see langword="null"/>.
+            /// </exception>
+            /// <exception cref="ArgumentException">
+            /// Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has
+            /// invalid route-template syntax.
+            /// </exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
+            /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public TBuilder AddJsonBody(IEnumerable<string> verbs, string pattern, JsonTypeInfo typeInfo, string paramName) =>
                 routeScopeBuilder.AddHandler(verbs, pattern, CreateHandler(typeInfo, paramName));
 
@@ -163,6 +176,15 @@ namespace NanoRoute
             /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>,
+            /// <paramref name="pattern"/>, <paramref name="typeInfo"/>, or <paramref name="paramName"/> is
+            /// <see langword="null"/>.
+            /// </exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
+            /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public TBuilder AddJsonBody(string verb, string pattern, JsonTypeInfo typeInfo, string paramName) =>
                 routeScopeBuilder.AddJsonBody([verb /*will be null checked*/], pattern, typeInfo, paramName);
 
@@ -177,6 +199,10 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the JSON-binding
             /// middleware is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="typeInfo"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not a supported HTTP method.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
+            /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public TBuilder AddJsonBody(IEnumerable<string> verbs, JsonTypeInfo typeInfo, string paramName) =>
                 routeScopeBuilder.AddJsonBody(verbs, RouteScopeBuilder.CurrentPrefix, typeInfo, paramName);
 
@@ -190,6 +216,11 @@ namespace NanoRoute
             /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, <paramref name="typeInfo"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
+            /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public TBuilder AddJsonBody(string pattern, JsonTypeInfo typeInfo, string paramName) =>
                 routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, pattern, typeInfo, paramName);
 
@@ -203,6 +234,9 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the JSON-binding
             /// middleware is bound to the whole current builder scope for <c>POST</c>, <c>PUT</c>, and <c>PATCH</c>.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="typeInfo"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
+            /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName) =>
                 routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, RouteScopeBuilder.CurrentPrefix, typeInfo, paramName);
 
@@ -217,6 +251,7 @@ namespace NanoRoute
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is <see langword="null"/>.</exception>
             public TBuilder AddJsonBody(IEnumerable<string> verbs, string pattern, Type type, string paramName)
             {
                 Ensure.NotNull(type);
@@ -241,6 +276,7 @@ namespace NanoRoute
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is <see langword="null"/>.</exception>
             public TBuilder AddJsonBody(string verb, string pattern, Type type, string paramName) =>
                 routeScopeBuilder.AddJsonBody([verb /*will be null checked*/], pattern, type, paramName);
 
@@ -255,6 +291,7 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the JSON-binding
             /// middleware is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is <see langword="null"/>.</exception>
             public TBuilder AddJsonBody(IEnumerable<string> verbs, Type type, string paramName) =>
                 routeScopeBuilder.AddJsonBody(verbs, RouteScopeBuilder.CurrentPrefix, type, paramName);
 
@@ -268,6 +305,7 @@ namespace NanoRoute
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is <see langword="null"/>.</exception>
             public TBuilder AddJsonBody(string pattern, Type type, string paramName) =>
                 routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, pattern, type, paramName);
 
@@ -281,6 +319,7 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the JSON-binding
             /// middleware is bound to the whole current builder scope for <c>POST</c>, <c>PUT</c>, and <c>PATCH</c>.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is <see langword="null"/>.</exception>
             public TBuilder AddJsonBody(Type type, string paramName) =>
                 routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, RouteScopeBuilder.CurrentPrefix, type, paramName);
 
@@ -296,6 +335,10 @@ namespace NanoRoute
             /// method is called inherit the updated configuration; existing child builders keep their own scoped copy.
             /// Registered JSON error-detail middleware snapshots the configuration that is current at registration time.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="configure"/>, or the value returned
+            /// by <paramref name="configure"/> is <see langword="null"/>.
+            /// </exception>
             public TBuilder ConfigureJsonErrorDetails(ConfigureBuilderDelegate<JsonErrorDetailsConfig> configure)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -317,6 +360,7 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the error-detail
             /// middleware is bound to the whole current builder scope for all supported HTTP methods.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
             public TBuilder AddJsonErrorDetails() =>
                 routeScopeBuilder.AddJsonErrorDetails(RouteScopeBuilder.CurrentPrefix);
 
@@ -328,6 +372,9 @@ namespace NanoRoute
             /// the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.
             /// </param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> or <paramref name="pattern"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
             public TBuilder AddJsonErrorDetails(string pattern) =>
                 routeScopeBuilder.AddJsonErrorDetails(HttpVerb.Names, pattern);
 
@@ -340,6 +387,9 @@ namespace NanoRoute
             /// the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.
             /// </param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, or <paramref name="pattern"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
             public TBuilder AddJsonErrorDetails(string verb, string pattern) =>
                 routeScopeBuilder.AddJsonErrorDetails([verb /*will be null checked*/], pattern);
 
@@ -352,6 +402,8 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the error-detail
             /// middleware is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> or <paramref name="verbs"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not a supported HTTP method.</exception>
             public TBuilder AddJsonErrorDetails(IEnumerable<string> verbs) =>
                 routeScopeBuilder.AddJsonErrorDetails(verbs, RouteScopeBuilder.CurrentPrefix);
 
@@ -381,6 +433,9 @@ namespace NanoRoute
             ///         throw new InvalidOperationException("Unexpected state"));
             /// </code>
             /// </example>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, or <paramref name="pattern"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
             public TBuilder AddJsonErrorDetails(IEnumerable<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -429,6 +484,10 @@ namespace NanoRoute
             /// kind. The deserialized body is written into <see cref="RequestContext.Parameters"/>, and an existing
             /// value with the same key is overwritten.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/>, <paramref name="typeInfo"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
+            /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public EndPointBuilder WithJsonBody(JsonTypeInfo typeInfo, string paramName)
             {
                 Ensure.NotNull(endPointBuilder);
@@ -445,6 +504,10 @@ namespace NanoRoute
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/>, <paramref name="type"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
+            /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public EndPointBuilder WithJsonBody(Type type, string paramName)
             {
                 Ensure.NotNull(type);
@@ -462,6 +525,10 @@ namespace NanoRoute
             /// <typeparam name="T">The CLR type expected in the request body.</typeparam>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/> or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
+            /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public EndPointBuilder WithJsonBody<T>(string paramName) => endPointBuilder.WithJsonBody(typeof(T), paramName);
         }
 
@@ -474,6 +541,9 @@ namespace NanoRoute
             /// <param name="body">The value to serialize.</param>
             /// <param name="typeInfo">The metadata used to serialize <paramref name="body"/>.</param>
             /// <returns>A new <see cref="HttpResponseMessage"/> with JSON content.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when the supplied JSON metadata is not compatible with <paramref name="body"/>.</exception>
+            /// <exception cref="NotSupportedException">Thrown when the value cannot be serialized with the supplied JSON metadata.</exception>
             public static HttpResponseMessage Json(HttpStatusCode statusCode, object? body, JsonTypeInfo typeInfo)
             {
                 Ensure.NotNull(typeInfo);
@@ -496,6 +566,9 @@ namespace NanoRoute
             /// <param name="body">The value to serialize.</param>
             /// <param name="typeInfo">The metadata used to serialize <paramref name="body"/>.</param>
             /// <returns>A new <see cref="HttpResponseMessage"/> with JSON content.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when the supplied JSON metadata is not compatible with <paramref name="body"/>.</exception>
+            /// <exception cref="NotSupportedException">Thrown when the value cannot be serialized with the supplied JSON metadata.</exception>
             public static HttpResponseMessage Json<T>(HttpStatusCode statusCode, T? body, JsonTypeInfo<T> typeInfo)
             {
                 Ensure.NotNull(typeInfo);
@@ -511,6 +584,9 @@ namespace NanoRoute
             /// <param name="body">The value to serialize.</param>
             /// <param name="options">The serializer options used to resolve metadata and serialization behavior.</param>
             /// <returns>A new <see cref="HttpResponseMessage"/> with JSON content.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is <see langword="null"/>.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when JSON metadata cannot be resolved or is not compatible with <paramref name="body"/>.</exception>
+            /// <exception cref="NotSupportedException">Thrown when the value cannot be serialized with the resolved JSON metadata.</exception>
             public static HttpResponseMessage Json<T>(HttpStatusCode statusCode, T? body, JsonSerializerOptions options)
             {
                 Ensure.NotNull(options);

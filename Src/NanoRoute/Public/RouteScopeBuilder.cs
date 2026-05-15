@@ -131,6 +131,10 @@ namespace NanoRoute
         /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
         /// <returns>The current instance.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="parserName"/>, <paramref name="bindArguments"/>, or
+        /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
+        /// </exception>
         public RouteScopeBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
         {
             Ensure.NotNull(parserName);
@@ -156,11 +160,17 @@ namespace NanoRoute
         /// the pipeline with the next compatible handler from the already selected route branch.
         /// </param>
         /// <returns>The current route scope builder instance.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is
+        /// <see langword="null"/>.
+        /// </exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>
         /// <exception cref="InvalidOperationException">
-        /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
-        /// registered yet.
+        /// Thrown when <paramref name="pattern"/> uses an unsupported optional parameter or list parser, references
+        /// a value parser that has not been registered yet, or reuses a parser-backed branch with a different
+        /// parameter name.
         /// </exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
         /// <example>
         /// <code>
         /// builder.AddHandler("GET", "/files/{path:any}/*", (context, next) =&gt;
@@ -210,10 +220,13 @@ namespace NanoRoute
         /// registrations or overrides made on the child scope stay local to that branch.
         /// </remarks>
         /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/*</c>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="pattern"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException">
-        /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
-        /// registered yet.
+        /// Thrown when <paramref name="pattern"/> uses an unsupported optional parameter or list parser, references
+        /// a value parser that has not been registered yet, or reuses a parser-backed branch with a different
+        /// parameter name.
         /// </exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
         /// <example>
         /// <code>
         /// RouteScopeBuilder api = builder.CreatePrefix("/api/*");

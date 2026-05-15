@@ -48,6 +48,9 @@ namespace NanoRoute
         /// Once a branch is selected at a given depth, NanoRoute does not return to sibling branches later in the pipeline.
         /// </remarks>
         /// <exception cref="HttpRequestException">Thrown when no handler matches the request path.</exception>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="request"/> or <paramref name="services"/> is <see langword="null"/>.
+        /// </exception>
         /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
         /// <exception cref="OperationCanceledException">
         /// Thrown when the caller cancels the <paramref name="cancellation"/>.

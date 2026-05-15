@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Frozen;
+using System.Net.Http;
 
 namespace NanoRoute
 {
@@ -47,6 +48,7 @@ namespace NanoRoute
         /// The default is <see cref="UnexpectedParameterBehavior.Ignore"/>, so additional query-string keys that are
         /// not present in the binding descriptor do not affect request processing.
         /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is not a defined <see cref="UnexpectedParameterBehavior"/> value.</exception>
         public UnexpectedParameterBehavior UnexpectedParameterBehavior
         {
             get;
@@ -83,6 +85,10 @@ namespace NanoRoute
             /// method is called inherit the updated configuration; existing child builders keep their own scoped copy.
             /// Registered query-binding middleware snapshots the configuration that is current at registration time.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="configure"/>, or the value returned
+            /// by <paramref name="configure"/> is <see langword="null"/>.
+            /// </exception>
             public TBuilder ConfigureQueryParsing(ConfigureBuilderDelegate<QueryParsingConfig> configure)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -113,6 +119,9 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
             public TBuilder AddQueryBindings(string bindings) => routeScopeBuilder.AddQueryBindings(HttpVerb.Names, RouteScopeBuilder.CurrentPrefix, bindings);
 
             /// <summary>
@@ -133,6 +142,9 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
             public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings) => routeScopeBuilder.AddQueryBindings(verbs, RouteScopeBuilder.CurrentPrefix, bindings);
 
             /// <summary>
@@ -154,6 +166,9 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
             public TBuilder AddQueryBindings(string pattern, string bindings) => routeScopeBuilder.AddQueryBindings(HttpVerb.Names, pattern, bindings);
 
             /// <summary>
@@ -176,6 +191,9 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported, <paramref name="pattern"/> has invalid route-template syntax, or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
             public TBuilder AddQueryBindings(string verb, string pattern, string bindings) => routeScopeBuilder.AddQueryBindings([verb /*will be null checked*/], pattern, bindings);
 
             /// <summary>
@@ -198,6 +216,9 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported, <paramref name="pattern"/> has invalid route-template syntax, or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
             public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings) => routeScopeBuilder.AddQueryBindings(verbs, pattern, bindings, static config => config);
 
             /// <summary>
@@ -226,6 +247,16 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>,
+            /// <paramref name="pattern"/>, <paramref name="bindings"/>, <paramref name="oneOffConfigOverride"/>,
+            /// or the value returned by <paramref name="oneOffConfigOverride"/> is <see langword="null"/>.
+            /// </exception>
+            /// <exception cref="ArgumentException">
+            /// Thrown when an entry in <paramref name="verbs"/> is not supported, <paramref name="pattern"/> has
+            /// invalid route-template syntax, or <paramref name="bindings"/> has invalid query-binding syntax.
+            /// </exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
             public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings, ConfigureBuilderDelegate<QueryParsingConfig> oneOffConfigOverride)
             {
                 Ensure.NotNull(routeScopeBuilder);

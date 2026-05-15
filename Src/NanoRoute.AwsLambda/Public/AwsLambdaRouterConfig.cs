@@ -15,6 +15,7 @@ namespace NanoRoute.AwsLambda
         /// <summary>
         /// Gets or sets the amount of time reserved before the Lambda invocation timeout is reached.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is negative.</exception>
         public TimeSpan LambdaTimeoutBuffer
         {
             get;

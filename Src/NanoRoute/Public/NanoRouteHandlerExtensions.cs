@@ -63,6 +63,7 @@ namespace NanoRoute
         /// this is treated as the keyed service name. <see cref="ValueSource.Skip"/> does not allow
         /// a name because no value is read.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">Thrown when a name is assigned while <see cref="Source"/> is <see cref="ValueSource.Skip"/>.</exception>
         public string? Name
         {
             get;
@@ -236,6 +237,9 @@ namespace NanoRoute
             /// or from the request service provider.
             /// </para>
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
                 routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
 
@@ -262,6 +266,9 @@ namespace NanoRoute
             /// or from the request service provider.
             /// </para>
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
                 routeScopeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
 
@@ -288,6 +295,9 @@ namespace NanoRoute
             /// or from the request service provider.
             /// </para>
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
@@ -316,6 +326,9 @@ namespace NanoRoute
             /// or from the request service provider.
             /// </para>
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
                 routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
 
@@ -342,6 +355,9 @@ namespace NanoRoute
             /// or from the request service provider.
             /// </para>
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
                 routeScopeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
 
@@ -368,6 +384,9 @@ namespace NanoRoute
             /// or from the request service provider.
             /// </para>
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
                 AddTypedHandlerCore(routeScopeBuilder, verbs, pattern, handler);
 
@@ -386,6 +405,9 @@ namespace NanoRoute
             /// builder.AddHandler("/health/", (context, next) =&gt; Results.Ok());
             /// </code>
             /// </example>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
             public TBuilder AddHandler(string pattern, RequestHandlerDelegate handler) => routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
 
             /// <summary>
@@ -407,6 +429,9 @@ namespace NanoRoute
             ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
             /// </code>
             /// </example>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
             public TBuilder AddHandler(IEnumerable<string> verbs, string pattern, RequestHandlerDelegate handler)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -434,6 +459,8 @@ namespace NanoRoute
             /// builder.AddHandler(["GET", "POST"], (context, next) =&gt; next());
             /// </code>
             /// </example>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not a supported HTTP method.</exception>
             public TBuilder AddHandler(IEnumerable<string> verbs, RequestHandlerDelegate handler) => routeScopeBuilder.AddHandler(verbs, RouteScopeBuilder.CurrentPrefix, handler);
         }
     }

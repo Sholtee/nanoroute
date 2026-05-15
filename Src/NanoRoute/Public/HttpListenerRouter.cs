@@ -100,6 +100,14 @@ namespace NanoRoute
         /// <param name="services">The service provider exposed to handlers through <see cref="RequestContext.Services"/>.</param>
         /// <param name="cancellation">A token that can cancel request processing and response streaming.</param>
         /// <returns>A task that completes after the router has finished writing the response.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="context"/> or <paramref name="services"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
+        /// <exception cref="HttpRequestException">
+        /// Thrown when no handler matches the request path or a matched handler signals an HTTP failure that is not
+        /// translated by middleware.
+        /// </exception>
         /// <exception cref="OperationCanceledException">
         /// Thrown when the caller cancels <paramref name="cancellation"/>. The listener response is aborted before the
         /// exception is rethrown.

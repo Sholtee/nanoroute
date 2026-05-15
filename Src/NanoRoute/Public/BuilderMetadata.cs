@@ -44,6 +44,7 @@ namespace NanoRoute
         /// <typeparam name="T">The metadata value type.</typeparam>
         /// <param name="defaultValue">The value to return when the metadata entry is absent.</param>
         /// <returns>The registered metadata value, or <paramref name="defaultValue"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="defaultValue"/> is <see langword="null"/>.</exception>
         public T GetOrDefault<T>(T defaultValue) where T : notnull
         {
             Ensure.NotNull(defaultValue);
@@ -65,6 +66,7 @@ namespace NanoRoute
         /// </summary>
         /// <typeparam name="T">The metadata value type.</typeparam>
         /// <param name="value">The metadata value.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <see langword="null"/>.</exception>
         public void Set<T>(T value) where T : notnull
         {
             Ensure.NotNull(value);

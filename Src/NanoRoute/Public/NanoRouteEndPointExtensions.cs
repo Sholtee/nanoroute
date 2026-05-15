@@ -61,6 +61,8 @@ namespace NanoRoute
         /// routing continues with the next compatible handler registered for the same endpoint branch.
         /// </param>
         /// <returns>The current <see cref="EndPointBuilder"/> instance.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
         public EndPointBuilder WithHandler(RequestHandlerDelegate handler)
         {
             Ensure.NotNull(handler);
@@ -96,6 +98,18 @@ namespace NanoRoute
             /// with <c>/*</c>.
             /// </param>
             /// <returns>An endpoint builder rooted at <paramref name="pattern"/>.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, or
+            /// <paramref name="pattern"/> is <see langword="null"/>.
+            /// </exception>
+            /// <exception cref="ArgumentException">
+            /// Thrown when <paramref name="pattern"/> is not an exact or prefix route pattern, has invalid
+            /// route-template syntax, or an entry in <paramref name="verbs"/> is not a supported HTTP method.
+            /// </exception>
+            /// <exception cref="InvalidOperationException">
+            /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
+            /// missing value parser, or conflicts with an existing parser-backed branch.
+            /// </exception>
             public EndPointBuilder CreateEndPoint(IEnumerable<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -114,6 +128,18 @@ namespace NanoRoute
             /// with <c>/*</c>.
             /// </param>
             /// <returns>An endpoint builder rooted at <paramref name="pattern"/>.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, or
+            /// <paramref name="pattern"/> is <see langword="null"/>.
+            /// </exception>
+            /// <exception cref="ArgumentException">
+            /// Thrown when <paramref name="pattern"/> is not an exact or prefix route pattern, has invalid
+            /// route-template syntax, or <paramref name="verb"/> is not a supported HTTP method.
+            /// </exception>
+            /// <exception cref="InvalidOperationException">
+            /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
+            /// missing value parser, or conflicts with an existing parser-backed branch.
+            /// </exception>
             public EndPointBuilder CreateEndPoint(string verb, string pattern)
             {
                 Ensure.NotNull(verb);
@@ -131,6 +157,18 @@ namespace NanoRoute
             /// </param>
             /// <param name="configureEndPoint">A callback that registers endpoint-local handlers and middleware.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>,
+            /// <paramref name="pattern"/>, or <paramref name="configureEndPoint"/> is <see langword="null"/>.
+            /// </exception>
+            /// <exception cref="ArgumentException">
+            /// Thrown when <paramref name="pattern"/> is not an exact or prefix route pattern, has invalid
+            /// route-template syntax, or an entry in <paramref name="verbs"/> is not a supported HTTP method.
+            /// </exception>
+            /// <exception cref="InvalidOperationException">
+            /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
+            /// missing value parser, or conflicts with an existing parser-backed branch.
+            /// </exception>
             public TBuilder AddEndPoint(IEnumerable<string> verbs, string pattern, Action<EndPointBuilder> configureEndPoint)
             {
                 Ensure.NotNull(configureEndPoint);
@@ -153,6 +191,18 @@ namespace NanoRoute
             /// </param>
             /// <param name="configureEndPoint">A callback that registers endpoint-local handlers and middleware.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>,
+            /// <paramref name="pattern"/>, or <paramref name="configureEndPoint"/> is <see langword="null"/>.
+            /// </exception>
+            /// <exception cref="ArgumentException">
+            /// Thrown when <paramref name="pattern"/> is not an exact or prefix route pattern, has invalid
+            /// route-template syntax, or <paramref name="verb"/> is not a supported HTTP method.
+            /// </exception>
+            /// <exception cref="InvalidOperationException">
+            /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
+            /// missing value parser, or conflicts with an existing parser-backed branch.
+            /// </exception>
             public TBuilder AddEndPoint(string verb, string pattern, Action<EndPointBuilder> configureEndPoint)
             {
                 Ensure.NotNull(verb);

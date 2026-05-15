@@ -34,6 +34,7 @@ namespace NanoRoute
         /// looks up the exception's exact runtime type in this dictionary. If no normalizer is registered, the
         /// exception is converted to a generic internal-server-error <see cref="HttpRequestException"/>.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when the assigned value is <see langword="null"/>.</exception>
         public ImmutableDictionary<Type, ExceptionNormalizer> ExceptionNormalizers
         {
             get;
@@ -94,6 +95,10 @@ namespace NanoRoute
             /// method is called inherit the updated configuration; existing child builders keep their own scoped copy.
             /// Registered exception handlers snapshot the configuration that is current at registration time.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="configure"/>, or the value returned
+            /// by <paramref name="configure"/> is <see langword="null"/>.
+            /// </exception>
             public TBuilder ConfigureExceptionHandling(ConfigureBuilderDelegate<ExceptionHandlingConfig> configure)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -119,6 +124,7 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the middleware
             /// is bound to the whole current builder scope for all supported HTTP methods.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
             public TBuilder AddExceptionHandler() => routeScopeBuilder.AddExceptionHandler(RouteScopeBuilder.CurrentPrefix);
 
             /// <summary>
@@ -135,6 +141,9 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> or <paramref name="pattern"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
             public TBuilder AddExceptionHandler(string pattern) => routeScopeBuilder.AddExceptionHandler(HttpVerb.Names, pattern);
 
             /// <summary>
@@ -152,6 +161,9 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, or <paramref name="pattern"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
             public TBuilder AddExceptionHandler(string verb, string pattern) => routeScopeBuilder.AddExceptionHandler([verb /*will be null checked*/], pattern);
 
             /// <summary>
@@ -167,6 +179,8 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the middleware
             /// is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> or <paramref name="verbs"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not a supported HTTP method.</exception>
             public TBuilder AddExceptionHandler(IEnumerable<string> verbs) => routeScopeBuilder.AddExceptionHandler(verbs, RouteScopeBuilder.CurrentPrefix);
 
             /// <summary>
@@ -184,6 +198,9 @@ namespace NanoRoute
             /// values are allowed to flow through unchanged. <see cref="OperationCanceledException"/> is intentionally
             /// not normalized so caller-driven cancellation can propagate unchanged.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, or <paramref name="pattern"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
             public TBuilder AddExceptionHandler(IEnumerable<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -251,6 +268,7 @@ namespace NanoRoute
             /// <param name="status">The HTTP status code that should be associated with the exception.</param>
             /// <param name="title">The human-readable error title.</param>
             /// <param name="errors">Optional client-facing error messages that should not contain sensitive data.</param>
+            /// <exception cref="HttpRequestException">Always thrown with the supplied status and error metadata.</exception>
             [DoesNotReturn]
             public static void Throw(HttpStatusCode status, string title, params IEnumerable<string> errors) => Throw(status, title, null, errors, null);
 
@@ -262,6 +280,7 @@ namespace NanoRoute
             /// <param name="original">The original exception, if any.</param>
             /// <param name="errors">Optional client-facing error messages that should not contain sensitive data.</param>
             /// <param name="developerMessages">Optional developer-facing messages that may contain sensitive data.</param>
+            /// <exception cref="HttpRequestException">Always thrown with the supplied status and error metadata.</exception>
             [DoesNotReturn]
             public static void Throw(HttpStatusCode status, string title, Exception? original = null, IEnumerable<string>? errors = null, IEnumerable<string>? developerMessages = null)
             {
@@ -289,6 +308,7 @@ namespace NanoRoute
             /// </param>
             /// <param name="traceId">The trace identifier to expose in the resulting payload.</param>
             /// <returns>The structured error payload.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="requestException"/> is <see langword="null"/>.</exception>
             public ErrorDetails GetErrorDetails(bool populateErrorInfo = false, string? traceId = null)
             {
                 Ensure.NotNull(requestException);
