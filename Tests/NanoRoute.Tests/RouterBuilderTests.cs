@@ -70,7 +70,7 @@ namespace NanoRoute.Tests
         [Test]
         public void RoutePatterns_ShouldDeduplicateIdenticalEntries()
         {
-            RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
+            RequestMiddlewareDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
 
             _routerBuilder
                 .AddHandler("GET", "/items/", handler)
@@ -87,15 +87,15 @@ namespace NanoRoute.Tests
         {
             _routerBuilder
                 .AddValueParser("any", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .AddHandler("GET", RouteScopeBuilder.CurrentPrefix, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/somewhere/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/{some_str_1:any}/not-prefix/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
+                .AddHandler("GET", RouteScopeBuilder.CurrentPrefix, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/somewhere/*", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/{some_str_1:any}/not-prefix/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object);
 
             RouteScopeBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/*")
-                .AddHandler("GET", RouteScopeBuilder.CurrentExact, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/{some_str_2:any}/something/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/explicit/something/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/not-prefix/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
+                .AddHandler("GET", RouteScopeBuilder.CurrentExact, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/{some_str_2:any}/something/*", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/explicit/something/*", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/not-prefix/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object);
 
             Assert.That(_routerBuilder.Patterns, Is.EqualTo(new string[]
             {

@@ -13,6 +13,8 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
+    using Properties;
+
     internal sealed partial class RouterBuilderTests
     {
         private sealed record EndpointMetadata(string Value);
@@ -182,7 +184,7 @@ namespace NanoRoute.Tests
         [Test]
         public void EndPointHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
+            RequestMiddlewareDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
             EndPointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/items/");
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).CreateEndPoint("GET", "/items/"))!;

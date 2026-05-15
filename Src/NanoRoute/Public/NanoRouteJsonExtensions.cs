@@ -79,7 +79,7 @@ namespace NanoRoute
 #else
             "application/json";
 #endif
-        private static RequestHandlerDelegate CreateHandler(JsonTypeInfo typeInfo, string paramName)
+        private static RequestMiddlewareDelegate CreateHandler(JsonTypeInfo typeInfo, string paramName)
         {
             Ensure.NotNull(typeInfo);
             Ensure.NotNull(paramName);

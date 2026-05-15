@@ -180,7 +180,7 @@ namespace NanoRoute
         /// });
         /// </code>
         /// </example>
-        public RouteScopeBuilder AddHandler(string verb, string pattern, RequestHandlerDelegate handler)
+        public RouteScopeBuilder AddHandler(string verb, string pattern, RequestMiddlewareDelegate handler)
         {
             Ensure.NotNull(verb);
             Ensure.NotNull(pattern);

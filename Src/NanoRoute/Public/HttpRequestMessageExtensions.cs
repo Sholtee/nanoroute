@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 
 namespace NanoRoute
@@ -15,6 +16,7 @@ namespace NanoRoute
     /// </summary>
     public static class HttpRequestMessageExtensions
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly FrozenSet<string> s_contentHeaders = new List<string>
         {
             "Allow",

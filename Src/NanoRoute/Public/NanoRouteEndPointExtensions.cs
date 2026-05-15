@@ -63,10 +63,8 @@ namespace NanoRoute
         /// <returns>The current <see cref="EndPointBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
-        public EndPointBuilder WithHandler(RequestHandlerDelegate handler)
+        public EndPointBuilder WithHandler(RequestMiddlewareDelegate handler)
         {
-            Ensure.NotNull(handler);
-
             _prefix.AddHandler(_verbs, _matchKind, handler);
 
             return this;

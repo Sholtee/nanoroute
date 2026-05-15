@@ -5,18 +5,23 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace NanoRoute
 {
     /// <summary>
-    /// 
+    /// Creates a router instance from a configured <see cref="RouterBuilder{TRouter, TConfig}"/>.
     /// </summary>
-    /// <typeparam name="TRouter"></typeparam>
-    /// <typeparam name="TConfig"></typeparam>
-    /// <param name="routerBuilder"></param>
-    /// <returns></returns>
+    /// <typeparam name="TRouter">The concrete router type produced by the factory.</typeparam>
+    /// <typeparam name="TConfig">The strongly typed router configuration used by the builder.</typeparam>
+    /// <param name="routerBuilder">
+    /// The builder that contains the current route registrations, parser registrations, metadata, and configuration.
+    /// </param>
+    /// <returns>
+    /// A <typeparamref name="TRouter"/> instance backed by the builder's current route snapshot.
+    /// </returns>
     public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : Router where TConfig: RouterConfig, new();
 
     /// <summary>
@@ -38,7 +43,8 @@ namespace NanoRoute
     /// routerBuilder.AddValueParser
     /// (
     ///     "int",
-    ///     static rawArgs => (
+    ///     static rawArgs =>
+    ///     (
     ///         Min: rawArgs.TryGetValue("min", out string? min) ? int.Parse(min) : null,
     ///         Max: rawArgs.TryGetValue("max", out string? max) ? int.Parse(max) : null
     ///     ),
@@ -142,14 +148,14 @@ namespace NanoRoute
     public delegate HttpRequestException ExceptionNormalizer(Exception exception);
 
     /// <summary>
-    /// Invokes the next compatible handler in the current routing pipeline.
+    /// Invokes the next compatible middleware in the current routing pipeline.
     /// </summary>
     /// <returns>
-    /// The <see cref="HttpResponseMessage"/> produced by the next matching handler.
+    /// The <see cref="HttpResponseMessage"/> produced by the next matching middleware.
     /// </returns>
     /// <remarks>
-    /// This delegate is passed into <see cref="RequestHandlerDelegate"/> so handlers can opt into middleware-style
-    /// composition. When the current handler does not call it, the pipeline stops at the current handler. Matching
+    /// This delegate is passed into <see cref="RequestMiddlewareDelegate"/> so middleware can opt into middleware-style
+    /// composition. When the current middleware does not call it, the pipeline stops at the current middleware. Matching
     /// continues only within the route branch already selected for the request; sibling branches are not revisited.
     /// </remarks>
     /// <example>
@@ -164,15 +170,50 @@ namespace NanoRoute
     public delegate Task<HttpResponseMessage> CallNextHandlerDelegate();
 
     /// <summary>
-    /// Represents a request handler in the router pipeline.
+    /// Represents a typed request handler in the router pipeline.
     /// </summary>
-    /// <param name="requestContext">The current request context, including parsed route parameters and services.</param>
-    /// <param name="callNext">A delegate that invokes the next compatible handler in the pipeline.</param>
+    /// <typeparam name="TRequestContext">
+    /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+    /// </typeparam>
+    /// <param name="requestContext">
+    /// The typed request object built from the current <see cref="RequestContext"/>.
+    /// </param>
+    /// <returns>The response produced by the current handler.</returns>
+    /// <remarks>
+    /// This delegate is used by <see cref="NanoRouteHandlerExtensions"/> overloads that do not expose
+    /// <see cref="CallNextHandlerDelegate"/>. The pipeline stops when the handler returns.
+    /// </remarks>
+    public delegate Task<HttpResponseMessage> TypedRequestHandlerDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TRequestContext requestContext) where TRequestContext : new();
+
+    /// <summary>
+    /// Represents typed middleware in the router pipeline.
+    /// </summary>
+    /// <typeparam name="TRequestContext">
+    /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+    /// </typeparam>
+    /// <param name="requestContext">
+    /// The typed request object built from the current <see cref="RequestContext"/>.
+    /// </param>
+    /// <param name="callNext">A delegate that invokes the next compatible middleware in the pipeline.</param>
     /// <returns>
-    /// The response produced by the current handler, or by a later handler when <paramref name="callNext"/> is invoked.
+    /// The response produced by the current middleware, or by later middleware when <paramref name="callNext"/> is invoked.
     /// </returns>
     /// <remarks>
-    /// Handlers may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
+    /// This delegate is used by <see cref="NanoRouteHandlerExtensions"/> overloads that support middleware-style
+    /// composition.
+    /// </remarks>
+    public delegate Task<HttpResponseMessage> TypedRequestMiddlewareDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TRequestContext requestContext, CallNextHandlerDelegate callNext) where TRequestContext : new();
+
+    /// <summary>
+    /// Represents middleware in the router pipeline.
+    /// </summary>
+    /// <param name="requestContext">The current request context, including parsed route parameters and services.</param>
+    /// <param name="callNext">A delegate that invokes the next compatible middleware in the pipeline.</param>
+    /// <returns>
+    /// The response produced by the current middleware, or by later middleware when <paramref name="callNext"/> is invoked.
+    /// </returns>
+    /// <remarks>
+    /// Middleware may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
     /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder)"/>, or equivalent custom
     /// middleware is registered, those exceptions can be translated into structured error responses. Use
     /// <see cref="NanoRouteJsonExtensions.ConfigureJsonErrorDetails{TBuilder}(TBuilder, ConfigureBuilderDelegate{JsonErrorDetailsConfig})"/>
@@ -192,6 +233,6 @@ namespace NanoRoute
     /// });
     /// </code>
     /// </example>
-    public delegate Task<HttpResponseMessage> RequestHandlerDelegate(RequestContext requestContext, CallNextHandlerDelegate callNext);
+    public delegate Task<HttpResponseMessage> RequestMiddlewareDelegate(RequestContext requestContext, CallNextHandlerDelegate callNext);
 }
 

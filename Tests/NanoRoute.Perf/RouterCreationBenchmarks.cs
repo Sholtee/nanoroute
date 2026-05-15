@@ -18,7 +18,7 @@ namespace NanoRoute.Perf
             Mixed
         }
 
-        private static readonly RequestHandlerDelegate s_handler =
+        private static readonly RequestMiddlewareDelegate s_handler =
             static (_, _) => throw new InvalidOperationException("The router creation benchmark should not execute handlers.");
 
         private RouterBuilder<TestRouter, RouterConfig> _builder = null!;
