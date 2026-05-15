@@ -409,6 +409,7 @@ namespace NanoRoute
             /// </example>
             public TBuilder AddHandler(IEnumerable<string> verbs, string pattern, RequestHandlerDelegate handler)
             {
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(verbs);
 
                 foreach (string verb in verbs)

@@ -78,6 +78,45 @@ namespace NanoRoute
 #else
             "application/json";
 #endif
+        private static RequestHandlerDelegate CreateHandler(JsonTypeInfo typeInfo, string paramName)
+        {
+            Ensure.NotNull(typeInfo);
+            Ensure.NotNull(paramName);
+
+            return async (RequestContext context, CallNextHandlerDelegate next) =>
+            {
+                context.Cancellation.ThrowIfCancellationRequested();
+
+                if (context.Request.Content is not { } content)
+                {
+                    BadRequest(Resources.ERR_MISSING_BODY);
+                    return null!;
+                }
+
+                if (!JSON_MEDIA_TYPE.Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
+                    BadRequest(Resources.ERR_BAD_CONTENT_TYPE);
+
+                Stream contentStream = await content.ReadAsStreamAsync();
+
+                object? body = null;
+
+                try
+                {
+                    body = await JsonSerializer.DeserializeAsync(contentStream, typeInfo, context.Cancellation);
+                }
+                catch (JsonException ex)
+                {
+                    BadRequest(ex.Message);
+                }
+
+                context.Parameters[paramName] = body;
+
+                return await next();        
+            };
+
+            [DoesNotReturn]
+            static void BadRequest(string error) => HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, error);
+        }
 
         extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder: RouteScopeBuilder
         {
@@ -110,50 +149,8 @@ namespace NanoRoute
             ///     });
             /// </code>
             /// </example>
-            public TBuilder AddJsonBody(IEnumerable<string> verbs, string pattern, JsonTypeInfo typeInfo, string paramName)
-            {
-                Ensure.NotNull(routeScopeBuilder);
-                Ensure.NotNull(verbs);
-                Ensure.NotNull(pattern);
-                Ensure.NotNull(typeInfo);
-                Ensure.NotNull(paramName);
-
-                routeScopeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
-                {
-                    context.Cancellation.ThrowIfCancellationRequested();
-
-                    if (context.Request.Content is not { } content)
-                    {
-                        BadRequest(Resources.ERR_MISSING_BODY);
-                        return null!;
-                    }
-
-                    if (!JSON_MEDIA_TYPE.Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
-                        BadRequest(Resources.ERR_BAD_CONTENT_TYPE);
-
-                    Stream contentStream = await content.ReadAsStreamAsync();
-
-                    object? body = null;
-
-                    try
-                    {
-                        body = await JsonSerializer.DeserializeAsync(contentStream, typeInfo, context.Cancellation);
-                    }
-                    catch (JsonException ex)
-                    {
-                        BadRequest(ex.Message);
-                    }
-
-                    context.Parameters[paramName] = body;
-
-                    return await next();
-                });
-
-                return routeScopeBuilder;
-
-                [DoesNotReturn]
-                static void BadRequest(string error) => HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, error);
-            }
+            public TBuilder AddJsonBody(IEnumerable<string> verbs, string pattern, JsonTypeInfo typeInfo, string paramName) =>
+                routeScopeBuilder.AddHandler(verbs, pattern, CreateHandler(typeInfo, paramName));
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for a single HTTP method.
@@ -166,7 +163,8 @@ namespace NanoRoute
             /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
-            public TBuilder AddJsonBody(string verb, string pattern, JsonTypeInfo typeInfo, string paramName) => routeScopeBuilder.AddJsonBody([verb /*will be null checked*/], pattern, typeInfo, paramName);
+            public TBuilder AddJsonBody(string verb, string pattern, JsonTypeInfo typeInfo, string paramName) =>
+                routeScopeBuilder.AddJsonBody([verb /*will be null checked*/], pattern, typeInfo, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for the selected HTTP methods.
@@ -179,7 +177,8 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the JSON-binding
             /// middleware is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
-            public TBuilder AddJsonBody(IEnumerable<string> verbs, JsonTypeInfo typeInfo, string paramName) => routeScopeBuilder.AddJsonBody(verbs, RouteScopeBuilder.CurrentPrefix, typeInfo, paramName);
+            public TBuilder AddJsonBody(IEnumerable<string> verbs, JsonTypeInfo typeInfo, string paramName) =>
+                routeScopeBuilder.AddJsonBody(verbs, RouteScopeBuilder.CurrentPrefix, typeInfo, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for <c>POST</c>, <c>PUT</c>, and <c>PATCH</c>.
@@ -191,7 +190,8 @@ namespace NanoRoute
             /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
-            public TBuilder AddJsonBody(string pattern, JsonTypeInfo typeInfo, string paramName) => routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, pattern, typeInfo, paramName);
+            public TBuilder AddJsonBody(string pattern, JsonTypeInfo typeInfo, string paramName) =>
+                routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, pattern, typeInfo, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for <c>POST</c>, <c>PUT</c>, and <c>PATCH</c>.
@@ -203,7 +203,8 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the JSON-binding
             /// middleware is bound to the whole current builder scope for <c>POST</c>, <c>PUT</c>, and <c>PATCH</c>.
             /// </remarks>
-            public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName) => routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, RouteScopeBuilder.CurrentPrefix, typeInfo, paramName);
+            public TBuilder AddJsonBody(JsonTypeInfo typeInfo, string paramName) =>
+                routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, RouteScopeBuilder.CurrentPrefix, typeInfo, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter using runtime type metadata.
@@ -240,7 +241,8 @@ namespace NanoRoute
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
-            public TBuilder AddJsonBody(string verb, string pattern, Type type, string paramName) => routeScopeBuilder.AddJsonBody([verb /*will be null checked*/], pattern, type, paramName);
+            public TBuilder AddJsonBody(string verb, string pattern, Type type, string paramName) =>
+                routeScopeBuilder.AddJsonBody([verb /*will be null checked*/], pattern, type, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter using runtime type metadata.
@@ -253,7 +255,8 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the JSON-binding
             /// middleware is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
-            public TBuilder AddJsonBody(IEnumerable<string> verbs, Type type, string paramName) => routeScopeBuilder.AddJsonBody(verbs, RouteScopeBuilder.CurrentPrefix, type, paramName);
+            public TBuilder AddJsonBody(IEnumerable<string> verbs, Type type, string paramName) =>
+                routeScopeBuilder.AddJsonBody(verbs, RouteScopeBuilder.CurrentPrefix, type, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter using runtime type metadata for <c>POST</c>, <c>PUT</c>, and <c>PATCH</c>.
@@ -265,7 +268,8 @@ namespace NanoRoute
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
-            public TBuilder AddJsonBody(string pattern, Type type, string paramName) => routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, pattern, type, paramName);
+            public TBuilder AddJsonBody(string pattern, Type type, string paramName) =>
+                routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, pattern, type, paramName);
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter using runtime type metadata for <c>POST</c>, <c>PUT</c>, and <c>PATCH</c>.
@@ -277,7 +281,8 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the JSON-binding
             /// middleware is bound to the whole current builder scope for <c>POST</c>, <c>PUT</c>, and <c>PATCH</c>.
             /// </remarks>
-            public TBuilder AddJsonBody(Type type, string paramName) => routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, RouteScopeBuilder.CurrentPrefix, type, paramName);
+            public TBuilder AddJsonBody(Type type, string paramName) =>
+                routeScopeBuilder.AddJsonBody(HttpVerb.HavingBody, RouteScopeBuilder.CurrentPrefix, type, paramName);
 
             /// <summary>
             /// Updates the JSON error-detail configuration visible from the current builder scope.
@@ -312,7 +317,8 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the error-detail
             /// middleware is bound to the whole current builder scope for all supported HTTP methods.
             /// </remarks>
-            public TBuilder AddJsonErrorDetails() => routeScopeBuilder.AddJsonErrorDetails(RouteScopeBuilder.CurrentPrefix);
+            public TBuilder AddJsonErrorDetails() =>
+                routeScopeBuilder.AddJsonErrorDetails(RouteScopeBuilder.CurrentPrefix);
 
             /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses for all supported HTTP methods.
@@ -322,7 +328,8 @@ namespace NanoRoute
             /// the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.
             /// </param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
-            public TBuilder AddJsonErrorDetails(string pattern) => routeScopeBuilder.AddJsonErrorDetails(HttpVerb.Names, pattern);
+            public TBuilder AddJsonErrorDetails(string pattern) =>
+                routeScopeBuilder.AddJsonErrorDetails(HttpVerb.Names, pattern);
 
             /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses for a single HTTP method.
@@ -333,7 +340,8 @@ namespace NanoRoute
             /// the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.
             /// </param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
-            public TBuilder AddJsonErrorDetails(string verb, string pattern) => routeScopeBuilder.AddJsonErrorDetails([verb /*will be null checked*/], pattern);
+            public TBuilder AddJsonErrorDetails(string verb, string pattern) =>
+                routeScopeBuilder.AddJsonErrorDetails([verb /*will be null checked*/], pattern);
 
             /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses for the selected HTTP methods.
@@ -344,7 +352,8 @@ namespace NanoRoute
             /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the error-detail
             /// middleware is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
-            public TBuilder AddJsonErrorDetails(IEnumerable<string> verbs) => routeScopeBuilder.AddJsonErrorDetails(verbs, RouteScopeBuilder.CurrentPrefix);
+            public TBuilder AddJsonErrorDetails(IEnumerable<string> verbs) =>
+                routeScopeBuilder.AddJsonErrorDetails(verbs, RouteScopeBuilder.CurrentPrefix);
 
             /// <summary>
             /// Adds middleware that converts router exceptions into JSON <see cref="ErrorDetails"/> responses.
@@ -405,6 +414,50 @@ namespace NanoRoute
 
                 return routeScopeBuilder;
             }
+        }
+
+        extension(EndPointBuilder endPointBuilder)
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="typeInfo"></param>
+            /// <param name="paramName"></param>
+            /// <returns></returns>
+            public EndPointBuilder WithJsonBody(JsonTypeInfo typeInfo, string paramName)
+            {
+                Ensure.NotNull(endPointBuilder);
+
+                return endPointBuilder.WithHandler
+                (
+                    CreateHandler(typeInfo, paramName)
+                );
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="type"></param>
+            /// <param name="paramName"></param>
+            /// <returns></returns>
+            public EndPointBuilder WithJsonBody(Type type, string paramName)
+            {
+                Ensure.NotNull(type);
+
+                return endPointBuilder.WithJsonBody
+                (
+                    JsonSerializerOptions.Web.GetTypeInfo(type),
+                    paramName
+                );
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="paramName"></param>
+            /// <returns></returns>
+            public EndPointBuilder WithJsonBody<T>(string paramName) => endPointBuilder.WithJsonBody(typeof(T), paramName);
         }
 
         extension(HttpResponseMessage)

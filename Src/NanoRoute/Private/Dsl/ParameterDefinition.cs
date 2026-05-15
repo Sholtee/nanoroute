@@ -50,7 +50,7 @@ namespace NanoRoute.Internals
                 }
             }
 
-            throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
+            throw new ArgumentException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset), nameof(pattern));
         }
 
         public required ValueParserDefinition ValueParser { get; init; }

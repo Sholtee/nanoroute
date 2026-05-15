@@ -55,6 +55,7 @@
       System.Diagnostics.CodeAnalysis.NotNullWhenAttribute;
       System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute;
       System.Index;
+      System.Range;
       System.Runtime.CompilerServices.CallerArgumentExpressionAttribute;
       System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute;
       System.Runtime.CompilerServices.IsExternalInit;
