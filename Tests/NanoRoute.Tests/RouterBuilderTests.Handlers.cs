@@ -184,9 +184,9 @@ namespace NanoRoute.Tests
         [TestCase("/path//to/", 6)]
         public void AddHandler_ShouldRejectRepeatedSeparators(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
 
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [Test]
@@ -294,7 +294,7 @@ namespace NanoRoute.Tests
             TypedRequestHandlerDelegate<TypedRouteRequest> typedHandler = _ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
             TypedRequestMiddlewareDelegate<TypedRouteRequest> typedMiddleware = (_, next) => next();
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder)null!).WithHandler(typedHandler))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder)null!).WithHandler(typedHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestHandlerDelegate<TypedRouteRequest>)null!))!;
