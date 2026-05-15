@@ -44,7 +44,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.Metadata.Set(new TestMetadata("parent"));
 
-            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/child/");
+            RouteScopeBuilder childBuilder = _routerBuilder.CreatePrefix("/child/*");
 
             Assert.That(childBuilder.Metadata.TryGet(out TestMetadata? metadata), Is.True);
             Assert.That(metadata, Is.EqualTo(new TestMetadata("parent")));
@@ -55,7 +55,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.Metadata.Set(new TestMetadata("parent"));
 
-            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/child/");
+            RouteScopeBuilder childBuilder = _routerBuilder.CreatePrefix("/child/*");
             childBuilder.Metadata.Set(new TestMetadata("child"));
 
             Assert.Multiple(() =>
@@ -70,7 +70,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.Metadata.Set(new TestMetadata("before"));
 
-            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/child/");
+            RouteScopeBuilder childBuilder = _routerBuilder.CreatePrefix("/child/*");
             _routerBuilder.Metadata.Set(new TestMetadata("after"));
 
             Assert.Multiple(() =>
@@ -85,7 +85,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.Metadata.Set(new TestMetadata("parent"));
 
-            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/child/");
+            RouteScopeBuilder childBuilder = _routerBuilder.CreatePrefix("/child/*");
 
             Assert.That(childBuilder.Metadata.Remove<TestMetadata>(), Is.True);
 

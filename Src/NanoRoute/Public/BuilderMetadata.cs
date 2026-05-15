@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NanoRoute
 {
@@ -28,7 +29,11 @@ namespace NanoRoute
 
         internal BuilderMetadata() => _items = [];
 
-        private BuilderMetadata(Dictionary<Type, object> items) => _items = new Dictionary<Type, object>(items);
+        private BuilderMetadata(Dictionary<Type, object> items) => _items = items.ToDictionary
+        (
+            static kvp => kvp.Key,
+            static kvp => kvp.Value is ICloneable cloneable ? cloneable.Clone() : kvp.Value
+        );
 
         internal BuilderMetadata CreateScope() => new(_items);
 

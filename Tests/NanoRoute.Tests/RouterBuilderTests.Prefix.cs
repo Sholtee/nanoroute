@@ -20,11 +20,11 @@ namespace NanoRoute.Tests
         public async Task CreatePrefix_ShouldRegisterHandlersUnderThePrefix()
         {
             _routerBuilder
-                .AddHandler("GET", "/users", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
+                .AddHandler("GET", "/users/", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
 
             _routerBuilder
-                .CreatePrefix("/api/")
-                .AddHandler("GET", "/users", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                .CreatePrefix("/api/*")
+                .AddHandler("GET", "/users/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent("prefixed")
                 });
@@ -54,13 +54,13 @@ namespace NanoRoute.Tests
         [Test]
         public void CreatePrefix_ShouldKeepChildValueParsersScopedToTheChildBranch()
         {
-            RouteBuilder api = _routerBuilder.CreatePrefix("/api/");
+            RouteScopeBuilder api = _routerBuilder.CreatePrefix("/api/*");
 
             api
                 .AddValueParser("name", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .AddHandler("GET", "/users/{user:name}", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK));
+                .AddHandler("GET", "/users/{user:name}/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK));
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", "/users/{user:name}", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", "/users/{user:name}/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))!;
 
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, "name")));
         }
@@ -69,8 +69,8 @@ namespace NanoRoute.Tests
         public async Task AddPrefix_ShouldConfigureHandlersUnderThePrefix()
         {
             _routerBuilder
-                .AddPrefix("/api/", api => api
-                    .AddHandler("GET", "/status", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                .AddPrefix("/api/*", api => api
+                    .AddHandler("GET", "/status/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
                         Content = new StringContent("ready")
                     }));
@@ -98,14 +98,14 @@ namespace NanoRoute.Tests
         public async Task AddPrefix_ShouldAllowPrefixMiddlewareToWrapChildRoutes()
         {
             _routerBuilder
-                .AddPrefix("/api/", api => api
+                .AddPrefix("/api/*", api => api
                     .AddHandler(["GET"], async (_, next) =>
                     {
                         HttpResponseMessage response = await next();
                         response.Headers.Add("X-Prefix", "api");
                         return response;
                     })
-                    .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)));
+                    .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)));
 
             TestRouter router = _routerBuilder.CreateRouter();
 
@@ -120,7 +120,9 @@ namespace NanoRoute.Tests
         }
 
         [TestCase("")]
+        [TestCase("/")]
         [TestCase("/not-prefix")]
+        [TestCase("/not-prefix/")]
         [TestCase("/some/not-prefix")]
         public void CreatePrefix_ShouldThrowOnNonPrefixPattern(string pattern)
         {
@@ -129,7 +131,7 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_NOT_PREFIX));
         }
 
-        [TestCase("/path/{invalid-segment}/", 6)]
+        [TestCase("/path/{invalid-segment}/*", 6)]
         public void CreatePrefix_ShouldThrowOnInvalidPattern(string pattern, int expectedOffset)
         {
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.CreatePrefix(pattern))!;
@@ -139,14 +141,14 @@ namespace NanoRoute.Tests
         [Test]
         public void AddPrefix_ShouldBeNullChecked()
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddPrefix("/base/", null!))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddPrefix("/base/*", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("configureRoutes"));
         }
 
         [Test]
         public void AddPrefix_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.AddPrefix("/base/", _ => { });
+            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.AddPrefix("/base/*", _ => { });
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }

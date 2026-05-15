@@ -16,8 +16,8 @@ namespace NanoRoute.NativeAot
     internal static partial class Program
     {
         private static void ConfigureJsonRoutes(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) => builder
-            .AddJsonBody("POST", "/items", AppJsonContext.Default.CreateItemRequest, "body")
-            .AddHandler("POST", "/items", static (context, _) =>
+            .AddJsonBody("POST", "/items/", AppJsonContext.Default.CreateItemRequest, "body")
+            .AddHandler("POST", "/items/", static (context, _) =>
             {
                 CreateItemRequest body = (CreateItemRequest) context.Parameters["body"]!;
                 return Task.FromResult(HttpResponseMessage.Json

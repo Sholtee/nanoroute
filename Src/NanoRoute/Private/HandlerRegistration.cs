@@ -13,13 +13,6 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Returns true if the registration should match as a prefix.
         /// </summary>
-        public bool IsPrefix { get; } = Pattern.EndsWith
-        (
-#if NETSTANDARD2_1_OR_GREATER
-            '/'
-#else
-            "/"
-#endif
-        );
+        public bool IsPrefix { get; } = Pattern.EndsWith(RouteScopeBuilder.CurrentPrefix);
     }
 }

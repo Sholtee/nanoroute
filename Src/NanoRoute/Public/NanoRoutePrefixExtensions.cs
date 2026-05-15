@@ -10,50 +10,50 @@ namespace NanoRoute
     using Internals;
 
     /// <summary>
-    /// Adds prefix-routing helpers that configure child route builders under a shared base pattern.
+    /// Adds prefix-routing helpers that configure child route scopes under a shared base pattern.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Prefix builders inherit the value parsers and metadata visible when the child builder is created. Later
+    /// Prefix scopes inherit the value parsers and metadata visible when the child scope is created. Later
     /// changes made inside the prefix scope stay local to that child branch.
     /// </para>
     /// </remarks>
     public static class NanoRoutePrefixExtensions
     {
-        extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
+        extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
             /// <summary>
-            /// Creates a child builder for the given prefix, invokes a configuration callback, and returns the current builder.
+            /// Creates a child route scope for the given prefix, invokes a configuration callback, and returns the current builder.
             /// </summary>
             /// <param name="pattern">
-            /// The base prefix. It must be a valid route pattern ending in <c>/</c> so child routes can be appended to it.
+            /// The base prefix. It must be a valid route pattern ending in <c>/*</c> so child routes can be appended to it.
             /// </param>
-            /// <param name="configureRoutes">A callback that configures routes on the child builder.</param>
+            /// <param name="configureRoutes">A callback that configures routes on the child route scope.</param>
             /// <returns>The current builder.</returns>
-            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/</c>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/*</c>.</exception>
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
             /// registered yet.
             /// </exception>
             /// <example>
             /// <code>
-            /// builder.AddPrefix("/api/", api =&gt; api
-            ///     .AddHandler("GET", "/health", (context, _) =&gt; Results.Ok())
-            ///     .AddHandler("GET", "/users", (context, _) =&gt; Results.Ok()));
+            /// builder.AddPrefix("/api/*", api =&gt; api
+            ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+            ///     .AddHandler("GET", "/users/", (context, _) =&gt; Results.Ok()));
             /// </code>
             /// </example>
-            public TBuilder AddPrefix(string pattern, Action<RouteBuilder> configureRoutes)  // we don't allow routers to be created from a child builder -> configureRoutes receives a RouteBuilder
+            public TBuilder AddPrefix(string pattern, Action<RouteScopeBuilder> configureRoutes)  // child route scopes cannot create routers
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(pattern);
                 Ensure.NotNull(configureRoutes);
 
                 configureRoutes
                 (
-                    routeBuilder.CreatePrefix(pattern)
+                    routeScopeBuilder.CreatePrefix(pattern)
                 );
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
         }
     }

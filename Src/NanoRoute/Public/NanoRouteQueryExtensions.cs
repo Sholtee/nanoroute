@@ -69,7 +69,7 @@ namespace NanoRoute
     /// </summary>
     public static class NanoRouteQueryExtensions
     {
-        extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
+        extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
             /// <summary>
             /// Updates the query-parsing configuration visible from the current builder scope.
@@ -77,23 +77,23 @@ namespace NanoRoute
             /// <param name="configure">
             /// A callback that receives the current configuration and returns the replacement configuration.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
-            /// The configuration is stored in <see cref="RouteBuilder.Metadata"/>. Child builders created after this
+            /// The configuration is stored in <see cref="RouteScopeBuilder.Metadata"/>. Child builders created after this
             /// method is called inherit the updated configuration; existing child builders keep their own scoped copy.
             /// Registered query-binding middleware snapshots the configuration that is current at registration time.
             /// </remarks>
             public TBuilder ConfigureQueryParsing(ConfigureBuilderDelegate<QueryParsingConfig> configure)
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(configure);
 
-                QueryParsingConfig config = configure(routeBuilder.Metadata.GetOrDefault(QueryParsingConfig.Default));
+                QueryParsingConfig config = configure(routeScopeBuilder.Metadata.GetOrDefault(QueryParsingConfig.Default));
                 Ensure.NotNull(config);
 
-                routeBuilder.Metadata.Set(config);
+                routeScopeBuilder.Metadata.Set(config);
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
 
             /// <summary>
@@ -102,18 +102,18 @@ namespace NanoRoute
             /// <param name="bindings">
             /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
-            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the query-binding
+            /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the query-binding
             /// middleware is bound to the whole current builder scope for all supported HTTP methods.
             /// </remarks>
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            public TBuilder AddQueryBindings(string bindings) => routeBuilder.AddQueryBindings(HttpVerb.Names, RouteBuilder.CurrentPrefix, bindings);
+            public TBuilder AddQueryBindings(string bindings) => routeScopeBuilder.AddQueryBindings(HttpVerb.Names, RouteScopeBuilder.CurrentPrefix, bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
@@ -122,18 +122,18 @@ namespace NanoRoute
             /// <param name="bindings">
             /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
             /// query binding overwrites the existing value.
-            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the query-binding
+            /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the query-binding
             /// middleware is bound to the whole current builder scope for the selected HTTP methods.
             /// </remarks>
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings) => routeBuilder.AddQueryBindings(verbs, RouteBuilder.CurrentPrefix, bindings);
+            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings) => routeScopeBuilder.AddQueryBindings(verbs, RouteScopeBuilder.CurrentPrefix, bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
@@ -145,7 +145,7 @@ namespace NanoRoute
             /// <param name="bindings">
             /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
@@ -154,7 +154,7 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            public TBuilder AddQueryBindings(string pattern, string bindings) => routeBuilder.AddQueryBindings(HttpVerb.Names, pattern, bindings);
+            public TBuilder AddQueryBindings(string pattern, string bindings) => routeScopeBuilder.AddQueryBindings(HttpVerb.Names, pattern, bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
@@ -167,7 +167,7 @@ namespace NanoRoute
             /// <param name="bindings">
             /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
@@ -176,7 +176,7 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            public TBuilder AddQueryBindings(string verb, string pattern, string bindings) => routeBuilder.AddQueryBindings([verb /*will be null checked*/], pattern, bindings);
+            public TBuilder AddQueryBindings(string verb, string pattern, string bindings) => routeScopeBuilder.AddQueryBindings([verb /*will be null checked*/], pattern, bindings);
 
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>.
@@ -189,7 +189,7 @@ namespace NanoRoute
             /// <param name="bindings">
             /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
             /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
@@ -198,7 +198,7 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings) => routeBuilder.AddQueryBindings(verbs, pattern, bindings, static config => config);
+            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings) => routeScopeBuilder.AddQueryBindings(verbs, pattern, bindings, static config => config);
 
             /// <summary>
             /// Parses configured query parameters with a one-off configuration override and stores their values in
@@ -216,19 +216,19 @@ namespace NanoRoute
             /// A callback that receives the current <see cref="QueryParsingConfig"/> and returns the configuration
             /// captured by this query-binding middleware only.
             /// </param>
-            /// <returns>The current <paramref name="routeBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Use this overload when one query-binding registration should differ from the builder-scope
             /// configuration set by <see cref="ConfigureQueryParsing{TBuilder}(TBuilder, ConfigureBuilderDelegate{QueryParsingConfig})"/>.
             /// The returned configuration is captured at registration time and does not update
-            /// <see cref="RouteBuilder.Metadata"/>.
+            /// <see cref="RouteScopeBuilder.Metadata"/>.
             /// </remarks>
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
             public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings, ConfigureBuilderDelegate<QueryParsingConfig> oneOffConfigOverride)
             {
-                Ensure.NotNull(routeBuilder);
+                Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(verbs);
                 Ensure.NotNull(pattern);
                 Ensure.NotNull(bindings);
@@ -236,9 +236,9 @@ namespace NanoRoute
 
                 Dictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindingsTmp = new(ReadOnlyMemoryCharComparer.Instance);
 
-                foreach (ParameterDefinition parameterDefinition in RoutePatternParser.ParseQueryPattern(bindings))
+                foreach (ParameterDefinition parameterDefinition in DslParser.ParseQueryPattern(bindings))
                 {
-                    if (!routeBuilder.ValueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration? parserRegistration))
+                    if (!routeScopeBuilder.ValueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration? parserRegistration))
                         throw new InvalidOperationException
                         (
                             string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parameterDefinition.ValueParser.Name)
@@ -260,11 +260,11 @@ namespace NanoRoute
 
                 QueryParsingConfig config = oneOffConfigOverride
                 (
-                    routeBuilder.Metadata.GetOrDefault(QueryParsingConfig.Default)
+                    routeScopeBuilder.Metadata.GetOrDefault(QueryParsingConfig.Default)
                 );
                 Ensure.NotNull(config);
 
-                routeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
+                routeScopeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
                 {
                     using QueryStringParser queryStringParser = new(context, parsedBindings, config);
 
@@ -273,7 +273,7 @@ namespace NanoRoute
                     return await next();
                 });
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
         }
     }

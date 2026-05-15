@@ -33,7 +33,14 @@ namespace NanoRoute.Internals
                 {
                     ValueParser = ValueParserDefinition.Parse(pattern, ref newOffset),
                     ParameterName = parameterName.Length is 0 ? null : parameterName.TrimEnd('?'),
-                    IsOptional = parameterName.EndsWith("?", StringComparison.Ordinal)
+                    IsOptional = parameterName.EndsWith
+                    (
+#if NETSTANDARD2_1_OR_GREATER
+                        '?'
+#else
+                        "?"
+#endif
+                    )
                 };
 
                 if (newOffset < pattern.Length && pattern[newOffset] == '}')

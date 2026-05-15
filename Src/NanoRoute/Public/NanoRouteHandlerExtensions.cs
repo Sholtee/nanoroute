@@ -34,7 +34,7 @@ namespace NanoRoute
         /// <summary>
         /// Reads the value from <see cref="RequestContext.Parameters"/>.
         /// </summary>
-        Context,
+        Parameter,
 
         /// <summary>
         /// Resolves the value from <see cref="RequestContext.Services"/>.
@@ -58,7 +58,7 @@ namespace NanoRoute
         /// Gets or sets an optional binding name.
         /// </summary>
         /// <remarks>
-        /// For <see cref="ValueSource.Context"/>, this overrides the key looked up in
+        /// For <see cref="ValueSource.Parameter"/>, this overrides the key looked up in
         /// <see cref="RequestContext.Parameters"/>. For <see cref="ValueSource.ServiceLocator"/>,
         /// this is treated as the keyed service name. <see cref="ValueSource.Skip"/> does not allow
         /// a name because no value is read.
@@ -89,8 +89,8 @@ namespace NanoRoute
     /// automatically from the current request.
     /// </para>
     /// <para>
-    /// Use <see cref="ValueSourceAttribute"/> to bind a property from a specific context key or service.
-    /// Missing required context values and services throw <see cref="InvalidOperationException"/>.
+    /// Use <see cref="ValueSourceAttribute"/> to bind a property from a specific parameter key or service.
+    /// Missing required parameter values and services throw <see cref="InvalidOperationException"/>.
     /// </para>
     /// </remarks>
     public static class NanoRouteHandlerExtensions
@@ -135,7 +135,7 @@ namespace NanoRoute
                         );
                         continue;
                     }
-                    case ValueSource.Context:
+                    case ValueSource.Parameter:
                     {
                         string name = valueSource?.Name ?? prop.Name;
                         SetProperty
@@ -157,7 +157,7 @@ namespace NanoRoute
                                 SetProperty(static context => context.Cancellation);
                                 continue;                 
                         }
-                        goto case ValueSource.Context;
+                        goto case ValueSource.Parameter;
                     default:
                         Debug.Fail($"Unknown source: {valueSource.Source}");
                         break;
@@ -185,28 +185,34 @@ namespace NanoRoute
             propSetters.Add(result);  // return result;
 
             // In native AOT context this will be interpreted rather than compiled
-            return Expression.Lambda<Func<RequestContext, TRequestContext>>(Expression.Block([result], propSetters), source).Compile
-            (
-                preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported
-            );
+            return Expression
+                .Lambda<Func<RequestContext, TRequestContext>>
+                (
+                    Expression.Block([result], propSetters),
+                    source
+                ).
+                Compile
+                (
+                    preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported
+                );
         }
 
-        private static TBuilder AddTypedHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeBuilder, IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteBuilder where TRequestContext : new()
+        private static TBuilder AddTypedHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeScopeBuilder, IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TBuilder : RouteScopeBuilder where TRequestContext : new()
         {
-            Ensure.NotNull(routeBuilder);
+            Ensure.NotNull(routeScopeBuilder);
             Ensure.NotNull(verbs);
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
 
             Func<RequestContext, TRequestContext> mapContext = CreateContextMapperDelegate<TRequestContext>();
 
-            routeBuilder.AddHandler(verbs, pattern, (context, next) => handler(mapContext(context), next));
+            routeScopeBuilder.AddHandler(verbs, pattern, (context, next) => handler(mapContext(context), next));
 
-            return routeBuilder;
+            return routeScopeBuilder;
         }
         #endregion
 
-        extension<TBuilder>(TBuilder routeBuilder) where TBuilder : RouteBuilder
+        extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
             /// <summary>
             /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
@@ -216,7 +222,7 @@ namespace NanoRoute
             /// </typeparam>
             /// <param name="pattern">The route pattern to register for all supported HTTP methods.</param>
             /// <param name="handler">The typed handler delegate.</param>
-            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
             /// <remarks>
             /// <para>
             /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
@@ -231,7 +237,7 @@ namespace NanoRoute
             /// </para>
             /// </remarks>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
-                routeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
+                routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
 
             /// <summary>
             /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
@@ -242,7 +248,7 @@ namespace NanoRoute
             /// <param name="verb">The HTTP verb handled by the route.</param>
             /// <param name="pattern">The route pattern to register.</param>
             /// <param name="handler">The typed handler delegate.</param>
-            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
             /// <remarks>
             /// <para>
             /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
@@ -257,7 +263,7 @@ namespace NanoRoute
             /// </para>
             /// </remarks>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
-                routeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
+                routeScopeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
 
             /// <summary>
             /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
@@ -268,7 +274,7 @@ namespace NanoRoute
             /// <param name="verbs">The HTTP verbs handled by the route.</param>
             /// <param name="pattern">The route pattern to register.</param>
             /// <param name="handler">The typed handler delegate.</param>
-            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
             /// <remarks>
             /// <para>
             /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
@@ -285,7 +291,7 @@ namespace NanoRoute
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, Task<HttpResponseMessage>> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
-                return AddTypedHandlerCore(routeBuilder, verbs, pattern, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
+                return AddTypedHandlerCore(routeScopeBuilder, verbs, pattern, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
             }
 
             /// <summary>
@@ -296,7 +302,7 @@ namespace NanoRoute
             /// </typeparam>
             /// <param name="pattern">The route pattern to register for all supported HTTP methods.</param>
             /// <param name="handler">The typed middleware delegate.</param>
-            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
             /// <remarks>
             /// <para>
             /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
@@ -311,7 +317,7 @@ namespace NanoRoute
             /// </para>
             /// </remarks>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
-                routeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
+                routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
 
             /// <summary>
             /// Registers a typed middleware handler that receives a request object and the next handler in the pipeline.
@@ -322,7 +328,7 @@ namespace NanoRoute
             /// <param name="verb">The HTTP verb handled by the route.</param>
             /// <param name="pattern">The route pattern to register.</param>
             /// <param name="handler">The typed middleware delegate.</param>
-            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
             /// <remarks>
             /// <para>
             /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
@@ -337,7 +343,7 @@ namespace NanoRoute
             /// </para>
             /// </remarks>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
-                routeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
+                routeScopeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
 
             /// <summary>
             /// Registers a typed middleware handler that receives a request object and the next handler in the pipeline.
@@ -348,7 +354,7 @@ namespace NanoRoute
             /// <param name="verbs">The HTTP verbs handled by the route.</param>
             /// <param name="pattern">The route pattern to register.</param>
             /// <param name="handler">The typed middleware delegate.</param>
-            /// <returns>The current <paramref name="routeBuilder"/>.</returns>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
             /// <remarks>
             /// <para>
             /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
@@ -363,25 +369,24 @@ namespace NanoRoute
             /// </para>
             /// </remarks>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, Func<TRequestContext, CallNextHandlerDelegate, Task<HttpResponseMessage>> handler) where TRequestContext : new() =>
-                AddTypedHandlerCore(routeBuilder, verbs, pattern, handler);
+                AddTypedHandlerCore(routeScopeBuilder, verbs, pattern, handler);
 
             /// <summary>
             /// Registers a handler for all supported HTTP methods.
             /// </summary>
             /// <param name="pattern">
             /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-            /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-            /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
-            /// invalid, and patterns without a trailing slash match only the exact path.
+            /// registered parsers in the form <c>{parameterName:parserName}</c>. Exact patterns must end with
+            /// <c>/</c>, prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators are invalid.
             /// </param>
             /// <param name="handler">The handler to execute when the pattern matches.</param>
             /// <returns>The current router instance.</returns>
             /// <example>
             /// <code>
-            /// builder.AddHandler("/health", (context, next) =&gt; Results.Ok());
+            /// builder.AddHandler("/health/", (context, next) =&gt; Results.Ok());
             /// </code>
             /// </example>
-            public TBuilder AddHandler(string pattern, RequestHandlerDelegate handler) => routeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
+            public TBuilder AddHandler(string pattern, RequestHandlerDelegate handler) => routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
 
             /// <summary>
             /// Registers the same handler for multiple HTTP methods.
@@ -389,9 +394,8 @@ namespace NanoRoute
             /// <param name="verbs">The HTTP methods that should use the handler.</param>
             /// <param name="pattern">
             /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-            /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-            /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
-            /// invalid, and patterns without a trailing slash match only the exact path.
+            /// registered parsers in the form <c>{parameterName:parserName}</c>. Exact patterns must end with
+            /// <c>/</c>, prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators are invalid.
             /// </param>
             /// <param name="handler">The handler to execute when the route matches.</param>
             /// <returns>The current router instance.</returns>
@@ -399,7 +403,7 @@ namespace NanoRoute
             /// <code>
             /// builder.AddHandler(
             ///     ["GET", "POST"],
-            ///     "/api/items/{id:int}",
+            ///     "/api/items/{id:int}/",
             ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
             /// </code>
             /// </example>
@@ -408,9 +412,9 @@ namespace NanoRoute
                 Ensure.NotNull(verbs);
 
                 foreach (string verb in verbs)
-                    routeBuilder.AddHandler(verb, pattern, handler);
+                    routeScopeBuilder.AddHandler(verb, pattern, handler);
 
-                return routeBuilder;
+                return routeScopeBuilder;
             }
 
             /// <summary>
@@ -420,7 +424,7 @@ namespace NanoRoute
             /// <param name="handler">The handler to execute when a matching request enters this builder scope.</param>
             /// <returns>The current router instance.</returns>
             /// <remarks>
-            /// This overload uses <see cref="RouteBuilder.CurrentPrefix"/> as the route pattern, so the handler is
+            /// This overload uses <see cref="RouteScopeBuilder.CurrentPrefix"/> as the route pattern, so the handler is
             /// bound to the whole current builder scope. If the handler calls <c>next</c>, routing continues with
             /// the next compatible handler on the selected branch.
             /// </remarks>
@@ -429,7 +433,7 @@ namespace NanoRoute
             /// builder.AddHandler(["GET", "POST"], (context, next) =&gt; next());
             /// </code>
             /// </example>
-            public TBuilder AddHandler(IEnumerable<string> verbs, RequestHandlerDelegate handler) => routeBuilder.AddHandler(verbs, RouteBuilder.CurrentPrefix, handler);
+            public TBuilder AddHandler(IEnumerable<string> verbs, RequestHandlerDelegate handler) => routeScopeBuilder.AddHandler(verbs, RouteScopeBuilder.CurrentPrefix, handler);
         }
     }
 }

@@ -44,9 +44,9 @@ namespace NanoRoute.Perf
 
         private string CreateRoutePattern(int index) => Shape switch
         {
-            RouteShape.Literal => $"/api/v1/tenants/{index}/users/{index}/orders/{index}/details",
-            RouteShape.Mixed when index % 2 is 0 => $"/api/v1/tenants/{index}/users/{{userId:int}}/orders/{index}/details",
-            RouteShape.Mixed => $"/api/v1/tenants/{index}/users/{index}/orders/{{orderId:int}}/details",
+            RouteShape.Literal => $"/api/v1/tenants/{index}/users/{index}/orders/{index}/details/",
+            RouteShape.Mixed when index % 2 is 0 => $"/api/v1/tenants/{index}/users/{{userId:int}}/orders/{index}/details/",
+            RouteShape.Mixed => $"/api/v1/tenants/{index}/users/{index}/orders/{{orderId:int}}/details/",
             _ => throw new InvalidOperationException($"Unknown route shape: {Shape}.")
         };
 

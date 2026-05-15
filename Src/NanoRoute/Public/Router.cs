@@ -14,14 +14,14 @@ namespace NanoRoute
     using Internals;
 
     /// <summary>
-    /// Executes the route matching pipeline built by <see cref="RouteBuilder"/>.
+    /// Executes the route matching pipeline built by <see cref="RouteScopeBuilder"/>.
     /// </summary>
     /// <remarks>
     /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
     /// handlers in order until one returns a response without delegating further.
     /// </remarks>
     [method: SuppressMessage("ApiDesign", "RS0022:Constructor make noninheritable base class inheritable")]
-    public abstract class Router(RouteBuilder routeBuilder, RouterConfig config) : RoutingContext(routeBuilder.GetRoot(freeze: true))
+    public abstract class Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config) : RoutingContext(routeScopeBuilder.GetRoot(freeze: true))
     {
         /// <summary>
         /// The request property key that stores the trace identifier associated with the current request.

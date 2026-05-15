@@ -25,7 +25,7 @@ namespace NanoRoute.AwsLambda.Tests
         {
             ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
                 .CreateBuilder()
-                .AddHandler("GET", "/health", static (context, _) =>
+                .AddHandler("GET", "/health/", static (context, _) =>
                 {
                     Assert.That(context.Request.Headers.TryGetValues("accept", out IEnumerable<string>? values), Is.True);
                     Assert.That(values, Is.EquivalentTo(new[] { "text/plain" }));
@@ -60,7 +60,7 @@ namespace NanoRoute.AwsLambda.Tests
         {
             ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
                 .CreateBuilder()
-                .AddHandler("GET", "/health", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
+                .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
             APIGatewayHttpApiV2ProxyResponse response = await router.Route
@@ -86,7 +86,7 @@ namespace NanoRoute.AwsLambda.Tests
             ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
                 .CreateBuilder()
                 .ConfigureRouting(static config => config with { LambdaTimeoutBuffer = TimeSpan.FromSeconds(5) })
-                .AddHandler("GET", "/health", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
+                .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
             APIGatewayHttpApiV2ProxyResponse response = await router.Route
@@ -105,7 +105,7 @@ namespace NanoRoute.AwsLambda.Tests
             ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
                 .CreateBuilder()
                 .ConfigureRouting(static config => config with { LambdaTimeoutBuffer = TimeSpan.Zero })
-                .AddHandler("GET", "/health", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
+                .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
             APIGatewayHttpApiV2ProxyResponse response = await router.Route

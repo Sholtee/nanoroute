@@ -34,7 +34,7 @@ namespace NanoRoute.TestLambda
             })
             .AddJsonErrorDetails()
             .AddDefaultValueParsers()
-            .AddHandler("GET", "/health", static async (_, _) =>
+            .AddHandler("GET", "/health/", static async (_, _) =>
             {
                 await Task.Yield();
 
@@ -43,9 +43,9 @@ namespace NanoRoute.TestLambda
                     Content = new StringContent("ok")
                 };
             })
-            .AddPrefix("/items/{id:int(min=1)}/", item => item
-                .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter?:str(min=3)}")
-                .AddHandler("GET", RouteBuilder.CurrentExact, static async (context, _) =>
+            .AddPrefix("/items/{id:int(min=1)}/*", item => item
+                .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter?:str(min=3)}")
+                .AddHandler("GET", RouteScopeBuilder.CurrentExact, static async (context, _) =>
                 {
                     await Task.Yield();
 
@@ -57,15 +57,15 @@ namespace NanoRoute.TestLambda
                             : null
                     });
                 }))
-            .AddPrefix("/echo/", echo => echo
-                .AddJsonBody("POST", RouteBuilder.CurrentExact, JsonContext.Default.EchoRequest, "body")
-                .AddHandler("POST", RouteBuilder.CurrentExact, static async (context, _) =>
+            .AddPrefix("/echo/*", echo => echo
+                .AddJsonBody("POST", RouteScopeBuilder.CurrentExact, JsonContext.Default.EchoRequest, "body")
+                .AddHandler("POST", RouteScopeBuilder.CurrentExact, static async (context, _) =>
                 {
                     await Task.Yield();
 
                     return HttpResponseMessage.Json(context.Parameters["body"]);
                 }))
-            .AddHandler("GET", "/cookies", static async (_, _) =>
+            .AddHandler("GET", "/cookies/", static async (_, _) =>
             {
                 await Task.Yield();
 

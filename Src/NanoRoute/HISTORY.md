@@ -10,13 +10,16 @@
 - Removed the public `Router.MatchingPrecedence` snapshot property. Matching precedence is now carried by the immutable `RouterConfig` used to create the router.
 - Removed inline query-binding overloads from typed `AddHandler()` APIs. Register query bindings explicitly with `AddQueryBindings()` before adding the typed handler.
 - Removed the `NanoRoute.HandlerExtensions` namespace. `ValueSource`, `ValueSourceAttribute`, and typed-handler `AddHandler()` extension methods now live directly in the `NanoRoute` namespace.
-- Moved pattern-only and multi-verb `AddHandler()` overloads from builder instance methods to extension methods in the `NanoRoute` namespace. The single-verb `AddHandler(string verb, string pattern, ...)` overload remains on `RouteBuilder` and strongly typed router builders.
+- Renamed `RouteBuilder` to `RouteScopeBuilder` to better describe scoped prefix/subtree configuration.
+- Moved pattern-only and multi-verb `AddHandler()` overloads from builder instance methods to extension methods in the `NanoRoute` namespace. The single-verb `AddHandler(string verb, string pattern, ...)` overload remains on `RouteScopeBuilder` and strongly typed router builders.
+- Changed prefix-route patterns to use a trailing `/*` marker. A trailing `/` is now an exact route pattern, `RouteScopeBuilder.CurrentExact` is `/`, and `RouteScopeBuilder.CurrentPrefix` is `/*`.
+- Renamed `ValueSource.Context` to `ValueSource.Parameter` to describe that typed handlers read from `RequestContext.Parameters`.
 
 ### Added
 
 - Added `JsonErrorDetailsConfig` and `ConfigureJsonErrorDetails()` to configure JSON error-response diagnostics and `ErrorDetails` serialization metadata.
 - Added `QueryParsingConfig`, `UnexpectedParameterBehavior`, and `ConfigureQueryParsing()` to configure how query bindings handle undeclared query-string parameters.
-- Added typed `AddHandler()` overloads for pattern-only and single-verb registration, matching the rest of the route-builder API.
+- Added typed `AddHandler()` overloads for pattern-only and single-verb registration, matching the rest of the route-scope builder API.
 - Added `NanoRoutePrefixExtensions` as the extension-method home for `AddPrefix()`.
 
 ### Performance
@@ -61,16 +64,42 @@ If a typed handler needs query-string values, register query bindings before the
 
 ```csharp
 builder
-    .AddQueryBindings(["GET"], "/items/{id:int}", "{filter?:str(min=3)}")
+    .AddQueryBindings(["GET"], "/items/{id:int}/", "{filter?:str(min=3)}")
     .AddHandler
     (
         ["GET"],
-        "/items/{id:int}",
+        "/items/{id:int}/",
         static async (GetItemRequest request) =>
         {
             return await Handle(request);
         }
     );
+```
+
+Replace prefix route registrations like:
+
+```csharp
+builder.AddHandler("GET", "/api/users/{user_id:int}/", Middleware);
+builder.AddPrefix("/api/users/{user_id:int}/", users => { ... });
+```
+
+with:
+
+```csharp
+builder.AddHandler("GET", "/api/users/{user_id:int}/*", Middleware);
+builder.AddPrefix("/api/users/{user_id:int}/*", users => { ... });
+```
+
+Replace typed-handler binding attributes like:
+
+```csharp
+[ValueSource(ValueSource.Context, Name = "query_filter")]
+```
+
+with:
+
+```csharp
+[ValueSource(ValueSource.Parameter, Name = "query_filter")]
 ```
 
 ## 1.0.0-preview2
@@ -100,7 +129,7 @@ Replace typed-handler binding attributes like:
 with:
 
 ```csharp
-[ValueSource(ValueSource.Context, Name = "query_filter")]
+[ValueSource(ValueSource.Parameter, Name = "query_filter")]
 ```
 
 Replace diagnostic key constants like:

@@ -2,7 +2,7 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
-The core library is centered around `RouteBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+The core library is centered around `RouteScopeBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`.
 
@@ -31,12 +31,12 @@ HttpListenerRouter router = HttpListenerRouter
     })
     // Convert routing exceptions into JSON error responses.
     .AddJsonErrorDetails()
-    .AddHandler("GET", "/api/users/{user_id:int}/", async (context, next) =>
+    .AddHandler("GET", "/api/users/{user_id:int}/*", async (context, next) =>
     {
         context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
         return await next();
     })
-    .AddHandler("GET", "/api/users/{user_id:int}/details", async (context, _) =>
+    .AddHandler("GET", "/api/users/{user_id:int}/details/", async (context, _) =>
     {
         return new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -53,14 +53,13 @@ HttpListenerContext context = await listener.GetContextAsync();
 await router.Route(context, new ServiceCollection().BuildServiceProvider());
 ```
 
-In this example, `/api/users/{user_id:int}/` is a prefix route, so it runs before the more specific `/api/users/{user_id:int}/details` handler and can populate shared state in `RequestContext.Parameters`. `HttpListenerRouter` converts the incoming `HttpListenerContext` into an `HttpRequestMessage`, executes the NanoRoute pipeline, and copies the produced `HttpResponseMessage` back to the listener response.
+In this example, `/api/users/{user_id:int}/*` is a prefix route, so it runs before the more specific `/api/users/{user_id:int}/details/` handler and can populate shared state in `RequestContext.Parameters`. `HttpListenerRouter` converts the incoming `HttpListenerContext` into an `HttpRequestMessage`, executes the NanoRoute pipeline, and copies the produced `HttpResponseMessage` back to the listener response.
 
 ## Matching Rules
 
-- A trailing `/` makes a route a prefix match.
-- Without a trailing `/`, the route matches only the exact normalized request path.
-- Route patterns must start with `/`, except for `RouteBuilder.CurrentExact`, which matches the current scoped path exactly.
-- Use `RouteBuilder.CurrentPrefix` when a handler or middleware should match the current scoped path as a prefix.
+- Exact route patterns must start and end with `/`, for example `/items/`.
+- Prefix route patterns must start with `/` and end with `/*`, for example `/items/*`.
+- `/items` is invalid as a route pattern; use `/items/` for an exact route or `/items/*` for a prefix route.
 - Repeated `/` separators in route patterns, such as `//` or `/items//details`, are invalid.
 - Literal segments are matched case-insensitively.
 - Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
@@ -84,7 +83,7 @@ HttpListenerRouter router = HttpListenerRouter
         ParametersCapacity = 8
     })
     .AddDefaultValueParsers()
-    .AddHandler("GET", "/items/{slug:str}", static async (context, _) =>
+    .AddHandler("GET", "/items/{slug:str}/", static async (context, _) =>
     {
         await Task.CompletedTask;
         return HttpResponseMessage.Json(new { slug = context.Parameters["slug"] });
@@ -98,7 +97,7 @@ Created routers are immutable snapshots: later route or configuration changes on
 
 ### Module Configuration
 
-Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same builder scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
+Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same route scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
@@ -107,18 +106,18 @@ HttpListenerRouter router = HttpListenerRouter
     {
         PopulateErrorInfo = true
     })
-    .AddJsonErrorDetails("/api/")
-    .AddJsonErrorDetails("/admin/")
+    .AddJsonErrorDetails("/api/*")
+    .AddJsonErrorDetails("/admin/*")
     .CreateRouter();
 ```
 
-`ConfigureXxx()` methods update the configuration visible from the current builder scope. They affect module registrations made after the configuration call. Registrations that have already been added keep the configuration they captured when they were registered.
+`ConfigureXxx()` methods update the configuration visible from the current route scope. They affect module registrations made after the configuration call. Registrations that have already been added keep the configuration they captured when they were registered.
 
-Prefix builders follow the same rule as value parsers and metadata: a child builder receives a scoped copy when it is created. Configuration changes made later on the parent do not rewrite existing child scopes, and child changes stay local to that child scope.
+Prefix scopes follow the same rule as value parsers and metadata: a child scope receives a scoped copy when it is created. Configuration changes made later on the parent do not rewrite existing child scopes, and child changes stay local to that child scope.
 
 ### AddPrefix() and CreatePrefix()
 
-When several routes share the same prefix, `AddPrefix()` lets you define that prefix once and register child routes relative to it. If you want to hold onto a scoped child builder and add routes incrementally, use `CreatePrefix()`.
+When several routes share the same prefix, `AddPrefix()` lets you define that prefix once and register child routes relative to it. If you want to hold onto a child `RouteScopeBuilder` and add routes incrementally, use `CreatePrefix()`.
 
 ```csharp
 RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
@@ -128,13 +127,13 @@ RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListen
     // Convert routing exceptions into JSON error responses.
     .AddJsonErrorDetails();
 
-builder.AddPrefix("/api/users/{user_id:int}/", users => users
-    .AddHandler("GET", "/", async (context, next) =>
+builder.AddPrefix("/api/users/{user_id:int}/*", users => users
+    .AddHandler("GET", "/*", async (context, next) =>
     {
         context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
         return await next();
     })
-    .AddHandler("GET", "/details", async (context, _) =>
+    .AddHandler("GET", "/details/", async (context, _) =>
     {
         return HttpResponseMessage.Json(new
         {
@@ -146,7 +145,7 @@ builder.AddPrefix("/api/users/{user_id:int}/", users => users
 HttpListenerRouter router = builder.CreateRouter();
 ```
 
-This produces the same effective routes as registering `/api/users/{user_id:int}/` and `/api/users/{user_id:int}/details` directly, but keeps repeated base patterns out of individual `AddHandler()` calls.
+This produces the same effective routes as registering `/api/users/{user_id:int}/*` and `/api/users/{user_id:int}/details/` directly, but keeps repeated base patterns out of individual `AddHandler()` calls.
 
 ### Value Parsers
 
@@ -217,9 +216,9 @@ Built-in parsers use the same mechanism:
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
-    .AddPrefix("/items/", items => items
-        .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}")
-        .AddHandler("GET", RouteBuilder.CurrentExact, async (context, _) =>
+    .AddPrefix("/items/*", items => items
+        .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}")
+        .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (context, _) =>
         {
             return HttpResponseMessage.Json(new
             {
@@ -242,7 +241,7 @@ HttpListenerRouter router = HttpListenerRouter
 - List value parsers are supported only for query bindings, not route path parameters.
 - As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
 
-Use `ConfigureQueryParsing()` before `AddQueryBindings()` when you want later query-binding registrations in the same builder scope to reject query keys that were not declared in their binding descriptor:
+Use `ConfigureQueryParsing()` before `AddQueryBindings()` when you want later query-binding registrations in the same route scope to reject query keys that were not declared in their binding descriptor:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
@@ -252,8 +251,8 @@ HttpListenerRouter router = HttpListenerRouter
     {
         UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
     })
-    .AddQueryBindings("GET", "/items", "{filter:str(min=3)}")
-    .AddHandler("GET", "/items", static async (context, _) =>
+    .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}")
+    .AddHandler("GET", "/items/", static async (context, _) =>
     {
         await Task.CompletedTask;
         return HttpResponseMessage.Json(new { filter = context.Parameters["filter"] });
@@ -261,7 +260,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`AddQueryBindings()` snapshots the current `QueryParsingConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. The overload that accepts a `ConfigureBuilderDelegate<QueryParsingConfig>` applies a one-off override to that query-binding registration without changing builder metadata.
+`AddQueryBindings()` snapshots the current `QueryParsingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. The overload that accepts a `ConfigureBuilderDelegate<QueryParsingConfig>` applies a one-off override to that query-binding registration without changing builder metadata.
 
 ### Typed Handlers
 
@@ -279,7 +278,7 @@ public sealed class GetItemRequest
 {
     public int Id { get; set; }
 
-    [ValueSource(ValueSource.Context, Name = "query_filter")]
+    [ValueSource(ValueSource.Parameter, Name = "query_filter")]
     public string Filter { get; set; } = null!;
 
     [ValueSource(ValueSource.ServiceLocator)]
@@ -294,11 +293,11 @@ public sealed class GetItemRequest
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
-    .AddQueryBindings("GET", "/items/{id:int}", "{query_filter:str(min=3)}")
+    .AddQueryBindings("GET", "/items/{id:int}/", "{query_filter:str(min=3)}")
     .AddHandler
     (
         "GET",
-        "/items/{id:int}",
+        "/items/{id:int}/",
         async (GetItemRequest request) =>
         {
             Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
@@ -317,7 +316,7 @@ Binding rules:
 - Writable public properties are bound from `RequestContext.Parameters` by default, using the property name as the key.
 - `RequestContext` properties receive the current request context automatically.
 - `CancellationToken` properties receive the active request token automatically.
-- `[ValueSource(ValueSource.Context, Name = "...")]` binds from a different parameter or query-binding name.
+- `[ValueSource(ValueSource.Parameter, Name = "...")]` binds from a different parameter or query-binding name.
 - `[ValueSource(ValueSource.ServiceLocator)]` resolves a service from `RequestContext.Services`.
 - `[ValueSource(ValueSource.ServiceLocator, Name = "...")]` resolves a keyed service.
 - `[ValueSource(ValueSource.Skip)]` leaves the property untouched and does not allow `Name`.
@@ -333,7 +332,7 @@ Typed handlers also have middleware-style overloads that receive `CallNextHandle
 .AddHandler
 (
     ["GET"],
-    "/items/{id:int}",
+    "/items/{id:int}/",
     async (GetItemRequest request, CallNextHandlerDelegate next) =>
     {
         HttpResponseMessage response = await next();
@@ -365,11 +364,11 @@ HttpListenerRouter router = HttpListenerRouter
         )
     })
     .AddExceptionHandler()
-    .AddHandler("GET", "/items", (_, _) => throw new NotSupportedException())
+    .AddHandler("GET", "/items/", (_, _) => throw new NotSupportedException())
     .CreateRouter();
 ```
 
-`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
+`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
 
 ### JSON Error Details
 
@@ -383,13 +382,13 @@ HttpListenerRouter router = HttpListenerRouter
         PopulateErrorInfo = true
     })
     .AddJsonErrorDetails()
-    .AddHandler("GET", "/items", (_, _) => throw new InvalidOperationException("Boom"))
+    .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("Boom"))
     .CreateRouter();
 ```
 
 `PopulateErrorInfo` can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details.
 
-`AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix builders follow the normal `RouteBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
+`AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
 
 ### Custom Routers
 
@@ -414,7 +413,7 @@ public sealed class InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> b
 
 InMemoryRouter router = InMemoryRouter
     .CreateBuilder()
-    .AddHandler("GET", "/health", async (_, _) => new HttpResponseMessage())
+    .AddHandler("GET", "/health/", async (_, _) => new HttpResponseMessage())
     .CreateRouter();
 ```
 
@@ -431,9 +430,9 @@ This keeps the transport-specific concerns in your own router type while still r
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
 - `ConfigureRouting()` customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
-- `AddPrefix("/prefix/", ...)` configures a scoped route subtree and returns the current builder.
-- `CreatePrefix("/prefix/")` creates a scoped child builder for a route subtree.
-- `RouteBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
+- `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.
+- `CreatePrefix("/prefix/*")` creates a scoped child builder for a route subtree.
+- `RouteScopeBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` middleware.
 - `AddHandler<TRequestContext>()` projects `RequestContext` into a typed request object before invoking the handler.
@@ -445,7 +444,7 @@ This keeps the transport-specific concerns in your own router type while still r
 
 ## Core Types
 
-- [RouteBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteBuilder.html)
+- [RouteScopeBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteScopeBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
 - [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)

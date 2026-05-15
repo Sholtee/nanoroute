@@ -67,10 +67,10 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddValueParser("any", new Mock<SyncValueParserDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/path/to/{some_str:any}/something/", mockHandler_3.Object) // should not match after the literal branch was selected
-                .AddHandler("GET", "/path/to/explicit/something/", mockHandler_2.Object)  // should match 2nd
-                .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
-                .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/path/to/{some_str:any}/something/*", mockHandler_3.Object) // should not match after the literal branch was selected
+                .AddHandler("GET", "/path/to/explicit/something/*", mockHandler_2.Object)  // should match 2nd
+                .AddHandler("GET", "/*", mockHandler_1.Object)  // should match 1st
+                .AddHandler("GET", "/path/should/not/match/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
@@ -100,12 +100,12 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/", mockHandler_1.Object)  // should match 1st
-                .AddHandler("GET", "/path/should/not/match/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddPrefix("/path/to/", routerBuilder => routerBuilder
+                .AddHandler("GET", "/*", mockHandler_1.Object)  // should match 1st
+                .AddHandler("GET", "/path/should/not/match/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
+                .AddPrefix("/path/to/*", routerBuilder => routerBuilder
                     .AddValueParser("any", new Mock<SyncValueParserDelegate>(MockBehavior.Strict).Object)
-                    .AddHandler("GET", "/{some_str:any}/something/", mockHandler_3.Object) // should not match after the literal branch was selected
-                    .AddHandler("GET", "/explicit/something/", mockHandler_2.Object))  // should match 2nd
+                    .AddHandler("GET", "/{some_str:any}/something/*", mockHandler_3.Object) // should not match after the literal branch was selected
+                    .AddHandler("GET", "/explicit/something/*", mockHandler_2.Object))  // should match 2nd
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/");
@@ -114,33 +114,15 @@ namespace NanoRoute.Tests
             mockHandler_3.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Never);
         }
 
-        [TestCase("")]
-        [TestCase("/")]
-        public async Task Handle_ShouldWorkWithEmptyPaths(string path)
+        [TestCase("/path/to/explicit/something/")]
+        public async Task Handle_ShouldSupportExactMatches(string pattern)
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder
-                .AddHandler("GET", path, mockHandler.Object)
-                .CreateRouter();
-
-            _request.RequestUri = new Uri("https://www.exmaple.com");
-
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
-        }
-
-        [Test]
-        public async Task Handle_ShouldSupportExactMatches()
-        {
-            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
-            mockHandler
-                .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
-                .ReturnsAsync(s_response);
-
-            _routerBuilder.AddHandler("GET", "/path/to/explicit/something", mockHandler.Object);
+            _routerBuilder.AddHandler("GET", pattern, mockHandler.Object);
 
             TestRouter router = _routerBuilder.CreateRouter();
 
@@ -163,7 +145,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            _routerBuilder.AddHandler("GET", "/path/to/explicit/something/", mockHandler.Object);
+            _routerBuilder.AddHandler("GET", "/path/to/explicit/something/*", mockHandler.Object);
 
             TestRouter router = _routerBuilder.CreateRouter();
 
@@ -176,8 +158,8 @@ namespace NanoRoute.Tests
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Exactly(2));
         }
 
-        [TestCase("/path/to/explicit/something")]
-        [TestCase("/path/to/{some_str:any}/something")]
+        [TestCase("/path/to/explicit/something/")]
+        [TestCase("/path/to/{some_str:any}/something/")]
         public async Task Handle_ShouldSupportMultipleHandlersAgainstTheSamePattern(string pattern)
         {
             MockSequence seq = new();
@@ -235,8 +217,8 @@ namespace NanoRoute.Tests
                     return true;
                 })
                 .ConfigureRouting(config => config with { MatchingPrecedence = matchingPrecedence })
-                .AddHandler("GET", "/items/literal", mockLiteralHandler.Object)
-                .AddHandler("GET", "/items/{value:str}", mockParameterizedHandler.Object)
+                .AddHandler("GET", "/items/literal/", mockLiteralHandler.Object)
+                .AddHandler("GET", "/items/{value:str}/", mockParameterizedHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/items/literal");
@@ -256,7 +238,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .ConfigureRouting(config => config with { ParametersCapacity = parametersCapacity })
-                .AddHandler("GET", "/users/{user_id:int}/items/{item_id:int}", async (context, _) =>
+                .AddHandler("GET", "/users/{user_id:int}/items/{item_id:int}/", async (context, _) =>
                 {
                     capturedCapacity = context.Parameters.EnsureCapacity(0);
                     return s_response;
@@ -312,8 +294,8 @@ namespace NanoRoute.Tests
                     parsed = null;
                     return false;
                 })
-                .AddHandler("GET", "/api/users/{user_id:int}/", mockGetUser.Object)
-                .AddHandler("GET", "/api/users/{user_id:int}/dosomething", mockDoSomethingWithUser.Object)
+                .AddHandler("GET", "/api/users/{user_id:int}/*", mockGetUser.Object)
+                .AddHandler("GET", "/api/users/{user_id:int}/dosomething/", mockDoSomethingWithUser.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
@@ -366,9 +348,9 @@ namespace NanoRoute.Tests
                     parsed = null;
                     return false;
                 })
-                .AddPrefix("/api/users/{user_id:int}/", routerBuilder => routerBuilder
-                    .AddHandler("GET", "/", mockGetUser.Object)
-                    .AddHandler("GET", "/dosomething", mockDoSomethingWithUser.Object))
+                .AddPrefix("/api/users/{user_id:int}/*", routerBuilder => routerBuilder
+                    .AddHandler("GET", RouteScopeBuilder.CurrentPrefix, mockGetUser.Object)
+                    .AddHandler("GET", "/dosomething/", mockDoSomethingWithUser.Object))
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/api/users/1986/dosomething");
@@ -392,7 +374,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddValueParser("slug", mockParser.Object)
-                .AddHandler("GET", "/users/{user_id:int}/{slug}/cica", async (context, next) =>
+                .AddHandler("GET", "/users/{user_id:int}/{slug}/cica/", async (context, next) =>
                 {
                     paramz = context.Parameters;
                     return s_response;
@@ -416,7 +398,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder.AddHandler("POST", "/path/to/somewhere", mockHandler.Object).CreateRouter();
+            TestRouter router = _routerBuilder.AddHandler("POST", "/path/to/somewhere/", mockHandler.Object).CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
             _request.Method = HttpMethod.Get;
@@ -440,7 +422,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder.AddHandler(["GET", "POST"], "/path/to/somewhere", mockHandler.Object).CreateRouter();
+            TestRouter router = _routerBuilder.AddHandler(["GET", "POST"], "/path/to/somewhere/", mockHandler.Object).CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
             _request.Method = HttpMethod.Get;
@@ -463,7 +445,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("/path/to/somewhere", mockHandler.Object)
+                .AddHandler("/path/to/somewhere/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
@@ -485,7 +467,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/path/to/SOMEWHERE", mockHandler.Object)
+                .AddHandler("GET", "/path/to/SOMEWHERE/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/PATH/to/somewhere");
@@ -631,9 +613,9 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddValueParser("int", mockIntParser.Object)
                 .AddValueParser("str", mockStringParser.Object)
-                .AddPrefix("/api/users/", bldr => bldr
-                    .AddHandler("GET", "/{prefix:str}/{user_id:int}/dosomething", mockHandler_1.Object)
-                    .AddHandler("GET", "/{prefix:str}/{user_id_str:str}/dosomething", mockHandler_2.Object))
+                .AddPrefix("/api/users/*", bldr => bldr
+                    .AddHandler("GET", "/{prefix:str}/{user_id:int}/dosomething/", mockHandler_1.Object)
+                    .AddHandler("GET", "/{prefix:str}/{user_id_str:str}/dosomething/", mockHandler_2.Object))
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething");
@@ -673,7 +655,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/users/~denes", mockHandler.Object)
+                .AddHandler("GET", "/users/~denes/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/users/%7Edenes");
@@ -691,7 +673,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/files/a%20b", mockHandler.Object)
+                .AddHandler("GET", "/files/a%20b/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
@@ -709,7 +691,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/files/a+b", mockHandler.Object)
+                .AddHandler("GET", "/files/a+b/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a+b");
@@ -739,7 +721,7 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddValueParser("str", mockParser.Object)
-                .AddHandler("GET", "/files/{name:str}", mockHandler.Object)
+                .AddHandler("GET", "/files/{name:str}/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
@@ -773,7 +755,7 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddValueParser("str", mockParser.Object)
-                .AddHandler("GET", "/files/{name:str}", mockHandler.Object)
+                .AddHandler("GET", "/files/{name:str}/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
@@ -798,7 +780,7 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddValueParser("str", forceStateMachine ? ParserWithStateMachine : ParserWithoutStateMachine)
-                .AddHandler("GET", "/files/{name:str}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                .AddHandler("GET", "/files/{name:str}/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent((string) context.Parameters["name"]!)
                 })
@@ -838,7 +820,7 @@ namespace NanoRoute.Tests
                     mockBindArguments.Object,
                     mockParser.Object
                 )
-                .AddHandler("GET", "/files/{name:bounded(min=3,text='it\\'s okay')}", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["name"]!) })
+                .AddHandler("GET", "/files/{name:bounded(min=3,text='it\\'s okay')}/", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["name"]!) })
                 .CreateRouter();
 
             HttpRequestMessage request = new() { Method = HttpMethod.Get, RequestUri = new Uri("https://www.exmaple.com/files/abcd") };
@@ -885,7 +867,7 @@ namespace NanoRoute.Tests
                     mockBindArguments.Object,
                     mockParser.Object
                 )
-                .AddHandler("GET", "/files/{name:bounded(min=3,text='it\\'s okay')}", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["name"]!) })
+                .AddHandler("GET", "/files/{name:bounded(min=3,text='it\\'s okay')}/", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["name"]!) })
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/abcd");
@@ -930,8 +912,8 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddIntParser()
-                .AddHandler("GET", "/items/{value:int(min=10,max=20)}", boundedHandler.Object)
-                .AddHandler("GET", "/items/{value:int}", fallbackHandler.Object)
+                .AddHandler("GET", "/items/{value:int(min=10,max=20)}/", boundedHandler.Object)
+                .AddHandler("GET", "/items/{value:int}/", fallbackHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/items/15");
@@ -969,8 +951,8 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddStringParser()
-                .AddHandler("GET", "/tags/{slug:str(min=3,max=3,pattern='^[a-z]+$')}", constrainedHandler.Object)
-                .AddHandler("GET", "/tags/{slug:str}", fallbackHandler.Object)
+                .AddHandler("GET", "/tags/{slug:str(min=3,max=3,pattern='^[a-z]+$')}/", constrainedHandler.Object)
+                .AddHandler("GET", "/tags/{slug:str}/", fallbackHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/tags/abc");
@@ -983,8 +965,8 @@ namespace NanoRoute.Tests
             fallbackHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
-        [TestCase("/items/{value:int}")]
-        [TestCase("/items/{value:int()}")]
+        [TestCase("/items/{value:int}/")]
+        [TestCase("/items/{value:int()}/")]
         public async Task AddIntParser_ShouldAcceptRoutesWithoutParameters(string pattern)
         {
             Mock<RequestHandlerDelegate> handler = new(MockBehavior.Strict);
@@ -1003,8 +985,8 @@ namespace NanoRoute.Tests
             handler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
-        [TestCase("/items/{value:guid}")]
-        [TestCase("/items/{value:guid()}")]
+        [TestCase("/items/{value:guid}/")]
+        [TestCase("/items/{value:guid()}/")]
         public async Task AddGuidParser_ShouldAcceptRoutesWithoutParameters(string pattern)
         {
             Guid id = Guid.Parse("4a91f2c0-0e3c-4ec8-9f8c-8d2d2f2c7d1a");
@@ -1025,8 +1007,8 @@ namespace NanoRoute.Tests
             handler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
-        [TestCase("/flags/{value:bool}")]
-        [TestCase("/flags/{value:bool()}")]
+        [TestCase("/flags/{value:bool}/")]
+        [TestCase("/flags/{value:bool()}/")]
         public async Task AddBoolParser_ShouldAcceptRoutesWithoutParameters(string pattern)
         {
             Mock<RequestHandlerDelegate> handler = new(MockBehavior.Strict);
@@ -1045,8 +1027,8 @@ namespace NanoRoute.Tests
             handler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
-        [TestCase("/tags/{value:str}")]
-        [TestCase("/tags/{value:str()}")]
+        [TestCase("/tags/{value:str}/")]
+        [TestCase("/tags/{value:str()}/")]
         public async Task AddStringParser_ShouldAcceptRoutesWithoutParameters(string pattern)
         {
             Mock<RequestHandlerDelegate> handler = new(MockBehavior.Strict);
@@ -1074,7 +1056,7 @@ namespace NanoRoute.Tests
                 .ReturnsAsync(s_response);
 
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/users/denes", mockHandler.Object)
+                .AddHandler("GET", "/users/denes/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/users/../users/denes");
@@ -1116,9 +1098,9 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddValueParser("int", mockIntParser.Object)
                 .AddValueParser("str", mockStringParser.Object)
-                .AddPrefix("/api/", bldr => bldr
-                    .AddHandler("GET", "/{id:int}/details", mockIntHandler.Object)
-                    .AddHandler("GET", "/{slug:str}/details", mockStringHandler.Object))
+                .AddPrefix("/api/*", bldr => bldr
+                    .AddHandler("GET", "/{id:int}/details/", mockIntHandler.Object)
+                    .AddHandler("GET", "/{slug:str}/details/", mockStringHandler.Object))
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/api/abc/details");
@@ -1134,7 +1116,7 @@ namespace NanoRoute.Tests
         public async Task Handle_ShouldLogTheRequestLifecycle()
         {
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/path/to/somewhere", async (_, _) => s_response)
+                .AddHandler("GET", "/path/to/somewhere/", async (_, _) => s_response)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
@@ -1156,7 +1138,7 @@ namespace NanoRoute.Tests
 
                 Assert.That(matchingHandler.Level, Is.EqualTo(EventLevel.Informational));
                 Assert.That(matchingHandler.PayloadNames, Is.EquivalentTo(new[] { "RequestUri", "Verb", "Pattern", "ParameterCount" }));
-                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/somewhere", HttpMethod.Get.Method, "/path/to/somewhere", 0 }));
+                Assert.That(matchingHandler.Payload, Is.EquivalentTo(new object?[] { "https://www.exmaple.com/path/to/somewhere", HttpMethod.Get.Method, "/path/to/somewhere/", 0 }));
             });
         }
 

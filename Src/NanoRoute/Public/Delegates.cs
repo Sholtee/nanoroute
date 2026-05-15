@@ -120,7 +120,7 @@ namespace NanoRoute
     /// <returns>The replacement configuration.</returns>
     /// <remarks>
     /// Configuration delegates run during route registration, not during request processing. Extension methods that
-    /// use <see cref="RouteBuilder.Metadata"/> can use this delegate shape for scoped builder settings.
+    /// use <see cref="RouteScopeBuilder.Metadata"/> can use this delegate shape for scoped builder settings.
     /// A module registration should capture the configuration visible when it is registered; later
     /// <c>ConfigureXxx()</c> calls affect later registrations, not registrations that already exist.
     /// </remarks>
@@ -154,7 +154,7 @@ namespace NanoRoute
     /// </remarks>
     /// <example>
     /// <code>
-    /// routerBuilder.AddHandler("GET", "/api/users/{id:int}", async (requestContext, callNext) =>
+    /// routerBuilder.AddHandler("GET", "/api/users/{id:int}/", async (requestContext, callNext) =>
     /// {
     ///     requestContext.Parameters["StartTime"] = DateTimeOffset.UtcNow;
     ///     return await callNext();
@@ -185,7 +185,7 @@ namespace NanoRoute
     /// </remarks>
     /// <example>
     /// <code>
-    /// routerBuilder.AddHandler("GET", "/api/users/{user_id:int}/", (requestContext, callNext) =&gt;
+    /// routerBuilder.AddHandler("GET", "/api/users/{user_id:int}/*", (requestContext, callNext) =&gt;
     /// {
     ///     requestContext.Parameters["User"] = LoadUser((int) requestContext.Parameters["user_id"]!);
     ///     return callNext();

@@ -28,7 +28,7 @@ public sealed class Function
         .CreateBuilder()
         .AddJsonErrorDetails()
         .AddDefaultValueParsers()
-        .AddHandler("GET", "/health", static async (_, _) =>
+        .AddHandler("GET", "/health/", static async (_, _) =>
         {
             await Task.CompletedTask;
 
@@ -65,9 +65,9 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
-    .AddPrefix("/api/items/", items => items
-        .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter?:str(min=3)}")
-        .AddHandler("GET", RouteBuilder.CurrentExact, static async (context, _) =>
+    .AddPrefix("/api/items/*", items => items
+        .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter?:str(min=3)}")
+        .AddHandler("GET", RouteScopeBuilder.CurrentExact, static async (context, _) =>
         {
             await Task.CompletedTask;
 
@@ -76,7 +76,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
                 filter = context.Parameters.TryGetValue("filter", out object? filter) ? filter : null
             });
         })
-        .AddHandler("GET", "{id:int(min=1)}", static async (context, _) =>
+        .AddHandler("GET", "/{id:int(min=1)}/", static async (context, _) =>
         {
             await Task.CompletedTask;
 
@@ -130,7 +130,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
         LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
     })
     .AddJsonErrorDetails()
-    .AddHandler("GET", "/health", static async (_, _) =>
+    .AddHandler("GET", "/health/", static async (_, _) =>
     {
         await Task.CompletedTask;
         return new HttpResponseMessage(HttpStatusCode.OK);
@@ -153,7 +153,7 @@ public sealed class GetItemRequest
 {
     public int Id { get; set; }
 
-    [ValueSource(ValueSource.Context, Name = "filter")]
+    [ValueSource(ValueSource.Parameter, Name = "filter")]
     public string? Filter { get; set; }
 
     [ValueSource(ValueSource.ServiceLocator)]
@@ -166,12 +166,12 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
-    .AddPrefix("/items/{id:int}/", items => items
-      .AddQueryBindings(["GET"], RouteBuilder.CurrentExact, "{filter?:str(min=3)}")
+    .AddPrefix("/items/{id:int}/*", items => items
+      .AddQueryBindings(["GET"], RouteScopeBuilder.CurrentExact, "{filter?:str(min=3)}")
       .AddHandler
       (
           ["GET"],
-          RouteBuilder.CurrentExact,
+          RouteScopeBuilder.CurrentExact,
           static async (GetItemRequest request) =>
           {
               Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);

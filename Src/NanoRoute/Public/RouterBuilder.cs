@@ -14,7 +14,7 @@ namespace NanoRoute
     /// </summary>
     /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter"/>.</typeparam>
     /// <typeparam name="TConfig">The configuration type exposed by <see cref="RouterConfig"/>.</typeparam>
-    public sealed class RouterBuilder<TRouter, TConfig> : RouteBuilder where TRouter : Router where TConfig: RouterConfig, new()
+    public sealed class RouterBuilder<TRouter, TConfig> : RouteScopeBuilder where TRouter : Router where TConfig: RouterConfig, new()
     {
         private readonly RouterFactoryDelegate<TRouter, TConfig> _routerFactory;
 
@@ -50,8 +50,8 @@ namespace NanoRoute
         /// <param name="verb">The HTTP method that activates the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Without a trailing slash, the pattern matches only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>. Exact patterns must end with
+        /// <c>/</c>, and prefix patterns must end with <c>/*</c>.
         /// </param>
         /// <param name="handler">
         /// The handler to execute. If several handlers match, calling the supplied <c>next</c> delegate continues
@@ -62,7 +62,7 @@ namespace NanoRoute
         /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a value parser that has not been registered yet.</exception>
         /// <example>
         /// <code>
-        /// builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
+        /// builder.AddHandler("GET", "/files/{path:any}/*", (context, next) =&gt;
         /// {
         ///     string path = (string) context.Parameters["path"]!;
         ///     return ServeFile(path);

@@ -118,7 +118,7 @@ namespace NanoRoute
         ///     .CreateBuilder()
         ///     .AddJsonErrorDetails()
         ///     .AddDefaultValueParsers()
-        ///     .AddHandler("GET", "/hello/{name:str}", (context, _) =&gt;
+        ///     .AddHandler("GET", "/hello/{name:str}/", (context, _) =&gt;
         ///         Task.FromResult(HttpResponseMessage.Json(new
         ///         {
         ///             message = $"Hello {context.Parameters["name"]}"

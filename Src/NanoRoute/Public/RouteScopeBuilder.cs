@@ -1,5 +1,5 @@
 /********************************************************************************
-* RouteBuilder.cs                                                               *
+* RouteScopeBuilder.cs                                                          *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -14,25 +14,24 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
-    /// Builder responsible for route configuration.
+    /// Builder responsible for configuring a route scope and its child route tree.
     /// </summary>
     /// <remarks>
     /// Route patterns support literal segments and parser-backed parameter segments such as
-    /// <c>/users/{id:int}</c>. Patterns must start with <c>/</c>, and repeated <c>/</c> separators such as
-    /// <c>//</c> are invalid. A trailing <c>/</c> marks the pattern as a prefix match, while patterns without a
-    /// trailing slash must match the full path exactly.
+    /// <c>/users/{id:int}/</c>. Patterns must start with <c>/</c>, exact patterns must end with <c>/</c>,
+    /// prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators such as <c>//</c> are invalid.
     /// </remarks>
-    public class RouteBuilder : RoutingContext
+    public class RouteScopeBuilder : RoutingContext
     {
         /// <summary>
-        /// The route pattern that matches the current builder scope exactly.
+        /// The route pattern that matches the current route scope exactly.
         /// </summary>
-        public const string CurrentExact = "";
+        public const string CurrentExact = "/";
 
         /// <summary>
-        /// The route pattern that matches the current builder scope as a prefix.
+        /// The route pattern that matches the current route scope as a prefix.
         /// </summary>
-        public const string CurrentPrefix = "/";
+        public const string CurrentPrefix = "/*";
 
         #region Private
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -41,11 +40,11 @@ namespace NanoRoute
         /// <summary>
         /// Gets or creates the <see cref="RouteNode"/> that matches the given <paramref name="pattern"/>.
         /// </summary>
-        private RouteNode FindNode(string pattern)
+        private RouteNode GetOrCreateNode(string pattern)
         {
             RouteNode target = _root;
 
-            foreach(object definition in RoutePatternParser.ParseRoutePattern(pattern))
+            foreach(object definition in DslParser.ParseRoutePattern(pattern))
             {
                 switch (definition)
                 {
@@ -95,21 +94,26 @@ namespace NanoRoute
             return target;
         }
 
-        private static string JoinPattern(string a, string b) => $"{a.TrimEnd('/')}/{b.TrimStart('/')}";
+        private static string JoinPattern(string @base, string extensions)
+        {
+            Debug.Assert(@base.EndsWith(CurrentPrefix), "Base patterns must be prefix routes");
 
-        private RouteBuilder(RouteBuilder parent, string baseUrl): base(parent.FindNode(baseUrl))
+            return @base.TrimEnd('*') + extensions.TrimStart('/');
+        }
+
+        private RouteScopeBuilder(RouteScopeBuilder parent, string pattern): base(parent.GetOrCreateNode(pattern))
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
             
-            BasePattern = JoinPattern(parent.BasePattern, baseUrl);
+            BasePattern = JoinPattern(parent.BasePattern, pattern);
             Metadata = parent.Metadata.CreateScope();
         }
 
-        internal RouteBuilder(): base(new RouteNode())
+        internal RouteScopeBuilder(): base(new RouteNode())
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
 
-            BasePattern = string.Empty;
+            BasePattern = CurrentPrefix;
             Metadata = new BuilderMetadata();
         }
 
@@ -127,7 +131,7 @@ namespace NanoRoute
         /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
         /// <returns>The current instance.</returns>
-        public RouteBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
+        public RouteScopeBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
         {
             Ensure.NotNull(parserName);
             Ensure.NotNull(bindArguments);
@@ -144,15 +148,14 @@ namespace NanoRoute
         /// <param name="verb">The HTTP method that activates the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
-        /// invalid, and patterns without a trailing slash match only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>. Exact patterns must end with
+        /// <c>/</c>, prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators are invalid.
         /// </param>
         /// <param name="handler">
         /// The handler to execute. If several handlers match, calling the supplied <c>next</c> delegate continues
         /// the pipeline with the next compatible handler from the already selected route branch.
         /// </param>
-        /// <returns>The current router instance.</returns>
+        /// <returns>The current route scope builder instance.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>
         /// <exception cref="InvalidOperationException">
         /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
@@ -160,14 +163,14 @@ namespace NanoRoute
         /// </exception>
         /// <example>
         /// <code>
-        /// builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
+        /// builder.AddHandler("GET", "/files/{path:any}/*", (context, next) =&gt;
         /// {
         ///     string path = (string) context.Parameters["path"]!;
         ///     return ServeFile(path);
         /// });
         /// </code>
         /// </example>
-        public RouteBuilder AddHandler(string verb, string pattern, RequestHandlerDelegate handler)
+        public RouteScopeBuilder AddHandler(string verb, string pattern, RequestHandlerDelegate handler)
         {
             Ensure.NotNull(verb);
             Ensure.NotNull(pattern);
@@ -179,7 +182,7 @@ namespace NanoRoute
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, verb), nameof(verb)
                 );
 
-            RouteNode target = FindNode(pattern);
+            RouteNode target = GetOrCreateNode(pattern);
 
             if (!target.HandlerRegistrations.TryGetValue(v, out IList<HandlerRegistration> handlerRegistrations))
             {
@@ -196,77 +199,77 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Creates a child builder whose routes are rooted under the given prefix.
+        /// Creates a child route scope whose routes are rooted under the given prefix.
         /// </summary>
         /// <param name="pattern">
-        /// The base prefix. It must be a valid route pattern ending in <c>/</c> so child routes can be appended to it.
+        /// The base prefix. It must be a valid route pattern ending in <c>/*</c> so child routes can be appended to it.
         /// </param>
-        /// <returns>A child builder that shares the current route tree but has its own parser registration scope.</returns>
+        /// <returns>A child route scope builder that shares the current route tree but has its own parser registration scope.</returns>
         /// <remarks>
-        /// Child builders inherit the parent's registered value parsers at creation time. Additional parser
-        /// registrations or overrides made on the child builder stay local to that branch.
+        /// Child route scopes inherit the parent's registered value parsers at creation time. Additional parser
+        /// registrations or overrides made on the child scope stay local to that branch.
         /// </remarks>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/*</c>.</exception>
         /// <exception cref="InvalidOperationException">
         /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
         /// registered yet.
         /// </exception>
         /// <example>
         /// <code>
-        /// RouteBuilder api = builder.CreatePrefix("/api/");
+        /// RouteScopeBuilder api = builder.CreatePrefix("/api/*");
         ///
-        /// api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());
+        /// api.AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok());
         /// </code>
         /// </example>
-        public RouteBuilder CreatePrefix(string pattern)
+        public RouteScopeBuilder CreatePrefix(string pattern)
         {
             Ensure.NotNull(pattern);
 
-            if (!pattern.EndsWith("/"))
+            if (!pattern.EndsWith(CurrentPrefix))
                 throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
 
-            return new RouteBuilder(this, pattern);
+            return new RouteScopeBuilder(this, pattern);
         }
 
         /// <summary>
-        /// Gets the value parser registrations currently visible from this builder instance.
+        /// Gets the value parser registrations currently visible from this route scope.
         /// </summary>
         /// <remarks>
-        /// For child builders created with <see cref="CreatePrefix(string)"/>, this dictionary reflects the inherited
+        /// For child scopes created with <see cref="CreatePrefix(string)"/>, this dictionary reflects the inherited
         /// registrations plus any overrides added to that child scope.
         /// </remarks>
         public IReadOnlyDictionary<string, ValueParserRegistration> ValueParsers => _valueParsers;
 
         /// <summary>
-        /// Gets the route pattern prefix for this builder branch.
+        /// Gets the route pattern prefix for this route scope.
         /// </summary>
         /// <remarks>
-        /// The root builder has an empty base pattern. Child builders created with <see cref="CreatePrefix(string)"/>
-        /// expose the accumulated prefix inherited from their parent builders.
+        /// The root scope exposes <see cref="CurrentPrefix"/>. Child scopes created with
+        /// <see cref="CreatePrefix(string)"/> expose the accumulated prefix inherited from their parent scopes.
         /// </remarks>
         public string BasePattern { get; }
 
         /// <summary>
-        /// Gets extension-defined builder metadata visible from this builder instance.
+        /// Gets extension-defined builder metadata visible from this route scope.
         /// </summary>
         /// <remarks>
         /// Metadata is public for extension authors who need scoped build-time settings behind module-specific
         /// configuration methods. Application code usually should prefer those module APIs instead of reading or
         /// writing metadata directly.
         /// <para>
-        /// Child builders created with <see cref="CreatePrefix(string)"/> inherit a scoped copy of their parent's
-        /// metadata. Metadata updates made after the child builder is created stay local to the builder where they
+        /// Child scopes created with <see cref="CreatePrefix(string)"/> inherit a scoped copy of their parent's
+        /// metadata. Metadata updates made after the child scope is created stay local to the scope where they
         /// are made.
         /// </para>
         /// </remarks>
         public BuilderMetadata Metadata { get; }
 
         /// <summary>
-        /// Gets the distinct route patterns currently visible from this builder branch.
+        /// Gets the distinct route patterns currently visible from this route scope.
         /// </summary>
         /// <remarks>
-        /// Each entry is formatted as <c>[Verb] Pattern</c>. Child builders list only the routes reachable from
-        /// their base path, while the root builder lists the whole configured tree.
+        /// Each entry is formatted as <c>[Verb] Pattern</c>. Child scopes list only the routes reachable from
+        /// their base path, while the root scope lists the whole configured tree.
         /// </remarks>
         public IEnumerable<string> Patterns
         {
@@ -276,7 +279,7 @@ namespace NanoRoute
 
                 Walk(_root, patterns);
 
-                return patterns.OrderBy(static p => p);
+                return patterns.OrderBy(static p => p, StringComparer.Ordinal);
 
                 static void Walk(RouteNode node, HashSet<string> patterns)
                 {

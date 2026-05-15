@@ -54,10 +54,10 @@ namespace NanoRoute.Perf
         {
             (string pattern, Uri requestUri) = Scenario switch
             {
-                ScenarioKind.SingleLiteral => ("/health", new Uri("https://www.example.com/health")),
-                ScenarioKind.SingleParsed => ("/{id:int}", new Uri("https://www.example.com/42")),
-                ScenarioKind.ComplexLiteral => ("/api/v1/users/42/orders/7/items/3/details", new Uri("https://www.example.com/api/v1/users/42/orders/7/items/3/details")),
-                ScenarioKind.ComplexParsed => ("/api/v1/users/{userId:int}/orders/{orderId:int}/items/{itemId:int}/details", new Uri("https://www.example.com/api/v1/users/42/orders/7/items/3/details")),
+                ScenarioKind.SingleLiteral => ("/health/", new Uri("https://www.example.com/health")),
+                ScenarioKind.SingleParsed => ("/{id:int}/", new Uri("https://www.example.com/42")),
+                ScenarioKind.ComplexLiteral => ("/api/v1/users/42/orders/7/items/3/details/", new Uri("https://www.example.com/api/v1/users/42/orders/7/items/3/details")),
+                ScenarioKind.ComplexParsed => ("/api/v1/users/{userId:int}/orders/{orderId:int}/items/{itemId:int}/details/", new Uri("https://www.example.com/api/v1/users/42/orders/7/items/3/details")),
                 _ => throw new ArgumentOutOfRangeException(nameof(Scenario), Scenario, "Unknown routing benchmark scenario.")
             };
 
