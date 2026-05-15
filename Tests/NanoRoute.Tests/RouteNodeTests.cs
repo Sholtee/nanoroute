@@ -47,11 +47,11 @@ namespace NanoRoute.Tests
             root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(rootHandler, "/")];
 
             RouteNode literalChild = new();
-            literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(literalHandler, "/users")];
+            literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(literalHandler, "/users/")];
             root.LiteralChildren.Add("users".AsMemory(), literalChild);
 
             RouteNode parsedChild = new() { ParameterParser = parser };
-            parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(parsedHandler, "/{id:str}")];
+            parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(parsedHandler, "/{id:str}/")];
             root.ParsedChildren.Add(parsedChild);
 
             RouteNode copy = root.Copy(freeze: false);
@@ -89,7 +89,7 @@ namespace NanoRoute.Tests
             root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(handler, "/")];
 
             RouteNode literalChild = new();
-            literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(handler, "/users")];
+            literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(handler, "/users/")];
             root.LiteralChildren.Add("users".AsMemory(), literalChild);
 
             RouteNode parsedChild = new()
@@ -101,7 +101,7 @@ namespace NanoRoute.Tests
                     Arguments: null
                 )
             };
-            parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(handler, "/{id:str}")];
+            parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(handler, "/{id:str}/")];
             root.ParsedChildren.Add(parsedChild);
 
             RouteNode copy = root.Copy(freeze: true);
@@ -132,7 +132,7 @@ namespace NanoRoute.Tests
 
             RouteNode snapshot = root.Copy(frozen);
 
-            root.HandlerRegistrations[HttpVerb.Get].Add(new HandlerRegistration(addedLaterHandler, "/after"));
+            root.HandlerRegistrations[HttpVerb.Get].Add(new HandlerRegistration(addedLaterHandler, "/after/"));
             root.LiteralChildren.Add("admins".AsMemory(), new RouteNode());
             root.ParsedChildren.Add(new RouteNode());
 

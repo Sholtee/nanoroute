@@ -89,8 +89,8 @@ namespace NanoRoute
     /// automatically from the current request.
     /// </para>
     /// <para>
-    /// Use <see cref="ValueSourceAttribute"/> to bind a property from a specific context key or service.
-    /// Missing required context values and services throw <see cref="InvalidOperationException"/>.
+    /// Use <see cref="ValueSourceAttribute"/> to bind a property from a specific parameter key or service.
+    /// Missing required parameter values and services throw <see cref="InvalidOperationException"/>.
     /// </para>
     /// </remarks>
     public static class NanoRouteHandlerExtensions
@@ -376,15 +376,14 @@ namespace NanoRoute
             /// </summary>
             /// <param name="pattern">
             /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-            /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-            /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
-            /// invalid, and patterns without a trailing slash match only the exact path.
+            /// registered parsers in the form <c>{parameterName:parserName}</c>. Exact patterns must end with
+            /// <c>/</c>, prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators are invalid.
             /// </param>
             /// <param name="handler">The handler to execute when the pattern matches.</param>
             /// <returns>The current router instance.</returns>
             /// <example>
             /// <code>
-            /// builder.AddHandler("/health", (context, next) =&gt; Results.Ok());
+            /// builder.AddHandler("/health/", (context, next) =&gt; Results.Ok());
             /// </code>
             /// </example>
             public TBuilder AddHandler(string pattern, RequestHandlerDelegate handler) => routeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
@@ -395,9 +394,8 @@ namespace NanoRoute
             /// <param name="verbs">The HTTP methods that should use the handler.</param>
             /// <param name="pattern">
             /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-            /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-            /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
-            /// invalid, and patterns without a trailing slash match only the exact path.
+            /// registered parsers in the form <c>{parameterName:parserName}</c>. Exact patterns must end with
+            /// <c>/</c>, prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators are invalid.
             /// </param>
             /// <param name="handler">The handler to execute when the route matches.</param>
             /// <returns>The current router instance.</returns>
@@ -405,7 +403,7 @@ namespace NanoRoute
             /// <code>
             /// builder.AddHandler(
             ///     ["GET", "POST"],
-            ///     "/api/items/{id:int}",
+            ///     "/api/items/{id:int}/",
             ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
             /// </code>
             /// </example>

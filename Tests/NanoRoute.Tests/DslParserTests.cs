@@ -117,6 +117,8 @@ namespace NanoRoute.Tests
         [TestCase("/items?filter=x", 6)]
         [TestCase("/items&filter=x", 6)]
         [TestCase("/items=filter", 6)]
+        [TestCase("/items", 6)]
+        [TestCase("/items/{id:int}/details", 23)]
         [TestCase("/items/{id:int}tail", 15)]
         public void ParseRoutePattern_ShouldRejectInvalidSeparatorsAfterDefinitions(string pattern, int expectedOffset)
         {

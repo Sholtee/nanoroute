@@ -35,11 +35,11 @@ namespace NanoRoute.Perf
             _pattern = Scenario switch
             {
                 ScenarioKind.Empty => "/",
-                ScenarioKind.LiteralSegments => "/api/v1/catalog/items/details",
-                ScenarioKind.SingleParameter => "/items/{id:int}",
-                ScenarioKind.MixedParameters => "/tenants/{tenantId:guid}/items/{itemId:int}/revisions/{revision:int}",
-                ScenarioKind.ParserArguments => "/items/{id:int(min=1,max=999999)}/names/{name:str(pattern='[a-z]+')}/details",
-                ScenarioKind.LongRoute => "/api/v1/tenants/{tenantId:guid}/regions/{region:str}/warehouses/{warehouseId:int}/aisles/{aisle:str}/bins/{binId:int}/items/{itemId:guid}",
+                ScenarioKind.LiteralSegments => "/api/v1/catalog/items/details/",
+                ScenarioKind.SingleParameter => "/items/{id:int}/",
+                ScenarioKind.MixedParameters => "/tenants/{tenantId:guid}/items/{itemId:int}/revisions/{revision:int}/",
+                ScenarioKind.ParserArguments => "/items/{id:int(min=1,max=999999)}/names/{name:str(pattern='[a-z]+')}/details/",
+                ScenarioKind.LongRoute => "/api/v1/tenants/{tenantId:guid}/regions/{region:str}/warehouses/{warehouseId:int}/aisles/{aisle:str}/bins/{binId:int}/items/{itemId:guid}/",
                 _ => throw new ArgumentOutOfRangeException(nameof(Scenario), Scenario, "Unknown route-pattern benchmark scenario.")
             };
         }

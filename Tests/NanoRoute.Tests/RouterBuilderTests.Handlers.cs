@@ -22,7 +22,7 @@ namespace NanoRoute.Tests
         public async Task AddHandler_WithSingleVerbAndPattern_ShouldBindHandlerToMatchingRouteAndVerb()
         {
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent("items")
                 })
@@ -57,7 +57,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddHandler("GET", "/items/{id:int}", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                .AddHandler("GET", "/items/{id:int}/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(context.Parameters["id"]!.ToString()!)
                 })
@@ -77,7 +77,7 @@ namespace NanoRoute.Tests
         public async Task AddHandler_WithMultipleVerbsAndPattern_ShouldRegisterTheHandlerForEachVerb()
         {
             TestRouter router = _routerBuilder
-                .AddHandler(["GET", "POST"], "/items", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                .AddHandler(["GET", "POST"], "/items/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(context.Request.Method.Method)
                 })
@@ -110,7 +110,7 @@ namespace NanoRoute.Tests
         public async Task AddHandler_WithPatternOnlyOverload_ShouldRegisterTheHandlerForAllVerbs()
         {
             TestRouter router = _routerBuilder
-                .AddHandler("/items", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
+                .AddHandler("/items/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(context.Request.Method.Method)
                 })
@@ -139,8 +139,8 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddHandler(["GET"], mockHandler.Object)
-                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
-                .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted))
+                .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted))
                 .CreateRouter();
 
             HttpResponseMessage getResponse = await router.Handle
@@ -170,9 +170,9 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
-        [TestCase("/users/~denes")]
-        [TestCase("/files/a%20b")]
-        [TestCase("/mail/a%40b")]
+        [TestCase("/users/~denes/")]
+        [TestCase("/files/a%20b/")]
+        [TestCase("/mail/a%40b/")]
         public void AddHandler_ShouldAllowUriLiteralCharacters(string pattern)
         {
             Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
@@ -191,7 +191,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddHandler_ShouldThrowOnInvalidVerb()
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("INVALID", "/path/to/somewhere", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("INVALID", "/path/to/somewhere/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
             Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "INVALID")));
         }

@@ -103,7 +103,7 @@ namespace NanoRoute
             /// routerBuilder
             ///     .AddJsonErrorDetails()
             ///     .AddJsonBody("POST", "/users/", MyJsonContext.Default.CreateUserRequest, "body")
-            ///     .AddHandler("POST", "/users", (context, _) =&gt;
+            ///     .AddHandler("POST", "/users/", (context, _) =&gt;
             ///     {
             ///         CreateUserRequest body = (CreateUserRequest) context.Parameters["body"]!;
             ///         return Task.FromResult(HttpResponseMessage.Json(HttpStatusCode.Created, body));
@@ -368,7 +368,7 @@ namespace NanoRoute
             /// <code>
             /// routerBuilder
             ///     .AddJsonErrorDetails()
-            ///     .AddHandler("GET", "/items/{id:int}", (context, _) =&gt;
+            ///     .AddHandler("GET", "/items/{id:int}/", (context, _) =&gt;
             ///         throw new InvalidOperationException("Unexpected state"));
             /// </code>
             /// </example>

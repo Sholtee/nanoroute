@@ -43,7 +43,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task MoveNextAsync_ShouldMatchLiteralBranches()
         {
-            HandlerRegistration handler = new(s_handler, "/api/users");
+            HandlerRegistration handler = new(s_handler, "/api/users/");
 
             RouteNode
                 root = new(),
@@ -63,13 +63,13 @@ namespace NanoRoute.Tests
             Assert.That(await cursor.MoveNextAsync(), Is.False);
         }
 
-        [TestCase(MatchingPrecedence.LiteralFirst, "/items/value")]
-        [TestCase(MatchingPrecedence.ParameterizedFirst, "/items/{id:str}")]
+        [TestCase(MatchingPrecedence.LiteralFirst, "/items/value/")]
+        [TestCase(MatchingPrecedence.ParameterizedFirst, "/items/{id:str}/")]
         public async Task MoveNextAsync_ShouldRespectMatchingPrecedence(MatchingPrecedence matchingPrecedence, string expectedPattern)
         {
             HandlerRegistration
-                literalHandler = new(s_handler, "/items/value"),
-                parsedHandler = new(s_handler, "/items/{id:str}");
+                literalHandler = new(s_handler, "/items/value/"),
+                parsedHandler = new(s_handler, "/items/{id:str}/");
 
             RouteNode
                 root = new(),
@@ -129,7 +129,7 @@ namespace NanoRoute.Tests
                     return new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString()));
                 });
 
-            HandlerRegistration handler = new(s_handler, "/api/{slug:str}/details");
+            HandlerRegistration handler = new(s_handler, "/api/{slug:str}/details/");
 
             RouteNode
                 root = new(),
@@ -174,7 +174,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task MoveNextAsync_ShouldNotAttachParametersWhenTheParsedSegmentHasNoParameterName()
         {
-            HandlerRegistration handler = new(s_handler, "/api/{str}/details");
+            HandlerRegistration handler = new(s_handler, "/api/{str}/details/");
 
             RouteNode
                 root = new(),
@@ -213,7 +213,7 @@ namespace NanoRoute.Tests
                 .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")))
                 .Returns(new ValueTask<ValueParseResult>(new ValueParseResult(true, 1986)));
 
-            HandlerRegistration handler = new(s_handler, "/api/{id:int}/details");
+            HandlerRegistration handler = new(s_handler, "/api/{id:int}/details/");
 
             RouteNode
                 root = new(),

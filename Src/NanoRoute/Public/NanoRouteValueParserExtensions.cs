@@ -319,7 +319,7 @@ namespace NanoRoute
             /// <code>
             /// builder
             ///     .AddDefaultValueParsers()
-            ///     .AddHandler("GET", "/users/{id:int}", (context, next) =&gt; Results.Ok(context.Parameters["id"]));
+            ///     .AddHandler("GET", "/users/{id:int}/", (context, next) =&gt; Results.Ok(context.Parameters["id"]));
             /// </code>
             /// </example>
             public TBuilder AddDefaultValueParsers()

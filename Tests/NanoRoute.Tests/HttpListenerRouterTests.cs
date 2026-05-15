@@ -124,7 +124,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldHandlePostRequests()
         {
             CreateRouter(bldr => bldr
-                .AddHandler("POST", "/welcome", async (context, _) =>
+                .AddHandler("POST", "/welcome/", async (context, _) =>
                 {
                     Assert.That(context.Request.Headers.TryGetValues("X-Custom-Request-Header", out IEnumerable<string>? values), Is.True);
                     Assert.That(values, Is.EquivalentTo(new string[] { "cica" }));
@@ -162,7 +162,7 @@ namespace NanoRoute.Tests
         {
             CreateRouter(bldr => bldr
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .AddHandler("Get", "/welcome/{name:str}", async (context, _) =>
+                .AddHandler("Get", "/welcome/{name:str}/", async (context, _) =>
                 {
                     Assert.That(context.Request.Headers.TryGetValues("X-Custom-Request-Header", out IEnumerable<string>? values), Is.True);
                     Assert.That(values, Is.EquivalentTo(new string[] { "cica" }));
@@ -199,7 +199,7 @@ namespace NanoRoute.Tests
             using CancellationTokenSource cancellation = new(TimeSpan.FromMilliseconds(50));
 
             CreateRouter(bldr => bldr
-                .AddHandler("GET", "/welcome", async (context, _) =>
+                .AddHandler("GET", "/welcome/", async (context, _) =>
                 {
                     await Task.Delay(Timeout.InfiniteTimeSpan, context.Cancellation);
                     return new HttpResponseMessage(HttpStatusCode.OK);
@@ -239,7 +239,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldCopyContentHeadersToRequestContent()
         {
             CreateRouter(bldr => bldr
-                .AddHandler("POST", "/welcome", async (context, _) =>
+                .AddHandler("POST", "/welcome/", async (context, _) =>
                 {
                     Assert.That(context.Request.Content, Is.Not.Null);
                     Assert.That(context.Request.Content!.Headers.ContentType, Is.Not.Null);
@@ -271,7 +271,7 @@ namespace NanoRoute.Tests
         {
             CreateRouter(bldr => bldr
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .AddHandler("GET", "", async (context, _) =>
+                .AddHandler("GET", RouteBuilder.CurrentExact, async (context, _) =>
                 {
                     Assert.That(context.Request.TryGetProperty(Router.OriginalRequestName, out object? originalRequest), Is.True);
                     Assert.That(originalRequest, Is.InstanceOf<HttpListenerRequest>());
@@ -292,7 +292,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldIgnoreReservedResponseHeaders()
         {
             CreateRouter(bldr => bldr
-                .AddHandler("GET", "", async (_, _) =>
+                .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) =>
                 {
                     HttpResponseMessage resp = new(HttpStatusCode.OK) { Content = new StringContent("Hello") };
 
@@ -322,7 +322,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldCopyResponseContentHeaders()
         {
             CreateRouter(bldr => bldr
-                .AddHandler("GET", "/welcome", async (_, _) =>
+                .AddHandler("GET", "/welcome/", async (_, _) =>
                 {
                     StringContent content = new(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }));
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json")
@@ -355,7 +355,7 @@ namespace NanoRoute.Tests
         public async Task Route_ShouldHandleResponsesWithoutContent()
         {
             CreateRouter(bldr => bldr
-                .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.NoContent)));
+                .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.NoContent)));
 
             Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
 
@@ -377,12 +377,12 @@ namespace NanoRoute.Tests
                     parsed = success ? value : null;
                     return success;
                 })
-                .AddHandler("GET", "/api/users/{user_id:int}/", async (context, next) =>
+                .AddHandler("GET", "/api/users/{user_id:int}/*", async (context, next) =>
                 {
                     context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
                     return await next();
                 })
-                .AddHandler("GET", "/api/users/{user_id:int}/details", async (context, _) =>
+                .AddHandler("GET", "/api/users/{user_id:int}/details/", async (context, _) =>
                 {
                     return new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -406,13 +406,13 @@ namespace NanoRoute.Tests
         {
             CreateRouter(bldr => bldr
                 .AddDefaultValueParsers()
-                .AddPrefix("/api/users/{user_id:int}/", users => users
-                    .AddHandler("GET", "/", async (context, next) =>
+                .AddPrefix("/api/users/{user_id:int}/*", users => users
+                    .AddHandler("GET", RouteBuilder.CurrentPrefix, async (context, next) =>
                     {
                         context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
                         return await next();
                     })
-                    .AddHandler("GET", "/details", async (context, _) =>
+                    .AddHandler("GET", "/details/", async (context, _) =>
                     {
                         return HttpResponseMessage.Json(new
                         {

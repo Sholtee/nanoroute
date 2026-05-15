@@ -18,26 +18,20 @@ namespace NanoRoute
     /// </summary>
     /// <remarks>
     /// Route patterns support literal segments and parser-backed parameter segments such as
-    /// <c>/users/{id:int}</c>. Patterns must start with <c>/</c>, and repeated <c>/</c> separators such as
-    /// <c>//</c> are invalid. A trailing <c>/</c> marks the pattern as a prefix match, while patterns without a
-    /// trailing slash must match the full path exactly.
+    /// <c>/users/{id:int}/</c>. Patterns must start with <c>/</c>, exact patterns must end with <c>/</c>,
+    /// prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators such as <c>//</c> are invalid.
     /// </remarks>
     public class RouteBuilder : RoutingContext
     {
         /// <summary>
-        /// 
-        /// </summary>
-        public const string PrefixTail = "/*";
-
-        /// <summary>
         /// The route pattern that matches the current builder scope exactly.
         /// </summary>
-        public const string CurrentExact = "";
+        public const string CurrentExact = "/";
 
         /// <summary>
         /// The route pattern that matches the current builder scope as a prefix.
         /// </summary>
-        public const string CurrentPrefix = "/";
+        public const string CurrentPrefix = "/*";
 
         #region Private
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -100,7 +94,12 @@ namespace NanoRoute
             return target;
         }
 
-        private static string JoinPattern(string @base, string extensions) => @base.TrimEnd('*') + extensions.TrimStart('/');
+        private static string JoinPattern(string @base, string extensions)
+        {
+            Debug.Assert(@base.EndsWith(CurrentPrefix), "Base patterns must be prefix routes");
+
+            return @base.TrimEnd('*') + extensions.TrimStart('/');
+        }
 
         private RouteBuilder(RouteBuilder parent, string pattern): base(parent.GetOrCreateNode(pattern))
         {
@@ -114,7 +113,7 @@ namespace NanoRoute
         {
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
 
-            BasePattern = PrefixTail;
+            BasePattern = CurrentPrefix;
             Metadata = new BuilderMetadata();
         }
 
@@ -149,9 +148,8 @@ namespace NanoRoute
         /// <param name="verb">The HTTP method that activates the handler.</param>
         /// <param name="pattern">
         /// The route pattern to match. Literal segments are matched case-insensitively, parameter segments use
-        /// registered parsers in the form <c>{parameterName:parserName}</c>, and a trailing <c>/</c> turns the
-        /// pattern into a prefix match. Patterns must start with <c>/</c>, repeated <c>/</c> separators are
-        /// invalid, and patterns without a trailing slash match only the exact path.
+        /// registered parsers in the form <c>{parameterName:parserName}</c>. Exact patterns must end with
+        /// <c>/</c>, prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators are invalid.
         /// </param>
         /// <param name="handler">
         /// The handler to execute. If several handlers match, calling the supplied <c>next</c> delegate continues
@@ -165,7 +163,7 @@ namespace NanoRoute
         /// </exception>
         /// <example>
         /// <code>
-        /// builder.AddHandler("GET", "/files/{path:any}/", (context, next) =&gt;
+        /// builder.AddHandler("GET", "/files/{path:any}/*", (context, next) =&gt;
         /// {
         ///     string path = (string) context.Parameters["path"]!;
         ///     return ServeFile(path);
@@ -204,30 +202,30 @@ namespace NanoRoute
         /// Creates a child builder whose routes are rooted under the given prefix.
         /// </summary>
         /// <param name="pattern">
-        /// The base prefix. It must be a valid route pattern ending in <c>/</c> so child routes can be appended to it.
+        /// The base prefix. It must be a valid route pattern ending in <c>/*</c> so child routes can be appended to it.
         /// </param>
         /// <returns>A child builder that shares the current route tree but has its own parser registration scope.</returns>
         /// <remarks>
         /// Child builders inherit the parent's registered value parsers at creation time. Additional parser
         /// registrations or overrides made on the child builder stay local to that branch.
         /// </remarks>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/*</c>.</exception>
         /// <exception cref="InvalidOperationException">
         /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
         /// registered yet.
         /// </exception>
         /// <example>
         /// <code>
-        /// RouteBuilder api = builder.CreatePrefix("/api/");
+        /// RouteBuilder api = builder.CreatePrefix("/api/*");
         ///
-        /// api.AddHandler("GET", "/health", (context, _) =&gt; Results.Ok());
+        /// api.AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok());
         /// </code>
         /// </example>
         public RouteBuilder CreatePrefix(string pattern)
         {
             Ensure.NotNull(pattern);
 
-            if (!pattern.EndsWith(PrefixTail))
+            if (!pattern.EndsWith(CurrentPrefix))
                 throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
 
             return new RouteBuilder(this, pattern);
@@ -246,8 +244,8 @@ namespace NanoRoute
         /// Gets the route pattern prefix for this builder branch.
         /// </summary>
         /// <remarks>
-        /// The root builder has an empty base pattern. Child builders created with <see cref="CreatePrefix(string)"/>
-        /// expose the accumulated prefix inherited from their parent builders.
+        /// The root builder exposes <see cref="CurrentPrefix"/>. Child builders created with
+        /// <see cref="CreatePrefix(string)"/> expose the accumulated prefix inherited from their parent builders.
         /// </remarks>
         public string BasePattern { get; }
 
@@ -281,7 +279,7 @@ namespace NanoRoute
 
                 Walk(_root, patterns);
 
-                return patterns.OrderBy(static p => p);
+                return patterns.OrderBy(static p => p, StringComparer.Ordinal);
 
                 static void Walk(RouteNode node, HashSet<string> patterns)
                 {

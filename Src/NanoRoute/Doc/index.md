@@ -27,8 +27,8 @@ The API documentation for this package is generated from the XML comments in the
 
 ## Highlights
 
-- Routes can be exact matches or prefix matches depending on whether the pattern ends with `/`.
-- Route patterns must start with `/`, and repeated `/` separators such as `//` are invalid.
+- Exact route patterns must start and end with `/`; prefix route patterns must start with `/` and end with `/*`.
+- Repeated `/` separators such as `//` are invalid.
 - Value parsers can be synchronous or asynchronous, and they can optionally bind route-template arguments such as `{id:int(min=1)}` once during registration.
 - Parser-backed segments support optional parameter names. `{id:int}` stores the parsed value in `RequestContext.Parameters`, while `{int}` only validates the segment.
 - `AddPrefix()` and `CreatePrefix()` create scoped route subtrees without forcing you to repeat common prefixes.
@@ -43,7 +43,7 @@ The API documentation for this package is generated from the XML comments in the
 - `ConfigureJsonErrorDetails()` stores scoped JSON `ErrorDetails` response settings used by subsequently registered `AddJsonErrorDetails()` middleware.
 - Handler convenience overloads such as pattern-only registration, multi-verb registration, and `AddHandler<TRequestContext>()` are extension methods in the `NanoRoute` namespace.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
-- `ValueSourceAttribute` customizes typed-handler property binding with `Context`, `ServiceLocator`, and `Skip` sources.
+- `ValueSourceAttribute` customizes typed-handler property binding with `Parameter`, `ServiceLocator`, and `Skip` sources.
 
 ## Value Parser Syntax
 

@@ -15,18 +15,18 @@ namespace NanoRoute.NativeAot
     {
         private static void ConfigureTypedHandlerRoutes(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) => builder
             .AddStringParser()
-            .AddQueryBindings("GET", "/typed/items/{id:int(min=1)}", "{query_filter:str(min=3)}")
-            .AddHandler(["GET"], "/typed/items/{id:int(min=1)}", static (TypedRequest request) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            .AddQueryBindings("GET", "/typed/items/{id:int(min=1)}/", "{query_filter:str(min=3)}")
+            .AddHandler(["GET"], "/typed/items/{id:int(min=1)}/", static (TypedRequest request) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent($"{request.Service.Prefix}:{request.Id}:{request.Filter}", Encoding.UTF8, "text/plain")
             }))
-            .AddHandler(["GET"], "/typed/middleware/{id:int(min=1)}", static async (TypedMiddlewareRequest request, CallNextHandlerDelegate next) =>
+            .AddHandler(["GET"], "/typed/middleware/{id:int(min=1)}/", static async (TypedMiddlewareRequest request, CallNextHandlerDelegate next) =>
             {
                 HttpResponseMessage response = await next().ConfigureAwait(false);
                 response.Headers.Add("X-Typed-Id", request.Id.ToString());
                 return response;
             })
-            .AddHandler("GET", "/typed/middleware/{id:int(min=1)}", static (context, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            .AddHandler("GET", "/typed/middleware/{id:int(min=1)}/", static (context, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent($"middleware:{context.Parameters["id"]}", Encoding.UTF8, "text/plain")
             }));

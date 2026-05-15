@@ -1,7 +1,6 @@
 const NanoRoute.NanoRouteExceptionExtensions.DeveloperMessagesName = "DeveloperMessages" -> string!
 const NanoRoute.NanoRouteExceptionExtensions.ErrorsName = "Errors" -> string!
 const NanoRoute.NanoRouteExceptionExtensions.StatusName = "StatusCode" -> string!
-const NanoRoute.RouteBuilder.PrefixTail = "/*" -> string!
 const NanoRoute.Router.OriginalRequestName = "OriginalRequest" -> string!
 const NanoRoute.Router.TraceIdName = "TraceId" -> string!
 NanoRoute.BindArgumentsDelegate
@@ -124,8 +123,8 @@ NanoRoute.RouteBuilder
 NanoRoute.RouteBuilder.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.BasePattern.get -> string!
-const NanoRoute.RouteBuilder.CurrentExact = "" -> string!
-const NanoRoute.RouteBuilder.CurrentPrefix = "/" -> string!
+const NanoRoute.RouteBuilder.CurrentExact = "/" -> string!
+const NanoRoute.RouteBuilder.CurrentPrefix = "/*" -> string!
 NanoRoute.RouteBuilder.CreatePrefix(string! pattern) -> NanoRoute.RouteBuilder!
 NanoRoute.RouteBuilder.Metadata.get -> NanoRoute.BuilderMetadata!
 NanoRoute.RouteBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!

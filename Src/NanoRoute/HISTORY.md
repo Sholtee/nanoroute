@@ -11,6 +11,8 @@
 - Removed inline query-binding overloads from typed `AddHandler()` APIs. Register query bindings explicitly with `AddQueryBindings()` before adding the typed handler.
 - Removed the `NanoRoute.HandlerExtensions` namespace. `ValueSource`, `ValueSourceAttribute`, and typed-handler `AddHandler()` extension methods now live directly in the `NanoRoute` namespace.
 - Moved pattern-only and multi-verb `AddHandler()` overloads from builder instance methods to extension methods in the `NanoRoute` namespace. The single-verb `AddHandler(string verb, string pattern, ...)` overload remains on `RouteBuilder` and strongly typed router builders.
+- Changed prefix-route patterns to use a trailing `/*` marker. A trailing `/` is now an exact route pattern, `RouteBuilder.CurrentExact` is `/`, and `RouteBuilder.CurrentPrefix` is `/*`.
+- Renamed `ValueSource.Context` to `ValueSource.Parameter` to describe that typed handlers read from `RequestContext.Parameters`.
 
 ### Added
 
@@ -61,16 +63,42 @@ If a typed handler needs query-string values, register query bindings before the
 
 ```csharp
 builder
-    .AddQueryBindings(["GET"], "/items/{id:int}", "{filter?:str(min=3)}")
+    .AddQueryBindings(["GET"], "/items/{id:int}/", "{filter?:str(min=3)}")
     .AddHandler
     (
         ["GET"],
-        "/items/{id:int}",
+        "/items/{id:int}/",
         static async (GetItemRequest request) =>
         {
             return await Handle(request);
         }
     );
+```
+
+Replace prefix route registrations like:
+
+```csharp
+builder.AddHandler("GET", "/api/users/{user_id:int}/", Middleware);
+builder.AddPrefix("/api/users/{user_id:int}/", users => { ... });
+```
+
+with:
+
+```csharp
+builder.AddHandler("GET", "/api/users/{user_id:int}/*", Middleware);
+builder.AddPrefix("/api/users/{user_id:int}/*", users => { ... });
+```
+
+Replace typed-handler binding attributes like:
+
+```csharp
+[ValueSource(ValueSource.Context, Name = "query_filter")]
+```
+
+with:
+
+```csharp
+[ValueSource(ValueSource.Parameter, Name = "query_filter")]
 ```
 
 ## 1.0.0-preview2
@@ -100,7 +128,7 @@ Replace typed-handler binding attributes like:
 with:
 
 ```csharp
-[ValueSource(ValueSource.Context, Name = "query_filter")]
+[ValueSource(ValueSource.Parameter, Name = "query_filter")]
 ```
 
 Replace diagnostic key constants like:

@@ -46,8 +46,8 @@ namespace NanoRoute.Tests
         [Test]
         public void CurrentRoutePatternConstants_ShouldExposeExistingRouteSemantics()
         {
-            Assert.That(RouteBuilder.CurrentExact, Is.EqualTo(string.Empty));
-            Assert.That(RouteBuilder.CurrentPrefix, Is.EqualTo("/"));
+            Assert.That(RouteBuilder.CurrentExact, Is.EqualTo("/"));
+            Assert.That(RouteBuilder.CurrentPrefix, Is.EqualTo("/*"));
         }
 
         [Test]
@@ -63,10 +63,10 @@ namespace NanoRoute.Tests
         public async Task CreateRouter_ShouldCreateAnImmutableSnapshot()
         {
             TestRouter router = _routerBuilder
-                .AddHandler("GET", "/before", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .AddHandler("GET", "/before/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
-            _routerBuilder.AddHandler("GET", "/after", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
+            _routerBuilder.AddHandler("GET", "/after/", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/after") }, s_services))!;
             Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
@@ -78,12 +78,12 @@ namespace NanoRoute.Tests
             RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
 
             _routerBuilder
-                .AddHandler("GET", "/items", handler)
-                .AddHandler("GET", "/items", handler);
+                .AddHandler("GET", "/items/", handler)
+                .AddHandler("GET", "/items/", handler);
 
             Assert.That(_routerBuilder.Patterns, Is.EqualTo(new[]
             {
-                "[Get] /items"
+                "[Get] /items/"
             }));
         }
 
@@ -93,43 +93,43 @@ namespace NanoRoute.Tests
             _routerBuilder
                 .AddValueParser("any", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("GET", RouteBuilder.CurrentPrefix, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/somewhere/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/{some_str_1:any}/not-prefix", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
+                .AddHandler("GET", "/somewhere/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/{some_str_1:any}/not-prefix/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
 
-            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/")
+            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/*")
                 .AddHandler("GET", RouteBuilder.CurrentExact, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/{some_str_2:any}/something/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/explicit/something/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/not-prefix", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
+                .AddHandler("GET", "/{some_str_2:any}/something/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/explicit/something/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
+                .AddHandler("GET", "/not-prefix/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
 
             Assert.That(_routerBuilder.Patterns, Is.EqualTo(new string[]
             {
-                "[Get] /",
-                "[Get] /{some_str_1:any}/not-prefix",
+                "[Get] /*",
                 "[Get] /path/to/",
-                "[Get] /path/to/{some_str_2:any}/something/",
-                "[Get] /path/to/explicit/something/",
-                "[Get] /path/to/not-prefix",
-                "[Get] /somewhere/",
+                "[Get] /path/to/explicit/something/*",
+                "[Get] /path/to/not-prefix/",
+                "[Get] /path/to/{some_str_2:any}/something/*",
+                "[Get] /somewhere/*",
+                "[Get] /{some_str_1:any}/not-prefix/",
             }));
             Assert.That(childBuilder.Patterns, Is.EqualTo(new string[]
             {
                 "[Get] /path/to/",
-                "[Get] /path/to/{some_str_2:any}/something/",
-                "[Get] /path/to/explicit/something/",
-                "[Get] /path/to/not-prefix"
+                "[Get] /path/to/explicit/something/*",
+                "[Get] /path/to/not-prefix/",
+                "[Get] /path/to/{some_str_2:any}/something/*",
             }));
         }
 
         [Test]
         public void BasePattern_ShouldReflectTheBuilderBranch()
         {
-            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/");
-            RouteBuilder nestedBuilder = childBuilder.CreatePrefix("/nested/");
+            RouteBuilder childBuilder = _routerBuilder.CreatePrefix("/path/to/*");
+            RouteBuilder nestedBuilder = childBuilder.CreatePrefix("/nested/*");
 
-            Assert.That(_routerBuilder.BasePattern, Is.Empty);
-            Assert.That(childBuilder.BasePattern, Is.EqualTo("/path/to/"));
-            Assert.That(nestedBuilder.BasePattern, Is.EqualTo("/path/to/nested/"));
+            Assert.That(_routerBuilder.BasePattern, Is.EqualTo("/*"));
+            Assert.That(childBuilder.BasePattern, Is.EqualTo("/path/to/*"));
+            Assert.That(nestedBuilder.BasePattern, Is.EqualTo("/path/to/nested/*"));
         }
     }
 }

@@ -22,9 +22,9 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddPrefix("/items/", items => items
-                    .AddQueryBindings("GET", "", "{filter:str(min=3)}&{page?:int(min=1)}")
-                    .AddHandler("GET", "", async (context, _) => new HttpResponseMessage
+                .AddPrefix("/items/*", items => items
+                    .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}")
+                    .AddHandler("GET", RouteBuilder.CurrentExact, async (context, _) => new HttpResponseMessage
                     {
                         Content = new StringContent($"{context.Parameters["filter"]}:{context.Parameters["page"]}")
                     }))
@@ -50,7 +50,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("{filter?:str(min=3)}")
-                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
                 {
                     Content = new StringContent(context.Parameters.ContainsKey("filter") ? "present" : "missing")
                 })
@@ -75,9 +75,9 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddPrefix("/items/", items => items
-                    .AddQueryBindings("GET", "", "{filter:str(min=3)}")
-                    .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
+                .AddPrefix("/items/*", items => items
+                    .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}")
+                    .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
@@ -119,7 +119,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("{query_filter:str(min=3)}")
-                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
                 {
                     Content = new StringContent((string) context.Parameters["query_filter"]!)
                 })
@@ -143,9 +143,9 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddQueryBindings("GET", "/items", "{filter:str(min=3)}")
-                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
-                .AddHandler("POST", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}")
+                .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
@@ -179,7 +179,7 @@ namespace NanoRoute.Tests
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings(new[] { "GET" }, "{filter:str(min=3)}")
-                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
                 {
                     Content = new StringContent((string) context.Parameters["filter"]!)
                 })
@@ -199,8 +199,8 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddQueryBindings("/items", "{filter:str(min=3)}")
-                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                .AddQueryBindings("/items/", "{filter:str(min=3)}")
+                .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
                 {
                     Content = new StringContent((string) context.Parameters["filter"]!)
                 })
@@ -224,8 +224,8 @@ namespace NanoRoute.Tests
                 {
                     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
                 })
-                .AddQueryBindings("GET", "/items", "{filter:str(min=3)}")
-                .AddHandler("GET", "/items", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
+                .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}")
+                .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
@@ -248,11 +248,11 @@ namespace NanoRoute.Tests
                 {
                     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
                 })
-                .AddQueryBindings(["GET"], "/items", "{filter:str(min=3)}", config => config with
+                .AddQueryBindings(["GET"], "/items/", "{filter:str(min=3)}", config => config with
                 {
                     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Ignore
                 })
-                .AddHandler("GET", "/items", async (context, _) => new HttpResponseMessage
+                .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
                 {
                     Content = new StringContent((string) context.Parameters["filter"]!)
                 })
@@ -276,16 +276,16 @@ namespace NanoRoute.Tests
                 {
                     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
                 })
-                .AddPrefix("/strict/", strict => strict
-                    .AddQueryBindings("GET", "", "{filter:str(min=3)}")
-                    .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
-                .AddPrefix("/loose/", loose => loose
+                .AddPrefix("/strict/*", strict => strict
+                    .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}")
+                    .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
+                .AddPrefix("/loose/*", loose => loose
                     .ConfigureQueryParsing(config => config with
                     {
                         UnexpectedParameterBehavior = UnexpectedParameterBehavior.Ignore
                     })
-                    .AddQueryBindings("GET", "", "{filter:str(min=3)}")
-                    .AddHandler("GET", "", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted)))
+                    .AddQueryBindings("GET", RouteBuilder.CurrentExact, "{filter:str(min=3)}")
+                    .AddHandler("GET", RouteBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted)))
                 .CreateRouter();
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
@@ -316,6 +316,8 @@ namespace NanoRoute.Tests
         [Test]
         public void QueryHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
+            _routerBuilder.AddDefaultValueParsers();
+
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddQueryBindings(""))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeBuilder"));
 
@@ -334,7 +336,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((IEnumerable<string>) null!, "/", ""))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!, "/", ""))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!, "/", "{filter:str}"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", null!, ""))!;
@@ -355,7 +357,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings(["GET"], "/", "", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("oneOffConfigOverride"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings(["GET"], "/", "", _ => null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings(["GET"], "/", "{filter:str}", _ => null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("config"));
         });
     }
