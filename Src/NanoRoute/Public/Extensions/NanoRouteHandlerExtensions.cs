@@ -95,105 +95,114 @@ namespace NanoRoute
     public static class NanoRouteHandlerExtensions
     {
         #region Private
-        private static Func<RequestContext, TRequestContext> CreateContextMapperDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>() where TRequestContext : new()
+        private static class ContextMapper<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext> where TRequestContext : new()
         {
-            ParameterExpression
-                source = Expression.Parameter(typeof(RequestContext), nameof(source)),
-                result = Expression.Variable(typeof(TRequestContext), nameof(result));
-
-            List<Expression> propSetters = 
-            [
-                Expression.Assign
-                (
-                    result,
-                    Expression.New
-                    (
-                        typeof(TRequestContext).GetConstructor(Type.EmptyTypes)
-                    )
-                )
-            ];
-
-            foreach (PropertyInfo prop in typeof(TRequestContext).GetProperties(BindingFlags.Instance | BindingFlags.Public))
-            {
-                if (!prop.CanWrite)
-                    continue;
-
-                ValueSourceAttribute? valueSource = prop.GetCustomAttribute<ValueSourceAttribute>();
-
-                switch (valueSource?.Source)
+            private static readonly Lazy<Func<RequestContext, TRequestContext>> s_MapperFunction = new
+            (
+                static () =>
                 {
-                    case ValueSource.Skip:
-                        continue;
-                    case ValueSource.ServiceLocator:
-                    {
-                        SetProperty
+                    ParameterExpression
+                        source = Expression.Parameter(typeof(RequestContext), nameof(source)),
+                        result = Expression.Variable(typeof(TRequestContext), nameof(result));
+
+                    List<Expression> propSetters = 
+                    [
+                        Expression.Assign
                         (
-                            valueSource?.Name is { } name
-                                ? context => context.Services.GetRequiredKeyedService(prop.PropertyType, name)
-                                : context => context.Services.GetRequiredService(prop.PropertyType)
-                        );
-                        continue;
-                    }
-                    case ValueSource.Parameter:
+                            result,
+                            Expression.New
+                            (
+                                typeof(TRequestContext).GetConstructor(Type.EmptyTypes)
+                            )
+                        )
+                    ];
+
+                    foreach (PropertyInfo prop in typeof(TRequestContext).GetProperties(BindingFlags.Instance | BindingFlags.Public))
                     {
-                        string name = valueSource?.Name ?? prop.Name;
-                        SetProperty
-                        (
-                            context => context.Parameters.TryGetValue(name, out object? arg)
-                                ? arg!
-                                // InvalidOperationException may map to HTTP 500 but the developer message will contain the reason
-                                : throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_MISSING_REQUIRED_PARAMETER, name))
-                        );
-                        continue;
-                    }
-                    case null:
-                        switch (prop.PropertyType)
+                        if (!prop.CanWrite)
+                            continue;
+
+                        ValueSourceAttribute? valueSource = prop.GetCustomAttribute<ValueSourceAttribute>();
+
+                        switch (valueSource?.Source)
                         {
-                            case Type x when x == typeof(RequestContext):
-                                SetPropertyValue(source);
+                            case ValueSource.Skip:
                                 continue;
-                            case Type x when x == typeof(CancellationToken):
-                                SetProperty(static context => context.Cancellation);
-                                continue;                 
+                            case ValueSource.ServiceLocator:
+                            {
+                                SetProperty
+                                (
+                                    valueSource?.Name is { } name
+                                        ? context => context.Services.GetRequiredKeyedService(prop.PropertyType, name)
+                                        : context => context.Services.GetRequiredService(prop.PropertyType)
+                                );
+                                continue;
+                            }
+                            case ValueSource.Parameter:
+                            {
+                                string name = valueSource?.Name ?? prop.Name;
+                                SetProperty
+                                (
+                                    context => context.Parameters.TryGetValue(name, out object? arg)
+                                        ? arg!
+                                        // InvalidOperationException may map to HTTP 500 but the developer message will contain the reason
+                                        : throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_MISSING_REQUIRED_PARAMETER, name))
+                                );
+                                continue;
+                            }
+                            case null:
+                                switch (prop.PropertyType)
+                                {
+                                    case Type x when x == typeof(RequestContext):
+                                        SetPropertyValue(source);
+                                        continue;
+                                    case Type x when x == typeof(CancellationToken):
+                                        SetProperty(static context => context.Cancellation);
+                                        continue;                 
+                                }
+                                goto case ValueSource.Parameter;
+                            default:
+                                Debug.Fail($"Unknown source: {valueSource.Source}");
+                                break;
                         }
-                        goto case ValueSource.Parameter;
-                    default:
-                        Debug.Fail($"Unknown source: {valueSource.Source}");
-                        break;
-                }
 
-                void SetPropertyValue(Expression value) => propSetters.Add
-                (
-                    Expression.Assign
-                    (
-                        Expression.Property(result, prop),
-                        Expression.Convert(value, prop.PropertyType)
-                    )
-                );
+                        void SetPropertyValue(Expression value) => propSetters.Add
+                        (
+                            Expression.Assign
+                            (
+                                Expression.Property(result, prop),
+                                Expression.Convert(value, prop.PropertyType)
+                            )
+                        );
 
-                void SetProperty(Func<RequestContext, object> del) => SetPropertyValue
-                (
-                    Expression.Invoke
-                    (
-                        Expression.Constant(del, typeof(Func<RequestContext, object>)),
-                        source
-                    )
-                );
-            }
+                        void SetProperty(Func<RequestContext, object> del) => SetPropertyValue
+                        (
+                            Expression.Invoke
+                            (
+                                Expression.Constant(del, typeof(Func<RequestContext, object>)),
+                                source
+                            )
+                        );
+                    }
 
-            propSetters.Add(result);  // return result;
+                    propSetters.Add(result);  // return result;
 
-            // In native AOT context this will be interpreted rather than compiled
-            return Expression
-                .Lambda<Func<RequestContext, TRequestContext>>
-                (
-                    Expression.Block([result], propSetters),
-                    source
-                ).
-                Compile
-                (
-                    preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported
-                );
+                    // In native AOT context this will be interpreted rather than compiled
+                    return Expression
+                        .Lambda<Func<RequestContext, TRequestContext>>
+                        (
+                            Expression.Block([result], propSetters),
+                            source
+                        ).
+                        Compile
+                        (
+                            preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported
+                        );
+                },
+                isThreadSafe: true
+            );
+
+            public static Func<RequestContext, TRequestContext> Value => s_MapperFunction.Value;
         }
 
         private static TBuilder AddTypedHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeScopeBuilder, IEnumerable<string> verbs, string pattern, TypedRequestMiddlewareDelegate<TRequestContext> handler) where TBuilder : RouteScopeBuilder where TRequestContext : new()
@@ -203,7 +212,7 @@ namespace NanoRoute
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
 
-            Func<RequestContext, TRequestContext> mapContext = CreateContextMapperDelegate<TRequestContext>();
+            Func<RequestContext, TRequestContext> mapContext = ContextMapper<TRequestContext>.Value;
 
             routeScopeBuilder.AddHandler(verbs, pattern, (context, next) => handler(mapContext(context), next));
 
@@ -215,7 +224,7 @@ namespace NanoRoute
             Ensure.NotNull(endPointBuilder);
             Ensure.NotNull(handler);
 
-            Func<RequestContext, TRequestContext> mapContext = CreateContextMapperDelegate<TRequestContext>();
+            Func<RequestContext, TRequestContext> mapContext = ContextMapper<TRequestContext>.Value;
 
             return endPointBuilder.WithHandler((context, next) => handler(mapContext(context), next));
         }
