@@ -6,35 +6,58 @@ NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` 
 
 ```text
 nanoroute/
-|-- Src/                        Main source code
-|   |-- NanoRoute/              Library project
-|   |   |-- Doc/                DocFX documentation sources
-|   |   |-- Public/             Public API surface
-|   |   |-- Private/            Internal implementation details
-|   |   |   |-- LowLevel/       Low-level path and buffer helpers
-|   |   |   |-- RoutePattern/   Route pattern parsing and matching
-|   |   |-- Properties/         Resources and generated metadata
-|   |   |-- Icon.png            NuGet package icon
-|   |   |-- NanoRoute.csproj    Project file
-|   |   |-- PublicAPI.*.txt     Public API analyzer baselines
-|   |   |-- README.md           NuGet package README
-|   |-- NanoRoute.AwsLambda/    AWS Lambda adapter package
-|       |-- Doc/                DocFX documentation sources
-|       |-- Public/             Public adapter API surface
-|       |-- Private/            API Gateway DTO mapping helpers
-|       |-- Properties/         Resources and generated metadata
+|-- .github/
+|   |-- workflows/                      GitHub Actions workflows
+|-- Scripts/                            Build, packaging, docs, and local helper scripts
+|-- Src/                                Main source code
+|   |-- Directory.Build.props           Shared source project settings
+|   |-- Directory.Build.targets         Shared source project targets
+|   |-- NanoRoute/                      Library project
+|   |   |-- Doc/                        DocFX documentation sources
+|   |   |   |-- docfx.json              DocFX build configuration
+|   |   |   |-- docfxFilters.yml        API filter rules
+|   |   |   |-- index.md                Core package documentation landing page
+|   |   |-- Private/                    Internal implementation details
+|   |   |   |-- Dsl/                    Route DSL parsing helpers
+|   |   |   |-- LowLevel/               Low-level path and buffer helpers
+|   |   |-- Properties/                 Resources and generated metadata
+|   |   |-- Public/                     Public API surface
+|   |   |   |-- Extensions/             Public extension methods
+|   |   |   |-- HttpListener/           HttpListener adapter API
+|   |   |-- HISTORY.md                  Version history
+|   |   |-- Icon.png                    NuGet package icon
+|   |   |-- NanoRoute.csproj
+|   |   |-- PublicAPI.*.txt             Public API analyzer baselines
+|   |   |-- README.md                   NuGet package README
+|   |-- NanoRoute.AwsLambda/            AWS Lambda adapter package
+|       |-- Doc/                        DocFX documentation sources
+|       |   |-- docfx.json              DocFX build configuration
+|       |   |-- index.md                AWS Lambda package documentation landing page
+|       |-- Private/                    API Gateway DTO mapping helpers
+|       |-- Properties/                 Resources and generated metadata
+|       |-- Public/                     Public adapter API surface
+|       |-- HISTORY.md                  Version history
+|       |-- Icon.png                    NuGet package icon
 |       |-- NanoRoute.AwsLambda.csproj
-|       |-- PublicAPI.*.txt
-|       |-- README.md
-|-- Tests/                      Validation and benchmarks
-|   |-- NanoRoute.Tests/        Unit tests
-|   |-- NanoRoute.Perf/         Performance benchmarks
-|   |-- NanoRoute.NativeAot/    Native AOT smoke test
-|   |-- CoverageSettings.xml    Coverage configuration
-|   |-- Directory.Build.props   Shared test project settings
-|-- Scripts/                    Build and test helpers
-|-- Directory.Build.props       Shared MSBuild settings
-|-- NanoRoute.slnx              Solution entry point
+|       |-- PublicAPI.*.txt             Public API analyzer baselines
+|       |-- README.md                   NuGet package README
+|-- Tests/                              Validation, integration, smoke, and benchmark projects
+|   |-- NanoRoute.AwsLambda.Tests/      AWS Lambda adapter tests
+|   |-- NanoRoute.NativeAot/            Native AOT smoke test
+|   |-- NanoRoute.Perf/                 Performance benchmarks
+|   |-- NanoRoute.TestLambda/           LocalStack Lambda test project
+|   |-- NanoRoute.Tests/                Core unit tests
+|   |-- CoverageSettings.xml            Coverage configuration
+|   |-- Directory.Build.props           Shared test project settings
+|   |-- UnitTests.props                 Shared unit test project settings
+|-- .editorconfig
+|-- .gitignore
+|-- AGENTS.md                           Repository-specific agent instructions
+|-- Directory.Build.props               Shared MSBuild settings
+|-- dotnet-tools.json                   Local .NET tool manifest
+|-- LICENSE
+|-- NanoRoute.slnx                      Solution entry point
+|-- README.md                           Project README
 ```
 
 ## Target Frameworks
