@@ -215,7 +215,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/items/{id:int(min=1,max=2)}/", handler)
                 .AddHandler("POST", "/items/{id:int(max=2,min=1)}/", handler);
 
-            RouteNode root = _routerBuilder.GetRoot(true);
+            RouteNode root = _routerBuilder.CreateSnapshot();
 
             Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren, Has.Count.EqualTo(1));
             Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren[0].ParameterParser!.Definition.ParameterName, Is.EqualTo("id"));

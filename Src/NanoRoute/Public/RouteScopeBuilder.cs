@@ -125,7 +125,7 @@ namespace NanoRoute
         /// Creates an immutable snapshot of the current route tree.
         /// </summary>
         /// <returns>A copy of the configured root node.</returns>
-        internal RouteNode GetRoot(bool freeze) => _root.Copy(freeze);
+        internal RouteNode CreateSnapshot() => _root.Copy(freeze: true);
         #endregion
 
         /// <summary>

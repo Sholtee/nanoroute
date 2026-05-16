@@ -21,7 +21,7 @@ namespace NanoRoute
     /// </remarks>
     public abstract class Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config)
     {
-        private readonly RouteNode _root = routeScopeBuilder.GetRoot(freeze: true);
+        private readonly RouteNode _root = routeScopeBuilder.CreateSnapshot();
 
         /// <summary>
         /// The request property key that stores the trace identifier associated with the current request.
