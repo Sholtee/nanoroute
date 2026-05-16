@@ -18,9 +18,9 @@ namespace NanoRoute.AwsLambda
     /// <summary>
     /// Routes API Gateway HTTP API and Lambda Function URL <see cref="APIGatewayHttpApiV2ProxyRequest"/> instances through a NanoRoute pipeline.
     /// </summary>
-    public sealed class ApiGatewayHttpApiV2Router : Router
+    public sealed class ApiGatewayHttpApiV2Router : Router<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig>
     {
-        private ApiGatewayHttpApiV2Router(RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> builder) : base(builder, builder.RouterConfig) { }
+        private ApiGatewayHttpApiV2Router(RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> builder) : base(builder) { }
 
         /// <summary>
         /// Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.
@@ -82,16 +82,5 @@ namespace NanoRoute.AwsLambda
                 }
             };
         }
-
-        /// <summary>
-        /// Configuration assigned to this instance.
-        /// </summary>
-        public new AwsLambdaRouterConfig Config => (AwsLambdaRouterConfig) base.Config;
-
-        /// <summary>
-        /// Creates a strongly typed builder for configuring an <see cref="ApiGatewayHttpApiV2Router"/>.
-        /// </summary>
-        /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
-        public static RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> CreateBuilder() => new RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig>(static builder => new ApiGatewayHttpApiV2Router(builder));
     }
 }

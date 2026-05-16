@@ -164,7 +164,7 @@ namespace NanoRoute.Internals
             if (hi < 0 || lo < 0)
                 return false;
 
-            value = (byte) ((hi << 4) | lo);
+            value = (byte)((hi << 4) | lo);
             return true;
 
             static int HexToInt(char c)

@@ -24,7 +24,7 @@ namespace NanoRoute
     /// This adapter converts incoming <see cref="HttpListener"/> traffic into the core
     /// <see cref="HttpRequestMessage"/>/<see cref="HttpResponseMessage"/> pipeline used by NanoRoute.
     /// </remarks>
-    public sealed class HttpListenerRouter: Router
+    public sealed class HttpListenerRouter : Router<HttpListenerRouter, HttpListenerRouterConfig>
     {
         #region Private
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
@@ -36,9 +36,11 @@ namespace NanoRoute
             "Server"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
+        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder) { }
+
         private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
-            response.StatusCode = (int) responseMessage.StatusCode;
+            response.StatusCode = (int)responseMessage.StatusCode;
 
             CopyResponseHeaders(responseMessage.Headers);
 
@@ -89,8 +91,6 @@ namespace NanoRoute
 
             return requestMessage;
         }
-
-        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig) { }
         #endregion
 
         /// <summary>
@@ -155,16 +155,5 @@ namespace NanoRoute
                 throw;
             }
         }
-
-        /// <summary>
-        /// Configuration assigned to this instance.
-        /// </summary>
-        public new HttpListenerRouterConfig Config => (HttpListenerRouterConfig) base.Config;
-
-        /// <summary>
-        /// Creates a strongly typed builder for configuring an <see cref="HttpListenerRouter"/>.
-        /// </summary>
-        /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
-        public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static bldr => new HttpListenerRouter(bldr));
     }
 }

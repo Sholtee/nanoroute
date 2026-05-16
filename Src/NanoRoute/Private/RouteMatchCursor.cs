@@ -23,7 +23,7 @@ namespace NanoRoute.Internals
         public required Dictionary<string, object?> AttachedParameters { get; init; }
     }
 
-    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation): IAsyncEnumerator<RouteMatch>
+    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation) : IAsyncEnumerator<RouteMatch>
     {
         #region Private
         private enum BranchKind
@@ -128,7 +128,7 @@ namespace NanoRoute.Internals
             _handlerIndex = 0;
             _handlers = null;
             _decodedSegment = default;
-            
+
             _segment.MoveNext();
         }
 

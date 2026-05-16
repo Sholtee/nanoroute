@@ -22,7 +22,7 @@ namespace NanoRoute
     /// <returns>
     /// A <typeparamref name="TRouter"/> instance backed by the builder's current route snapshot.
     /// </returns>
-    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : Router where TConfig: RouterConfig, new();
+    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : Router where TConfig : RouterConfig, new();
 
     /// <summary>
     /// Binds raw parser arguments to an opaque object that is cached with the route definition.

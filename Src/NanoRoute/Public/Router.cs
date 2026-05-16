@@ -4,7 +4,11 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Net.Http;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,9 +23,9 @@ namespace NanoRoute
     /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
     /// handlers in order until one returns a response without delegating further.
     /// </remarks>
-    public abstract class Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config)
+    public abstract class Router
     {
-        private readonly RouteNode _root = routeScopeBuilder.CreateSnapshot();
+        private readonly RouteNode _root;
 
         /// <summary>
         /// The request property key that stores the trace identifier associated with the current request.
@@ -32,6 +36,20 @@ namespace NanoRoute
         /// The request property key that stores the original transport-specific request object.
         /// </summary>
         public const string OriginalRequestName = "OriginalRequest";
+
+        /// <summary>
+        /// Creates a new <see cref="Router"/> instance.
+        /// </summary>
+        /// <param name="routeScopeBuilder">The builder scope whose registered routes are captured by the router.</param>
+        /// <param name="config">The configuration assigned to the router instance.</param>
+        protected Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config)
+        {
+            Ensure.NotNull(routeScopeBuilder);
+            Ensure.NotNull(config);
+
+            _root = routeScopeBuilder.CreateSnapshot();
+            Config = config;
+        }
 
         /// <summary>
         /// Routes an <see cref="HttpRequestMessage"/> through the configured handler pipeline.
@@ -77,6 +95,58 @@ namespace NanoRoute
         /// <summary>
         /// Configuration assigned to this instance.
         /// </summary>
-        public RouterConfig Config { get; } = config;
+        public RouterConfig Config { get; }
+    }
+
+    /// <summary>
+    /// Provides the self-typed base for concrete router implementations with strongly typed configuration.
+    /// </summary>
+    /// <typeparam name="TDescendant">The concrete router type produced by <see cref="CreateBuilder"/>.</typeparam>
+    /// <typeparam name="TConfig">The configuration type exposed by <see cref="Config"/>.</typeparam>
+    /// <param name="bldr">The builder whose route snapshot and configuration initialize the router.</param>
+    /// <remarks>
+    /// Concrete routers derive from this type to inherit <see cref="CreateBuilder"/> and a typed
+    /// <see cref="Config"/> property. The concrete router must expose a public or non-public constructor that accepts
+    /// <see cref="RouterBuilder{TRouter, TConfig}"/> so the generated factory can create immutable router snapshots.
+    /// </remarks>
+    public abstract class Router<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicConstructors)] TDescendant, TConfig>(RouterBuilder<TDescendant, TConfig> bldr) : Router(bldr, bldr.RouterConfig) where TDescendant : Router<TDescendant, TConfig> where TConfig : RouterConfig, new()
+    {
+        private static readonly Lazy<RouterFactoryDelegate<TDescendant, TConfig>> s_factory = new
+        (
+            static () =>
+            {
+                ParameterExpression bldr = Expression.Parameter(typeof(RouterBuilder<TDescendant, TConfig>), nameof(bldr));
+
+                return Expression
+                    .Lambda<RouterFactoryDelegate<TDescendant, TConfig>>
+                    (
+                        Expression.New
+                        (
+                            typeof(TDescendant).GetConstructor
+                            (
+                                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+                                null,
+                                [typeof(RouterBuilder<TDescendant, TConfig>)],
+                                []
+                            ) ?? throw new MissingMethodException(),
+                            bldr
+                        ),
+                        bldr
+                    )
+                    .Compile(preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported);
+            },
+            isThreadSafe: true
+        );
+
+        /// <summary>
+        /// Configuration assigned to this instance.
+        /// </summary>
+        public new TConfig Config => (TConfig) base.Config;
+
+        /// <summary>
+        /// Creates a strongly typed builder.
+        /// </summary>
+        /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
+        public static RouterBuilder<TDescendant, TConfig> CreateBuilder() => new(s_factory.Value);
     }
 }

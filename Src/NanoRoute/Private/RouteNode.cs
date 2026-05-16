@@ -99,7 +99,7 @@ namespace NanoRoute.Internals
                     .ToFrozenDictionary
                     (
                         static kvp => kvp.Key,
-                        static kvp => (IList<HandlerRegistration>) kvp.Value.ToImmutableArray()
+                        static kvp => (IList<HandlerRegistration>)kvp.Value.ToImmutableArray()
                     );
 
                 Frozen = true;

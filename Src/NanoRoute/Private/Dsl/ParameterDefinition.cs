@@ -24,7 +24,7 @@ namespace NanoRoute.Internals
             int newOffset = offset;
 
             if (newOffset < pattern.Length && pattern[newOffset++] == '{' && s_parameterName.Match(pattern, newOffset) is { Success: true, Index: int index, Length: int length } parsed && index == newOffset)
-            {             
+            {
                 string parameterName = parsed.Groups["parameterName"].Value;
 
                 newOffset += length;

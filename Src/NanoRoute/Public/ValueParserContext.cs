@@ -17,12 +17,12 @@ namespace NanoRoute
         /// Gets the decoded route segment.
         /// </summary>
         public required ReadOnlyMemory<char> Segment { get; init; }
-        
+
         /// <summary>
         /// Gets the request-scoped service provider.
         /// </summary>
         public required IServiceProvider Services { get; init; }
- 
+
         /// <summary>
         /// Gets the parser arguments that were bound during route registration.
         /// </summary>

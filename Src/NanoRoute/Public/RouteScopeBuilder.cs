@@ -46,7 +46,7 @@ namespace NanoRoute
         {
             RouteNode target = _root;
 
-            foreach(object definition in DslParser.ParseRoutePattern(pattern))
+            foreach (object definition in DslParser.ParseRoutePattern(pattern))
             {
                 switch (definition)
                 {
@@ -76,7 +76,7 @@ namespace NanoRoute
 
                         target = parsedChild;
                         break;
-                    
+
                     case ReadOnlyMemory<char> literalSegmentDefinition:
                         if (!target.LiteralChildren.TryGetValue(literalSegmentDefinition, out RouteNode exactChild))
                         {
@@ -107,7 +107,7 @@ namespace NanoRoute
         {
             _root = parent.GetOrCreateNode(pattern);
             _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
-            
+
             BasePattern = JoinPattern(parent.BasePattern, pattern);
             Metadata = parent.Metadata.CreateScope();
         }
@@ -243,7 +243,7 @@ namespace NanoRoute
             Ensure.NotNull(pattern);
 
             if (!pattern.EndsWith(CurrentPrefix))
-                throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
+                throw new ArgumentException(Resources.ERR_NOT_PREFIX, nameof(pattern));
 
             return new RouteScopeBuilder(this, pattern);
         }
@@ -303,7 +303,7 @@ namespace NanoRoute
                     foreach (KeyValuePair<HttpVerb, IList<HandlerRegistration>> handlerRegistrations in node.HandlerRegistrations)
                         foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
                             patterns.Add($"[{handlerRegistrations.Key}] {handlerRegistration.Pattern}");
- 
+
                     foreach (RouteNode childNode in node.LiteralChildren.Values)
                         Walk(childNode, patterns);
 
