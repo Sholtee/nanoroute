@@ -447,7 +447,7 @@ HttpListenerRouter router = HttpListenerRouter
 
 ## Custom Routers
 
-If `HttpListenerRouter` is not the transport you want, you can derive from `Router` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
+If `HttpListenerRouter` is not the transport you want, derive from `Router<TDescendant, TConfig>` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
 
 ```csharp
 using System;
@@ -457,10 +457,11 @@ using System.Threading.Tasks;
 
 using NanoRoute;
 
-public sealed class InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder) : Router(builder, builder.RouterConfig)
+public sealed class InMemoryRouter : Router<InMemoryRouter, RouterConfig>
 {
-    public static RouterBuilder<InMemoryRouter, RouterConfig> CreateBuilder() =>
-        new(static builder => new InMemoryRouter(builder));
+    private InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder) : base(builder)
+    {
+    }
 
     public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
         Handle(request, services, cancellation);

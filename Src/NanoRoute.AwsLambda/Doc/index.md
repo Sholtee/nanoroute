@@ -208,4 +208,4 @@ This package is intentionally narrow:
 - Supported: Lambda proxy responses represented by `APIGatewayHttpApiV2ProxyResponse`.
 - Not currently supported: REST API payload format `1.0`, Application Load Balancer events, or custom event models.
 
-For unsupported transports, derive a custom router from the core `Router` type and map your event model to `HttpRequestMessage` before calling `Handle()`.
+For unsupported transports, derive a custom router from the core `Router<TDescendant, TConfig>` type and map your event model to `HttpRequestMessage` before calling `Handle()`.
