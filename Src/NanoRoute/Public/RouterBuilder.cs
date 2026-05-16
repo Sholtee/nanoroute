@@ -83,7 +83,7 @@ namespace NanoRoute
         /// });
         /// </code>
         /// </example>
-        public new RouterBuilder<TRouter, TConfig> AddHandler(string verb, string pattern, RequestMiddlewareDelegate handler)
+        public new RouterBuilder<TRouter, TConfig> AddHandler(string verb, string pattern, RequestHandlerDelegate handler)
         {
             base.AddHandler(verb, pattern, handler);
             return this;

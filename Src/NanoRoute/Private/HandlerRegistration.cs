@@ -8,7 +8,7 @@ namespace NanoRoute.Internals
     /// <summary>
     /// Represents a request <paramref cref="Handler"/> registration.
     /// </summary>
-    internal sealed record HandlerRegistration(RequestMiddlewareDelegate Handler, string Pattern)
+    internal sealed record HandlerRegistration(RequestHandlerDelegate Handler, string Pattern)
     {
         /// <summary>
         /// Returns true if the registration should match as a prefix.

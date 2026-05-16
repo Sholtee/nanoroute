@@ -133,7 +133,10 @@ namespace NanoRoute
                         ),
                         bldr
                     )
-                    .Compile(preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported);
+                    .Compile
+                    (
+                        preferInterpretation: !RuntimeFeature.IsDynamicCodeSupported
+                    );
             },
             isThreadSafe: true
         );

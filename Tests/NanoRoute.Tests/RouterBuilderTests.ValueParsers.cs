@@ -28,7 +28,7 @@ namespace NanoRoute.Tests
                 .CreatePrefix("/to/*")
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
 
-            Assert.DoesNotThrow(() => childBuilder.AddHandler("/{str}/{int}/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object));
+            Assert.DoesNotThrow(() => childBuilder.AddHandler("/{str}/{int}/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace NanoRoute.Tests
                 .CreatePrefix("/to/*")
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; });
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("/{str}/{int}/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("/{str}/{int}/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, "int")));
         }
 
@@ -112,7 +112,7 @@ namespace NanoRoute.Tests
                 .CreatePrefix("/child/*")
                 .AddValueParser("value", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = $"child:{segment}"; return true; });
 
-            RequestMiddlewareDelegate handler = async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["id"]!.ToString()!) };
+            RequestHandlerDelegate handler = async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["id"]!.ToString()!) };
 
             childBuilder
                 .AddHandler("GET", "/{id:value}/", handler);
@@ -151,7 +151,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddValueParser("int", args => int.Parse(args["min"], CultureInfo.InvariantCulture), new Mock<ValueParserDelegate>(MockBehavior.Strict).Object);
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
@@ -161,7 +161,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddValueParser("int", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object);
 
-            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", "/orders/{id:int}/details/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object));
+            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", "/orders/{id:int}/details/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
 
         [TestCase("/ok/bad[segment]", 7)]
@@ -170,7 +170,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddValueParser("int", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object);
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
@@ -179,7 +179,7 @@ namespace NanoRoute.Tests
         [TestCase("/path/to/{parameter_name:missing}/")]
         public void AddHandler_ShouldThrowOnMissingValueParser(string pattern)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler(pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler(pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, "missing")));
         }
 
@@ -188,9 +188,9 @@ namespace NanoRoute.Tests
         {
             _routerBuilder
                 .AddValueParser("int", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/path/to/{id:int}/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object);
+                .AddHandler("GET", "/path/to/{id:int}/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", "/path/to/{other_id:int}/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", "/path/to/{other_id:int}/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_PARAMETER_OVERRIDE));
         }
 
@@ -199,9 +199,9 @@ namespace NanoRoute.Tests
         {
             _routerBuilder
                 .AddValueParser("int", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object)
-                .AddHandler("GET", "/path/to/{int}/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object);
+                .AddHandler("GET", "/path/to/{int}/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object);
 
-            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("POST", "/path/to/{int}/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object));
+            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("POST", "/path/to/{int}/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
 
         [Test]
@@ -209,7 +209,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddIntParser();
 
-            RequestMiddlewareDelegate handler = new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object;
+            RequestHandlerDelegate handler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
 
             _routerBuilder
                 .AddHandler("GET", "/items/{id:int(min=1,max=2)}/", handler)
@@ -256,7 +256,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddDefaultValueParsers();
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("args"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
         }
@@ -269,7 +269,7 @@ namespace NanoRoute.Tests
                 .AddGuidParser()
                 .AddBoolParser();
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("rawArgs"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
         }
@@ -282,7 +282,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddIntParser();
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("args"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
         }
@@ -296,7 +296,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddStringParser();
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("args"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
         }

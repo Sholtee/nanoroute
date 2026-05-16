@@ -205,7 +205,7 @@ namespace NanoRoute
             public static Func<RequestContext, TRequestContext> Value => s_MapperFunction.Value;
         }
 
-        private static TBuilder AddTypedHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeScopeBuilder, IEnumerable<string> verbs, string pattern, TypedRequestMiddlewareDelegate<TRequestContext> handler) where TBuilder : RouteScopeBuilder where TRequestContext : new()
+        private static TBuilder AddTypedHandlerCore<TBuilder, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TBuilder routeScopeBuilder, IEnumerable<string> verbs, string pattern, TypedRequestHandlerDelegate<TRequestContext> handler) where TBuilder : RouteScopeBuilder where TRequestContext : new()
         {
             Ensure.NotNull(routeScopeBuilder);
             Ensure.NotNull(verbs);
@@ -219,7 +219,7 @@ namespace NanoRoute
             return routeScopeBuilder;
         }
 
-        private static EndPointBuilder WithTypedHandlerCore<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(EndPointBuilder endPointBuilder, TypedRequestMiddlewareDelegate<TRequestContext> handler) where TRequestContext : new()
+        private static EndPointBuilder WithTypedHandlerCore<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(EndPointBuilder endPointBuilder, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
         {
             Ensure.NotNull(endPointBuilder);
             Ensure.NotNull(handler);
@@ -257,11 +257,100 @@ namespace NanoRoute
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
             /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
                 routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
 
             /// <summary>
             /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
+            /// </summary>
+            /// <typeparam name="TRequestContext">
+            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+            /// </typeparam>
+            /// <param name="verb">The HTTP verb handled by the route.</param>
+            /// <param name="pattern">The route pattern to register.</param>
+            /// <param name="handler">The typed handler delegate.</param>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
+            /// <remarks>
+            /// <para>
+            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
+            /// </para>
+            /// <para>
+            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
+            /// <see cref="CancellationToken"/> receives the active request token.
+            /// </para>
+            /// <para>
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
+            /// or from the request service provider.
+            /// </para>
+            /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
+                routeScopeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
+
+            /// <summary>
+            /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
+            /// </summary>
+            /// <typeparam name="TRequestContext">
+            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+            /// </typeparam>
+            /// <param name="verbs">The HTTP verbs handled by the route.</param>
+            /// <param name="pattern">The route pattern to register.</param>
+            /// <param name="handler">The typed handler delegate.</param>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
+            /// <remarks>
+            /// <para>
+            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
+            /// </para>
+            /// <para>
+            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
+            /// <see cref="CancellationToken"/> receives the active request token.
+            /// </para>
+            /// <para>
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
+            /// or from the request service provider.
+            /// </para>
+            /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
+            {
+                Ensure.NotNull(handler);
+                return AddTypedHandlerCore(routeScopeBuilder, verbs, pattern, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
+            }
+
+            /// <summary>
+            /// Registers a typed handler that receives a request object and the next handler in the pipeline.
+            /// </summary>
+            /// <typeparam name="TRequestContext">
+            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+            /// </typeparam>
+            /// <param name="pattern">The route pattern to register for all supported HTTP methods.</param>
+            /// <param name="handler">The typed handler delegate.</param>
+            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
+            /// <remarks>
+            /// <para>
+            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
+            /// </para>
+            /// <para>
+            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
+            /// <see cref="CancellationToken"/> receives the active request token.
+            /// </para>
+            /// <para>
+            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
+            /// or from the request service provider.
+            /// </para>
+            /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
+            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
+                routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
+
+            /// <summary>
+            /// Registers a typed handler that receives a request object and the next handler in the pipeline.
             /// </summary>
             /// <typeparam name="TRequestContext">
             /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
@@ -290,7 +379,7 @@ namespace NanoRoute
                 routeScopeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
 
             /// <summary>
-            /// Registers a typed handler that receives a request object built from the current <see cref="RequestContext"/>.
+            /// Registers a typed handler that receives a request object and the next handler in the pipeline.
             /// </summary>
             /// <typeparam name="TRequestContext">
             /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
@@ -315,96 +404,7 @@ namespace NanoRoute
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
             /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
-            {
-                Ensure.NotNull(handler);
-                return AddTypedHandlerCore(routeScopeBuilder, verbs, pattern, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
-            }
-
-            /// <summary>
-            /// Registers a typed middleware handler that receives a request object and the next handler in the pipeline.
-            /// </summary>
-            /// <typeparam name="TRequestContext">
-            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
-            /// </typeparam>
-            /// <param name="pattern">The route pattern to register for all supported HTTP methods.</param>
-            /// <param name="handler">The typed middleware delegate.</param>
-            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
-            /// <remarks>
-            /// <para>
-            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
-            /// </para>
-            /// <para>
-            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
-            /// <see cref="CancellationToken"/> receives the active request token.
-            /// </para>
-            /// <para>
-            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
-            /// or from the request service provider.
-            /// </para>
-            /// </remarks>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
-            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
-            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, TypedRequestMiddlewareDelegate<TRequestContext> handler) where TRequestContext : new() =>
-                routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
-
-            /// <summary>
-            /// Registers a typed middleware handler that receives a request object and the next handler in the pipeline.
-            /// </summary>
-            /// <typeparam name="TRequestContext">
-            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
-            /// </typeparam>
-            /// <param name="verb">The HTTP verb handled by the route.</param>
-            /// <param name="pattern">The route pattern to register.</param>
-            /// <param name="handler">The typed middleware delegate.</param>
-            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
-            /// <remarks>
-            /// <para>
-            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
-            /// </para>
-            /// <para>
-            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
-            /// <see cref="CancellationToken"/> receives the active request token.
-            /// </para>
-            /// <para>
-            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
-            /// or from the request service provider.
-            /// </para>
-            /// </remarks>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
-            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
-            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, TypedRequestMiddlewareDelegate<TRequestContext> handler) where TRequestContext : new() =>
-                routeScopeBuilder.AddHandler([verb /*will be null checked*/], pattern, handler);
-
-            /// <summary>
-            /// Registers a typed middleware handler that receives a request object and the next handler in the pipeline.
-            /// </summary>
-            /// <typeparam name="TRequestContext">
-            /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
-            /// </typeparam>
-            /// <param name="verbs">The HTTP verbs handled by the route.</param>
-            /// <param name="pattern">The route pattern to register.</param>
-            /// <param name="handler">The typed middleware delegate.</param>
-            /// <returns>The current <paramref name="routeScopeBuilder"/>.</returns>
-            /// <remarks>
-            /// <para>
-            /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
-            /// </para>
-            /// <para>
-            /// A property of type <see cref="RequestContext"/> receives the current context, and a property of type
-            /// <see cref="CancellationToken"/> receives the active request token.
-            /// </para>
-            /// <para>
-            /// Apply <see cref="ValueSourceAttribute"/> to bind a property from a different parameter name
-            /// or from the request service provider.
-            /// </para>
-            /// </remarks>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
-            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
-            /// <exception cref="InvalidOperationException">Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</exception>
-            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, TypedRequestMiddlewareDelegate<TRequestContext> handler) where TRequestContext : new() =>
+            public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
                 AddTypedHandlerCore(routeScopeBuilder, verbs, pattern, handler);
 
             /// <summary>
@@ -425,7 +425,7 @@ namespace NanoRoute
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
             /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
-            public TBuilder AddHandler(string pattern, RequestMiddlewareDelegate handler) => routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
+            public TBuilder AddHandler(string pattern, RequestHandlerDelegate handler) => routeScopeBuilder.AddHandler(HttpVerb.Names, pattern, handler);
 
             /// <summary>
             /// Registers the same handler for multiple HTTP methods.
@@ -449,7 +449,7 @@ namespace NanoRoute
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="pattern"/> has invalid route-template syntax.</exception>
             /// <exception cref="InvalidOperationException">Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</exception>
-            public TBuilder AddHandler(IEnumerable<string> verbs, string pattern, RequestMiddlewareDelegate handler)
+            public TBuilder AddHandler(IEnumerable<string> verbs, string pattern, RequestHandlerDelegate handler)
             {
                 Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(verbs);
@@ -478,7 +478,7 @@ namespace NanoRoute
             /// </example>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not a supported HTTP method.</exception>
-            public TBuilder AddHandler(IEnumerable<string> verbs, RequestMiddlewareDelegate handler) => routeScopeBuilder.AddHandler(verbs, RouteScopeBuilder.CurrentPrefix, handler);
+            public TBuilder AddHandler(IEnumerable<string> verbs, RequestHandlerDelegate handler) => routeScopeBuilder.AddHandler(verbs, RouteScopeBuilder.CurrentPrefix, handler);
         }
 
         extension(EndPointBuilder endPointBuilder)
@@ -507,19 +507,19 @@ namespace NanoRoute
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/> or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
             /// <exception cref="InvalidOperationException">Thrown when request-time typed binding cannot resolve a required parameter or service.</exception>
-            public EndPointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
+            public EndPointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
                 return WithTypedHandlerCore(endPointBuilder, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
             }
 
             /// <summary>
-            /// Registers a typed endpoint middleware handler that receives a request object and the next handler in the pipeline.
+            /// Registers a typed endpoint handler that receives a request object and the next handler in the pipeline.
             /// </summary>
             /// <typeparam name="TRequestContext">
             /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
             /// </typeparam>
-            /// <param name="handler">The typed endpoint middleware delegate.</param>
+            /// <param name="handler">The typed endpoint handler delegate.</param>
             /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
             /// <remarks>
             /// <para>
@@ -537,7 +537,7 @@ namespace NanoRoute
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/> or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
             /// <exception cref="InvalidOperationException">Thrown when request-time typed binding cannot resolve a required parameter or service.</exception>
-            public EndPointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestMiddlewareDelegate<TRequestContext> handler) where TRequestContext : new() =>
+            public EndPointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
                 WithTypedHandlerCore(endPointBuilder, handler);
         }
     }

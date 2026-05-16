@@ -54,7 +54,7 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Adds a handler or middleware delegate to the endpoint.
+        /// Adds a handler delegate to the endpoint.
         /// </summary>
         /// <param name="handler">
         /// The handler to run when the endpoint matches. If the handler calls the supplied <c>next</c> delegate,
@@ -63,7 +63,7 @@ namespace NanoRoute
         /// <returns>The current <see cref="EndPointBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
-        public EndPointBuilder WithHandler(RequestMiddlewareDelegate handler)
+        public EndPointBuilder WithHandler(RequestHandlerDelegate handler)
         {
             _prefix.AddHandler(_verbs, _matchKind, handler);
 

@@ -38,10 +38,10 @@ namespace NanoRoute.Tests
                 Arguments: null
             );
 
-            RequestMiddlewareDelegate
-                rootHandler = new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object,
-                literalHandler = new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object,
-                parsedHandler = new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object;
+            RequestHandlerDelegate
+                rootHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
+                literalHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
+                parsedHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
 
             RouteNode root = new();
             root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(rootHandler, "/")];
@@ -85,7 +85,7 @@ namespace NanoRoute.Tests
         {
             RouteNode root = new();
 
-            RequestMiddlewareDelegate handler = new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object;
+            RequestHandlerDelegate handler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
             root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(handler, "/")];
 
             RouteNode literalChild = new();
@@ -120,9 +120,9 @@ namespace NanoRoute.Tests
         [Test]
         public void Copy_SnapshotShouldStayIndependentFromLaterMutations([Values] bool frozen)
         {
-            RequestMiddlewareDelegate
-                initialHandler = new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object,
-                addedLaterHandler = new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object;
+            RequestHandlerDelegate
+                initialHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
+                addedLaterHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
 
             RouteNode root = new();
             root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(initialHandler, "/")];

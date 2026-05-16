@@ -18,7 +18,7 @@ namespace NanoRoute.Tests
     [TestFixture]
     internal sealed class RouteMatchCursorTests
     {
-        private static readonly RequestMiddlewareDelegate s_handler = static (_, _) => Task.FromResult(new HttpResponseMessage());
+        private static readonly RequestHandlerDelegate s_handler = static (_, _) => Task.FromResult(new HttpResponseMessage());
 
         private static ParameterDefinition Parse(string segment)
         {

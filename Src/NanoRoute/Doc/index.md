@@ -19,7 +19,7 @@ The API documentation for this package is generated from the XML comments in the
 - [UnexpectedParameterBehavior](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.UnexpectedParameterBehavior.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
-- [RequestMiddlewareDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestMiddlewareDelegate.html)
+- [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
 - [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html)
 - [NanoRoutePrefixExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html)
 - [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html)

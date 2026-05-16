@@ -486,8 +486,8 @@ namespace NanoRoute.Tests
         [Test]
         public void TypedHandlerHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            TypedRequestHandlerDelegate<TypedRouteRequest> handler = _ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
-            TypedRequestMiddlewareDelegate<TypedRouteRequest> middlewareHandler = (_, next) => next();
+            TypedRequestEndpointHandlerDelegate<TypedRouteRequest> handler = _ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            TypedRequestHandlerDelegate<TypedRouteRequest> pipelineHandler = (_, next) => next();
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler("/items/", handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
@@ -495,7 +495,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("/items/", (TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("/items/", (TypedRequestEndpointHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string) null!, "/items/", handler))!;
@@ -504,7 +504,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", null!, handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "/items/", (TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "/items/", (TypedRequestEndpointHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", handler))!;
@@ -516,37 +516,37 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], null!, handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], "/items/", (TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], "/items/", (TypedRequestEndpointHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler("/items/", middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler("/items/", pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("/items/", (TypedRequestMiddlewareDelegate<TypedRouteRequest>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("/items/", (TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string) null!, "/items/", middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string) null!, "/items/", pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", null!, middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", null!, pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "/items/", (TypedRequestMiddlewareDelegate<TypedRouteRequest>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "/items/", (TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, "/items/", middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, "/items/", pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], null!, middlewareHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], null!, pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], "/items/", (TypedRequestMiddlewareDelegate<TypedRouteRequest>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], "/items/", (TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
         });
     }

@@ -132,7 +132,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithVerbsAndNoPattern_ShouldBindHandlerToTheCurrentBuilderRoot()
         {
-            Mock<RequestMiddlewareDelegate> mockHandler = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (_, next) => await next());
@@ -166,7 +166,7 @@ namespace NanoRoute.Tests
         [TestCase("/path/{invalid-segment}", 6)]
         public void AddHandler_ShouldThrowOnInvalidPattern(string pattern, int expectedOffset)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
@@ -176,7 +176,7 @@ namespace NanoRoute.Tests
         [TestCase("/mail/a%40b/")]
         public void AddHandler_ShouldAllowUriLiteralCharacters(string pattern)
         {
-            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object));
+            Assert.DoesNotThrow(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object));
         }
 
         [TestCase("//", 1)]
@@ -184,7 +184,7 @@ namespace NanoRoute.Tests
         [TestCase("/path//to/", 6)]
         public void AddHandler_ShouldRejectRepeatedSeparators(string pattern, int expectedOffset)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
 
             Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
@@ -192,7 +192,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddHandler_ShouldThrowOnInvalidVerb()
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("INVALID", "/path/to/somewhere/", new Mock<RequestMiddlewareDelegate>(MockBehavior.Strict).Object))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("INVALID", "/path/to/somewhere/", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
             Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "INVALID")));
         }
@@ -254,7 +254,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            RequestMiddlewareDelegate requestHandler = async (_, _) => new HttpResponseMessage();
+            RequestHandlerDelegate requestHandler = async (_, _) => new HttpResponseMessage();
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((string) null!, requestHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
@@ -291,19 +291,19 @@ namespace NanoRoute.Tests
         public void WithHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             EndPointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/items/");
-            TypedRequestHandlerDelegate<TypedRouteRequest> typedHandler = _ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
-            TypedRequestMiddlewareDelegate<TypedRouteRequest> typedMiddleware = (_, next) => next();
+            TypedRequestEndpointHandlerDelegate<TypedRouteRequest> typedHandler = _ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            TypedRequestHandlerDelegate<TypedRouteRequest> typedPipelineHandler = (_, next) => next();
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder)null!).WithHandler(typedHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestHandlerDelegate<TypedRouteRequest>)null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestEndpointHandlerDelegate<TypedRouteRequest>)null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder)null!).WithHandler(typedMiddleware))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder)null!).WithHandler(typedPipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestMiddlewareDelegate<TypedRouteRequest>)null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestHandlerDelegate<TypedRouteRequest>)null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
         });
     }

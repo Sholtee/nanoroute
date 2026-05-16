@@ -184,7 +184,7 @@ namespace NanoRoute.Tests
         [Test]
         public void EndPointHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            RequestMiddlewareDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
+            RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
             EndPointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/items/");
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).CreateEndPoint("GET", "/items/"))!;
