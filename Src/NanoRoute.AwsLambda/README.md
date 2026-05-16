@@ -46,7 +46,7 @@ public sealed class Function
 }
 ```
 
-`ApiGatewayHttpApiV2Router.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router between Lambda invocations.
+`ApiGatewayHttpApiV2Router.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, endpoint builders, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router between Lambda invocations.
 
 The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass `ILambdaContext.RemainingTime` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 
@@ -190,6 +190,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` middleware.
+- `AddEndPoint()` and `CreateEndPoint()` capture endpoint verbs and route patterns once; endpoint helpers such as `WithHandler()` and `WithJsonBody()` work under Lambda the same way they do in the core package.
 - `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses when explicitly added.
 - `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.

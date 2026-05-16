@@ -147,6 +147,37 @@ HttpListenerRouter router = builder.CreateRouter();
 
 This produces the same effective routes as registering `/api/users/{user_id:int}/*` and `/api/users/{user_id:int}/details/` directly, but keeps repeated base patterns out of individual `AddHandler()` calls.
 
+### Endpoint Builders
+
+`AddEndPoint()` and `CreateEndPoint()` capture an endpoint's HTTP verb or verbs and exact or prefix route pattern once. Endpoint-aware helpers such as `WithHandler()` and `WithJsonBody()` then register middleware for that captured endpoint without repeating the route.
+
+```csharp
+public sealed class CreateItemRequest
+{
+    public string Name { get; set; } = string.Empty;
+}
+
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .AddJsonErrorDetails()
+    .AddDefaultValueParsers()
+    .AddEndPoint("POST", "/items/{id:int}/", endpoint => endpoint
+        .WithJsonBody<CreateItemRequest>("body")
+        .WithHandler(static async (context, _) =>
+        {
+            await Task.CompletedTask;
+
+            return HttpResponseMessage.Json(HttpStatusCode.Created, new
+            {
+                id = context.Parameters["id"],
+                body = context.Parameters["body"]
+            });
+        }))
+    .CreateRouter();
+```
+
+Endpoint builders are useful when several pieces of endpoint-local middleware need the same verbs and pattern. Multiple `WithHandler()` calls run in registration order, and each handler can call the supplied `next` delegate to continue the endpoint pipeline. `CreateEndPoint()` returns an `EndPointBuilder` when you want to configure an endpoint incrementally, and `EndPointBuilder.Metadata` stores endpoint-scoped build-time settings for endpoint-aware extensions.
+
 ### Value Parsers
 
 NanoRoute supports both synchronous and asynchronous value parsers:
@@ -432,6 +463,8 @@ This keeps the transport-specific concerns in your own router type while still r
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/*")` creates a scoped child builder for a route subtree.
+- `AddEndPoint()` and `CreateEndPoint()` capture an endpoint's verbs and route pattern once.
+- `EndPointBuilder.WithHandler()` and `WithJsonBody()` register endpoint-local handlers and JSON body middleware.
 - `RouteScopeBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
 - `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
 - `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` middleware.
@@ -451,6 +484,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
+- [EndPointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndPointBuilder.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
@@ -459,6 +493,7 @@ This keeps the transport-specific concerns in your own router type while still r
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
 - [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html)
+- [NanoRouteEndPointExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteEndPointExtensions.html)
 - [NanoRoutePrefixExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html)
 - [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html)
 - [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSourceAttribute.html)

@@ -13,6 +13,7 @@ The API documentation for this package is generated from the XML comments in the
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
+- [EndPointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndPointBuilder.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
@@ -21,6 +22,7 @@ The API documentation for this package is generated from the XML comments in the
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
 - [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html)
+- [NanoRouteEndPointExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteEndPointExtensions.html)
 - [NanoRoutePrefixExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html)
 - [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html)
 - [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSourceAttribute.html)
@@ -44,6 +46,8 @@ The API documentation for this package is generated from the XML comments in the
 - Handler convenience overloads such as pattern-only registration, multi-verb registration, and `AddHandler<TRequestContext>()` are extension methods in the `NanoRoute` namespace.
 - `AddHandler<TRequestContext>()` can project route parameters, query bindings, services, keyed services, `RequestContext`, and `CancellationToken` into typed request objects.
 - `ValueSourceAttribute` customizes typed-handler property binding with `Parameter`, `ServiceLocator`, and `Skip` sources.
+- `AddEndPoint()` and `CreateEndPoint()` create endpoint builders that capture HTTP verbs and an exact or prefix route pattern once.
+- Endpoint-aware helpers such as `WithHandler()` and `WithJsonBody()` register endpoint-local middleware without repeating the endpoint route.
 
 ## Value Parser Syntax
 

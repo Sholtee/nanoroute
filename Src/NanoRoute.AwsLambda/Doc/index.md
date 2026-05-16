@@ -23,6 +23,7 @@ The API documentation for this package is generated from the XML comments in the
 - String responses are returned as plain bodies, while other content types are base64 encoded.
 - `Set-Cookie` values are returned through the API Gateway `Cookies` collection.
 - Typed handlers, route parsers, query bindings, JSON body binders, prefixes, and middleware work the same way under Lambda as they do in the core package.
+- Endpoint builders such as `AddEndPoint()`, `CreateEndPoint()`, `WithHandler()`, and `WithJsonBody()` are available because the adapter uses the normal NanoRoute builder.
 
 ## Supported API Gateway Model
 
