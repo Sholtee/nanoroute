@@ -4,7 +4,6 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +19,6 @@ namespace NanoRoute
     /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
     /// handlers in order until one returns a response without delegating further.
     /// </remarks>
-    [method: SuppressMessage("ApiDesign", "RS0022:Constructor make noninheritable base class inheritable")]
     public abstract class Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config)
     {
         private readonly RouteNode _root = routeScopeBuilder.GetRoot(freeze: true);
