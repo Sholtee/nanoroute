@@ -162,7 +162,6 @@ NanoRoute.RouteScopeBuilder.CreatePrefix(string! pattern) -> NanoRoute.RouteScop
 NanoRoute.RouteScopeBuilder.Metadata.get -> NanoRoute.BuilderMetadata!
 NanoRoute.RouteScopeBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteScopeBuilder.ValueParsers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, NanoRoute.ValueParserRegistration!>!
-NanoRoute.RoutingContext
 NanoRoute.SyncValueParserDelegate
 NanoRoute.TypedRequestHandlerDelegate<TRequestContext>
 NanoRoute.TypedRequestMiddlewareDelegate<TRequestContext>

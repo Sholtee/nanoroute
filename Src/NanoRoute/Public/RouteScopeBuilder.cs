@@ -21,7 +21,7 @@ namespace NanoRoute
     /// <c>/users/{id:int}/</c>. Patterns must start with <c>/</c>, exact patterns must end with <c>/</c>,
     /// prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators such as <c>//</c> are invalid.
     /// </remarks>
-    public class RouteScopeBuilder : RoutingContext
+    public class RouteScopeBuilder
     {
         /// <summary>
         /// The route pattern that matches the current route scope exactly.
@@ -34,6 +34,8 @@ namespace NanoRoute
         public const string CurrentPrefix = "/*";
 
         #region Private
+        private readonly RouteNode _root;
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Dictionary<string, ValueParserRegistration> _valueParsers;
 
@@ -101,16 +103,18 @@ namespace NanoRoute
             return @base.TrimEnd('*') + extensions.TrimStart('/');
         }
 
-        private RouteScopeBuilder(RouteScopeBuilder parent, string pattern): base(parent.GetOrCreateNode(pattern))
+        private RouteScopeBuilder(RouteScopeBuilder parent, string pattern)
         {
+            _root = parent.GetOrCreateNode(pattern);
             _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
             
             BasePattern = JoinPattern(parent.BasePattern, pattern);
             Metadata = parent.Metadata.CreateScope();
         }
 
-        internal RouteScopeBuilder(): base(new RouteNode())
+        internal RouteScopeBuilder()
         {
+            _root = new RouteNode();
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
 
             BasePattern = CurrentPrefix;

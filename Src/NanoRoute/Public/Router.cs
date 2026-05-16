@@ -21,8 +21,10 @@ namespace NanoRoute
     /// handlers in order until one returns a response without delegating further.
     /// </remarks>
     [method: SuppressMessage("ApiDesign", "RS0022:Constructor make noninheritable base class inheritable")]
-    public abstract class Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config) : RoutingContext(routeScopeBuilder.GetRoot(freeze: true))
+    public abstract class Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config)
     {
+        private readonly RouteNode _root = routeScopeBuilder.GetRoot(freeze: true);
+
         /// <summary>
         /// The request property key that stores the trace identifier associated with the current request.
         /// </summary>
