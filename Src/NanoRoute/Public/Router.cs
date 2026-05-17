@@ -130,7 +130,7 @@ namespace NanoRoute
     /// </summary>
     /// <typeparam name="TDescendant">The concrete router type produced by <see cref="CreateBuilder"/>.</typeparam>
     /// <typeparam name="TConfig">The configuration type exposed by <see cref="Config"/>.</typeparam>
-    /// <param name="bldr">The builder whose route snapshot and configuration initialize the router.</param>
+    /// <param name="builder">The builder whose route snapshot and configuration initialize the router.</param>
     /// <remarks>
     /// Concrete routers derive from this type to inherit <see cref="CreateBuilder"/> and a typed
     /// <see cref="Config"/> property. The concrete router must expose a public or non-public constructor that accepts
@@ -146,13 +146,13 @@ namespace NanoRoute
     /// }
     /// </code>
     /// </example>
-    public abstract class Router<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicConstructors)] TDescendant, TConfig>(RouterBuilder<TDescendant, TConfig> bldr) : Router(bldr, bldr.RouterConfig) where TDescendant : Router<TDescendant, TConfig> where TConfig : RouterConfig, new()
+    public abstract class Router<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicConstructors)] TDescendant, TConfig>(RouterBuilder<TDescendant, TConfig> builder) : Router(builder, builder.RouterConfig) where TDescendant : Router<TDescendant, TConfig> where TConfig : RouterConfig, new()
     {
         private static readonly Lazy<RouterFactoryDelegate<TDescendant, TConfig>> s_factory = new
         (
             static () =>
             {
-                ParameterExpression bldr = Expression.Parameter(typeof(RouterBuilder<TDescendant, TConfig>), nameof(bldr));
+                ParameterExpression builder = Expression.Parameter(typeof(RouterBuilder<TDescendant, TConfig>), nameof(builder));
 
                 return Expression
                     .Lambda<RouterFactoryDelegate<TDescendant, TConfig>>
@@ -166,9 +166,9 @@ namespace NanoRoute
                                 [typeof(RouterBuilder<TDescendant, TConfig>)],
                                 []
                             ) ?? throw new MissingMethodException(),
-                            bldr
+                            builder
                         ),
-                        bldr
+                        builder
                     )
                     .Compile
                     (

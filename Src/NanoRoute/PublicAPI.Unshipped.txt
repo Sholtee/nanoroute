@@ -144,7 +144,7 @@ NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage! request, System.ISer
 NanoRoute.Router.Router(NanoRoute.RouteScopeBuilder! routeScopeBuilder, NanoRoute.RouterConfig! config) -> void
 NanoRoute.Router<TDescendant, TConfig>
 NanoRoute.Router<TDescendant, TConfig>.Config.get -> TConfig!
-NanoRoute.Router<TDescendant, TConfig>.Router(NanoRoute.RouterBuilder<TDescendant!, TConfig!>! bldr) -> void
+NanoRoute.Router<TDescendant, TConfig>.Router(NanoRoute.RouterBuilder<TDescendant!, TConfig!>! builder) -> void
 NanoRoute.RouterBuilder<TRouter, TConfig>
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!
 NanoRoute.RouterBuilder<TRouter, TConfig>.AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> NanoRoute.RouterBuilder<TRouter!, TConfig!>!

@@ -103,7 +103,7 @@ Prefer endpoint builders such as `AddEndPoint()` for application routes. Typed h
 
 The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass `ILambdaContext.RemainingTime` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 
-For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/main/Tests/NanoRoute.TestLambda). It wires `ApiGatewayHttpApiV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
+For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/master/Tests/NanoRoute.TestLambda). It wires `ApiGatewayHttpApiV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
 
 ## Core Types
 

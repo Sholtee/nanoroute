@@ -17,6 +17,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="RouterBuilderTests.*.cs">
+      <DependentUpon>RouterBuilderTests.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RouterTests.*.cs">
+      <DependentUpon>RouterTests.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute" Condition="'$(Configuration)'=='Debug'">
       <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
     </AssemblyAttribute>
