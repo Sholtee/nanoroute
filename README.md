@@ -2,6 +2,39 @@
 
 NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` pipelines. It includes optional `HttpListener` and AWS Lambda adapters plus focused helpers for JSON payloads, query binding, endpoint-local middleware, and error handling.
 
+## Install
+
+```shell
+dotnet add package NanoRoute --prerelease
+```
+
+For AWS Lambda HTTP API and Lambda Function URL support, also install the adapter package:
+
+```shell
+dotnet add package NanoRoute.AwsLambda --prerelease
+```
+
+## First Route
+
+```csharp
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+using NanoRoute;
+
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .AddEndPoint("GET", "/health/", endpoint => endpoint
+        .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("ok")
+        })))
+    .CreateRouter();
+```
+
+From there, add `AddDefaultValueParsers()` for route parameters, `WithQueryBindings()` for query strings, `WithJsonBody()` for request bodies, and typed handlers when you want route values, services, and framework values projected into a request object.
+
 ## Directory Structure
 
 ```text

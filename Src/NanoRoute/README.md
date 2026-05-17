@@ -4,11 +4,42 @@ NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines
 
 The core library is centered around `RouteScopeBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
-NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios.
+NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios. For JSON body and response handling in Native AOT apps, prefer overloads that accept `JsonTypeInfo` from a source-generated `JsonSerializerContext`.
 
 For AWS Lambda integrations, use the separate [NanoRoute.AwsLambda](https://www.nuget.org/packages/NanoRoute.AwsLambda/) package.
 
+## Install
+
+```shell
+dotnet add package NanoRoute --prerelease
+```
+
 ## Quick Start
+
+Create a router with one endpoint, then pass each incoming `HttpListenerContext` to `Route()` from your listener loop:
+
+```csharp
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+using NanoRoute;
+
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .AddEndPoint("GET", "/health/", endpoint => endpoint
+        .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("ok")
+        })))
+    .CreateRouter();
+```
+
+Add `AddDefaultValueParsers()` when route patterns need parameters such as `{id:int}`. Add endpoint helpers such as `WithQueryBindings()` and `WithJsonBody()` when an endpoint needs parsed query values or a JSON request body.
+
+## Typed Binding Example
+
+Typed handlers bind route values, query values, JSON bodies, services, `RequestContext`, and `CancellationToken` into request objects before your handler runs. The example below shows a small user API with route parameters, JSON request bodies, and service resolution:
 
 ```csharp
 using System;
@@ -110,6 +141,7 @@ public interface IUserRepository
 - Typed handlers can bind route values, query values, JSON bodies, services, `RequestContext`, and `CancellationToken` into request objects.
 - `AddJsonErrorDetails()` turns routing failures into JSON `ErrorDetails` responses.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
+- Native AOT JSON apps should pass source-generated `JsonTypeInfo` values to `WithJsonBody(...)` and `HttpResponseMessage.Json(...)`.
 
 ## Documentation
 
