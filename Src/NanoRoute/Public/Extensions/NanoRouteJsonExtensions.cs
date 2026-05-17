@@ -624,7 +624,7 @@ namespace NanoRoute
             }
         }
 
-        extension(EndPointBuilder endPointBuilder)
+        extension(EndpointBuilder endPointBuilder)
         {
             /// <summary>
             /// Deserializes JSON request bodies into an endpoint parameter using source-generated or custom JSON metadata.
@@ -646,7 +646,7 @@ namespace NanoRoute
             /// endpoint.WithJsonBody(MyJsonContext.Default.CreateUserRequest, "body");
             /// </code>
             /// </example>
-            public EndPointBuilder WithJsonBody(JsonTypeInfo typeInfo, string paramName)
+            public EndpointBuilder WithJsonBody(JsonTypeInfo typeInfo, string paramName)
             {
                 Ensure.NotNull(endPointBuilder);
 
@@ -672,7 +672,7 @@ namespace NanoRoute
             /// endpoint.WithJsonBody(typeof(CreateUserRequest), "body");
             /// </code>
             /// </example>
-            public EndPointBuilder WithJsonBody(Type type, string paramName)
+            public EndpointBuilder WithJsonBody(Type type, string paramName)
             {
                 Ensure.NotNull(type);
 
@@ -699,7 +699,7 @@ namespace NanoRoute
             /// endpoint.WithJsonBody&lt;CreateUserRequest&gt;("body");
             /// </code>
             /// </example>
-            public EndPointBuilder WithJsonBody<T>(string paramName) => endPointBuilder.WithJsonBody(typeof(T), paramName);
+            public EndpointBuilder WithJsonBody<T>(string paramName) => endPointBuilder.WithJsonBody(typeof(T), paramName);
         }
 
         extension(HttpResponseMessage)

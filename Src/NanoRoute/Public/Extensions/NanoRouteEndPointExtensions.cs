@@ -1,5 +1,5 @@
 /********************************************************************************
-* NanoRouteEndPointExtensions.cs                                                *
+* NanoRouteEndpointExtensions.cs                                                *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -26,13 +26,13 @@ namespace NanoRoute
     ///     .WithHandler((context, _) =&gt; CreateUser(context)));
     /// </code>
     /// </example>
-    public sealed class EndPointBuilder
+    public sealed class EndpointBuilder
     {
         private readonly string _matchKind;
 
         private readonly IReadOnlyCollection<string> _verbs;
 
-        internal EndPointBuilder(RouteScopeBuilder scope, IEnumerable<string> verbs, string pattern)
+        internal EndpointBuilder(RouteScopeBuilder scope, IEnumerable<string> verbs, string pattern)
         {
             Ensure.NotNull(scope);
             Ensure.NotNull(pattern);
@@ -65,7 +65,7 @@ namespace NanoRoute
         /// The handler to run when the endpoint matches. If the handler calls the supplied <c>next</c> delegate,
         /// routing continues with the next compatible handler registered for the same endpoint branch.
         /// </param>
-        /// <returns>The current <see cref="EndPointBuilder"/> instance.</returns>
+        /// <returns>The current <see cref="EndpointBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
         /// <example>
@@ -73,7 +73,7 @@ namespace NanoRoute
         /// endpoint.WithHandler((context, _) =&gt; Results.Ok(context.Parameters));
         /// </code>
         /// </example>
-        public EndPointBuilder WithHandler(RequestHandlerDelegate handler)
+        public EndpointBuilder WithHandler(RequestHandlerDelegate handler)
         {
             Prefix.AddHandler(_verbs, _matchKind, handler);
 
@@ -99,7 +99,7 @@ namespace NanoRoute
     ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
     /// </code>
     /// </example>
-    public static class NanoRouteEndPointExtensions
+    public static class NanoRouteEndpointExtensions
     {
         extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
@@ -129,13 +129,13 @@ namespace NanoRoute
             /// EndPointBuilder endpoint = builder.CreateEndPoint(["GET", "HEAD"], "/users/{id:int}/");
             /// </code>
             /// </example>
-            public EndPointBuilder CreateEndPoint(IEnumerable<string> verbs, string pattern)
+            public EndpointBuilder CreateEndPoint(IEnumerable<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(verbs);
                 Ensure.NotNull(pattern);
 
-                return new EndPointBuilder(routeScopeBuilder, verbs, pattern);
+                return new EndpointBuilder(routeScopeBuilder, verbs, pattern);
             }
 
             /// <summary>
@@ -164,7 +164,7 @@ namespace NanoRoute
             /// EndPointBuilder endpoint = builder.CreateEndPoint("GET", "/users/{id:int}/");
             /// </code>
             /// </example>
-            public EndPointBuilder CreateEndPoint(string verb, string pattern)
+            public EndpointBuilder CreateEndPoint(string verb, string pattern)
             {
                 Ensure.NotNull(verb);
 
@@ -200,7 +200,7 @@ namespace NanoRoute
             ///     .WithHandler((context, _) =&gt; SaveUser(context)));
             /// </code>
             /// </example>
-            public TBuilder AddEndPoint(IEnumerable<string> verbs, string pattern, Action<EndPointBuilder> configureEndPoint)
+            public TBuilder AddEndPoint(IEnumerable<string> verbs, string pattern, Action<EndpointBuilder> configureEndPoint)
             {
                 Ensure.NotNull(configureEndPoint);
 
@@ -240,7 +240,7 @@ namespace NanoRoute
             ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
             /// </code>
             /// </example>
-            public TBuilder AddEndPoint(string verb, string pattern, Action<EndPointBuilder> configureEndPoint)
+            public TBuilder AddEndPoint(string verb, string pattern, Action<EndpointBuilder> configureEndPoint)
             {
                 Ensure.NotNull(verb);
 

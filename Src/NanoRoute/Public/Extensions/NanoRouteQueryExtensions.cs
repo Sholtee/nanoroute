@@ -359,7 +359,7 @@ namespace NanoRoute
             }
         }
 
-        extension(EndPointBuilder endPointBuilder)
+        extension(EndpointBuilder endPointBuilder)
         {
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>
@@ -386,7 +386,7 @@ namespace NanoRoute
             /// endpoint.WithQueryBindings("{filter?:str}&amp;{page?:int(min=1)}");
             /// </code>
             /// </example>
-            public EndPointBuilder WithQueryBindings(string bindings)
+            public EndpointBuilder WithQueryBindings(string bindings)
             {
                 Ensure.NotNull(endPointBuilder);
 

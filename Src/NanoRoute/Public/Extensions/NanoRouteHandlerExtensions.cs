@@ -319,7 +319,7 @@ namespace NanoRoute
             return routeScopeBuilder;
         }
 
-        private static EndPointBuilder WithTypedHandlerCore<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(EndPointBuilder endPointBuilder, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
+        private static EndpointBuilder WithTypedHandlerCore<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(EndpointBuilder endPointBuilder, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
         {
             Ensure.NotNull(endPointBuilder);
             Ensure.NotNull(handler);
@@ -614,7 +614,7 @@ namespace NanoRoute
             public TBuilder AddHandler(IEnumerable<string> verbs, RequestHandlerDelegate handler) => routeScopeBuilder.AddHandler(verbs, RouteScopeBuilder.CurrentPrefix, handler);
         }
 
-        extension(EndPointBuilder endPointBuilder)
+        extension(EndpointBuilder endPointBuilder)
         {
             /// <summary>
             /// Registers a typed endpoint handler that receives a request object built from the current <see cref="RequestContext"/>.
@@ -645,7 +645,7 @@ namespace NanoRoute
             /// endpoint.WithHandler&lt;UserRequest&gt;(request =&gt; Results.Ok(request.Id));
             /// </code>
             /// </example>
-            public EndPointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
+            public EndpointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
                 return WithTypedHandlerCore(endPointBuilder, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
@@ -680,7 +680,7 @@ namespace NanoRoute
             /// endpoint.WithHandler&lt;UserRequest&gt;((request, next) =&gt; next());
             /// </code>
             /// </example>
-            public EndPointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
+            public EndpointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
                 WithTypedHandlerCore(endPointBuilder, handler);
         }
     }
