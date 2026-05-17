@@ -34,7 +34,7 @@ public sealed class Function
     private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
         .CreateBuilder()
         .AddJsonErrorDetails()
-        .AddEndPoint("GET", "/health/", endpoint => endpoint
+        .AddEndpoint("GET", "/health/", endpoint => endpoint
             .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("ok")
@@ -80,7 +80,7 @@ public sealed class Function
         .CreateBuilder()
         .AddDefaultValueParsers()
         .AddJsonErrorDetails()
-        .AddEndPoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
+        .AddEndpoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
             .WithHandler(static async (GetUserRequest request) =>
             {
                 return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
@@ -89,7 +89,7 @@ public sealed class Function
                     Name = await request.Users.GetNameAsync(request.UserId)
                 });
             }))
-        .AddEndPoint("POST", "/api/users/", endpoint => endpoint
+        .AddEndpoint("POST", "/api/users/", endpoint => endpoint
             .WithJsonBody<CreateUserBody>(nameof(CreateUserRequest.Body))
             .WithHandler(static async (CreateUserRequest request) =>
             {
@@ -146,7 +146,7 @@ public interface IUserRepository
 }
 ```
 
-`ApiGatewayHttpApiV2Router.CreateBuilder()` uses the same builder APIs as the core package. Prefer endpoint builders such as `AddEndPoint()` for application routes; typed handlers and endpoint helpers such as `WithJsonBody()` and `WithQueryBindings()` keep route values, query values, JSON bodies, services, and framework values in request objects.
+`ApiGatewayHttpApiV2Router.CreateBuilder()` uses the same builder APIs as the core package. Prefer endpoint builders such as `AddEndpoint()` for application routes; typed handlers and endpoint helpers such as `WithJsonBody()` and `WithQueryBindings()` keep route values, query values, JSON bodies, services, and framework values in request objects.
 
 Pass `ILambdaContext.RemainingTime` to `Route()` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 

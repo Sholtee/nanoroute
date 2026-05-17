@@ -295,13 +295,13 @@ namespace NanoRoute.Tests
             TypedRequestHandlerDelegate<TypedRouteRequest> typedPipelineHandler = (_, next) => next();
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((EndpointBuilder) null!).WithHandler(typedHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("endpointBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestEndpointHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
             ex = Assert.Throws<ArgumentNullException>(() => ((EndpointBuilder) null!).WithHandler(typedPipelineHandler))!;
-            Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("endpointBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));

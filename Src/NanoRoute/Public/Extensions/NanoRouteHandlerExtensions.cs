@@ -319,14 +319,14 @@ namespace NanoRoute
             return routeScopeBuilder;
         }
 
-        private static EndpointBuilder WithTypedHandlerCore<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(EndpointBuilder endPointBuilder, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
+        private static EndpointBuilder WithTypedHandlerCore<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(EndpointBuilder endpointBuilder, TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
         {
-            Ensure.NotNull(endPointBuilder);
+            Ensure.NotNull(endpointBuilder);
             Ensure.NotNull(handler);
 
             Func<RequestContext, TRequestContext> mapContext = ContextMapper<TRequestContext>.Value;
 
-            return endPointBuilder.WithHandler((context, next) => handler(mapContext(context), next));
+            return endpointBuilder.WithHandler((context, next) => handler(mapContext(context), next));
         }
         #endregion
 
@@ -614,7 +614,7 @@ namespace NanoRoute
             public TBuilder AddHandler(IEnumerable<string> verbs, RequestHandlerDelegate handler) => routeScopeBuilder.AddHandler(verbs, RouteScopeBuilder.CurrentPrefix, handler);
         }
 
-        extension(EndpointBuilder endPointBuilder)
+        extension(EndpointBuilder endpointBuilder)
         {
             /// <summary>
             /// Registers a typed endpoint handler that receives a request object built from the current <see cref="RequestContext"/>.
@@ -623,7 +623,7 @@ namespace NanoRoute
             /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
             /// </typeparam>
             /// <param name="handler">The typed endpoint handler delegate.</param>
-            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="endpointBuilder"/> instance.</returns>
             /// <remarks>
             /// <para>
             /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
@@ -637,7 +637,7 @@ namespace NanoRoute
             /// or from the request service provider.
             /// </para>
             /// </remarks>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/> or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endpointBuilder"/> or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
             /// <exception cref="InvalidOperationException">Thrown when request-time typed binding cannot resolve a required parameter or service.</exception>
             /// <example>
@@ -648,7 +648,7 @@ namespace NanoRoute
             public EndpointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
             {
                 Ensure.NotNull(handler);
-                return WithTypedHandlerCore(endPointBuilder, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
+                return WithTypedHandlerCore(endpointBuilder, (TRequestContext context, CallNextHandlerDelegate _) => handler(context));
             }
 
             /// <summary>
@@ -658,7 +658,7 @@ namespace NanoRoute
             /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
             /// </typeparam>
             /// <param name="handler">The typed endpoint handler delegate.</param>
-            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="endpointBuilder"/> instance.</returns>
             /// <remarks>
             /// <para>
             /// Writable public properties are bound from <see cref="RequestContext.Parameters"/> by default.
@@ -672,7 +672,7 @@ namespace NanoRoute
             /// or from the request service provider.
             /// </para>
             /// </remarks>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/> or <paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endpointBuilder"/> or <paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
             /// <exception cref="InvalidOperationException">Thrown when request-time typed binding cannot resolve a required parameter or service.</exception>
             /// <example>
@@ -681,7 +681,7 @@ namespace NanoRoute
             /// </code>
             /// </example>
             public EndpointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
-                WithTypedHandlerCore(endPointBuilder, handler);
+                WithTypedHandlerCore(endpointBuilder, handler);
         }
     }
 }

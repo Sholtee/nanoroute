@@ -27,7 +27,7 @@ using NanoRoute;
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .AddEndPoint("GET", "/health/", endpoint => endpoint
+    .AddEndpoint("GET", "/health/", endpoint => endpoint
         .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent("ok")
@@ -59,7 +59,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddJsonErrorDetails()
-    .AddEndPoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
+    .AddEndpoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
         .WithHandler(static async (GetUserRequest request) =>
         {
             return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
@@ -68,7 +68,7 @@ HttpListenerRouter router = HttpListenerRouter
                 Name = await request.Users.GetNameAsync(request.UserId)
             });
         }))
-    .AddEndPoint("POST", "/api/users/", endpoint => endpoint
+    .AddEndpoint("POST", "/api/users/", endpoint => endpoint
         .WithJsonBody<CreateUserBody>(nameof(CreateUserRequest.Body))
         .WithHandler(static async (CreateUserRequest request) =>
         {
@@ -126,7 +126,7 @@ public interface IUserRepository
 }
 ```
 
-`AddEndPoint()` is the recommended application-level entry point for most routes: it captures the HTTP verb and route pattern once, then endpoint helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` add endpoint-local middleware without repeating the route. Typed handlers bind route values, query values, JSON bodies, services, and framework values into request objects before your handler runs.
+`AddEndpoint()` is the recommended application-level entry point for most routes: it captures the HTTP verb and route pattern once, then endpoint helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` add endpoint-local middleware without repeating the route. Typed handlers bind route values, query values, JSON bodies, services, and framework values into request objects before your handler runs.
 
 `AddHandler()` is still available when you need lower-level pipeline composition, such as custom middleware chains or manually scoped prefix routes.
 

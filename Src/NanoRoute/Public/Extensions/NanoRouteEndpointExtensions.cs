@@ -21,7 +21,7 @@ namespace NanoRoute
     /// </remarks>
     /// <example>
     /// <code>
-    /// builder.AddEndPoint("POST", "/users/", endpoint =&gt; endpoint
+    /// builder.AddEndpoint("POST", "/users/", endpoint =&gt; endpoint
     ///     .WithJsonBody&lt;CreateUserRequest&gt;("body")
     ///     .WithHandler((context, _) =&gt; CreateUser(context)));
     /// </code>
@@ -95,7 +95,7 @@ namespace NanoRoute
     /// </summary>
     /// <example>
     /// <code>
-    /// builder.AddEndPoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
+    /// builder.AddEndpoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
     ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
     /// </code>
     /// </example>
@@ -126,7 +126,7 @@ namespace NanoRoute
             /// </exception>
             /// <example>
             /// <code>
-            /// EndPointBuilder endpoint = builder.CreateEndpoint(["GET", "HEAD"], "/users/{id:int}/");
+            /// EndpointBuilder endpoint = builder.CreateEndpoint(["GET", "HEAD"], "/users/{id:int}/");
             /// </code>
             /// </example>
             public EndpointBuilder CreateEndpoint(IEnumerable<string> verbs, string pattern)
@@ -161,7 +161,7 @@ namespace NanoRoute
             /// </exception>
             /// <example>
             /// <code>
-            /// EndPointBuilder endpoint = builder.CreateEndpoint("GET", "/users/{id:int}/");
+            /// EndpointBuilder endpoint = builder.CreateEndpoint("GET", "/users/{id:int}/");
             /// </code>
             /// </example>
             public EndpointBuilder CreateEndpoint(string verb, string pattern)
@@ -179,11 +179,11 @@ namespace NanoRoute
             /// The endpoint route pattern. Exact patterns must end with <c>/</c>, and prefix patterns must end
             /// with <c>/*</c>.
             /// </param>
-            /// <param name="configureEndPoint">A callback that registers endpoint-local handlers and middleware.</param>
+            /// <param name="configureEndpoint">A callback that registers endpoint-local handlers and middleware.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <exception cref="ArgumentNullException">
             /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>,
-            /// <paramref name="pattern"/>, or <paramref name="configureEndPoint"/> is <see langword="null"/>.
+            /// <paramref name="pattern"/>, or <paramref name="configureEndpoint"/> is <see langword="null"/>.
             /// </exception>
             /// <exception cref="ArgumentException">
             /// Thrown when <paramref name="pattern"/> is not an exact or prefix route pattern, has invalid
@@ -200,11 +200,11 @@ namespace NanoRoute
             ///     .WithHandler((context, _) =&gt; SaveUser(context)));
             /// </code>
             /// </example>
-            public TBuilder AddEndpoint(IEnumerable<string> verbs, string pattern, Action<EndpointBuilder> configureEndPoint)
+            public TBuilder AddEndpoint(IEnumerable<string> verbs, string pattern, Action<EndpointBuilder> configureEndpoint)
             {
-                Ensure.NotNull(configureEndPoint);
+                Ensure.NotNull(configureEndpoint);
 
-                configureEndPoint
+                configureEndpoint
                 (
                     routeScopeBuilder.CreateEndpoint(verbs, pattern)
                 );
@@ -220,11 +220,11 @@ namespace NanoRoute
             /// The endpoint route pattern. Exact patterns must end with <c>/</c>, and prefix patterns must end
             /// with <c>/*</c>.
             /// </param>
-            /// <param name="configureEndPoint">A callback that registers endpoint-local handlers and middleware.</param>
+            /// <param name="configureEndpoint">A callback that registers endpoint-local handlers and middleware.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <exception cref="ArgumentNullException">
             /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>,
-            /// <paramref name="pattern"/>, or <paramref name="configureEndPoint"/> is <see langword="null"/>.
+            /// <paramref name="pattern"/>, or <paramref name="configureEndpoint"/> is <see langword="null"/>.
             /// </exception>
             /// <exception cref="ArgumentException">
             /// Thrown when <paramref name="pattern"/> is not an exact or prefix route pattern, has invalid
@@ -240,11 +240,11 @@ namespace NanoRoute
             ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
             /// </code>
             /// </example>
-            public TBuilder AddEndpoint(string verb, string pattern, Action<EndpointBuilder> configureEndPoint)
+            public TBuilder AddEndpoint(string verb, string pattern, Action<EndpointBuilder> configureEndpoint)
             {
                 Ensure.NotNull(verb);
 
-                return routeScopeBuilder.AddEndpoint([verb], pattern, configureEndPoint);
+                return routeScopeBuilder.AddEndpoint([verb], pattern, configureEndpoint);
             }
         }
     }

@@ -47,8 +47,8 @@ NanoRoute.MatchingPrecedence.LiteralFirst = 0 -> NanoRoute.MatchingPrecedence
 NanoRoute.MatchingPrecedence.ParameterizedFirst = 1 -> NanoRoute.MatchingPrecedence
 NanoRoute.NanoRouteEndpointExtensions
 NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!)
-NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!).AddEndpoint(string! verb, string! pattern, System.Action<NanoRoute.EndpointBuilder!>! configureEndPoint) -> TBuilder!
-NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!).AddEndpoint(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, System.Action<NanoRoute.EndpointBuilder!>! configureEndPoint) -> TBuilder!
+NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!).AddEndpoint(string! verb, string! pattern, System.Action<NanoRoute.EndpointBuilder!>! configureEndpoint) -> TBuilder!
+NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!).AddEndpoint(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, System.Action<NanoRoute.EndpointBuilder!>! configureEndpoint) -> TBuilder!
 NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!).CreateEndpoint(string! verb, string! pattern) -> NanoRoute.EndpointBuilder!
 NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!).CreateEndpoint(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern) -> NanoRoute.EndpointBuilder!
 NanoRoute.NanoRouteExceptionExtensions

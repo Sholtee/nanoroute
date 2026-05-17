@@ -25,7 +25,7 @@ using NanoRoute;
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .AddEndPoint("GET", "/health/", endpoint => endpoint
+    .AddEndpoint("GET", "/health/", endpoint => endpoint
         .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent("ok")

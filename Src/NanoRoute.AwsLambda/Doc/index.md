@@ -31,7 +31,7 @@ public sealed class Function
         .CreateBuilder()
         .AddDefaultValueParsers()
         .AddJsonErrorDetails()
-        .AddEndPoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
+        .AddEndpoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
             .WithHandler(static async (GetUserRequest request) =>
             {
                 return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
@@ -40,7 +40,7 @@ public sealed class Function
                     Name = await request.Users.GetNameAsync(request.UserId)
                 });
             }))
-        .AddEndPoint("POST", "/api/users/", endpoint => endpoint
+        .AddEndpoint("POST", "/api/users/", endpoint => endpoint
             .WithJsonBody<CreateUserBody>(nameof(CreateUserRequest.Body))
             .WithHandler(static async (CreateUserRequest request) =>
             {
@@ -99,7 +99,7 @@ public interface IUserRepository
 
 `ApiGatewayHttpApiV2Router.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, endpoint builders, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router between Lambda invocations.
 
-Prefer endpoint builders such as `AddEndPoint()` for application routes. Typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
+Prefer endpoint builders such as `AddEndpoint()` for application routes. Typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
 
 The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass `ILambdaContext.RemainingTime` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 
@@ -126,7 +126,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddPrefix("/api/items/*", items => items
-        .AddEndPoint("GET", RouteScopeBuilder.CurrentExact, endpoint => endpoint
+        .AddEndpoint("GET", RouteScopeBuilder.CurrentExact, endpoint => endpoint
             .WithQueryBindings("{filter?:str(min=3)}")
             .WithHandler(static async (context, _) =>
             {
@@ -137,7 +137,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
                     filter = context.Parameters.TryGetValue("filter", out object? filter) ? filter : null
                 });
             }))
-        .AddEndPoint("GET", "/{id:int(min=1)}/", endpoint => endpoint
+        .AddEndpoint("GET", "/{id:int(min=1)}/", endpoint => endpoint
             .WithHandler(static async (context, _) =>
             {
                 await Task.CompletedTask;
@@ -192,7 +192,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
         LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
     })
     .AddJsonErrorDetails()
-    .AddEndPoint("GET", "/health/", endpoint => endpoint
+    .AddEndpoint("GET", "/health/", endpoint => endpoint
         .WithHandler(static async (_, _) =>
         {
             await Task.CompletedTask;
@@ -230,7 +230,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddPrefix("/items/{id:int}/*", items => items
-        .AddEndPoint(["GET"], RouteScopeBuilder.CurrentExact, endpoint => endpoint
+        .AddEndpoint(["GET"], RouteScopeBuilder.CurrentExact, endpoint => endpoint
             .WithQueryBindings("{filter?:str(min=3)}")
             .WithHandler(static async (GetItemRequest request) =>
             {
@@ -247,13 +247,13 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 - `ConfigureRouting()` customizes `AwsLambdaRouterConfig` before creating a router snapshot.
 - `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
-- `AddQueryBindings()` and `EndPointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
-- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndPointBuilder.WithQueryBindings()` middleware.
-- `AddEndPoint()` and `CreateEndPoint()` capture endpoint verbs and route patterns once; endpoint helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` work under Lambda the same way they do in the core package.
-- `AddJsonBody()` and `EndPointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
+- `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
+- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` middleware.
+- `AddEndpoint()` and `CreateEndpoint()` capture endpoint verbs and route patterns once; endpoint helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` work under Lambda the same way they do in the core package.
+- `AddJsonBody()` and `EndpointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses when explicitly added.
 - `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.
-- `AddHandler<TRequest>()` and `EndPointBuilder.WithHandler<TRequest>()` project `RequestContext` into a typed request object before invoking the handler.
+- `AddHandler<TRequest>()` and `EndpointBuilder.WithHandler<TRequest>()` project `RequestContext` into a typed request object before invoking the handler.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 
 ## Supported API Gateway Model

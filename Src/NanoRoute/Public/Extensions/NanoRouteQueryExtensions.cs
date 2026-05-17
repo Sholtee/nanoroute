@@ -359,7 +359,7 @@ namespace NanoRoute
             }
         }
 
-        extension(EndpointBuilder endPointBuilder)
+        extension(EndpointBuilder endpointBuilder)
         {
             /// <summary>
             /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>
@@ -368,7 +368,7 @@ namespace NanoRoute
             /// <param name="bindings">
             /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
             /// </param>
-            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="endpointBuilder"/> instance.</returns>
             /// <remarks>
             /// The query-binding middleware is registered for the endpoint's captured HTTP methods and route match
             /// kind. Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
@@ -378,7 +378,7 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/> or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endpointBuilder"/> or <paramref name="bindings"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
             /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
             /// <example>
@@ -388,11 +388,11 @@ namespace NanoRoute
             /// </example>
             public EndpointBuilder WithQueryBindings(string bindings)
             {
-                Ensure.NotNull(endPointBuilder);
+                Ensure.NotNull(endpointBuilder);
 
-                return endPointBuilder.WithHandler
+                return endpointBuilder.WithHandler
                 (
-                    CreateHandler(endPointBuilder.Prefix, bindings)
+                    CreateHandler(endpointBuilder.Prefix, bindings)
                 );
             }
         }

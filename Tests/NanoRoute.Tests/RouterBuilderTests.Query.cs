@@ -376,7 +376,7 @@ namespace NanoRoute.Tests
             EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
 
             ex = Assert.Throws<ArgumentNullException>(() => ((EndpointBuilder) null!).WithQueryBindings(""))!;
-            Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
+            Assert.That(ex.ParamName, Is.EqualTo("endpointBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithQueryBindings(null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
