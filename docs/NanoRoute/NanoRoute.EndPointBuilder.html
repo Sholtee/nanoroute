@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Class EndPointBuilder | NanoRoute </title>
+      <title>Class EndpointBuilder | NanoRoute </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Class EndPointBuilder | NanoRoute ">
+      <meta name="title" content="Class EndpointBuilder | NanoRoute ">
     
     <meta name="description" content="Builds handlers and middleware that belong to a single route endpoint.">
       <link rel="shortcut icon" href="Icon.png">
@@ -35,18 +35,18 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.EndPointBuilder">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.EndpointBuilder">
 
 
 
-  <h1 id="NanoRoute_EndPointBuilder" data-uid="NanoRoute.EndPointBuilder" class="text-break">Class EndPointBuilder</h1>
+  <h1 id="NanoRoute_EndpointBuilder" data-uid="NanoRoute.EndpointBuilder" class="text-break">Class EndpointBuilder</h1>
   <div class="markdown level0 summary"><p>Builds handlers and middleware that belong to a single route endpoint.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">EndPointBuilder</span></div>
+    <div class="level1"><span class="xref">EndpointBuilder</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -71,24 +71,24 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_EndPointBuilder_syntax">Syntax</h5>
+  <h5 id="NanoRoute_EndpointBuilder_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class EndPointBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class EndpointBuilder</code></pre>
   </div>
-  <h5 id="NanoRoute_EndPointBuilder_remarks"><strong>Remarks</strong></h5>
+  <h5 id="NanoRoute_EndpointBuilder_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Endpoint builders capture the endpoint route pattern and HTTP verbs once, then let endpoint-aware
 extensions register middleware against that captured endpoint. Extension authors can use
-<a class="xref" href="NanoRoute.EndPointBuilder.html#NanoRoute_EndPointBuilder_Prefix">Prefix</a> when they need access to the endpoint's scoped route builder.</p>
+<a class="xref" href="NanoRoute.EndpointBuilder.html#NanoRoute_EndpointBuilder_Prefix">Prefix</a> when they need access to the endpoint's scoped route builder.</p>
 </div>
-  <h5 id="NanoRoute_EndPointBuilder_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">builder.AddEndPoint("POST", "/users/", endpoint =&gt; endpoint
+  <h5 id="NanoRoute_EndpointBuilder_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.AddEndpoint("POST", "/users/", endpoint =&gt; endpoint
     .WithJsonBody&lt;CreateUserRequest&gt;("body")
     .WithHandler((context, _) =&gt; CreateUser(context)));</code></pre>
 
   <h3 id="properties">Properties
 </h3>
-  <a id="NanoRoute_EndPointBuilder_Prefix_" data-uid="NanoRoute.EndPointBuilder.Prefix*"></a>
-  <h4 id="NanoRoute_EndPointBuilder_Prefix" data-uid="NanoRoute.EndPointBuilder.Prefix">Prefix</h4>
+  <a id="NanoRoute_EndpointBuilder_Prefix_" data-uid="NanoRoute.EndpointBuilder.Prefix*"></a>
+  <h4 id="NanoRoute_EndpointBuilder_Prefix" data-uid="NanoRoute.EndpointBuilder.Prefix">Prefix</h4>
   <div class="markdown level1 summary"><p>Gets the route scope that backs the endpoint.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -111,20 +111,20 @@ extensions register middleware against that captured endpoint. Extension authors
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_EndPointBuilder_Prefix_remarks">Remarks</h5>
+  <h5 id="NanoRoute_EndpointBuilder_Prefix_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Endpoint-aware extensions can use this scope to access endpoint-local value parsers, metadata, and
 lower-level handler registration APIs.</p>
 </div>
   <h3 id="methods">Methods
 </h3>
-  <a id="NanoRoute_EndPointBuilder_WithHandler_" data-uid="NanoRoute.EndPointBuilder.WithHandler*"></a>
-  <h4 id="NanoRoute_EndPointBuilder_WithHandler_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.EndPointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate)">WithHandler(RequestHandlerDelegate)</h4>
+  <a id="NanoRoute_EndpointBuilder_WithHandler_" data-uid="NanoRoute.EndpointBuilder.WithHandler*"></a>
+  <h4 id="NanoRoute_EndpointBuilder_WithHandler_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.EndpointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate)">WithHandler(RequestHandlerDelegate)</h4>
   <div class="markdown level1 summary"><p>Adds a handler delegate to the endpoint.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public EndPointBuilder WithHandler(RequestHandlerDelegate handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public EndpointBuilder WithHandler(RequestHandlerDelegate handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -155,13 +155,13 @@ routing continues with the next compatible handler registered for the same endpo
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><p>The current <a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a> instance.</p>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><p>The current <a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a> instance.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_EndPointBuilder_WithHandler_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
+  <h5 id="NanoRoute_EndpointBuilder_WithHandler_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
   <pre><code class="lang-csharp">endpoint.WithHandler((context, _) =&gt; Results.Ok(context.Parameters));</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
@@ -187,22 +187,22 @@ routing continues with the next compatible handler registered for the same endpo
   </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0__">NanoRouteHandlerExtensions.WithHandler&lt;TRequestContext&gt;(EndPointBuilder, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0__">NanoRouteHandlerExtensions.WithHandler&lt;TRequestContext&gt;(EndpointBuilder, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestHandlerDelegate___0__">NanoRouteHandlerExtensions.WithHandler&lt;TRequestContext&gt;(EndPointBuilder, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestHandlerDelegate___0__">NanoRouteHandlerExtensions.WithHandler&lt;TRequestContext&gt;(EndpointBuilder, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_">NanoRouteJsonExtensions.WithJsonBody(EndPointBuilder, JsonTypeInfo, string)</a>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_">NanoRouteJsonExtensions.WithJsonBody(EndpointBuilder, JsonTypeInfo, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Type_System_String_">NanoRouteJsonExtensions.WithJsonBody(EndPointBuilder, Type, string)</a>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Type_System_String_">NanoRouteJsonExtensions.WithJsonBody(EndpointBuilder, Type, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody__1_NanoRoute_EndPointBuilder_System_String_">NanoRouteJsonExtensions.WithJsonBody&lt;T&gt;(EndPointBuilder, string)</a>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody__1_NanoRoute_EndpointBuilder_System_String_">NanoRouteJsonExtensions.WithJsonBody&lt;T&gt;(EndpointBuilder, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndPointBuilder_System_String_">NanoRouteQueryExtensions.WithQueryBindings(EndPointBuilder, string)</a>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndpointBuilder_System_String_">NanoRouteQueryExtensions.WithQueryBindings(EndpointBuilder, string)</a>
   </div>
 
 </article>

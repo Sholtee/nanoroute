@@ -2306,13 +2306,13 @@ by <code class="paramref">configure</code> is <a href="https://learn.microsoft.c
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody*"></a>
-  <h4 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">WithJsonBody(EndPointBuilder, JsonTypeInfo, string)</h4>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)">WithJsonBody(EndpointBuilder, JsonTypeInfo, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into an endpoint parameter using source-generated or custom JSON metadata.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithJsonBody(this EndPointBuilder endPointBuilder, JsonTypeInfo typeInfo, string paramName)</code></pre>
+    <pre><code class="lang-csharp hljs">public static EndpointBuilder WithJsonBody(this EndpointBuilder endpointBuilder, JsonTypeInfo typeInfo, string paramName)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2325,8 +2325,8 @@ by <code class="paramref">configure</code> is <a href="https://learn.microsoft.c
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><span class="parametername">endPointBuilder</span></td>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><span class="parametername">endpointBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -2353,18 +2353,18 @@ by <code class="paramref">configure</code> is <a href="https://learn.microsoft.c
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><p>The current <code class="paramref">endpointBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The JSON-binding middleware is registered for the endpoint's captured HTTP methods and route match
 kind. The deserialized body is written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>, and an existing
 value with the same key is overwritten.</p>
 </div>
-  <h5 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String__examples">Examples</h5>
   <pre><code class="lang-csharp">endpoint.WithJsonBody(MyJsonContext.Default.CreateUserRequest, "body");</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
@@ -2378,7 +2378,7 @@ value with the same key is overwritten.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">endPointBuilder</code>, <code class="paramref">typeInfo</code>, or <code class="paramref">paramName</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">endpointBuilder</code>, <code class="paramref">typeInfo</code>, or <code class="paramref">paramName</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>
@@ -2399,13 +2399,13 @@ value with the same key is overwritten.</p>
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody*"></a>
-  <h4 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Type_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder,System.Type,System.String)">WithJsonBody(EndPointBuilder, Type, string)</h4>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Type_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder,System.Type,System.String)">WithJsonBody(EndpointBuilder, Type, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into an endpoint parameter using runtime type metadata.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithJsonBody(this EndPointBuilder endPointBuilder, Type type, string paramName)</code></pre>
+    <pre><code class="lang-csharp hljs">public static EndpointBuilder WithJsonBody(this EndpointBuilder endpointBuilder, Type type, string paramName)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2418,8 +2418,8 @@ value with the same key is overwritten.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><span class="parametername">endPointBuilder</span></td>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><span class="parametername">endpointBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -2446,13 +2446,13 @@ value with the same key is overwritten.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><p>The current <code class="paramref">endpointBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Type_System_String__examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Type_System_String__examples">Examples</h5>
   <pre><code class="lang-csharp">endpoint.WithJsonBody(typeof(CreateUserRequest), "body");</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
@@ -2466,7 +2466,7 @@ value with the same key is overwritten.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">endPointBuilder</code>, <code class="paramref">type</code>, or <code class="paramref">paramName</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">endpointBuilder</code>, <code class="paramref">type</code>, or <code class="paramref">paramName</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>
@@ -2492,13 +2492,13 @@ value with the same key is overwritten.</p>
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody*"></a>
-  <h4 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody__1_NanoRoute_EndPointBuilder_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody``1(NanoRoute.EndPointBuilder,System.String)">WithJsonBody&lt;T&gt;(EndPointBuilder, string)</h4>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody__1_NanoRoute_EndpointBuilder_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.WithJsonBody``1(NanoRoute.EndpointBuilder,System.String)">WithJsonBody&lt;T&gt;(EndpointBuilder, string)</h4>
   <div class="markdown level1 summary"><p>Deserializes JSON request bodies into an endpoint parameter using runtime type metadata.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithJsonBody&lt;T&gt;(this EndPointBuilder endPointBuilder, string paramName) where T : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public static EndpointBuilder WithJsonBody&lt;T&gt;(this EndpointBuilder endpointBuilder, string paramName) where T : notnull</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2511,8 +2511,8 @@ value with the same key is overwritten.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><span class="parametername">endPointBuilder</span></td>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><span class="parametername">endpointBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -2533,8 +2533,8 @@ value with the same key is overwritten.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><p>The current <code class="paramref">endpointBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -2555,7 +2555,7 @@ value with the same key is overwritten.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody__1_NanoRoute_EndPointBuilder_System_String__examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_WithJsonBody__1_NanoRoute_EndpointBuilder_System_String__examples">Examples</h5>
   <pre><code class="lang-csharp">endpoint.WithJsonBody&lt;CreateUserRequest&gt;("body");</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
@@ -2569,7 +2569,7 @@ value with the same key is overwritten.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">endPointBuilder</code> or <code class="paramref">paramName</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">endpointBuilder</code> or <code class="paramref">paramName</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>

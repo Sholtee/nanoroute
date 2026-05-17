@@ -60,17 +60,17 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.EndPointBuilder.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.EndpointBuilder.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.EndPointBuilder.html"
+          "relative_path": "NanoRoute.EndpointBuilder.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.EndPointBuilder",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.EndPointBuilder.yml\" sourcestartlinenumber=\"1\">Builds handlers and middleware that belong to a single route endpoint.</p>\n"
+      "Title": "NanoRoute.EndpointBuilder",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.EndpointBuilder.yml\" sourcestartlinenumber=\"1\">Builds handlers and middleware that belong to a single route endpoint.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -186,17 +186,17 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteEndPointExtensions.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteEndpointExtensions.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.NanoRouteEndPointExtensions.html"
+          "relative_path": "NanoRoute.NanoRouteEndpointExtensions.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.NanoRouteEndPointExtensions",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteEndPointExtensions.yml\" sourcestartlinenumber=\"1\">Adds endpoint-building helpers to route scope builders.</p>\n"
+      "Title": "NanoRoute.NanoRouteEndpointExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteEndpointExtensions.yml\" sourcestartlinenumber=\"1\">Adds endpoint-building helpers to route scope builders.</p>\n"
     },
     {
       "type": "ManagedReference",

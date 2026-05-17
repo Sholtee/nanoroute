@@ -60,7 +60,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddJsonErrorDetails()
-    .AddEndPoint(&quot;GET&quot;, &quot;/api/users/{user_id:int}/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;GET&quot;, &quot;/api/users/{user_id:int}/&quot;, endpoint =&gt; endpoint
         .WithHandler(static async (GetUserRequest request) =&gt;
         {
             return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
@@ -69,7 +69,7 @@ HttpListenerRouter router = HttpListenerRouter
                 Name = await request.Users.GetNameAsync(request.UserId)
             });
         }))
-    .AddEndPoint(&quot;POST&quot;, &quot;/api/users/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;POST&quot;, &quot;/api/users/&quot;, endpoint =&gt; endpoint
         .WithJsonBody&lt;CreateUserBody&gt;(nameof(CreateUserRequest.Body))
         .WithHandler(static async (CreateUserRequest request) =&gt;
         {
@@ -126,7 +126,7 @@ public interface IUserRepository
     Task&lt;string&gt; GetNameAsync(int userId);
 }
 </code></pre>
-<p><code>AddEndPoint()</code> is the recommended application-level entry point for most routes. It captures an HTTP verb or verbs and a route pattern once, then endpoint helpers such as <code>WithHandler()</code> and <code>WithJsonBody()</code> add endpoint-local middleware without repeating the route. Typed handlers bind route values, JSON bodies, services, and framework values into request objects before your handler runs.</p>
+<p><code>AddEndpoint()</code> is the recommended application-level entry point for most routes. It captures an HTTP verb or verbs and a route pattern once, then endpoint helpers such as <code>WithHandler()</code> and <code>WithJsonBody()</code> add endpoint-local middleware without repeating the route. Typed handlers bind route values, JSON bodies, services, and framework values into request objects before your handler runs.</p>
 <p><code>AddHandler()</code> remains available as the lower-level pipeline primitive for custom middleware composition, prefix pipelines, and extension authors.</p>
 <h2 id="core-types">Core Types</h2>
 <ul>
@@ -137,7 +137,7 @@ public interface IUserRepository
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html">Router</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html">RouterConfig</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html">RouterBuilder`2</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndPointBuilder.html">EndPointBuilder</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html">EndpointBuilder</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html">RequestContext</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a></li>
@@ -146,7 +146,7 @@ public interface IUserRepository
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html">NanoRouteHandlerExtensions</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteEndPointExtensions.html">NanoRouteEndPointExtensions</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteEndpointExtensions.html">NanoRouteEndpointExtensions</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html">NanoRoutePrefixExtensions</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html">ValueSource</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a></li>
@@ -174,7 +174,7 @@ public interface IUserRepository
         ParametersCapacity = 8
     })
     .AddDefaultValueParsers()
-    .AddEndPoint(&quot;GET&quot;, &quot;/items/{slug:str}/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;GET&quot;, &quot;/items/{slug:str}/&quot;, endpoint =&gt; endpoint
         .WithHandler(static async (context, _) =&gt;
         {
             await Task.CompletedTask;
@@ -211,7 +211,7 @@ builder.AddPrefix(&quot;/api/users/{user_id:int}/*&quot;, users =&gt; users
         context.Parameters[&quot;user&quot;] = $&quot;user-{context.Parameters[&quot;user_id&quot;]}&quot;;
         return await next();
     })
-    .AddEndPoint(&quot;GET&quot;, &quot;/details/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;GET&quot;, &quot;/details/&quot;, endpoint =&gt; endpoint
         .WithHandler(static async (context, _) =&gt;
         {
             await Task.CompletedTask;
@@ -227,7 +227,7 @@ HttpListenerRouter router = builder.CreateRouter();
 </code></pre>
 <p>This produces the same effective routes as registering <code>/api/users/{user_id:int}/*</code> and <code>/api/users/{user_id:int}/details/</code> directly, but keeps repeated base patterns out of endpoint registrations.</p>
 <h2 id="endpoint-builders">Endpoint Builders</h2>
-<p><code>AddEndPoint()</code> and <code>CreateEndPoint()</code> capture an endpoint's HTTP verb or verbs and exact or prefix route pattern once. Endpoint-aware helpers such as <code>WithHandler()</code>, <code>WithJsonBody()</code>, and <code>WithQueryBindings()</code> then register middleware for that captured endpoint without repeating the route.</p>
+<p><code>AddEndpoint()</code> and <code>CreateEndpoint()</code> capture an endpoint's HTTP verb or verbs and exact or prefix route pattern once. Endpoint-aware helpers such as <code>WithHandler()</code>, <code>WithJsonBody()</code>, and <code>WithQueryBindings()</code> then register middleware for that captured endpoint without repeating the route.</p>
 <pre><code class="lang-csharp">public sealed class CreateItemRequest
 {
     public string Name { get; set; } = string.Empty;
@@ -237,7 +237,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
-    .AddEndPoint(&quot;POST&quot;, &quot;/items/{id:int}/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;POST&quot;, &quot;/items/{id:int}/&quot;, endpoint =&gt; endpoint
         .WithQueryBindings(&quot;{source:str}&quot;)
         .WithJsonBody&lt;CreateItemRequest&gt;(&quot;body&quot;)
         .WithHandler(static async (context, _) =&gt;
@@ -253,7 +253,7 @@ HttpListenerRouter router = HttpListenerRouter
         }))
     .CreateRouter();
 </code></pre>
-<p>Endpoint builders are useful when several pieces of endpoint-local middleware need the same verbs and pattern. Multiple <code>WithHandler()</code> calls run in registration order, and each handler can call the supplied <code>next</code> delegate to continue the endpoint pipeline. <code>WithQueryBindings()</code> uses the endpoint's captured verbs and match kind, so query parsing stays local to that endpoint. <code>CreateEndPoint()</code> returns an <code>EndPointBuilder</code> when you want to configure an endpoint incrementally, and <code>EndPointBuilder.Prefix</code> exposes the endpoint's scoped route builder for endpoint-aware extensions that need the lower-level builder surface.</p>
+<p>Endpoint builders are useful when several pieces of endpoint-local middleware need the same verbs and pattern. Multiple <code>WithHandler()</code> calls run in registration order, and each handler can call the supplied <code>next</code> delegate to continue the endpoint pipeline. <code>WithQueryBindings()</code> uses the endpoint's captured verbs and match kind, so query parsing stays local to that endpoint. <code>CreateEndpoint()</code> returns an <code>EndpointBuilder</code> when you want to configure an endpoint incrementally, and <code>EndpointBuilder.Prefix</code> exposes the endpoint's scoped route builder for endpoint-aware extensions that need the lower-level builder surface.</p>
 <h2 id="value-parsers">Value Parsers</h2>
 <p>NanoRoute supports both synchronous and asynchronous value parsers:</p>
 <ul>
@@ -330,7 +330,7 @@ RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = Http
     .AddDefaultValueParsers()
     .AddPrefix(&quot;/items/*&quot;, items =&gt; items
         .AddQueryBindings(&quot;GET&quot;, RouteScopeBuilder.CurrentExact, &quot;{filter:str(min=3)}&amp;{page?:int(min=1)}&amp;{tag:str(min=2)[]}&quot;)
-        .AddEndPoint(&quot;GET&quot;, RouteScopeBuilder.CurrentExact, endpoint =&gt; endpoint
+        .AddEndpoint(&quot;GET&quot;, RouteScopeBuilder.CurrentExact, endpoint =&gt; endpoint
             .WithHandler(static async (context, _) =&gt;
             {
                 await Task.CompletedTask;
@@ -365,7 +365,7 @@ RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = Http
         UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
     })
     .AddQueryBindings(&quot;GET&quot;, &quot;/items/&quot;, &quot;{filter:str(min=3)}&quot;)
-    .AddEndPoint(&quot;GET&quot;, &quot;/items/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;GET&quot;, &quot;/items/&quot;, endpoint =&gt; endpoint
         .WithHandler(static async (context, _) =&gt;
         {
             await Task.CompletedTask;
@@ -373,7 +373,7 @@ RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = Http
         }))
     .CreateRouter();
 </code></pre>
-<p><code>AddQueryBindings()</code> and <code>WithQueryBindings()</code> snapshot the current <code>QueryParsingConfig</code> at registration time. Prefix scopes follow the normal <code>RouteScopeBuilder.Metadata</code> scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. Endpoint builders use the same scoped configuration through <code>EndPointBuilder.Prefix</code>.</p>
+<p><code>AddQueryBindings()</code> and <code>WithQueryBindings()</code> snapshot the current <code>QueryParsingConfig</code> at registration time. Prefix scopes follow the normal <code>RouteScopeBuilder.Metadata</code> scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. Endpoint builders use the same scoped configuration through <code>EndpointBuilder.Prefix</code>.</p>
 <h2 id="typed-handlers">Typed Handlers</h2>
 <p>Typed handlers let you describe the data a route needs as a request object instead of reading everything manually from <code>RequestContext.Parameters</code>.</p>
 <pre><code class="lang-csharp">using System.Net;
@@ -403,7 +403,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddQueryBindings(&quot;GET&quot;, &quot;/items/{id:int}/&quot;, &quot;{query_filter:str(min=3)}&quot;)
-    .AddEndPoint(&quot;GET&quot;, &quot;/items/{id:int}/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;GET&quot;, &quot;/items/{id:int}/&quot;, endpoint =&gt; endpoint
         .WithHandler(async (GetItemRequest request) =&gt;
         {
             Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
@@ -429,7 +429,7 @@ HttpListenerRouter router = HttpListenerRouter
 </ul>
 <p>Typed endpoint handlers support the same route selection shapes as regular endpoint handlers: a single <code>verb</code> plus <code>pattern</code>, or an <code>IEnumerable&lt;string&gt;</code> of verbs plus <code>pattern</code>.</p>
 <p>They also have middleware-style overloads that receive <code>CallNextHandlerDelegate</code>:</p>
-<pre><code class="lang-csharp">.AddEndPoint([&quot;GET&quot;], &quot;/items/{id:int}/&quot;, endpoint =&gt; endpoint
+<pre><code class="lang-csharp">.AddEndpoint([&quot;GET&quot;], &quot;/items/{id:int}/&quot;, endpoint =&gt; endpoint
     .WithHandler(async (GetItemRequest request, CallNextHandlerDelegate next) =&gt;
     {
         HttpResponseMessage response = await next();
@@ -457,7 +457,7 @@ HttpListenerRouter router = HttpListenerRouter
         ])
     })
     .AddExceptionHandler()
-    .AddEndPoint(&quot;GET&quot;, &quot;/items/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;GET&quot;, &quot;/items/&quot;, endpoint =&gt; endpoint
         .WithHandler((_, _) =&gt; throw new NotSupportedException()))
     .CreateRouter();
 </code></pre>
@@ -471,7 +471,7 @@ HttpListenerRouter router = HttpListenerRouter
         PopulateErrorInfo = true
     })
     .AddJsonErrorDetails()
-    .AddEndPoint(&quot;GET&quot;, &quot;/items/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;GET&quot;, &quot;/items/&quot;, endpoint =&gt; endpoint
         .WithHandler((_, _) =&gt; throw new InvalidOperationException(&quot;Boom&quot;)))
     .CreateRouter();
 </code></pre>
@@ -498,7 +498,7 @@ public sealed class InMemoryRouter : Router&lt;InMemoryRouter, RouterConfig&gt;
 
 InMemoryRouter router = InMemoryRouter
     .CreateBuilder()
-    .AddEndPoint(&quot;GET&quot;, &quot;/health/&quot;, endpoint =&gt; endpoint
+    .AddEndpoint(&quot;GET&quot;, &quot;/health/&quot;, endpoint =&gt; endpoint
         .WithHandler(static (_, _) =&gt; Task.FromResult(new HttpResponseMessage())))
     .CreateRouter();
 </code></pre>
@@ -516,14 +516,14 @@ InMemoryRouter router = InMemoryRouter
 <li><code>AddDefaultValueParsers()</code> registers the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code> value parsers.</li>
 <li><code>AddPrefix(&quot;/prefix/*&quot;, ...)</code> configures a scoped route subtree and returns the current builder.</li>
 <li><code>CreatePrefix(&quot;/prefix/*&quot;)</code> creates a scoped child builder for a route subtree.</li>
-<li><code>AddEndPoint()</code> and <code>CreateEndPoint()</code> capture an endpoint's verbs and route pattern once.</li>
-<li><code>EndPointBuilder.WithHandler()</code>, <code>EndPointBuilder.WithJsonBody()</code>, and <code>EndPointBuilder.WithQueryBindings()</code> register endpoint-local handlers, JSON body middleware, and query bindings.</li>
+<li><code>AddEndpoint()</code> and <code>CreateEndpoint()</code> capture an endpoint's verbs and route pattern once.</li>
+<li><code>EndpointBuilder.WithHandler()</code>, <code>EndpointBuilder.WithJsonBody()</code>, and <code>EndpointBuilder.WithQueryBindings()</code> register endpoint-local handlers, JSON body middleware, and query bindings.</li>
 <li><code>RouteScopeBuilder.Metadata</code> stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.</li>
-<li><code>AddQueryBindings()</code> and <code>EndPointBuilder.WithQueryBindings()</code> bind selected query-string values into <code>RequestContext.Parameters</code>.</li>
-<li><code>ConfigureQueryParsing()</code> customizes query-binding behavior used by subsequently registered <code>AddQueryBindings()</code> and <code>EndPointBuilder.WithQueryBindings()</code> middleware.</li>
-<li><code>AddHandler&lt;TRequestContext&gt;()</code> and <code>EndPointBuilder.WithHandler&lt;TRequestContext&gt;()</code> project <code>RequestContext</code> into a typed request object before invoking the handler.</li>
+<li><code>AddQueryBindings()</code> and <code>EndpointBuilder.WithQueryBindings()</code> bind selected query-string values into <code>RequestContext.Parameters</code>.</li>
+<li><code>ConfigureQueryParsing()</code> customizes query-binding behavior used by subsequently registered <code>AddQueryBindings()</code> and <code>EndpointBuilder.WithQueryBindings()</code> middleware.</li>
+<li><code>AddHandler&lt;TRequestContext&gt;()</code> and <code>EndpointBuilder.WithHandler&lt;TRequestContext&gt;()</code> project <code>RequestContext</code> into a typed request object before invoking the handler.</li>
 <li><code>ConfigureExceptionHandling()</code> customizes exception normalization used by subsequently registered <code>AddExceptionHandler()</code> middleware.</li>
-<li><code>AddJsonBody()</code> and <code>EndPointBuilder.WithJsonBody()</code> bind JSON request content into <code>RequestContext.Parameters</code>.</li>
+<li><code>AddJsonBody()</code> and <code>EndpointBuilder.WithJsonBody()</code> bind JSON request content into <code>RequestContext.Parameters</code>.</li>
 <li><code>AddJsonErrorDetails()</code> turns routing exceptions into JSON <code>ErrorDetails</code> responses.</li>
 <li><code>ConfigureJsonErrorDetails()</code> customizes JSON <code>ErrorDetails</code> response diagnostics and serialization metadata used by subsequently registered <code>AddJsonErrorDetails()</code> middleware.</li>
 <li><code>HttpResponseMessage.Json(...)</code> creates JSON responses with the library's serializer defaults.</li>

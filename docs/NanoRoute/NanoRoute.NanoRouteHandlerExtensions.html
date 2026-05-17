@@ -1131,13 +1131,13 @@ or from the request service provider.
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteHandlerExtensions_WithHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler*"></a>
-  <h4 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0__" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndPointBuilder,NanoRoute.TypedRequestEndpointHandlerDelegate{``0})">WithHandler&lt;TRequestContext&gt;(EndPointBuilder, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0__" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndpointBuilder,NanoRoute.TypedRequestEndpointHandlerDelegate{``0})">WithHandler&lt;TRequestContext&gt;(EndpointBuilder, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</h4>
   <div class="markdown level1 summary"><p>Registers a typed endpoint handler that receives a request object built from the current <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithHandler&lt;TRequestContext&gt;(this EndPointBuilder endPointBuilder, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt; handler) where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static EndpointBuilder WithHandler&lt;TRequestContext&gt;(this EndpointBuilder endpointBuilder, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt; handler) where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1150,8 +1150,8 @@ or from the request service provider.
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><span class="parametername">endPointBuilder</span></td>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><span class="parametername">endpointBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -1172,8 +1172,8 @@ or from the request service provider.
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><p>The current <code class="paramref">endpointBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -1194,7 +1194,7 @@ or from the request service provider.
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0___remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>
 Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
 </p>
@@ -1207,7 +1207,7 @@ Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttr
 or from the request service provider.
 </p>
 </div>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0___examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0___examples">Examples</h5>
   <pre><code class="lang-csharp">endpoint.WithHandler&lt;UserRequest&gt;(request =&gt; Results.Ok(request.Id));</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
@@ -1221,7 +1221,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">endPointBuilder</code> or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">endpointBuilder</code> or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>
@@ -1237,13 +1237,13 @@ or from the request service provider.
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteHandlerExtensions_WithHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler*"></a>
-  <h4 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestHandlerDelegate___0__" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndPointBuilder,NanoRoute.TypedRequestHandlerDelegate{``0})">WithHandler&lt;TRequestContext&gt;(EndPointBuilder, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestHandlerDelegate___0__" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndpointBuilder,NanoRoute.TypedRequestHandlerDelegate{``0})">WithHandler&lt;TRequestContext&gt;(EndpointBuilder, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</h4>
   <div class="markdown level1 summary"><p>Registers a typed endpoint handler that receives a request object and the next handler in the pipeline.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithHandler&lt;TRequestContext&gt;(this EndPointBuilder endPointBuilder, TypedRequestHandlerDelegate&lt;TRequestContext&gt; handler) where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static EndpointBuilder WithHandler&lt;TRequestContext&gt;(this EndpointBuilder endpointBuilder, TypedRequestHandlerDelegate&lt;TRequestContext&gt; handler) where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1256,8 +1256,8 @@ or from the request service provider.
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><span class="parametername">endPointBuilder</span></td>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><span class="parametername">endpointBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -1278,8 +1278,8 @@ or from the request service provider.
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><p>The current <code class="paramref">endpointBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
@@ -1300,7 +1300,7 @@ or from the request service provider.
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestHandlerDelegate___0___remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestHandlerDelegate___0___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>
 Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
 </p>
@@ -1313,7 +1313,7 @@ Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttr
 or from the request service provider.
 </p>
 </div>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestHandlerDelegate___0___examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestHandlerDelegate___0___examples">Examples</h5>
   <pre><code class="lang-csharp">endpoint.WithHandler&lt;UserRequest&gt;((request, next) =&gt; next());</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
@@ -1327,7 +1327,7 @@ or from the request service provider.
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">endPointBuilder</code> or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">endpointBuilder</code> or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>

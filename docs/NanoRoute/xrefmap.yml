@@ -106,36 +106,36 @@ references:
   fullName.vb: NanoRoute.ConfigureBuilderDelegate(Of TConfig)
   nameWithType: ConfigureBuilderDelegate<TConfig>
   nameWithType.vb: ConfigureBuilderDelegate(Of TConfig)
-- uid: NanoRoute.EndPointBuilder
-  name: EndPointBuilder
-  href: NanoRoute.EndPointBuilder.html
-  commentId: T:NanoRoute.EndPointBuilder
-  fullName: NanoRoute.EndPointBuilder
-  nameWithType: EndPointBuilder
-- uid: NanoRoute.EndPointBuilder.Prefix
+- uid: NanoRoute.EndpointBuilder
+  name: EndpointBuilder
+  href: NanoRoute.EndpointBuilder.html
+  commentId: T:NanoRoute.EndpointBuilder
+  fullName: NanoRoute.EndpointBuilder
+  nameWithType: EndpointBuilder
+- uid: NanoRoute.EndpointBuilder.Prefix
   name: Prefix
-  href: NanoRoute.EndPointBuilder.html#NanoRoute_EndPointBuilder_Prefix
-  commentId: P:NanoRoute.EndPointBuilder.Prefix
-  fullName: NanoRoute.EndPointBuilder.Prefix
-  nameWithType: EndPointBuilder.Prefix
-- uid: NanoRoute.EndPointBuilder.Prefix*
+  href: NanoRoute.EndpointBuilder.html#NanoRoute_EndpointBuilder_Prefix
+  commentId: P:NanoRoute.EndpointBuilder.Prefix
+  fullName: NanoRoute.EndpointBuilder.Prefix
+  nameWithType: EndpointBuilder.Prefix
+- uid: NanoRoute.EndpointBuilder.Prefix*
   name: Prefix
-  href: NanoRoute.EndPointBuilder.html#NanoRoute_EndPointBuilder_Prefix_
-  commentId: Overload:NanoRoute.EndPointBuilder.Prefix
-  fullName: NanoRoute.EndPointBuilder.Prefix
-  nameWithType: EndPointBuilder.Prefix
-- uid: NanoRoute.EndPointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate)
+  href: NanoRoute.EndpointBuilder.html#NanoRoute_EndpointBuilder_Prefix_
+  commentId: Overload:NanoRoute.EndpointBuilder.Prefix
+  fullName: NanoRoute.EndpointBuilder.Prefix
+  nameWithType: EndpointBuilder.Prefix
+- uid: NanoRoute.EndpointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate)
   name: WithHandler(RequestHandlerDelegate)
-  href: NanoRoute.EndPointBuilder.html#NanoRoute_EndPointBuilder_WithHandler_NanoRoute_RequestHandlerDelegate_
-  commentId: M:NanoRoute.EndPointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate)
-  fullName: NanoRoute.EndPointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate)
-  nameWithType: EndPointBuilder.WithHandler(RequestHandlerDelegate)
-- uid: NanoRoute.EndPointBuilder.WithHandler*
+  href: NanoRoute.EndpointBuilder.html#NanoRoute_EndpointBuilder_WithHandler_NanoRoute_RequestHandlerDelegate_
+  commentId: M:NanoRoute.EndpointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate)
+  fullName: NanoRoute.EndpointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate)
+  nameWithType: EndpointBuilder.WithHandler(RequestHandlerDelegate)
+- uid: NanoRoute.EndpointBuilder.WithHandler*
   name: WithHandler
-  href: NanoRoute.EndPointBuilder.html#NanoRoute_EndPointBuilder_WithHandler_
-  commentId: Overload:NanoRoute.EndPointBuilder.WithHandler
-  fullName: NanoRoute.EndPointBuilder.WithHandler
-  nameWithType: EndPointBuilder.WithHandler
+  href: NanoRoute.EndpointBuilder.html#NanoRoute_EndpointBuilder_WithHandler_
+  commentId: Overload:NanoRoute.EndpointBuilder.WithHandler
+  fullName: NanoRoute.EndpointBuilder.WithHandler
+  nameWithType: EndpointBuilder.WithHandler
 - uid: NanoRoute.ErrorDetails
   name: ErrorDetails
   href: NanoRoute.ErrorDetails.html
@@ -412,60 +412,60 @@ references:
   commentId: F:NanoRoute.MatchingPrecedence.ParameterizedFirst
   fullName: NanoRoute.MatchingPrecedence.ParameterizedFirst
   nameWithType: MatchingPrecedence.ParameterizedFirst
-- uid: NanoRoute.NanoRouteEndPointExtensions
-  name: NanoRouteEndPointExtensions
-  href: NanoRoute.NanoRouteEndPointExtensions.html
-  commentId: T:NanoRoute.NanoRouteEndPointExtensions
-  fullName: NanoRoute.NanoRouteEndPointExtensions
-  nameWithType: NanoRouteEndPointExtensions
-- uid: NanoRoute.NanoRouteEndPointExtensions.AddEndPoint*
-  name: AddEndPoint
-  href: NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_AddEndPoint_
-  commentId: Overload:NanoRoute.NanoRouteEndPointExtensions.AddEndPoint
-  fullName: NanoRoute.NanoRouteEndPointExtensions.AddEndPoint
-  nameWithType: NanoRouteEndPointExtensions.AddEndPoint
-- uid: NanoRoute.NanoRouteEndPointExtensions.AddEndPoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.EndPointBuilder})
-  name: AddEndPoint<TBuilder>(TBuilder, IEnumerable<string>, string, Action<EndPointBuilder>)
-  href: NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_AddEndPoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_EndPointBuilder__
-  commentId: M:NanoRoute.NanoRouteEndPointExtensions.AddEndPoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.EndPointBuilder})
-  name.vb: AddEndPoint(Of TBuilder)(TBuilder, IEnumerable(Of String), String, Action(Of EndPointBuilder))
-  fullName: NanoRoute.NanoRouteEndPointExtensions.AddEndPoint<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string, System.Action<NanoRoute.EndPointBuilder>)
-  fullName.vb: NanoRoute.NanoRouteEndPointExtensions.AddEndPoint(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, System.Action(Of NanoRoute.EndPointBuilder))
-  nameWithType: NanoRouteEndPointExtensions.AddEndPoint<TBuilder>(TBuilder, IEnumerable<string>, string, Action<EndPointBuilder>)
-  nameWithType.vb: NanoRouteEndPointExtensions.AddEndPoint(Of TBuilder)(TBuilder, IEnumerable(Of String), String, Action(Of EndPointBuilder))
-- uid: NanoRoute.NanoRouteEndPointExtensions.AddEndPoint``1(``0,System.String,System.String,System.Action{NanoRoute.EndPointBuilder})
-  name: AddEndPoint<TBuilder>(TBuilder, string, string, Action<EndPointBuilder>)
-  href: NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_AddEndPoint__1___0_System_String_System_String_System_Action_NanoRoute_EndPointBuilder__
-  commentId: M:NanoRoute.NanoRouteEndPointExtensions.AddEndPoint``1(``0,System.String,System.String,System.Action{NanoRoute.EndPointBuilder})
-  name.vb: AddEndPoint(Of TBuilder)(TBuilder, String, String, Action(Of EndPointBuilder))
-  fullName: NanoRoute.NanoRouteEndPointExtensions.AddEndPoint<TBuilder>(TBuilder, string, string, System.Action<NanoRoute.EndPointBuilder>)
-  fullName.vb: NanoRoute.NanoRouteEndPointExtensions.AddEndPoint(Of TBuilder)(TBuilder, String, String, System.Action(Of NanoRoute.EndPointBuilder))
-  nameWithType: NanoRouteEndPointExtensions.AddEndPoint<TBuilder>(TBuilder, string, string, Action<EndPointBuilder>)
-  nameWithType.vb: NanoRouteEndPointExtensions.AddEndPoint(Of TBuilder)(TBuilder, String, String, Action(Of EndPointBuilder))
-- uid: NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint*
-  name: CreateEndPoint
-  href: NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint_
-  commentId: Overload:NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint
-  fullName: NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint
-  nameWithType: NanoRouteEndPointExtensions.CreateEndPoint
-- uid: NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)
-  name: CreateEndPoint<TBuilder>(TBuilder, IEnumerable<string>, string)
-  href: NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_
-  commentId: M:NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)
-  name.vb: CreateEndPoint(Of TBuilder)(TBuilder, IEnumerable(Of String), String)
-  fullName: NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string)
-  fullName.vb: NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String)
-  nameWithType: NanoRouteEndPointExtensions.CreateEndPoint<TBuilder>(TBuilder, IEnumerable<string>, string)
-  nameWithType.vb: NanoRouteEndPointExtensions.CreateEndPoint(Of TBuilder)(TBuilder, IEnumerable(Of String), String)
-- uid: NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint``1(``0,System.String,System.String)
-  name: CreateEndPoint<TBuilder>(TBuilder, string, string)
-  href: NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint__1___0_System_String_System_String_
-  commentId: M:NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint``1(``0,System.String,System.String)
-  name.vb: CreateEndPoint(Of TBuilder)(TBuilder, String, String)
-  fullName: NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint<TBuilder>(TBuilder, string, string)
-  fullName.vb: NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint(Of TBuilder)(TBuilder, String, String)
-  nameWithType: NanoRouteEndPointExtensions.CreateEndPoint<TBuilder>(TBuilder, string, string)
-  nameWithType.vb: NanoRouteEndPointExtensions.CreateEndPoint(Of TBuilder)(TBuilder, String, String)
+- uid: NanoRoute.NanoRouteEndpointExtensions
+  name: NanoRouteEndpointExtensions
+  href: NanoRoute.NanoRouteEndpointExtensions.html
+  commentId: T:NanoRoute.NanoRouteEndpointExtensions
+  fullName: NanoRoute.NanoRouteEndpointExtensions
+  nameWithType: NanoRouteEndpointExtensions
+- uid: NanoRoute.NanoRouteEndpointExtensions.AddEndpoint*
+  name: AddEndpoint
+  href: NanoRoute.NanoRouteEndpointExtensions.html#NanoRoute_NanoRouteEndpointExtensions_AddEndpoint_
+  commentId: Overload:NanoRoute.NanoRouteEndpointExtensions.AddEndpoint
+  fullName: NanoRoute.NanoRouteEndpointExtensions.AddEndpoint
+  nameWithType: NanoRouteEndpointExtensions.AddEndpoint
+- uid: NanoRoute.NanoRouteEndpointExtensions.AddEndpoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.EndpointBuilder})
+  name: AddEndpoint<TBuilder>(TBuilder, IEnumerable<string>, string, Action<EndpointBuilder>)
+  href: NanoRoute.NanoRouteEndpointExtensions.html#NanoRoute_NanoRouteEndpointExtensions_AddEndpoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_EndpointBuilder__
+  commentId: M:NanoRoute.NanoRouteEndpointExtensions.AddEndpoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.EndpointBuilder})
+  name.vb: AddEndpoint(Of TBuilder)(TBuilder, IEnumerable(Of String), String, Action(Of EndpointBuilder))
+  fullName: NanoRoute.NanoRouteEndpointExtensions.AddEndpoint<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string, System.Action<NanoRoute.EndpointBuilder>)
+  fullName.vb: NanoRoute.NanoRouteEndpointExtensions.AddEndpoint(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, System.Action(Of NanoRoute.EndpointBuilder))
+  nameWithType: NanoRouteEndpointExtensions.AddEndpoint<TBuilder>(TBuilder, IEnumerable<string>, string, Action<EndpointBuilder>)
+  nameWithType.vb: NanoRouteEndpointExtensions.AddEndpoint(Of TBuilder)(TBuilder, IEnumerable(Of String), String, Action(Of EndpointBuilder))
+- uid: NanoRoute.NanoRouteEndpointExtensions.AddEndpoint``1(``0,System.String,System.String,System.Action{NanoRoute.EndpointBuilder})
+  name: AddEndpoint<TBuilder>(TBuilder, string, string, Action<EndpointBuilder>)
+  href: NanoRoute.NanoRouteEndpointExtensions.html#NanoRoute_NanoRouteEndpointExtensions_AddEndpoint__1___0_System_String_System_String_System_Action_NanoRoute_EndpointBuilder__
+  commentId: M:NanoRoute.NanoRouteEndpointExtensions.AddEndpoint``1(``0,System.String,System.String,System.Action{NanoRoute.EndpointBuilder})
+  name.vb: AddEndpoint(Of TBuilder)(TBuilder, String, String, Action(Of EndpointBuilder))
+  fullName: NanoRoute.NanoRouteEndpointExtensions.AddEndpoint<TBuilder>(TBuilder, string, string, System.Action<NanoRoute.EndpointBuilder>)
+  fullName.vb: NanoRoute.NanoRouteEndpointExtensions.AddEndpoint(Of TBuilder)(TBuilder, String, String, System.Action(Of NanoRoute.EndpointBuilder))
+  nameWithType: NanoRouteEndpointExtensions.AddEndpoint<TBuilder>(TBuilder, string, string, Action<EndpointBuilder>)
+  nameWithType.vb: NanoRouteEndpointExtensions.AddEndpoint(Of TBuilder)(TBuilder, String, String, Action(Of EndpointBuilder))
+- uid: NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint*
+  name: CreateEndpoint
+  href: NanoRoute.NanoRouteEndpointExtensions.html#NanoRoute_NanoRouteEndpointExtensions_CreateEndpoint_
+  commentId: Overload:NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint
+  fullName: NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint
+  nameWithType: NanoRouteEndpointExtensions.CreateEndpoint
+- uid: NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)
+  name: CreateEndpoint<TBuilder>(TBuilder, IEnumerable<string>, string)
+  href: NanoRoute.NanoRouteEndpointExtensions.html#NanoRoute_NanoRouteEndpointExtensions_CreateEndpoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_
+  commentId: M:NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)
+  name.vb: CreateEndpoint(Of TBuilder)(TBuilder, IEnumerable(Of String), String)
+  fullName: NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string)
+  fullName.vb: NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String)
+  nameWithType: NanoRouteEndpointExtensions.CreateEndpoint<TBuilder>(TBuilder, IEnumerable<string>, string)
+  nameWithType.vb: NanoRouteEndpointExtensions.CreateEndpoint(Of TBuilder)(TBuilder, IEnumerable(Of String), String)
+- uid: NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint``1(``0,System.String,System.String)
+  name: CreateEndpoint<TBuilder>(TBuilder, string, string)
+  href: NanoRoute.NanoRouteEndpointExtensions.html#NanoRoute_NanoRouteEndpointExtensions_CreateEndpoint__1___0_System_String_System_String_
+  commentId: M:NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint``1(``0,System.String,System.String)
+  name.vb: CreateEndpoint(Of TBuilder)(TBuilder, String, String)
+  fullName: NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint<TBuilder>(TBuilder, string, string)
+  fullName.vb: NanoRoute.NanoRouteEndpointExtensions.CreateEndpoint(Of TBuilder)(TBuilder, String, String)
+  nameWithType: NanoRouteEndpointExtensions.CreateEndpoint<TBuilder>(TBuilder, string, string)
+  nameWithType.vb: NanoRouteEndpointExtensions.CreateEndpoint(Of TBuilder)(TBuilder, String, String)
 - uid: NanoRoute.NanoRouteExceptionExtensions
   name: NanoRouteExceptionExtensions
   href: NanoRoute.NanoRouteExceptionExtensions.html
@@ -709,24 +709,24 @@ references:
   commentId: Overload:NanoRoute.NanoRouteHandlerExtensions.WithHandler
   fullName: NanoRoute.NanoRouteHandlerExtensions.WithHandler
   nameWithType: NanoRouteHandlerExtensions.WithHandler
-- uid: NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndPointBuilder,NanoRoute.TypedRequestEndpointHandlerDelegate{``0})
-  name: WithHandler<TRequestContext>(EndPointBuilder, TypedRequestEndpointHandlerDelegate<TRequestContext>)
-  href: NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0__
-  commentId: M:NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndPointBuilder,NanoRoute.TypedRequestEndpointHandlerDelegate{``0})
-  name.vb: WithHandler(Of TRequestContext)(EndPointBuilder, TypedRequestEndpointHandlerDelegate(Of TRequestContext))
-  fullName: NanoRoute.NanoRouteHandlerExtensions.WithHandler<TRequestContext>(NanoRoute.EndPointBuilder, NanoRoute.TypedRequestEndpointHandlerDelegate<TRequestContext>)
-  fullName.vb: NanoRoute.NanoRouteHandlerExtensions.WithHandler(Of TRequestContext)(NanoRoute.EndPointBuilder, NanoRoute.TypedRequestEndpointHandlerDelegate(Of TRequestContext))
-  nameWithType: NanoRouteHandlerExtensions.WithHandler<TRequestContext>(EndPointBuilder, TypedRequestEndpointHandlerDelegate<TRequestContext>)
-  nameWithType.vb: NanoRouteHandlerExtensions.WithHandler(Of TRequestContext)(EndPointBuilder, TypedRequestEndpointHandlerDelegate(Of TRequestContext))
-- uid: NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndPointBuilder,NanoRoute.TypedRequestHandlerDelegate{``0})
-  name: WithHandler<TRequestContext>(EndPointBuilder, TypedRequestHandlerDelegate<TRequestContext>)
-  href: NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestHandlerDelegate___0__
-  commentId: M:NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndPointBuilder,NanoRoute.TypedRequestHandlerDelegate{``0})
-  name.vb: WithHandler(Of TRequestContext)(EndPointBuilder, TypedRequestHandlerDelegate(Of TRequestContext))
-  fullName: NanoRoute.NanoRouteHandlerExtensions.WithHandler<TRequestContext>(NanoRoute.EndPointBuilder, NanoRoute.TypedRequestHandlerDelegate<TRequestContext>)
-  fullName.vb: NanoRoute.NanoRouteHandlerExtensions.WithHandler(Of TRequestContext)(NanoRoute.EndPointBuilder, NanoRoute.TypedRequestHandlerDelegate(Of TRequestContext))
-  nameWithType: NanoRouteHandlerExtensions.WithHandler<TRequestContext>(EndPointBuilder, TypedRequestHandlerDelegate<TRequestContext>)
-  nameWithType.vb: NanoRouteHandlerExtensions.WithHandler(Of TRequestContext)(EndPointBuilder, TypedRequestHandlerDelegate(Of TRequestContext))
+- uid: NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndpointBuilder,NanoRoute.TypedRequestEndpointHandlerDelegate{``0})
+  name: WithHandler<TRequestContext>(EndpointBuilder, TypedRequestEndpointHandlerDelegate<TRequestContext>)
+  href: NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0__
+  commentId: M:NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndpointBuilder,NanoRoute.TypedRequestEndpointHandlerDelegate{``0})
+  name.vb: WithHandler(Of TRequestContext)(EndpointBuilder, TypedRequestEndpointHandlerDelegate(Of TRequestContext))
+  fullName: NanoRoute.NanoRouteHandlerExtensions.WithHandler<TRequestContext>(NanoRoute.EndpointBuilder, NanoRoute.TypedRequestEndpointHandlerDelegate<TRequestContext>)
+  fullName.vb: NanoRoute.NanoRouteHandlerExtensions.WithHandler(Of TRequestContext)(NanoRoute.EndpointBuilder, NanoRoute.TypedRequestEndpointHandlerDelegate(Of TRequestContext))
+  nameWithType: NanoRouteHandlerExtensions.WithHandler<TRequestContext>(EndpointBuilder, TypedRequestEndpointHandlerDelegate<TRequestContext>)
+  nameWithType.vb: NanoRouteHandlerExtensions.WithHandler(Of TRequestContext)(EndpointBuilder, TypedRequestEndpointHandlerDelegate(Of TRequestContext))
+- uid: NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndpointBuilder,NanoRoute.TypedRequestHandlerDelegate{``0})
+  name: WithHandler<TRequestContext>(EndpointBuilder, TypedRequestHandlerDelegate<TRequestContext>)
+  href: NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndpointBuilder_NanoRoute_TypedRequestHandlerDelegate___0__
+  commentId: M:NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndpointBuilder,NanoRoute.TypedRequestHandlerDelegate{``0})
+  name.vb: WithHandler(Of TRequestContext)(EndpointBuilder, TypedRequestHandlerDelegate(Of TRequestContext))
+  fullName: NanoRoute.NanoRouteHandlerExtensions.WithHandler<TRequestContext>(NanoRoute.EndpointBuilder, NanoRoute.TypedRequestHandlerDelegate<TRequestContext>)
+  fullName.vb: NanoRoute.NanoRouteHandlerExtensions.WithHandler(Of TRequestContext)(NanoRoute.EndpointBuilder, NanoRoute.TypedRequestHandlerDelegate(Of TRequestContext))
+  nameWithType: NanoRouteHandlerExtensions.WithHandler<TRequestContext>(EndpointBuilder, TypedRequestHandlerDelegate<TRequestContext>)
+  nameWithType.vb: NanoRouteHandlerExtensions.WithHandler(Of TRequestContext)(EndpointBuilder, TypedRequestHandlerDelegate(Of TRequestContext))
 - uid: NanoRoute.NanoRouteJsonExtensions
   name: NanoRouteJsonExtensions
   href: NanoRoute.NanoRouteJsonExtensions.html
@@ -946,39 +946,39 @@ references:
   fullName.vb: NanoRoute.NanoRouteJsonExtensions.Json(Of T)(T)
   nameWithType: NanoRouteJsonExtensions.Json<T>(T?)
   nameWithType.vb: NanoRouteJsonExtensions.Json(Of T)(T)
-- uid: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)
-  name: WithJsonBody(EndPointBuilder, JsonTypeInfo, string)
-  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_
-  commentId: M:NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)
-  name.vb: WithJsonBody(EndPointBuilder, JsonTypeInfo, String)
-  fullName: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder, System.Text.Json.Serialization.Metadata.JsonTypeInfo, string)
-  fullName.vb: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder, System.Text.Json.Serialization.Metadata.JsonTypeInfo, String)
-  nameWithType: NanoRouteJsonExtensions.WithJsonBody(EndPointBuilder, JsonTypeInfo, string)
-  nameWithType.vb: NanoRouteJsonExtensions.WithJsonBody(EndPointBuilder, JsonTypeInfo, String)
-- uid: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder,System.Type,System.String)
-  name: WithJsonBody(EndPointBuilder, Type, string)
-  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndPointBuilder_System_Type_System_String_
-  commentId: M:NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder,System.Type,System.String)
-  name.vb: WithJsonBody(EndPointBuilder, Type, String)
-  fullName: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder, System.Type, string)
-  fullName.vb: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndPointBuilder, System.Type, String)
-  nameWithType: NanoRouteJsonExtensions.WithJsonBody(EndPointBuilder, Type, string)
-  nameWithType.vb: NanoRouteJsonExtensions.WithJsonBody(EndPointBuilder, Type, String)
+- uid: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)
+  name: WithJsonBody(EndpointBuilder, JsonTypeInfo, string)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.String)
+  name.vb: WithJsonBody(EndpointBuilder, JsonTypeInfo, String)
+  fullName: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder, System.Text.Json.Serialization.Metadata.JsonTypeInfo, string)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder, System.Text.Json.Serialization.Metadata.JsonTypeInfo, String)
+  nameWithType: NanoRouteJsonExtensions.WithJsonBody(EndpointBuilder, JsonTypeInfo, string)
+  nameWithType.vb: NanoRouteJsonExtensions.WithJsonBody(EndpointBuilder, JsonTypeInfo, String)
+- uid: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder,System.Type,System.String)
+  name: WithJsonBody(EndpointBuilder, Type, string)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_NanoRoute_EndpointBuilder_System_Type_System_String_
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder,System.Type,System.String)
+  name.vb: WithJsonBody(EndpointBuilder, Type, String)
+  fullName: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder, System.Type, string)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(NanoRoute.EndpointBuilder, System.Type, String)
+  nameWithType: NanoRouteJsonExtensions.WithJsonBody(EndpointBuilder, Type, string)
+  nameWithType.vb: NanoRouteJsonExtensions.WithJsonBody(EndpointBuilder, Type, String)
 - uid: NanoRoute.NanoRouteJsonExtensions.WithJsonBody*
   name: WithJsonBody
   href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody_
   commentId: Overload:NanoRoute.NanoRouteJsonExtensions.WithJsonBody
   fullName: NanoRoute.NanoRouteJsonExtensions.WithJsonBody
   nameWithType: NanoRouteJsonExtensions.WithJsonBody
-- uid: NanoRoute.NanoRouteJsonExtensions.WithJsonBody``1(NanoRoute.EndPointBuilder,System.String)
-  name: WithJsonBody<T>(EndPointBuilder, string)
-  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody__1_NanoRoute_EndPointBuilder_System_String_
-  commentId: M:NanoRoute.NanoRouteJsonExtensions.WithJsonBody``1(NanoRoute.EndPointBuilder,System.String)
-  name.vb: WithJsonBody(Of T)(EndPointBuilder, String)
-  fullName: NanoRoute.NanoRouteJsonExtensions.WithJsonBody<T>(NanoRoute.EndPointBuilder, string)
-  fullName.vb: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(Of T)(NanoRoute.EndPointBuilder, String)
-  nameWithType: NanoRouteJsonExtensions.WithJsonBody<T>(EndPointBuilder, string)
-  nameWithType.vb: NanoRouteJsonExtensions.WithJsonBody(Of T)(EndPointBuilder, String)
+- uid: NanoRoute.NanoRouteJsonExtensions.WithJsonBody``1(NanoRoute.EndpointBuilder,System.String)
+  name: WithJsonBody<T>(EndpointBuilder, string)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_WithJsonBody__1_NanoRoute_EndpointBuilder_System_String_
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.WithJsonBody``1(NanoRoute.EndpointBuilder,System.String)
+  name.vb: WithJsonBody(Of T)(EndpointBuilder, String)
+  fullName: NanoRoute.NanoRouteJsonExtensions.WithJsonBody<T>(NanoRoute.EndpointBuilder, string)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.WithJsonBody(Of T)(NanoRoute.EndpointBuilder, String)
+  nameWithType: NanoRouteJsonExtensions.WithJsonBody<T>(EndpointBuilder, string)
+  nameWithType.vb: NanoRouteJsonExtensions.WithJsonBody(Of T)(EndpointBuilder, String)
 - uid: NanoRoute.NanoRouteJsonExtensions.get_JsonTypeInfo
   name: get_JsonTypeInfo()
   href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_get_JsonTypeInfo
@@ -1084,15 +1084,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing(Of TBuilder)(TBuilder, NanoRoute.ConfigureBuilderDelegate(Of NanoRoute.QueryParsingConfig))
   nameWithType: NanoRouteQueryExtensions.ConfigureQueryParsing<TBuilder>(TBuilder, ConfigureBuilderDelegate<QueryParsingConfig>)
   nameWithType.vb: NanoRouteQueryExtensions.ConfigureQueryParsing(Of TBuilder)(TBuilder, ConfigureBuilderDelegate(Of QueryParsingConfig))
-- uid: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndPointBuilder,System.String)
-  name: WithQueryBindings(EndPointBuilder, string)
-  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndPointBuilder_System_String_
-  commentId: M:NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndPointBuilder,System.String)
-  name.vb: WithQueryBindings(EndPointBuilder, String)
-  fullName: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndPointBuilder, string)
-  fullName.vb: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndPointBuilder, String)
-  nameWithType: NanoRouteQueryExtensions.WithQueryBindings(EndPointBuilder, string)
-  nameWithType.vb: NanoRouteQueryExtensions.WithQueryBindings(EndPointBuilder, String)
+- uid: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder,System.String)
+  name: WithQueryBindings(EndpointBuilder, string)
+  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndpointBuilder_System_String_
+  commentId: M:NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder,System.String)
+  name.vb: WithQueryBindings(EndpointBuilder, String)
+  fullName: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder, string)
+  fullName.vb: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder, String)
+  nameWithType: NanoRouteQueryExtensions.WithQueryBindings(EndpointBuilder, string)
+  nameWithType.vb: NanoRouteQueryExtensions.WithQueryBindings(EndpointBuilder, String)
 - uid: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings*
   name: WithQueryBindings
   href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_

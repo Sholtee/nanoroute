@@ -731,14 +731,14 @@ by <code class="paramref">configure</code> is <a href="https://learn.microsoft.c
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.WithQueryBindings*"></a>
-  <h4 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndPointBuilder_System_String_" data-uid="NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndPointBuilder,System.String)">WithQueryBindings(EndPointBuilder, string)</h4>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndpointBuilder_System_String_" data-uid="NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder,System.String)">WithQueryBindings(EndpointBuilder, string)</h4>
   <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>
 for the current endpoint.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithQueryBindings(this EndPointBuilder endPointBuilder, string bindings)</code></pre>
+    <pre><code class="lang-csharp hljs">public static EndpointBuilder WithQueryBindings(this EndpointBuilder endpointBuilder, string bindings)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -751,8 +751,8 @@ for the current endpoint.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><span class="parametername">endPointBuilder</span></td>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><span class="parametername">endpointBuilder</span></td>
         <td></td>
       </tr>
       <tr>
@@ -773,19 +773,19 @@ for the current endpoint.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
-        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+        <td><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></td>
+        <td><p>The current <code class="paramref">endpointBuilder</code> instance.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndPointBuilder_System_String__remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndpointBuilder_System_String__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The query-binding middleware is registered for the endpoint's captured HTTP methods and route match
 kind. Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
 </div>
-  <h5 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndPointBuilder_System_String__examples">Examples</h5>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndpointBuilder_System_String__examples">Examples</h5>
   <pre><code class="lang-csharp">endpoint.WithQueryBindings("{filter?:str}&amp;{page?:int(min=1)}");</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
@@ -804,7 +804,7 @@ query binding overwrites the existing value.</p>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">endPointBuilder</code> or <code class="paramref">bindings</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">endpointBuilder</code> or <code class="paramref">bindings</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>
