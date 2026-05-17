@@ -92,6 +92,12 @@ Use <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttrib
 Missing required parameter values and services throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a>.
 </p>
 </div>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder
+    .AddDefaultValueParsers()
+    .AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/", request =&gt;
+        Results.Ok(request.Id));</code></pre>
+
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
@@ -171,6 +177,27 @@ the next compatible handler on the selected branch.</p>
   <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_Collections_Generic_IEnumerable_System_String__NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
   <pre><code class="lang-csharp">builder.AddHandler(["GET", "POST"], (context, next) =&gt; next());</code></pre>
 
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not a supported HTTP method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
   <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.RequestHandlerDelegate)">AddHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, RequestHandlerDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers the same handler for multiple HTTP methods.</p>
@@ -254,6 +281,32 @@ registered parsers in the form <code>{parameterName:parserName}</code>. Exact pa
     "/api/items/{id:int}/",
     (context, next) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
 
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
   <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_String_NanoRoute_RequestHandlerDelegate_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``1(``0,System.String,NanoRoute.RequestHandlerDelegate)">AddHandler&lt;TBuilder&gt;(TBuilder, string, RequestHandlerDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a handler for all supported HTTP methods.</p>
@@ -328,14 +381,40 @@ registered parsers in the form <code>{parameterName:parserName}</code>. Exact pa
   <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_String_NanoRoute_RequestHandlerDelegate__examples">Examples</h5>
   <pre><code class="lang-csharp">builder.AddHandler("/health/", (context, next) =&gt; Results.Ok());</code></pre>
 
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
-  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>Registers a typed middleware handler that receives a request object and the next handler in the pipeline.</p>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1__" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.TypedRequestEndpointHandlerDelegate{``1})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object built from the current <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -365,9 +444,9 @@ registered parsers in the form <code>{parameterName:parserName}</code>. Exact pa
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TRequestContext, <a class="xref" href="NanoRoute.CallNextHandlerDelegate.html">CallNextHandlerDelegate</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><a class="xref" href="NanoRoute.TypedRequestEndpointHandlerDelegate-1.html">TypedRequestEndpointHandlerDelegate</a>&lt;TRequestContext&gt;</td>
         <td><span class="parametername">handler</span></td>
-        <td><p>The typed middleware delegate.</p>
+        <td><p>The typed handler delegate.</p>
 </td>
       </tr>
     </tbody>
@@ -408,7 +487,7 @@ registered parsers in the form <code>{parameterName:parserName}</code>. Exact pa
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>
 Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
 </p>
@@ -421,14 +500,44 @@ Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttr
 or from the request service provider.
 </p>
 </div>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler&lt;UserRequest&gt;(["GET", "HEAD"], "/users/{id:int}/", request =&gt;
+    Results.Ok(request.Id));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
-  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object built from the current <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>.</p>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_TypedRequestHandlerDelegate___1__" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.TypedRequestHandlerDelegate{``1})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object and the next handler in the pipeline.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, TypedRequestHandlerDelegate&lt;TRequestContext&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -458,7 +567,7 @@ or from the request service provider.
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRequestContext, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><a class="xref" href="NanoRoute.TypedRequestHandlerDelegate-1.html">TypedRequestHandlerDelegate</a>&lt;TRequestContext&gt;</td>
         <td><span class="parametername">handler</span></td>
         <td><p>The typed handler delegate.</p>
 </td>
@@ -501,7 +610,7 @@ or from the request service provider.
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_TypedRequestHandlerDelegate___1___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>
 Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
 </p>
@@ -514,101 +623,43 @@ Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttr
 or from the request service provider.
 </p>
 </div>
-  <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
-  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.String,System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>Registers a typed middleware handler that receives a request object and the next handler in the pipeline.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_TypedRequestHandlerDelegate___1___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler&lt;UserRequest&gt;(["GET", "POST"], "/users/{id:int}/*", (request, next) =&gt; next());</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
+        <th>Condition</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeScopeBuilder</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">pattern</span></td>
-        <td><p>The route pattern to register for all supported HTTP methods.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TRequestContext, <a class="xref" href="NanoRoute.CallNextHandlerDelegate.html">CallNextHandlerDelegate</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
-        <td><span class="parametername">handler</span></td>
-        <td><p>The typed middleware delegate.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
 </td>
       </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TBuilder</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TRequestContext</span></td>
-        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>
-Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
-</p>
-<p>
-A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
-</p>
-<p>
-Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a> to bind a property from a different parameter name
-or from the request service provider.
-</p>
-</div>
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
-  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.String,System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1__" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.String,NanoRoute.TypedRequestEndpointHandlerDelegate{``1})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</h4>
   <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object built from the current <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string pattern, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -632,7 +683,7 @@ or from the request service provider.
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRequestContext, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><a class="xref" href="NanoRoute.TypedRequestEndpointHandlerDelegate-1.html">TypedRequestEndpointHandlerDelegate</a>&lt;TRequestContext&gt;</td>
         <td><span class="parametername">handler</span></td>
         <td><p>The typed handler delegate.</p>
 </td>
@@ -675,7 +726,7 @@ or from the request service provider.
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>
 Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
 </p>
@@ -688,14 +739,160 @@ Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttr
 or from the request service provider.
 </p>
 </div>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler&lt;UserRequest&gt;("/users/{id:int}/", request =&gt;
+    Results.Ok(request.Id));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
-  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.String,System.String,System.Func{``1,NanoRoute.CallNextHandlerDelegate,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>Registers a typed middleware handler that receives a request object and the next handler in the pipeline.</p>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_NanoRoute_TypedRequestHandlerDelegate___1__" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.String,NanoRoute.TypedRequestHandlerDelegate{``1})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object and the next handler in the pipeline.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string pattern, TypedRequestHandlerDelegate&lt;TRequestContext&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to register for all supported HTTP methods.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.TypedRequestHandlerDelegate-1.html">TypedRequestHandlerDelegate</a>&lt;TRequestContext&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The typed handler delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TRequestContext</span></td>
+        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_NanoRoute_TypedRequestHandlerDelegate___1___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>
+Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
+</p>
+<p>
+A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
+</p>
+<p>
+Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a> to bind a property from a different parameter name
+or from the request service provider.
+</p>
+</div>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_NanoRoute_TypedRequestHandlerDelegate___1___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler&lt;UserRequest&gt;("/users/{id:int}/*", (request, next) =&gt; next());</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1__" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.String,System.String,NanoRoute.TypedRequestEndpointHandlerDelegate{``1})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object built from the current <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -725,100 +922,7 @@ or from the request service provider.
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TRequestContext, <a class="xref" href="NanoRoute.CallNextHandlerDelegate.html">CallNextHandlerDelegate</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
-        <td><span class="parametername">handler</span></td>
-        <td><p>The typed middleware delegate.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TBuilder</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TRequestContext</span></td>
-        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>
-Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
-</p>
-<p>
-A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
-</p>
-<p>
-Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a> to bind a property from a different parameter name
-or from the request service provider.
-</p>
-</div>
-  <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
-  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.String,System.String,System.Func{``1,System.Threading.Tasks.Task{System.Net.Http.HttpResponseMessage}})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object built from the current <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeScopeBuilder</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">verb</span></td>
-        <td><p>The HTTP verb handled by the route.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">pattern</span></td>
-        <td><p>The route pattern to register.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRequestContext, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;&gt;</td>
+        <td><a class="xref" href="NanoRoute.TypedRequestEndpointHandlerDelegate-1.html">TypedRequestEndpointHandlerDelegate</a>&lt;TRequestContext&gt;</td>
         <td><span class="parametername">handler</span></td>
         <td><p>The typed handler delegate.</p>
 </td>
@@ -861,7 +965,7 @@ or from the request service provider.
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage____remarks">Remarks</h5>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>
 Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
 </p>
@@ -874,6 +978,370 @@ Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttr
 or from the request service provider.
 </p>
 </div>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/", request =&gt;
+    Results.Ok(request.Id));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verb</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">verb</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteHandlerExtensions_AddHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_NanoRoute_TypedRequestHandlerDelegate___1__" data-uid="NanoRoute.NanoRouteHandlerExtensions.AddHandler``2(``0,System.String,System.String,NanoRoute.TypedRequestHandlerDelegate{``1})">AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed handler that receives a request object and the next handler in the pipeline.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddHandler&lt;TBuilder, TRequestContext&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, TypedRequestHandlerDelegate&lt;TRequestContext&gt; handler) where TBuilder : notnull, RouteScopeBuilder where TRequestContext : notnull, new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">verb</span></td>
+        <td><p>The HTTP verb handled by the route.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern to register.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.TypedRequestHandlerDelegate-1.html">TypedRequestHandlerDelegate</a>&lt;TRequestContext&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The typed handler delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TRequestContext</span></td>
+        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_NanoRoute_TypedRequestHandlerDelegate___1___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>
+Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
+</p>
+<p>
+A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
+</p>
+<p>
+Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a> to bind a property from a different parameter name
+or from the request service provider.
+</p>
+</div>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_NanoRoute_TypedRequestHandlerDelegate___1___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/*", (request, next) =&gt; next());</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verb</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">verb</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown for unsupported route-template features, missing value parsers, conflicting parser-backed branches, or when request-time typed binding cannot resolve a required parameter or service.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteHandlerExtensions_WithHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0__" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndPointBuilder,NanoRoute.TypedRequestEndpointHandlerDelegate{``0})">WithHandler&lt;TRequestContext&gt;(EndPointBuilder, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed endpoint handler that receives a request object built from the current <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithHandler&lt;TRequestContext&gt;(this EndPointBuilder endPointBuilder, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt; handler) where TRequestContext : notnull, new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
+        <td><span class="parametername">endPointBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.TypedRequestEndpointHandlerDelegate-1.html">TypedRequestEndpointHandlerDelegate</a>&lt;TRequestContext&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The typed endpoint handler delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
+        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TRequestContext</span></td>
+        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>
+Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
+</p>
+<p>
+A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
+</p>
+<p>
+Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a> to bind a property from a different parameter name
+or from the request service provider.
+</p>
+</div>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestEndpointHandlerDelegate___0___examples">Examples</h5>
+  <pre><code class="lang-csharp">endpoint.WithHandler&lt;UserRequest&gt;(request =&gt; Results.Ok(request.Id));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">endPointBuilder</code> or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when the endpoint's captured HTTP method is not supported.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when request-time typed binding cannot resolve a required parameter or service.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteHandlerExtensions_WithHandler_" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler*"></a>
+  <h4 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestHandlerDelegate___0__" data-uid="NanoRoute.NanoRouteHandlerExtensions.WithHandler``1(NanoRoute.EndPointBuilder,NanoRoute.TypedRequestHandlerDelegate{``0})">WithHandler&lt;TRequestContext&gt;(EndPointBuilder, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Registers a typed endpoint handler that receives a request object and the next handler in the pipeline.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithHandler&lt;TRequestContext&gt;(this EndPointBuilder endPointBuilder, TypedRequestHandlerDelegate&lt;TRequestContext&gt; handler) where TRequestContext : notnull, new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
+        <td><span class="parametername">endPointBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.TypedRequestHandlerDelegate-1.html">TypedRequestHandlerDelegate</a>&lt;TRequestContext&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The typed endpoint handler delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
+        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TRequestContext</span></td>
+        <td><p>The request-object type populated from the current route parameters, query bindings, services, and special framework values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestHandlerDelegate___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>
+Writable public properties are bound from <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> by default.
+</p>
+<p>
+A property of type <a class="xref" href="NanoRoute.RequestContext.html">RequestContext</a> receives the current context, and a property of type
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> receives the active request token.
+</p>
+<p>
+Apply <a class="xref" href="NanoRoute.ValueSourceAttribute.html">ValueSourceAttribute</a> to bind a property from a different parameter name
+or from the request service provider.
+</p>
+</div>
+  <h5 id="NanoRoute_NanoRouteHandlerExtensions_WithHandler__1_NanoRoute_EndPointBuilder_NanoRoute_TypedRequestHandlerDelegate___0___examples">Examples</h5>
+  <pre><code class="lang-csharp">endpoint.WithHandler&lt;UserRequest&gt;((request, next) =&gt; next());</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">endPointBuilder</code> or <code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when the endpoint's captured HTTP method is not supported.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when request-time typed binding cannot resolve a required parameter or service.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
 </article>
           </div>

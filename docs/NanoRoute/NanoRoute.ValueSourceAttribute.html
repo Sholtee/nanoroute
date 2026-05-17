@@ -182,6 +182,13 @@
     <pre><code class="lang-csharp hljs">[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public sealed class ValueSourceAttribute : Attribute</code></pre>
   </div>
+  <h5 id="NanoRoute_ValueSourceAttribute_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">public sealed class UserRequest
+{
+    [ValueSource(ValueSource.Parameter, Name = "user_id")]
+    public int Id { get; init; }
+}</code></pre>
+
   <h3 id="constructors">Constructors
 </h3>
   <a id="NanoRoute_ValueSourceAttribute__ctor_" data-uid="NanoRoute.ValueSourceAttribute.#ctor*"></a>
@@ -211,6 +218,13 @@ public sealed class ValueSourceAttribute : Attribute</code></pre>
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_ValueSourceAttribute__ctor_NanoRoute_ValueSource__examples">Examples</h5>
+  <pre><code class="lang-csharp">public sealed class UserRequest
+{
+    [ValueSource(ValueSource.Parameter, Name = "user_id")]
+    public int Id { get; init; }
+}</code></pre>
+
   <h3 id="properties">Properties
 </h3>
   <a id="NanoRoute_ValueSourceAttribute_Name_" data-uid="NanoRoute.ValueSourceAttribute.Name*"></a>
@@ -243,6 +257,26 @@ public sealed class ValueSourceAttribute : Attribute</code></pre>
 this is treated as the keyed service name. <a class="xref" href="NanoRoute.ValueSource.html#NanoRoute_ValueSource_Skip">Skip</a> does not allow
 a name because no value is read.</p>
 </div>
+  <h5 id="NanoRoute_ValueSourceAttribute_Name_examples">Examples</h5>
+  <pre><code class="lang-csharp">[ValueSource(ValueSource.Parameter, Name = "user_id")]
+public int Id { get; init; }</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when a name is assigned while <a class="xref" href="NanoRoute.ValueSourceAttribute.html#NanoRoute_ValueSourceAttribute_Source">Source</a> is <a class="xref" href="NanoRoute.ValueSource.html#NanoRoute_ValueSource_Skip">Skip</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_ValueSourceAttribute_Source_" data-uid="NanoRoute.ValueSourceAttribute.Source*"></a>
   <h4 id="NanoRoute_ValueSourceAttribute_Source" data-uid="NanoRoute.ValueSourceAttribute.Source">Source</h4>
   <div class="markdown level1 summary"><p>Gets the binding source used for the annotated property.</p>

@@ -83,6 +83,18 @@ unexpected exceptions.</p>
   <h5 id="NanoRoute_ExceptionHandlingConfig_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata">Metadata</a> and follows normal builder scoping rules.</p>
 </div>
+  <h5 id="NanoRoute_ExceptionHandlingConfig_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.ConfigureExceptionHandling(config =&gt; config with
+{
+    ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+    ([
+        ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+        (
+            static ex =&gt; new HttpRequestException("Conflict", ex, HttpStatusCode.Conflict)
+        )
+    ])
+});</code></pre>
+
   <h3 id="constructors">Constructors
 </h3>
   <a id="NanoRoute_ExceptionHandlingConfig__ctor_" data-uid="NanoRoute.ExceptionHandlingConfig.#ctor*"></a>
@@ -124,6 +136,9 @@ unexpected exceptions.</p>
 exceptions. Other unexpected exceptions are handled by the fallback internal-server-error normalizer in
 <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a>.</p>
 </div>
+  <h5 id="NanoRoute_ExceptionHandlingConfig_Default_examples">Examples</h5>
+  <pre><code class="lang-csharp">ExceptionHandlingConfig config = ExceptionHandlingConfig.Default;</code></pre>
+
   <a id="NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers_" data-uid="NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers*"></a>
   <h4 id="NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers" data-uid="NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers">ExceptionNormalizers</h4>
   <div class="markdown level1 summary"><p>Gets the exception normalizers keyed by concrete exception type.</p>
@@ -153,6 +168,34 @@ exceptions. Other unexpected exceptions are handled by the fallback internal-ser
 looks up the exception's exact runtime type in this dictionary. If no normalizer is registered, the
 exception is converted to a generic internal-server-error <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>.</p>
 </div>
+  <h5 id="NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureExceptionHandling(config =&gt; config with
+{
+    ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+    ([
+        ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+        (
+            static ex =&gt; new HttpRequestException("Conflict", ex, HttpStatusCode.Conflict)
+        )
+    ])
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when the assigned value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>

@@ -78,6 +78,11 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static class NanoRouteValueParserExtensions</code></pre>
   </div>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder
+    .AddDefaultValueParsers()
+    .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
+
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_NanoRouteValueParserExtensions_AddBoolParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddBoolParser*"></a>
@@ -140,6 +145,27 @@
   <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddBoolParser__1___0__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This parser does not support any arguments.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddBoolParser__1___0__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder
+    .AddBoolParser()
+    .AddHandler("GET", "/features/{enabled:bool}/", (context, _) =&gt; Results.Ok(context.Parameters["enabled"]));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddDefaultValueParsers*"></a>
   <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddDefaultValueParsers``1(``0)">AddDefaultValueParsers&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in value parsers for common scalar route segments.</p>
@@ -282,6 +308,27 @@ Existing registrations with the same names are overwritten.</p>
   <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddGuidParser__1___0__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This parser does not support any arguments.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddGuidParser__1___0__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder
+    .AddGuidParser()
+    .AddHandler("GET", "/users/{id:guid}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteValueParserExtensions_AddIntParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddIntParser*"></a>
   <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddIntParser__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddIntParser``1(``0)">AddIntParser&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in <code>int</code> value parser.</p>
@@ -343,6 +390,27 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 remarks"><p>Supported arguments:
 <code>min</code>, <code>max</code>.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddIntParser__1___0__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder
+    .AddIntParser()
+    .AddHandler("GET", "/items/{id:int(min=1)}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddStringParser*"></a>
   <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddStringParser``1(``0)">AddStringParser&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in <code>str</code> value parser.</p>
@@ -404,6 +472,27 @@ Existing registrations with the same names are overwritten.</p>
   <div class="markdown level1 remarks"><p>Supported arguments:
 <code>min</code>, <code>max</code>, <code>pattern</code>.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser__1___0__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder
+    .AddStringParser()
+    .AddHandler("GET", "/users/{name:str(min=2)}/", (context, _) =&gt; Results.Ok(context.Parameters["name"]));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser*"></a>
   <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncValueParserDelegate_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.BindArgumentsDelegate,NanoRoute.SyncValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, BindArgumentsDelegate, SyncValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a synchronous parser by adapting it to <a class="xref" href="NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a> and binding parser arguments once during route registration.</p>
@@ -476,6 +565,26 @@ Existing registrations with the same names are overwritten.</p>
       <tr>
         <td><span class="parametername">TBuilder</span></td>
         <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_SyncValueParserDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddValueParser("str", BindStringParserArguments, TryParseStringSegment);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">parserName</code>,
+<code class="paramref">bindArguments</code>, or <code class="paramref">tryParseDelegate</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -554,6 +663,26 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddValueParser("user", BindUserParserArguments, ParseUserAsync);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">parserName</code>,
+<code class="paramref">bindArguments</code>, or <code class="paramref">tryParseDelegate</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser*"></a>
   <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_SyncValueParserDelegate_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.SyncValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, SyncValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers a synchronous parser by adapting it to <a class="xref" href="NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a>.</p>
@@ -623,6 +752,30 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_SyncValueParserDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddValueParser("slug", static (ReadOnlyMemory&lt;char&gt; segment, object? _, out object? parsed) =&gt;
+{
+    parsed = segment.ToString();
+    return segment.Length &gt; 0;
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">parserName</code>, or
+<code class="paramref">tryParseDelegate</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser*"></a>
   <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_ValueParserDelegate_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddValueParser``1(``0,System.String,NanoRoute.ValueParserDelegate)">AddValueParser&lt;TBuilder&gt;(TBuilder, string, ValueParserDelegate)</h4>
   <div class="markdown level1 summary"><p>Registers an asynchronous parser without route-template arguments.</p>
@@ -689,6 +842,30 @@ Existing registrations with the same names are overwritten.</p>
       <tr>
         <td><span class="parametername">TBuilder</span></td>
         <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddValueParser__1___0_System_String_NanoRoute_ValueParserDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddValueParser("user", static async context =&gt;
+{
+    object? user = await FindUserAsync(context.Segment.ToString(), context.Cancellation);
+    return new ValueParseResult(user is not null, user);
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">parserName</code>, or
+<code class="paramref">tryParseDelegate</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
       </tr>
     </tbody>
   </table>

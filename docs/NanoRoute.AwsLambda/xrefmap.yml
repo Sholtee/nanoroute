@@ -13,30 +13,6 @@ references:
   commentId: T:NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router
   fullName: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router
   nameWithType: ApiGatewayHttpApiV2Router
-- uid: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Config
-  name: Config
-  href: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html#NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_Config
-  commentId: P:NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Config
-  fullName: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Config
-  nameWithType: ApiGatewayHttpApiV2Router.Config
-- uid: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Config*
-  name: Config
-  href: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html#NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_Config_
-  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Config
-  fullName: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Config
-  nameWithType: ApiGatewayHttpApiV2Router.Config
-- uid: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.CreateBuilder
-  name: CreateBuilder()
-  href: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html#NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_CreateBuilder
-  commentId: M:NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.CreateBuilder
-  fullName: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.CreateBuilder()
-  nameWithType: ApiGatewayHttpApiV2Router.CreateBuilder()
-- uid: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.CreateBuilder*
-  name: CreateBuilder
-  href: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html#NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_CreateBuilder_
-  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.CreateBuilder
-  fullName: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.CreateBuilder
-  nameWithType: ApiGatewayHttpApiV2Router.CreateBuilder
 - uid: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,System.TimeSpan)
   name: Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)
   href: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html#NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan_

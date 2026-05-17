@@ -83,6 +83,9 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_ValueParserDelegate_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Exceptions thrown by the delegate propagate during request processing for matching routes that use the parser.</p>
+</div>
   <h5 id="NanoRoute_ValueParserDelegate_examples"><strong>Examples</strong></h5>
   <pre><code class="lang-csharp">routerBuilder.AddValueParser("user", static async (ValueParserContext context) =&gt;
 {

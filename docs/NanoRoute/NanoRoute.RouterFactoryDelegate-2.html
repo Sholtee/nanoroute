@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width">
       <meta name="title" content="Delegate RouterFactoryDelegate&lt;TRouter, TConfig&gt; | NanoRoute ">
     
-    
+    <meta name="description" content="Creates a router instance from a configured .">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -40,7 +40,8 @@
 
 
   <h1 id="NanoRoute_RouterFactoryDelegate_2" data-uid="NanoRoute.RouterFactoryDelegate`2" class="text-break">Delegate RouterFactoryDelegate&lt;TRouter, TConfig&gt;</h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p>Creates a router instance from a configured <a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a>.</p>
+</div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
@@ -61,7 +62,8 @@
       <tr>
         <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;TRouter, TConfig&gt;</td>
         <td><span class="parametername">routerBuilder</span></td>
-        <td></td>
+        <td><p>The builder that contains the current route registrations, parser registrations, metadata, and configuration.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -76,7 +78,8 @@
     <tbody>
       <tr>
         <td><span class="xref">TRouter</span></td>
-        <td></td>
+        <td><p>A <code class="typeparamref">TRouter</code> instance backed by the builder's current route snapshot.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -91,14 +94,22 @@
     <tbody>
       <tr>
         <td><span class="parametername">TRouter</span></td>
-        <td></td>
+        <td><p>The concrete router type produced by the factory.</p>
+</td>
       </tr>
       <tr>
         <td><span class="parametername">TConfig</span></td>
-        <td></td>
+        <td><p>The strongly typed router configuration used by the builder.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_RouterFactoryDelegate_2_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Exceptions thrown by the factory propagate to the caller of <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter">CreateRouter()</a>.</p>
+</div>
+  <h5 id="NanoRoute_RouterFactoryDelegate_2_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">var builder = new RouterBuilder&lt;MyRouter, RouterConfig&gt;(static b =&gt; new MyRouter(b));</code></pre>
+
 
 </article>
           </div>

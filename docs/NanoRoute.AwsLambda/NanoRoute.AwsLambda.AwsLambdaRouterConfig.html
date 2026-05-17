@@ -78,6 +78,12 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public sealed record AwsLambdaRouterConfig : RouterConfig, IEquatable&lt;RouterConfig&gt;, IEquatable&lt;AwsLambdaRouterConfig&gt;</code></pre>
   </div>
+  <h5 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with
+{
+    LambdaTimeoutBuffer = TimeSpan.FromSeconds(2)
+});</code></pre>
+
   <h3 id="constructors">Constructors
 </h3>
   <a id="NanoRoute_AwsLambda_AwsLambdaRouterConfig__ctor_" data-uid="NanoRoute.AwsLambda.AwsLambdaRouterConfig.#ctor*"></a>
@@ -136,6 +142,28 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_AwsLambda_AwsLambdaRouterConfig_LambdaTimeoutBuffer_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with
+{
+    LambdaTimeoutBuffer = TimeSpan.FromSeconds(2)
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Thrown when the assigned value is negative.</p>
+</td>
       </tr>
     </tbody>
   </table>

@@ -96,8 +96,11 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_SyncValueParserDelegate_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Exceptions thrown by the delegate propagate during request processing for matching routes that use the parser.</p>
+</div>
   <h5 id="NanoRoute_SyncValueParserDelegate_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">routerBuilder.AddValueParser("int", (string segment, object? arguments, out object? parsed) =&gt;
+  <pre><code class="lang-csharp">routerBuilder.AddValueParser("int", (ReadOnlyMemory&lt;char&gt; segment, object? arguments, out object? parsed) =&gt;
 {
     var limits = ((int? Min, int? Max)) arguments!;
 

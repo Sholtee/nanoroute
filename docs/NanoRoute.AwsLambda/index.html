@@ -39,26 +39,231 @@
 <h1 id="nanorouteawslambda">NanoRoute.AwsLambda</h1>
 
 <p>NanoRoute.AwsLambda adds AWS Lambda adapters for NanoRoute while keeping the core package transport-neutral.</p>
-<p>The API documentation for this package is generated from the XML comments in the source. The links below are the intended published locations for the generated pages.</p>
+<p>The package supports Amazon API Gateway HTTP APIs and Lambda Function URLs that invoke Lambda functions with payload format version <code>2.0</code>. It translates <code>APIGatewayHttpApiV2ProxyRequest</code> events into <code>HttpRequestMessage</code> instances, runs the normal NanoRoute pipeline, and converts the produced <code>HttpResponseMessage</code> into an <code>APIGatewayHttpApiV2ProxyResponse</code>.</p>
+<p>NanoRoute.AwsLambda targets <code>netstandard2.0</code> and <code>netstandard2.1</code>.</p>
+<h2 id="quick-start">Quick Start</h2>
+<pre><code class="lang-csharp">using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using Microsoft.Extensions.DependencyInjection;
+using NanoRoute;
+using NanoRoute.AwsLambda;
+
+public sealed class Function
+{
+    // UserRepository is your application service that implements IUserRepository.
+    private static readonly IServiceProvider Services = new ServiceCollection()
+        .AddSingleton&lt;IUserRepository, UserRepository&gt;()
+        .BuildServiceProvider();
+
+    private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
+        .CreateBuilder()
+        .AddDefaultValueParsers()
+        .AddJsonErrorDetails()
+        .AddEndPoint(&quot;GET&quot;, &quot;/api/users/{user_id:int}/&quot;, endpoint =&gt; endpoint
+            .WithHandler(static async (GetUserRequest request) =&gt;
+            {
+                return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
+                {
+                    Id = request.UserId,
+                    Name = await request.Users.GetNameAsync(request.UserId)
+                });
+            }))
+        .AddEndPoint(&quot;POST&quot;, &quot;/api/users/&quot;, endpoint =&gt; endpoint
+            .WithJsonBody&lt;CreateUserBody&gt;(nameof(CreateUserRequest.Body))
+            .WithHandler(static async (CreateUserRequest request) =&gt;
+            {
+                int userId = await request.Users.CreateAsync(request.Body.Name);
+
+                return HttpResponseMessage.Json(HttpStatusCode.Created, new UserResponse
+                {
+                    Id = userId,
+                    Name = request.Body.Name
+                });
+            }))
+        .CreateRouter();
+
+    public Task&lt;APIGatewayHttpApiV2ProxyResponse&gt; FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+    {
+        return Router.Route(request, Services, context.RemainingTime);
+    }
+}
+
+public sealed class GetUserRequest
+{
+    [ValueSource(ValueSource.Parameter, Name = &quot;user_id&quot;)]
+    public int UserId { get; set; }
+
+    [ValueSource(ValueSource.ServiceLocator)]
+    public IUserRepository Users { get; set; } = null!;
+}
+
+public sealed class CreateUserRequest
+{
+    public CreateUserBody Body { get; set; } = null!;
+
+    [ValueSource(ValueSource.ServiceLocator)]
+    public IUserRepository Users { get; set; } = null!;
+}
+
+public sealed class CreateUserBody
+{
+    public string Name { get; set; } = string.Empty;
+}
+
+public sealed class UserResponse
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+}
+
+public interface IUserRepository
+{
+    Task&lt;int&gt; CreateAsync(string name);
+
+    Task&lt;string&gt; GetNameAsync(int userId);
+}
+</code></pre>
+<p><code>ApiGatewayHttpApiV2Router.CreateBuilder()</code> returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, endpoint builders, prefixes, and handlers in the builder, then call <code>CreateRouter()</code> once and reuse the router between Lambda invocations.</p>
+<p>Prefer endpoint builders such as <code>AddEndPoint()</code> for application routes. Typed handlers and endpoint helpers such as <code>WithJsonBody()</code> keep route values, JSON bodies, services, and framework values in request objects. <code>AddHandler()</code> is still available for lower-level middleware composition and custom pipelines.</p>
+<p>The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass <code>ILambdaContext.RemainingTime</code> so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.</p>
+<p>For a small working fixture, see <a href="https://github.com/Sholtee/nanoroute/tree/main/Tests/NanoRoute.TestLambda">Tests/NanoRoute.TestLambda</a>. It wires <code>ApiGatewayHttpApiV2Router</code> into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.</p>
 <h2 id="core-types">Core Types</h2>
 <ul>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html">ApiGatewayHttpApiV2Router</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a></li>
 </ul>
-<h2 id="highlights">Highlights</h2>
+<h2 id="routing">Routing</h2>
+<p>The Lambda adapter uses the same route matching and handler pipeline as NanoRoute.</p>
+<pre><code class="lang-csharp">using System.Net;
+using System.Net.Http;
+
+using NanoRoute;
+using NanoRoute.AwsLambda;
+
+ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+    .CreateBuilder()
+    .AddJsonErrorDetails()
+    .AddDefaultValueParsers()
+    .AddPrefix(&quot;/api/items/*&quot;, items =&gt; items
+        .AddEndPoint(&quot;GET&quot;, RouteScopeBuilder.CurrentExact, endpoint =&gt; endpoint
+            .WithQueryBindings(&quot;{filter?:str(min=3)}&quot;)
+            .WithHandler(static async (context, _) =&gt;
+            {
+                await Task.CompletedTask;
+
+                return HttpResponseMessage.Json(new
+                {
+                    filter = context.Parameters.TryGetValue(&quot;filter&quot;, out object? filter) ? filter : null
+                });
+            }))
+        .AddEndPoint(&quot;GET&quot;, &quot;/{id:int(min=1)}/&quot;, endpoint =&gt; endpoint
+            .WithHandler(static async (context, _) =&gt;
+            {
+                await Task.CompletedTask;
+
+                return HttpResponseMessage.Json(new
+                {
+                    id = context.Parameters[&quot;id&quot;]
+                });
+            })))
+    .CreateRouter();
+</code></pre>
+<p><code>CreateBuilder()</code> does not add JSON error handling automatically. Add <code>AddJsonErrorDetails()</code> yourself when you want structured JSON errors, or omit it when you want custom exception handling middleware or response shaping handlers to own failures.</p>
+<h2 id="request-mapping">Request Mapping</h2>
+<p><code>ApiGatewayHttpApiV2Router</code> converts the API Gateway event into an <code>HttpRequestMessage</code> before executing the NanoRoute pipeline.</p>
 <ul>
-<li>Supports Amazon API Gateway HTTP APIs and Lambda Function URLs that use payload format version <code>2.0</code>.</li>
-<li>Translates <code>APIGatewayHttpApiV2ProxyRequest</code> events into <code>HttpRequestMessage</code> instances before running the normal NanoRoute pipeline.</li>
-<li>Converts produced <code>HttpResponseMessage</code> instances into <code>APIGatewayHttpApiV2ProxyResponse</code> values.</li>
-<li><code>ApiGatewayHttpApiV2Router.CreateBuilder()</code> returns the same strongly typed builder style as the core package.</li>
-<li>Pass <code>ILambdaContext.RemainingTime</code> to <code>Route()</code> so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.</li>
-<li><code>AwsLambdaRouterConfig.LambdaTimeoutBuffer</code> controls the safety window reserved before the Lambda timeout; the default remains one second.</li>
-<li>Request URIs are built from <code>RawPath</code>, <code>RawQueryString</code>, the <code>Host</code> header, and forwarding metadata.</li>
+<li>The request URI is built from <code>RawPath</code>, <code>RawQueryString</code>, the <code>Host</code> header, and the request scheme.</li>
+<li>The scheme is read from <code>Forwarded: proto=...</code>, <code>X-Forwarded-Proto</code>, or inferred as <code>https</code> for Lambda Function URL domains.</li>
+<li>Request headers are copied onto the <code>HttpRequestMessage</code> or its content headers.</li>
 <li>Plain request bodies are exposed as <code>StringContent</code>; base64-encoded request bodies are exposed as <code>StreamContent</code>.</li>
 <li>The original <code>APIGatewayHttpApiV2ProxyRequest</code> is available through the NanoRoute request context as the original request object.</li>
-<li>String responses are returned as plain bodies, while other content types are base64 encoded.</li>
+<li>The API Gateway request id is used as the NanoRoute trace id.</li>
+</ul>
+<p>Payload format <code>2.0</code> does not include the scheme directly, so the adapter derives it from forwarding metadata or the Lambda Function URL domain. If the adapter cannot determine the scheme or host, the request cannot be mapped to an absolute <code>HttpRequestMessage.RequestUri</code> and routing fails before handlers run.</p>
+<h2 id="response-mapping">Response Mapping</h2>
+<p>NanoRoute handlers return ordinary <code>HttpResponseMessage</code> instances.</p>
+<ul>
+<li><code>StringContent</code> is returned as a plain response body.</li>
+<li>Other content types are base64 encoded and set <code>IsBase64Encoded</code> to <code>true</code>.</li>
+<li>Response headers are flattened into the API Gateway response header dictionary.</li>
 <li><code>Set-Cookie</code> values are returned through the API Gateway <code>Cookies</code> collection.</li>
-<li>Typed handlers, route parsers, query bindings, JSON body binders, prefixes, and middleware work the same way under Lambda as they do in the core package.</li>
+</ul>
+<p>Header values other than <code>Set-Cookie</code> are joined with commas, matching the single-value header model used by <code>APIGatewayHttpApiV2ProxyResponse.Headers</code>.</p>
+<h2 id="timeout-handling">Timeout Handling</h2>
+<p>Pass <code>ILambdaContext.RemainingTime</code> to <code>Route()</code>. By default, the adapter starts cancellation one second before the Lambda timeout so async value parsers and handlers can observe <code>ValueParserContext.Cancellation</code> and <code>RequestContext.Cancellation</code>.</p>
+<p>If the invocation is already inside that safety window, the request is cancelled immediately and the adapter returns a <code>504 Gateway Timeout</code> JSON error response.</p>
+<p>Use <code>AwsLambdaRouterConfig.LambdaTimeoutBuffer</code> when your function needs a different safety window:</p>
+<pre><code class="lang-csharp">ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+    .CreateBuilder()
+    .ConfigureRouting(config =&gt; config with
+    {
+        LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
+    })
+    .AddJsonErrorDetails()
+    .AddEndPoint(&quot;GET&quot;, &quot;/health/&quot;, endpoint =&gt; endpoint
+        .WithHandler(static async (_, _) =&gt;
+        {
+            await Task.CompletedTask;
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }))
+    .CreateRouter();
+</code></pre>
+<h2 id="typed-handlers">Typed Handlers</h2>
+<p>Typed handlers work the same way under Lambda as they do in the core package. The service provider passed to <code>Route()</code> is exposed through <code>RequestContext.Services</code>, so <code>[ValueSource(ValueSource.ServiceLocator)]</code> can resolve request object dependencies from your Lambda function's service container.</p>
+<pre><code class="lang-csharp">using System.Net.Http;
+using System.Threading;
+
+using NanoRoute;
+using NanoRoute.AwsLambda;
+
+public sealed class GetItemRequest
+{
+    public int Id { get; set; }
+
+    [ValueSource(ValueSource.Parameter, Name = &quot;filter&quot;)]
+    public string? Filter { get; set; }
+
+    [ValueSource(ValueSource.ServiceLocator)]
+    public IItemRepository Items { get; set; } = null!;
+
+    public CancellationToken Cancellation { get; set; }
+}
+
+ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+    .CreateBuilder()
+    .AddJsonErrorDetails()
+    .AddDefaultValueParsers()
+    .AddPrefix(&quot;/items/{id:int}/*&quot;, items =&gt; items
+        .AddEndPoint([&quot;GET&quot;], RouteScopeBuilder.CurrentExact, endpoint =&gt; endpoint
+            .WithQueryBindings(&quot;{filter?:str(min=3)}&quot;)
+            .WithHandler(static async (GetItemRequest request) =&gt;
+            {
+                Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
+                return HttpResponseMessage.Json(item);
+            })))
+    .CreateRouter();
+</code></pre>
+<h2 id="common-building-blocks">Common Building Blocks</h2>
+<ul>
+<li><code>ApiGatewayHttpApiV2Router.CreateBuilder()</code> starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.</li>
+<li><code>AwsLambdaRouterConfig</code> inherits the core <code>RouterConfig</code>, including <code>MatchingPrecedence</code>, and adds <code>LambdaTimeoutBuffer</code>.</li>
+<li><code>ConfigureRouting()</code> customizes <code>AwsLambdaRouterConfig</code> before creating a router snapshot.</li>
+<li><code>Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)</code> executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.</li>
+<li><code>AddDefaultValueParsers()</code> registers the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code> route parsers.</li>
+<li><code>AddQueryBindings()</code> and <code>EndPointBuilder.WithQueryBindings()</code> bind selected query-string values into <code>RequestContext.Parameters</code>.</li>
+<li><code>ConfigureQueryParsing()</code> customizes query-binding behavior used by subsequently registered <code>AddQueryBindings()</code> and <code>EndPointBuilder.WithQueryBindings()</code> middleware.</li>
+<li><code>AddEndPoint()</code> and <code>CreateEndPoint()</code> capture endpoint verbs and route patterns once; endpoint helpers such as <code>WithHandler()</code>, <code>WithJsonBody()</code>, and <code>WithQueryBindings()</code> work under Lambda the same way they do in the core package.</li>
+<li><code>AddJsonBody()</code> and <code>EndPointBuilder.WithJsonBody()</code> bind JSON request content into <code>RequestContext.Parameters</code>.</li>
+<li><code>AddJsonErrorDetails()</code> turns routing exceptions into JSON <code>ErrorDetails</code> responses when explicitly added.</li>
+<li><code>ConfigureJsonErrorDetails()</code> customizes JSON <code>ErrorDetails</code> response diagnostics and serialization metadata used by subsequently registered <code>AddJsonErrorDetails()</code> middleware.</li>
+<li><code>AddHandler&lt;TRequest&gt;()</code> and <code>EndPointBuilder.WithHandler&lt;TRequest&gt;()</code> project <code>RequestContext</code> into a typed request object before invoking the handler.</li>
+<li><code>HttpResponseMessage.Json(...)</code> creates JSON responses with the library's serializer defaults.</li>
 </ul>
 <h2 id="supported-api-gateway-model">Supported API Gateway Model</h2>
 <p>This package is intentionally narrow:</p>
@@ -68,7 +273,7 @@
 <li>Supported: Lambda proxy responses represented by <code>APIGatewayHttpApiV2ProxyResponse</code>.</li>
 <li>Not currently supported: REST API payload format <code>1.0</code>, Application Load Balancer events, or custom event models.</li>
 </ul>
-<p>For unsupported transports, derive a custom router from the core <code>Router</code> type and map your event model to <code>HttpRequestMessage</code> before calling <code>Handle()</code>.</p>
+<p>For unsupported transports, derive a custom router from the core <code>Router&lt;TDescendant, TConfig&gt;</code> type and map your event model to <code>HttpRequestMessage</code> before calling <code>Handle()</code>.</p>
 
 </article>
           </div>

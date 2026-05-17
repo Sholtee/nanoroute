@@ -87,8 +87,21 @@
   <div class="markdown level0 remarks"><p>Normalizers are configured with <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig__">ConfigureExceptionHandling&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;ExceptionHandlingConfig&gt;)</a>.
 They run only for exception types registered in <a class="xref" href="NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers">ExceptionNormalizers</a>.
 Existing <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> values are not
-normalized by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a>.</p>
+normalized by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a>.
+Exceptions thrown by a normalizer propagate from the exception-handling middleware.</p>
 </div>
+  <h5 id="NanoRoute_ExceptionNormalizer_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.ConfigureExceptionHandling(config =&gt; config with
+{
+    ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+    ([
+        ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+        (
+            static ex =&gt; new HttpRequestException("Bad state", ex, HttpStatusCode.Conflict)
+        )
+    ])
+});</code></pre>
+
 
 </article>
           </div>

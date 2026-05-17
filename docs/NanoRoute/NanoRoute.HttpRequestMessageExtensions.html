@@ -78,6 +78,9 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static class HttpRequestMessageExtensions</code></pre>
   </div>
+  <h5 id="NanoRoute_HttpRequestMessageExtensions_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">bool isContentHeader = HttpRequestMessage.ContentHeaders.Contains("Content-Type");</code></pre>
+
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_HttpRequestMessageExtensions_get_ContentHeaders_" data-uid="NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders*"></a>
@@ -104,6 +107,10 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_HttpRequestMessageExtensions_get_ContentHeaders_examples">Examples</h5>
+  <pre><code class="lang-csharp">if (HttpRequestMessage.ContentHeaders.Contains(headerName))
+    request.Content!.Headers.TryAddWithoutValidation(headerName, values);</code></pre>
+
 
 </article>
           </div>

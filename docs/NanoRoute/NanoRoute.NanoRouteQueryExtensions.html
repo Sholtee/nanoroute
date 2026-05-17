@@ -78,6 +78,12 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static class NanoRouteQueryExtensions</code></pre>
   </div>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder
+    .AddDefaultValueParsers()
+    .AddQueryBindings("{page?:int(min=1)}")
+    .AddHandler("GET", "/items/", (context, _) =&gt; Results.Ok(context.Parameters));</code></pre>
+
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
@@ -156,6 +162,9 @@ query binding overwrites the existing value.
 This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the query-binding
 middleware is bound to the whole current builder scope for the selected HTTP methods.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddQueryBindings(["GET", "HEAD"], "{filter?:str}&amp;{page?:int(min=1)}");</code></pre>
+
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -168,6 +177,21 @@ middleware is bound to the whole current builder scope for the selected HTTP met
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
         <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, or <code class="paramref">bindings</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not supported or <code class="paramref">bindings</code> has invalid query-binding syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown during request processing when the query string is invalid for the configured bindings.</p>
 </td>
       </tr>
     </tbody>
@@ -253,6 +277,9 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddQueryBindings(["GET", "HEAD"], "/items/*", "{filter?:str}&amp;{page?:int(min=1)}");</code></pre>
+
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -267,110 +294,19 @@ query binding overwrites the existing value.</p>
         <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
 </td>
       </tr>
-    </tbody>
-  </table>
-  <a id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings*"></a>
-  <h4 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__" data-uid="NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.String,NanoRoute.ConfigureBuilderDelegate{NanoRoute.QueryParsingConfig})">AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</h4>
-  <div class="markdown level1 summary"><p>Parses configured query parameters with a one-off configuration override and stores their values in
-<a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder AddQueryBindings&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, string bindings, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt; oneOffConfigOverride) where TBuilder : notnull, RouteScopeBuilder</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TBuilder</span></td>
-        <td><span class="parametername">routeScopeBuilder</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
-        <td><span class="parametername">verbs</span></td>
-        <td><p>The HTTP methods that activate the query-binding middleware.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, <code class="paramref">pattern</code>, or <code class="paramref">bindings</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">pattern</span></td>
-        <td><p>The route pattern where the query-binding middleware should be inserted. Use <code>/</code> to apply it to
-the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not supported, <code class="paramref">pattern</code> has invalid route-template syntax, or <code class="paramref">bindings</code> has invalid query-binding syntax.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">bindings</span></td>
-        <td><p>A query-parameter descriptor such as <code>{filter:str(min=3)}&amp;{page?:int(min=1)}</code>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate</a>&lt;<a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a>&gt;</td>
-        <td><span class="parametername">oneOffConfigOverride</span></td>
-        <td><p>A callback that receives the current <a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a> and returns the configuration
-captured by this query-binding middleware only.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TBuilder</span></td>
-        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TBuilder</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Use this overload when one query-binding registration should differ from the builder-scope
-configuration set by <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__">ConfigureQueryParsing&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</a>.
-The returned configuration is captured at registration time and does not update
-<a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata">Metadata</a>.</p>
-</div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown during request processing when the query string is invalid for the configured bindings.</p>
 </td>
       </tr>
     </tbody>
@@ -445,6 +381,9 @@ query binding overwrites the existing value.
 This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the query-binding
 middleware is bound to the whole current builder scope for all supported HTTP methods.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddQueryBindings("{filter?:str}&amp;{page?:int(min=1)}");</code></pre>
+
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -457,6 +396,21 @@ middleware is bound to the whole current builder scope for all supported HTTP me
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
         <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> or <code class="paramref">bindings</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">bindings</code> has invalid query-binding syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown during request processing when the query string is invalid for the configured bindings.</p>
 </td>
       </tr>
     </tbody>
@@ -536,6 +490,9 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddQueryBindings("/items/*", "{filter?:str}&amp;{page?:int(min=1)}");</code></pre>
+
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -548,6 +505,21 @@ query binding overwrites the existing value.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
         <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">pattern</code>, or <code class="paramref">bindings</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax or <code class="paramref">bindings</code> has invalid query-binding syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown during request processing when the query string is invalid for the configured bindings.</p>
 </td>
       </tr>
     </tbody>
@@ -633,6 +605,9 @@ the whole pipeline, or a narrower prefix/exact pattern to scope query binding to
 already contains the same key because of route binding, JSON binding, or earlier middleware, the
 query binding overwrites the existing value.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddQueryBindings("GET", "/items/*", "{filter?:str}&amp;{page?:int(min=1)}");</code></pre>
+
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -645,6 +620,21 @@ query binding overwrites the existing value.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
         <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verb</code>, <code class="paramref">pattern</code>, or <code class="paramref">bindings</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">verb</code> is not supported, <code class="paramref">pattern</code> has invalid route-template syntax, or <code class="paramref">bindings</code> has invalid query-binding syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown during request processing when the query string is invalid for the configured bindings.</p>
 </td>
       </tr>
     </tbody>
@@ -717,6 +707,118 @@ query binding overwrites the existing value.</p>
 method is called inherit the updated configuration; existing child builders keep their own scoped copy.
 Registered query-binding middleware snapshots the configuration that is current at registration time.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureQueryParsing(config =&gt; config with
+{
+    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">configure</code>, or the value returned
+by <code class="paramref">configure</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_" data-uid="NanoRoute.NanoRouteQueryExtensions.WithQueryBindings*"></a>
+  <h4 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndPointBuilder_System_String_" data-uid="NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndPointBuilder,System.String)">WithQueryBindings(EndPointBuilder, string)</h4>
+  <div class="markdown level1 summary"><p>Parses configured query parameters and stores their values in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>
+for the current endpoint.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static EndPointBuilder WithQueryBindings(this EndPointBuilder endPointBuilder, string bindings)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
+        <td><span class="parametername">endPointBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">bindings</span></td>
+        <td><p>A query-parameter descriptor such as <code>{filter:str(min=3)}&amp;{page?:int(min=1)}</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
+        <td><p>The current <code class="paramref">endPointBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndPointBuilder_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The query-binding middleware is registered for the endpoint's captured HTTP methods and route match
+kind. Parsed query values are written into <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>. If that dictionary
+already contains the same key because of route binding, JSON binding, or earlier middleware, the
+query binding overwrites the existing value.</p>
+</div>
+  <h5 id="NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndPointBuilder_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">endpoint.WithQueryBindings("{filter?:str}&amp;{page?:int(min=1)}");</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">bindings</code> references a value parser that is not registered.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">endPointBuilder</code> or <code class="paramref">bindings</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when the endpoint's captured HTTP method is not supported or <code class="paramref">bindings</code> has invalid query-binding syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown during request processing when the query string is invalid for the configured bindings.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
 </article>
           </div>

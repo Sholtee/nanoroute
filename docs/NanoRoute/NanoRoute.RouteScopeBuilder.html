@@ -46,9 +46,8 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><a class="xref" href="NanoRoute.RoutingContext.html">RoutingContext</a></div>
-    <div class="level2"><span class="xref">RouteScopeBuilder</span></div>
-      <div class="level3"><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a></div>
+    <div class="level1"><span class="xref">RouteScopeBuilder</span></div>
+      <div class="level2"><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -78,13 +77,18 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_RouteScopeBuilder_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class RouteScopeBuilder : RoutingContext</code></pre>
+    <pre><code class="lang-csharp hljs">public class RouteScopeBuilder</code></pre>
   </div>
   <h5 id="NanoRoute_RouteScopeBuilder_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Route patterns support literal segments and parser-backed parameter segments such as
 <code>/users/{id:int}/</code>. Patterns must start with <code>/</code>, exact patterns must end with <code>/</code>,
 prefix patterns must end with <code>/*</code>, and repeated <code>/</code> separators such as <code>//</code> are invalid.</p>
 </div>
+  <h5 id="NanoRoute_RouteScopeBuilder_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder
+    .AddDefaultValueParsers()
+    .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));</code></pre>
+
   <h3 id="fields">Fields
 </h3>
   <h4 id="NanoRoute_RouteScopeBuilder_CurrentExact" data-uid="NanoRoute.RouteScopeBuilder.CurrentExact">CurrentExact</h4>
@@ -110,6 +114,9 @@ prefix patterns must end with <code>/*</code>, and repeated <code>/</code> separ
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_RouteScopeBuilder_CurrentExact_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler("GET", RouteScopeBuilder.CurrentExact, (context, _) =&gt; Results.Ok());</code></pre>
+
   <h4 id="NanoRoute_RouteScopeBuilder_CurrentPrefix" data-uid="NanoRoute.RouteScopeBuilder.CurrentPrefix">CurrentPrefix</h4>
   <div class="markdown level1 summary"><p>The route pattern that matches the current route scope as a prefix.</p>
 </div>
@@ -133,6 +140,9 @@ prefix patterns must end with <code>/*</code>, and repeated <code>/</code> separ
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_RouteScopeBuilder_CurrentPrefix_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddHandler("GET", RouteScopeBuilder.CurrentPrefix, (context, next) =&gt; next());</code></pre>
+
   <h3 id="properties">Properties
 </h3>
   <a id="NanoRoute_RouteScopeBuilder_BasePattern_" data-uid="NanoRoute.RouteScopeBuilder.BasePattern*"></a>
@@ -197,6 +207,9 @@ metadata. Metadata updates made after the child scope is created stay local to t
 are made.
 </p>
 </div>
+  <h5 id="NanoRoute_RouteScopeBuilder_Metadata_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.Metadata.Set(new MyFeatureOptions { Enabled = true });</code></pre>
+
   <a id="NanoRoute_RouteScopeBuilder_Patterns_" data-uid="NanoRoute.RouteScopeBuilder.Patterns*"></a>
   <h4 id="NanoRoute_RouteScopeBuilder_Patterns" data-uid="NanoRoute.RouteScopeBuilder.Patterns">Patterns</h4>
   <div class="markdown level1 summary"><p>Gets the distinct route patterns currently visible from this route scope.</p>
@@ -225,6 +238,10 @@ are made.
   <div class="markdown level1 remarks"><p>Each entry is formatted as <code>[Verb] Pattern</code>. Child scopes list only the routes reachable from
 their base path, while the root scope lists the whole configured tree.</p>
 </div>
+  <h5 id="NanoRoute_RouteScopeBuilder_Patterns_examples">Examples</h5>
+  <pre><code class="lang-csharp">foreach (string pattern in builder.Patterns)
+    Console.WriteLine(pattern);</code></pre>
+
   <a id="NanoRoute_RouteScopeBuilder_ValueParsers_" data-uid="NanoRoute.RouteScopeBuilder.ValueParsers*"></a>
   <h4 id="NanoRoute_RouteScopeBuilder_ValueParsers" data-uid="NanoRoute.RouteScopeBuilder.ValueParsers">ValueParsers</h4>
   <div class="markdown level1 summary"><p>Gets the value parser registrations currently visible from this route scope.</p>
@@ -253,6 +270,9 @@ their base path, while the root scope lists the whole configured tree.</p>
   <div class="markdown level1 remarks"><p>For child scopes created with <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CreatePrefix_System_String_">CreatePrefix(string)</a>, this dictionary reflects the inherited
 registrations plus any overrides added to that child scope.</p>
 </div>
+  <h5 id="NanoRoute_RouteScopeBuilder_ValueParsers_examples">Examples</h5>
+  <pre><code class="lang-csharp">bool hasIntParser = builder.ValueParsers.ContainsKey("int");</code></pre>
+
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_RouteScopeBuilder_AddHandler_" data-uid="NanoRoute.RouteScopeBuilder.AddHandler*"></a>
@@ -330,14 +350,26 @@ the pipeline with the next compatible handler from the already selected route br
     </thead>
     <tbody>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">verb</code>, <code class="paramref">pattern</code>, or <code class="paramref">handler</code> is
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
         <td><p>Thrown when <code class="paramref">verb</code> is not a supported HTTP method.</p>
 </td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when <code class="paramref">pattern</code> is invalid or references a value parser that has not been
-registered yet.</p>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses an unsupported optional parameter or list parser, references
+a value parser that has not been registered yet, or reuses a parser-backed branch with a different
+parameter name.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax.</p>
 </td>
       </tr>
     </tbody>
@@ -393,6 +425,27 @@ registered yet.</p>
       <tr>
         <td><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></td>
         <td><p>The current instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouteScopeBuilder_AddValueParser_System_String_NanoRoute_BindArgumentsDelegate_NanoRoute_ValueParserDelegate__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddValueParser("slug", static rawArgs =&gt; null, static context =&gt;
+    ValueTask.FromResult(new ValueParseResult(context.Segment.Length &gt; 0, context.Segment.ToString())));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">parserName</code>, <code class="paramref">bindArguments</code>, or
+<code class="paramref">tryParseDelegate</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -464,14 +517,37 @@ api.AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok());</code></pre>
 </td>
       </tr>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when <code class="paramref">pattern</code> is invalid or references a value parser that has not been
-registered yet.</p>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses an unsupported optional parameter or list parser, references
+a value parser that has not been registered yet, or reuses a parser-backed branch with a different
+parameter name.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_AddEndPoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_EndPointBuilder__">NanoRouteEndPointExtensions.AddEndPoint&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Action&lt;EndPointBuilder&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_AddEndPoint__1___0_System_String_System_String_System_Action_NanoRoute_EndPointBuilder__">NanoRouteEndPointExtensions.AddEndPoint&lt;TBuilder&gt;(TBuilder, string, string, Action&lt;EndPointBuilder&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_">NanoRouteEndPointExtensions.CreateEndPoint&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteEndPointExtensions.html#NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint__1___0_System_String_System_String_">NanoRouteEndPointExtensions.CreateEndPoint&lt;TBuilder&gt;(TBuilder, string, string)</a>
+  </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a>
   </div>
@@ -500,22 +576,22 @@ registered yet.</p>
       <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_String_NanoRoute_RequestHandlerDelegate_">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder&gt;(TBuilder, string, RequestHandlerDelegate)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1__">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_TypedRequestHandlerDelegate___1__">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, IEnumerable&lt;string&gt;, string, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1__">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_NanoRoute_TypedRequestHandlerDelegate___1__">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_System_Func___1_NanoRoute_CallNextHandlerDelegate_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, Func&lt;TRequestContext, CallNextHandlerDelegate, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_NanoRoute_TypedRequestEndpointHandlerDelegate___1__">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_System_Func___1_System_Threading_Tasks_Task_System_Net_Http_HttpResponseMessage___">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, Func&lt;TRequestContext, Task&lt;HttpResponseMessage&gt;&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__2___0_System_String_System_String_NanoRoute_TypedRequestHandlerDelegate___1__">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder, TRequestContext&gt;(TBuilder, string, string, TypedRequestHandlerDelegate&lt;TRequestContext&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonBody__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo_System_String_">NanoRouteJsonExtensions.AddJsonBody&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, JsonTypeInfo, string)</a>
@@ -573,9 +649,6 @@ registered yet.</p>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string)</a>
-  </div>
-  <div>
-      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</a>

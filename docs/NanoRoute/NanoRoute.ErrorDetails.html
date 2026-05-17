@@ -79,6 +79,15 @@
   <div class="markdown level0 remarks"><p>Instances of this type can be serialized to JSON, XML, or any other format chosen by the caller.
 NanoRoute's JSON helpers use it as the default payload shape for error responses.</p>
 </div>
+  <h5 id="NanoRoute_ErrorDetails_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">var details = new ErrorDetails
+{
+    Title = "Bad Request",
+    Status = HttpStatusCode.BadRequest,
+    TraceId = "01HF...",
+    Errors = ["The id field is required."]
+};</code></pre>
+
   <h3 id="constructors">Constructors
 </h3>
   <a id="NanoRoute_ErrorDetails__ctor_" data-uid="NanoRoute.ErrorDetails.#ctor*"></a>

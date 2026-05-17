@@ -47,6 +47,9 @@ Classes
       <h4><a class="xref" href="NanoRoute.BuilderMetadata.html">BuilderMetadata</a></h4>
       <section><p>Stores extension-defined builder settings keyed by their CLR type.</p>
 </section>
+      <h4><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></h4>
+      <section><p>Builds handlers and middleware that belong to a single route endpoint.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a></h4>
       <section><p>Describes an HTTP error in a structured, serializer-agnostic format.</p>
 </section>
@@ -67,6 +70,9 @@ unexpected exceptions.</p>
       <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</a> creates JSON
 <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses.</p>
 </section>
+      <h4><a class="xref" href="NanoRoute.NanoRouteEndPointExtensions.html">NanoRouteEndPointExtensions</a></h4>
+      <section><p>Adds endpoint-building helpers to route scope builders.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html">NanoRouteExceptionExtensions</a></h4>
       <section><p>Adds helpers for normalizing exceptions and extracting structured error details.</p>
 </section>
@@ -86,7 +92,7 @@ unexpected exceptions.</p>
       <section><p>Provides convenience methods for registering value parsers.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a></h4>
-      <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</a> parses query strings.</p>
+      <section><p>Configures how query-binding middleware parses query strings.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></h4>
       <section><p>Builder responsible for configuring a route scope and its child route tree.</p>
@@ -100,8 +106,8 @@ unexpected exceptions.</p>
       <h4><a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a></h4>
       <section><p>Configures runtime behavior of <a class="xref" href="NanoRoute.Router.html">Router</a> instances.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.RoutingContext.html">RoutingContext</a></h4>
-      <section><p>Provides shared access to the route tree used during building and routing.</p>
+      <h4><a class="xref" href="NanoRoute.Router-2.html">Router&lt;TDescendant, TConfig&gt;</a></h4>
+      <section><p>Provides the self-typed base for concrete router implementations with strongly typed configuration.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.ValueParserRegistration.html">ValueParserRegistration</a></h4>
       <section><p>Stores a named value parser together with its argument binder.</p>
@@ -152,9 +158,19 @@ Delegates
       <section><p>Represents a request handler in the router pipeline.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.RouterFactoryDelegate-2.html">RouterFactoryDelegate&lt;TRouter, TConfig&gt;</a></h4>
-      <section></section>
+      <section><p>Creates a router instance from a configured <a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a>.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.SyncValueParserDelegate.html">SyncValueParserDelegate</a></h4>
       <section><p>Represents a synchronous value parser.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.TypedExceptionNormalizer-1.html">TypedExceptionNormalizer&lt;TException&gt;</a></h4>
+      <section><p>Converts an unexpected exception of a specific type into an enriched <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.TypedRequestEndpointHandlerDelegate-1.html">TypedRequestEndpointHandlerDelegate&lt;TRequestContext&gt;</a></h4>
+      <section><p>Represents a typed endpoint handler in the router pipeline.</p>
+</section>
+      <h4><a class="xref" href="NanoRoute.TypedRequestHandlerDelegate-1.html">TypedRequestHandlerDelegate&lt;TRequestContext&gt;</a></h4>
+      <section><p>Represents a typed request handler in the router pipeline.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a></h4>
       <section><p>Tries to parse a single route segment into a value that can optionally be stored in <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a>.</p>

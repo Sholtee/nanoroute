@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width">
       <meta name="title" content="Class QueryParsingConfig | NanoRoute ">
     
-    <meta name="description" content="Configures how  parses query strings.">
+    <meta name="description" content="Configures how query-binding middleware parses query strings.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -40,7 +40,7 @@
 
 
   <h1 id="NanoRoute_QueryParsingConfig" data-uid="NanoRoute.QueryParsingConfig" class="text-break">Class QueryParsingConfig</h1>
-  <div class="markdown level0 summary"><p>Configures how <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_">AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</a> parses query strings.</p>
+  <div class="markdown level0 summary"><p>Configures how query-binding middleware parses query strings.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -82,6 +82,12 @@
   <h5 id="NanoRoute_QueryParsingConfig_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Query-binding middleware snapshots the configuration that is current when it is registered.</p>
 </div>
+  <h5 id="NanoRoute_QueryParsingConfig_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.ConfigureQueryParsing(config =&gt; config with
+{
+    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+});</code></pre>
+
   <h3 id="constructors">Constructors
 </h3>
   <a id="NanoRoute_QueryParsingConfig__ctor_" data-uid="NanoRoute.QueryParsingConfig.#ctor*"></a>
@@ -118,6 +124,9 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_QueryParsingConfig_Default_examples">Examples</h5>
+  <pre><code class="lang-csharp">QueryParsingConfig config = QueryParsingConfig.Default;</code></pre>
+
   <a id="NanoRoute_QueryParsingConfig_UnexpectedParameterBehavior_" data-uid="NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior*"></a>
   <h4 id="NanoRoute_QueryParsingConfig_UnexpectedParameterBehavior" data-uid="NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior">UnexpectedParameterBehavior</h4>
   <div class="markdown level1 summary"><p>Gets how undeclared query-string parameters are handled.</p>
@@ -146,6 +155,28 @@
   <div class="markdown level1 remarks"><p>The default is <a class="xref" href="NanoRoute.UnexpectedParameterBehavior.html#NanoRoute_UnexpectedParameterBehavior_Ignore">Ignore</a>, so additional query-string keys that are
 not present in the binding descriptor do not affect request processing.</p>
 </div>
+  <h5 id="NanoRoute_QueryParsingConfig_UnexpectedParameterBehavior_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureQueryParsing(config =&gt; config with
+{
+    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Thrown when the assigned value is not a defined <a class="xref" href="NanoRoute.QueryParsingConfig.html#NanoRoute_QueryParsingConfig_UnexpectedParameterBehavior">UnexpectedParameterBehavior</a> value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>

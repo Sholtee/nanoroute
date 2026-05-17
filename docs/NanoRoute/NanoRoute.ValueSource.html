@@ -50,6 +50,13 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public enum ValueSource</code></pre>
   </div>
+  <h5 id="NanoRoute_ValueSource_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">public sealed class UserRequest
+{
+    [ValueSource(ValueSource.Parameter, Name = "id")]
+    public int Id { get; init; }
+}</code></pre>
+
   <h3 id="fields">Fields
 </h3>
   <table class="table table-bordered table-condensed">

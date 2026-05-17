@@ -78,6 +78,9 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static class NanoRouteExceptionExtensions</code></pre>
   </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.AddExceptionHandler();</code></pre>
+
   <h3 id="fields">Fields
 </h3>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_DeveloperMessagesName" data-uid="NanoRoute.NanoRouteExceptionExtensions.DeveloperMessagesName">DeveloperMessagesName</h4>
@@ -107,6 +110,10 @@
   <div class="markdown level1 remarks"><p>Written by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IEnumerable_System_String__System_Collections_Generic_IEnumerable_System_String__">Throw(HttpStatusCode, string, Exception?, IEnumerable&lt;string&gt;?, IEnumerable&lt;string&gt;?)</a>
 and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_">GetErrorDetails(HttpRequestException, bool, string?)</a>.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_DeveloperMessagesName_examples">Examples</h5>
+  <pre><code class="lang-csharp">HttpRequestException exception = ...
+object? messages = exception.Data[NanoRouteExceptionExtensions.DeveloperMessagesName];</code></pre>
+
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_ErrorsName" data-uid="NanoRoute.NanoRouteExceptionExtensions.ErrorsName">ErrorsName</h4>
   <div class="markdown level1 summary"><p>The <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.data">Data</a> key used to store client-facing error messages.</p>
 </div>
@@ -134,6 +141,10 @@ and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#Na
   <div class="markdown level1 remarks"><p>Written by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IEnumerable_System_String__System_Collections_Generic_IEnumerable_System_String__">Throw(HttpStatusCode, string, Exception?, IEnumerable&lt;string&gt;?, IEnumerable&lt;string&gt;?)</a>
 and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_">GetErrorDetails(HttpRequestException, bool, string?)</a>.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_ErrorsName_examples">Examples</h5>
+  <pre><code class="lang-csharp">HttpRequestException exception = ...
+object? errors = exception.Data[NanoRouteExceptionExtensions.ErrorsName];</code></pre>
+
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_StatusName" data-uid="NanoRoute.NanoRouteExceptionExtensions.StatusName">StatusName</h4>
   <div class="markdown level1 summary"><p>The <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.data">Data</a> key used to store the HTTP status code.</p>
 </div>
@@ -161,6 +172,10 @@ and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#Na
   <div class="markdown level1 remarks"><p>Written by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IEnumerable_System_String__System_Collections_Generic_IEnumerable_System_String__">Throw(HttpStatusCode, string, Exception?, IEnumerable&lt;string&gt;?, IEnumerable&lt;string&gt;?)</a>
 and read by <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_">GetErrorDetails(HttpRequestException, bool, string?)</a>.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_StatusName_examples">Examples</h5>
+  <pre><code class="lang-csharp">HttpRequestException exception = ...
+object? status = exception.Data[NanoRouteExceptionExtensions.StatusName];</code></pre>
+
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
@@ -228,6 +243,25 @@ not normalized so caller-driven cancellation can propagate unchanged.
 This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the middleware
 is bound to the whole current builder scope for all supported HTTP methods.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddExceptionHandler();</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String})">AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;)</h4>
   <div class="markdown level1 summary"><p>Adds an exception-handling middleware for the selected HTTP methods.</p>
@@ -299,6 +333,30 @@ not normalized so caller-driven cancellation can propagate unchanged.
 This overload uses <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_CurrentPrefix">CurrentPrefix</a> as the route pattern, so the middleware
 is bound to the whole current builder scope for the selected HTTP methods.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddExceptionHandler(["GET", "POST"]);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> or <code class="paramref">verbs</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not a supported HTTP method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)">AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</h4>
   <div class="markdown level1 summary"><p>Adds an exception-handling middleware for the selected HTTP methods.</p>
@@ -375,6 +433,35 @@ with normalized status codes and diagnostic payloads. Existing <a class="xref" h
 values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
 not normalized so caller-driven cancellation can propagate unchanged.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddExceptionHandler(["POST", "PUT"], "/api/users/*");</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, or <code class="paramref">pattern</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String)">AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string)</h4>
   <div class="markdown level1 summary"><p>Adds an exception-handling middleware for all supported HTTP methods.</p>
@@ -445,6 +532,35 @@ with normalized status codes and diagnostic payloads. Existing <a class="xref" h
 values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
 not normalized so caller-driven cancellation can propagate unchanged.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddExceptionHandler("/api/*");</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> or <code class="paramref">pattern</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String,System.String)">AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string, string)</h4>
   <div class="markdown level1 summary"><p>Adds an exception-handling middleware for a single HTTP method.</p>
@@ -521,6 +637,35 @@ with normalized status codes and diagnostic payloads. Existing <a class="xref" h
 values are allowed to flow through unchanged. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is intentionally
 not normalized so caller-driven cancellation can propagate unchanged.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddExceptionHandler("GET", "/api/*");</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verb</code>, or <code class="paramref">pattern</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">verb</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling_" data-uid="NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig__" data-uid="NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.ExceptionHandlingConfig})">ConfigureExceptionHandling&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;ExceptionHandlingConfig&gt;)</h4>
   <div class="markdown level1 summary"><p>Updates the exception-handling configuration visible from the current builder scope.</p>
@@ -589,6 +734,121 @@ not normalized so caller-driven cancellation can propagate unchanged.</p>
 method is called inherit the updated configuration; existing child builders keep their own scoped copy.
 Registered exception handlers snapshot the configuration that is current at registration time.</p>
 </div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureExceptionHandling(config =&gt; config with
+{
+    ExceptionNormalizers = config.ExceptionNormalizers.Remove(typeof(AggregateException))
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">configure</code>, or the value returned
+by <code class="paramref">configure</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteExceptionExtensions_For_" data-uid="NanoRoute.NanoRouteExceptionExtensions.For*"></a>
+  <h4 id="NanoRoute_NanoRouteExceptionExtensions_For__1_NanoRoute_TypedExceptionNormalizer___0__" data-uid="NanoRoute.NanoRouteExceptionExtensions.For``1(NanoRoute.TypedExceptionNormalizer{``0})">For&lt;TException&gt;(TypedExceptionNormalizer&lt;TException&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates an exception-normalizer registration for a concrete exception type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static KeyValuePair&lt;Type, ExceptionNormalizer&gt; For&lt;TException&gt;(TypedExceptionNormalizer&lt;TException&gt; normalizer) where TException : notnull, Exception</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.TypedExceptionNormalizer-1.html">TypedExceptionNormalizer</a>&lt;TException&gt;</td>
+        <td><span class="parametername">normalizer</span></td>
+        <td><p>The typed normalizer that converts <code class="typeparamref">TException</code> into an enriched
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a>, <a class="xref" href="NanoRoute.ExceptionNormalizer.html">ExceptionNormalizer</a>&gt;</td>
+        <td><p>A key/value pair suitable for adding to <a class="xref" href="NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers">ExceptionNormalizers</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TException</span></td>
+        <td><p>The concrete exception type handled by <code class="paramref">normalizer</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_For__1_NanoRoute_TypedExceptionNormalizer___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The returned entry is keyed by <code>typeof(TException)</code>. Exception handlers perform exact runtime
+type lookup, so derived exception types need their own registrations.</p>
+</div>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_For__1_NanoRoute_TypedExceptionNormalizer___0___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureExceptionHandling(config =&gt; config with
+{
+    ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+    ([
+        ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+        (
+            static ex =&gt; new HttpRequestException("Conflict", ex, HttpStatusCode.Conflict)
+        )
+    ])
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">normalizer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_" data-uid="NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_" data-uid="NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails(System.Net.Http.HttpRequestException,System.Boolean,System.String)">GetErrorDetails(HttpRequestException, bool, string?)</h4>
   <div class="markdown level1 summary"><p>Converts an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> into an <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> payload.</p>
@@ -643,6 +903,25 @@ Registered exception handlers snapshot the configuration that is current at regi
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">ErrorDetails details = exception.GetErrorDetails(populateErrorInfo: false, traceId);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">requestException</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteExceptionExtensions_Throw_" data-uid="NanoRoute.NanoRouteExceptionExtensions.Throw*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Collections_Generic_IEnumerable_System_String__" data-uid="NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode,System.String,System.Collections.Generic.IEnumerable{System.String})">Throw(HttpStatusCode, string, params IEnumerable&lt;string&gt;)</h4>
   <div class="markdown level1 summary"><p>Throws an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> enriched with an HTTP status code and public error messages.</p>
@@ -679,6 +958,25 @@ public static void Throw(HttpStatusCode status, string title, params IEnumerable
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
         <td><span class="parametername">errors</span></td>
         <td><p>Optional client-facing error messages that should not contain sensitive data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Collections_Generic_IEnumerable_System_String___examples">Examples</h5>
+  <pre><code class="lang-csharp">HttpRequestException.Throw(HttpStatusCode.BadRequest, "Bad Request", "Missing id.");</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Always thrown with the supplied status and error metadata.</p>
 </td>
       </tr>
     </tbody>
@@ -731,6 +1029,33 @@ public static void Throw(HttpStatusCode status, string title, Exception? origina
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
         <td><span class="parametername">developerMessages</span></td>
         <td><p>Optional developer-facing messages that may contain sensitive data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IEnumerable_System_String__System_Collections_Generic_IEnumerable_System_String___examples">Examples</h5>
+  <pre><code class="lang-csharp">Exception original = ...
+HttpRequestException.Throw
+(
+    HttpStatusCode.Conflict,
+    "Conflict",
+    original,
+    errors: ["The resource has changed."],
+    developerMessages: [original.ToString()]
+);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Always thrown with the supplied status and error metadata.</p>
 </td>
       </tr>
     </tbody>

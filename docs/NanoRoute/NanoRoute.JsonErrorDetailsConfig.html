@@ -85,6 +85,13 @@
 <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__">ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a>.
 The configuration visible from the builder scope is captured when JSON error-detail middleware is registered.</p>
 </div>
+  <h5 id="NanoRoute_JsonErrorDetailsConfig_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.ConfigureJsonErrorDetails(config =&gt; config with
+{
+    PopulateErrorInfo = true,
+    ErrorDetailsTypeInfo = MyJsonContext.Default.ErrorDetails
+});</code></pre>
+
   <h3 id="constructors">Constructors
 </h3>
   <a id="NanoRoute_JsonErrorDetailsConfig__ctor_" data-uid="NanoRoute.JsonErrorDetailsConfig.#ctor*"></a>
@@ -121,6 +128,9 @@ The configuration visible from the builder scope is captured when JSON error-det
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_JsonErrorDetailsConfig_Default_examples">Examples</h5>
+  <pre><code class="lang-csharp">JsonErrorDetailsConfig config = JsonErrorDetailsConfig.Default;</code></pre>
+
   <a id="NanoRoute_JsonErrorDetailsConfig_ErrorDetailsTypeInfo_" data-uid="NanoRoute.JsonErrorDetailsConfig.ErrorDetailsTypeInfo*"></a>
   <h4 id="NanoRoute_JsonErrorDetailsConfig_ErrorDetailsTypeInfo" data-uid="NanoRoute.JsonErrorDetailsConfig.ErrorDetailsTypeInfo">ErrorDetailsTypeInfo</h4>
   <div class="markdown level1 summary"><p>Gets the JSON serialization metadata used for <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses.</p>
@@ -149,6 +159,28 @@ The configuration visible from the builder scope is captured when JSON error-det
   <div class="markdown level1 remarks"><p>Replace this value to use custom source-generated metadata, property naming, converters, or other
 serializer behavior for the error payload.</p>
 </div>
+  <h5 id="NanoRoute_JsonErrorDetailsConfig_ErrorDetailsTypeInfo_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureJsonErrorDetails(config =&gt; config with
+{
+    ErrorDetailsTypeInfo = MyJsonContext.Default.ErrorDetails
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when the assigned value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_JsonErrorDetailsConfig_PopulateErrorInfo_" data-uid="NanoRoute.JsonErrorDetailsConfig.PopulateErrorInfo*"></a>
   <h4 id="NanoRoute_JsonErrorDetailsConfig_PopulateErrorInfo" data-uid="NanoRoute.JsonErrorDetailsConfig.PopulateErrorInfo">PopulateErrorInfo</h4>
   <div class="markdown level1 summary"><p>Gets a value indicating whether developer-facing diagnostic details should be included in JSON error responses.</p>
@@ -177,6 +209,12 @@ serializer behavior for the error payload.</p>
   <div class="markdown level1 remarks"><p>Diagnostic details may contain exception messages or stack traces. Keep this value <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>
 for production responses unless the caller is trusted to see those details.</p>
 </div>
+  <h5 id="NanoRoute_JsonErrorDetailsConfig_PopulateErrorInfo_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureJsonErrorDetails(config =&gt; config with
+{
+    PopulateErrorInfo = true
+});</code></pre>
+
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>

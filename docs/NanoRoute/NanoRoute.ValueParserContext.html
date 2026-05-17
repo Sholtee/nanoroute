@@ -70,6 +70,14 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly struct ValueParserContext</code></pre>
   </div>
+  <h5 id="NanoRoute_ValueParserContext_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.AddValueParser("user", static async context =&gt;
+{
+    Guid id = Guid.Parse(context.Segment.ToString());
+    object? user = await context.Services.GetRequiredService&lt;IUserStore&gt;().FindAsync(id, context.Cancellation);
+    return new ValueParseResult(user is not null, user);
+});</code></pre>
+
   <h3 id="properties">Properties
 </h3>
   <a id="NanoRoute_ValueParserContext_Arguments_" data-uid="NanoRoute.ValueParserContext.Arguments*"></a>
@@ -96,6 +104,9 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_ValueParserContext_Arguments_examples">Examples</h5>
+  <pre><code class="lang-csharp">ParserLimits? limits = (ParserLimits?) context.Arguments;</code></pre>
+
   <a id="NanoRoute_ValueParserContext_Cancellation_" data-uid="NanoRoute.ValueParserContext.Cancellation*"></a>
   <h4 id="NanoRoute_ValueParserContext_Cancellation" data-uid="NanoRoute.ValueParserContext.Cancellation">Cancellation</h4>
   <div class="markdown level1 summary"><p>Gets the linked pipeline cancellation token.</p>
@@ -120,6 +131,9 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_ValueParserContext_Cancellation_examples">Examples</h5>
+  <pre><code class="lang-csharp">context.Cancellation.ThrowIfCancellationRequested();</code></pre>
+
   <a id="NanoRoute_ValueParserContext_Segment_" data-uid="NanoRoute.ValueParserContext.Segment*"></a>
   <h4 id="NanoRoute_ValueParserContext_Segment" data-uid="NanoRoute.ValueParserContext.Segment">Segment</h4>
   <div class="markdown level1 summary"><p>Gets the decoded route segment.</p>
@@ -144,6 +158,9 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_ValueParserContext_Segment_examples">Examples</h5>
+  <pre><code class="lang-csharp">string value = context.Segment.ToString();</code></pre>
+
   <a id="NanoRoute_ValueParserContext_Services_" data-uid="NanoRoute.ValueParserContext.Services*"></a>
   <h4 id="NanoRoute_ValueParserContext_Services" data-uid="NanoRoute.ValueParserContext.Services">Services</h4>
   <div class="markdown level1 summary"><p>Gets the request-scoped service provider.</p>
@@ -168,6 +185,9 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_ValueParserContext_Services_examples">Examples</h5>
+  <pre><code class="lang-csharp">IUserStore store = context.Services.GetRequiredService&lt;IUserStore&gt;();</code></pre>
+
 
 </article>
           </div>

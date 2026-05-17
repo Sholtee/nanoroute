@@ -86,13 +86,15 @@ Return <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/key
   </table>
   <h5 id="NanoRoute_BindArgumentsDelegate_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This delegate runs during route registration, not during request processing. It is the right place to
-validate parser arguments, parse numeric limits, or precompile regular expressions once.</p>
+validate parser arguments, parse numeric limits, or precompile regular expressions once.
+Exceptions thrown by the delegate are reported while the route containing the parser arguments is registered.</p>
 </div>
   <h5 id="NanoRoute_BindArgumentsDelegate_examples"><strong>Examples</strong></h5>
   <pre><code class="lang-csharp">routerBuilder.AddValueParser
 (
     "int",
-    static rawArgs =&gt; (
+    static rawArgs =&gt;
+    (
         Min: rawArgs.TryGetValue("min", out string? min) ? int.Parse(min) : null,
         Max: rawArgs.TryGetValue("max", out string? max) ? int.Parse(max) : null
     ),

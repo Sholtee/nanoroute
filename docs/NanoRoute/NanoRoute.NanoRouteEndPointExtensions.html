@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class NanoRouteEndPointExtensions | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class NanoRouteEndPointExtensions | NanoRoute ">
+    
+    <meta name="description" content="Adds endpoint-building helpers to route scope builders.">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.NanoRouteEndPointExtensions">
+
+
+
+  <h1 id="NanoRoute_NanoRouteEndPointExtensions" data-uid="NanoRoute.NanoRouteEndPointExtensions" class="text-break">Class NanoRouteEndPointExtensions</h1>
+  <div class="markdown level0 summary"><p>Adds endpoint-building helpers to route scope builders.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">NanoRouteEndPointExtensions</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_NanoRouteEndPointExtensions_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class NanoRouteEndPointExtensions</code></pre>
+  </div>
+  <h5 id="NanoRoute_NanoRouteEndPointExtensions_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.AddEndPoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
+    .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));</code></pre>
+
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_NanoRouteEndPointExtensions_AddEndPoint_" data-uid="NanoRoute.NanoRouteEndPointExtensions.AddEndPoint*"></a>
+  <h4 id="NanoRoute_NanoRouteEndPointExtensions_AddEndPoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_EndPointBuilder__" data-uid="NanoRoute.NanoRouteEndPointExtensions.AddEndPoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.EndPointBuilder})">AddEndPoint&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Action&lt;EndPointBuilder&gt;)</h4>
+  <div class="markdown level1 summary"><p>Configures an endpoint for the selected HTTP methods and returns the current route scope builder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddEndPoint&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, Action&lt;EndPointBuilder&gt; configureEndPoint) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods handled by the endpoint.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The endpoint route pattern. Exact patterns must end with <code>/</code>, and prefix patterns must end
+with <code>/*</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a>&gt;</td>
+        <td><span class="parametername">configureEndPoint</span></td>
+        <td><p>A callback that registers endpoint-local handlers and middleware.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteEndPointExtensions_AddEndPoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_EndPointBuilder___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddEndPoint(["POST", "PUT"], "/users/{id:int}/", endpoint =&gt; endpoint
+    .WithJsonBody&lt;UpdateUserRequest&gt;("body")
+    .WithHandler((context, _) =&gt; SaveUser(context)));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>,
+<code class="paramref">pattern</code>, or <code class="paramref">configureEndPoint</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> is not an exact or prefix route pattern, has invalid
+route-template syntax, or an entry in <code class="paramref">verbs</code> is not a supported HTTP method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a
+missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteEndPointExtensions_AddEndPoint_" data-uid="NanoRoute.NanoRouteEndPointExtensions.AddEndPoint*"></a>
+  <h4 id="NanoRoute_NanoRouteEndPointExtensions_AddEndPoint__1___0_System_String_System_String_System_Action_NanoRoute_EndPointBuilder__" data-uid="NanoRoute.NanoRouteEndPointExtensions.AddEndPoint``1(``0,System.String,System.String,System.Action{NanoRoute.EndPointBuilder})">AddEndPoint&lt;TBuilder&gt;(TBuilder, string, string, Action&lt;EndPointBuilder&gt;)</h4>
+  <div class="markdown level1 summary"><p>Configures an endpoint for a single HTTP method and returns the current route scope builder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddEndPoint&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, Action&lt;EndPointBuilder&gt; configureEndPoint) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">verb</span></td>
+        <td><p>The HTTP method handled by the endpoint.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The endpoint route pattern. Exact patterns must end with <code>/</code>, and prefix patterns must end
+with <code>/*</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a>&gt;</td>
+        <td><span class="parametername">configureEndPoint</span></td>
+        <td><p>A callback that registers endpoint-local handlers and middleware.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteEndPointExtensions_AddEndPoint__1___0_System_String_System_String_System_Action_NanoRoute_EndPointBuilder___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddEndPoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
+    .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verb</code>,
+<code class="paramref">pattern</code>, or <code class="paramref">configureEndPoint</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> is not an exact or prefix route pattern, has invalid
+route-template syntax, or <code class="paramref">verb</code> is not a supported HTTP method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a
+missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint_" data-uid="NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint*"></a>
+  <h4 id="NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_" data-uid="NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)">CreateEndPoint&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</h4>
+  <div class="markdown level1 summary"><p>Creates an endpoint builder for the selected HTTP methods and route pattern.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static EndPointBuilder CreateEndPoint&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods handled by the endpoint.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The endpoint route pattern. Exact patterns must end with <code>/</code>, and prefix patterns must end
+with <code>/*</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
+        <td><p>An endpoint builder rooted at <code class="paramref">pattern</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">EndPointBuilder endpoint = builder.CreateEndPoint(["GET", "HEAD"], "/users/{id:int}/");</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, or
+<code class="paramref">pattern</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> is not an exact or prefix route pattern, has invalid
+route-template syntax, or an entry in <code class="paramref">verbs</code> is not a supported HTTP method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a
+missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint_" data-uid="NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint*"></a>
+  <h4 id="NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint__1___0_System_String_System_String_" data-uid="NanoRoute.NanoRouteEndPointExtensions.CreateEndPoint``1(``0,System.String,System.String)">CreateEndPoint&lt;TBuilder&gt;(TBuilder, string, string)</h4>
+  <div class="markdown level1 summary"><p>Creates an endpoint builder for a single HTTP method and route pattern.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static EndPointBuilder CreateEndPoint&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string verb, string pattern) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">verb</span></td>
+        <td><p>The HTTP method handled by the endpoint.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The endpoint route pattern. Exact patterns must end with <code>/</code>, and prefix patterns must end
+with <code>/*</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.EndPointBuilder.html">EndPointBuilder</a></td>
+        <td><p>An endpoint builder rooted at <code class="paramref">pattern</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteEndPointExtensions_CreateEndPoint__1___0_System_String_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">EndPointBuilder endpoint = builder.CreateEndPoint("GET", "/users/{id:int}/");</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verb</code>, or
+<code class="paramref">pattern</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> is not an exact or prefix route pattern, has invalid
+route-template syntax, or <code class="paramref">verb</code> is not a supported HTTP method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a
+missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

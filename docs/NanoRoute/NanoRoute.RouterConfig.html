@@ -83,6 +83,13 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public record RouterConfig : IEquatable&lt;RouterConfig&gt;</code></pre>
   </div>
+  <h5 id="NanoRoute_RouterConfig_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with
+{
+    MatchingPrecedence = MatchingPrecedence.ParameterizedFirst,
+    ParametersCapacity = 8
+});</code></pre>
+
   <h3 id="constructors">Constructors
 </h3>
   <a id="NanoRoute_RouterConfig__ctor_" data-uid="NanoRoute.RouterConfig.#ctor*"></a>
@@ -119,6 +126,25 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="NanoRoute_RouterConfig_MatchingPrecedence_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.ParameterizedFirst });</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Thrown when the assigned value is not a defined <a class="xref" href="NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_MatchingPrecedence">MatchingPrecedence</a> value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_RouterConfig_ParametersCapacity_" data-uid="NanoRoute.RouterConfig.ParametersCapacity*"></a>
   <h4 id="NanoRoute_RouterConfig_ParametersCapacity" data-uid="NanoRoute.RouterConfig.ParametersCapacity">ParametersCapacity</h4>
   <div class="markdown level1 summary"><p>Gets or sets the initial capacity of the request parameter dictionary.</p>
@@ -147,6 +173,25 @@
   <div class="markdown level1 remarks"><p>Increase this value when typical requests add many route, query, or handler-shared values to
 <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Parameters">Parameters</a> and you want to reduce dictionary resizing.</p>
 </div>
+  <h5 id="NanoRoute_RouterConfig_ParametersCapacity_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with { ParametersCapacity = 16 });</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Thrown when the assigned value is negative.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>

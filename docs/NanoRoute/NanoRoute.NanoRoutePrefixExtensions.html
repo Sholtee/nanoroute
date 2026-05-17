@@ -84,6 +84,10 @@ Prefix scopes inherit the value parsers and metadata visible when the child scop
 changes made inside the prefix scope stay local to that child branch.
 </p>
 </div>
+  <h5 id="NanoRoute_NanoRoutePrefixExtensions_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">builder.AddPrefix("/api/*", api =&gt; api
+    .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok()));</code></pre>
+
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_NanoRoutePrefixExtensions_AddPrefix_" data-uid="NanoRoute.NanoRoutePrefixExtensions.AddPrefix*"></a>
@@ -170,14 +174,25 @@ changes made inside the prefix scope stay local to that child branch.
     </thead>
     <tbody>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">pattern</code>, or
+<code class="paramref">configureRoutes</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
         <td><p>Thrown when <code class="paramref">pattern</code> does not end with <code>/*</code>.</p>
 </td>
       </tr>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Thrown when <code class="paramref">pattern</code> is invalid or references a value parser that has not been
-registered yet.</p>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a
+missing value parser, or conflicts with an existing parser-backed branch.</p>
 </td>
       </tr>
     </tbody>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class Router&lt;TDescendant, TConfig&gt; | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class Router&lt;TDescendant, TConfig&gt; | NanoRoute ">
+    
+    <meta name="description" content="Provides the self-typed base for concrete router implementations with strongly typed configuration.">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.Router`2">
+
+
+
+  <h1 id="NanoRoute_Router_2" data-uid="NanoRoute.Router`2" class="text-break">Class Router&lt;TDescendant, TConfig&gt;</h1>
+  <div class="markdown level0 summary"><p>Provides the self-typed base for concrete router implementations with strongly typed configuration.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="NanoRoute.Router.html">Router</a></div>
+    <div class="level2"><span class="xref">Router&lt;TDescendant, TConfig&gt;</span></div>
+      <div class="level3"><a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_TraceIdName">Router.TraceIdName</a>
+    </div>
+    <div>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_OriginalRequestName">Router.OriginalRequestName</a>
+    </div>
+    <div>
+      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_">Router.Handle(HttpRequestMessage, IServiceProvider, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_Router_2_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class Router&lt;TDescendant, TConfig&gt; : Router where TDescendant : Router&lt;TDescendant, TConfig&gt; where TConfig : RouterConfig, new()</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TDescendant</span></td>
+        <td><p>The concrete router type produced by <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_CreateBuilder">CreateBuilder()</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TConfig</span></td>
+        <td><p>The configuration type exposed by <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_Config">Config</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_Router_2_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Concrete routers derive from this type to inherit <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_CreateBuilder">CreateBuilder()</a> and a typed
+<a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_Config">Config</a> property. The concrete router must expose a public or non-public constructor that accepts
+<a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a> so the generated factory can create immutable router snapshots.</p>
+</div>
+  <h5 id="NanoRoute_Router_2_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">public sealed class MyRouter : Router&lt;MyRouter, RouterConfig&gt;
+{
+    private MyRouter(RouterBuilder&lt;MyRouter, RouterConfig&gt; builder) : base(builder)
+    {
+    }
+}</code></pre>
+
+  <h3 id="constructors">Constructors
+</h3>
+  <a id="NanoRoute_Router_2__ctor_" data-uid="NanoRoute.Router`2.#ctor*"></a>
+  <h4 id="NanoRoute_Router_2__ctor_NanoRoute_RouterBuilder__0__1__" data-uid="NanoRoute.Router`2.#ctor(NanoRoute.RouterBuilder{`0,`1})">Router(RouterBuilder&lt;TDescendant, TConfig&gt;)</h4>
+  <div class="markdown level1 summary"><p>Provides the self-typed base for concrete router implementations with strongly typed configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected Router(RouterBuilder&lt;TDescendant, TConfig&gt; bldr)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;TDescendant, TConfig&gt;</td>
+        <td><span class="parametername">bldr</span></td>
+        <td><p>The builder whose route snapshot and configuration initialize the router.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_Router_2__ctor_NanoRoute_RouterBuilder__0__1___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Concrete routers derive from this type to inherit <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_CreateBuilder">CreateBuilder()</a> and a typed
+<a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_Config">Config</a> property. The concrete router must expose a public or non-public constructor that accepts
+<a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a> so the generated factory can create immutable router snapshots.</p>
+</div>
+  <h5 id="NanoRoute_Router_2__ctor_NanoRoute_RouterBuilder__0__1___examples">Examples</h5>
+  <pre><code class="lang-csharp">public sealed class MyRouter : Router&lt;MyRouter, RouterConfig&gt;
+{
+    private MyRouter(RouterBuilder&lt;MyRouter, RouterConfig&gt; builder) : base(builder)
+    {
+    }
+}</code></pre>
+
+  <h3 id="properties">Properties
+</h3>
+  <a id="NanoRoute_Router_2_Config_" data-uid="NanoRoute.Router`2.Config*"></a>
+  <h4 id="NanoRoute_Router_2_Config" data-uid="NanoRoute.Router`2.Config">Config</h4>
+  <div class="markdown level1 summary"><p>Configuration assigned to this instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TConfig Config { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TConfig</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_Router_2_CreateBuilder_" data-uid="NanoRoute.Router`2.CreateBuilder*"></a>
+  <h4 id="NanoRoute_Router_2_CreateBuilder" data-uid="NanoRoute.Router`2.CreateBuilder">CreateBuilder()</h4>
+  <div class="markdown level1 summary"><p>Creates a strongly typed builder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static RouterBuilder&lt;TDescendant, TConfig&gt; CreateBuilder()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;TDescendant, TConfig&gt;</td>
+        <td><p>A builder that can register handlers, value parsers, and router configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_Router_2_CreateBuilder_examples">Examples</h5>
+  <pre><code class="lang-csharp">RouterBuilder&lt;MyRouter, RouterConfig&gt; builder = MyRouter.CreateBuilder();</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.missingmethodexception">MissingMethodException</a></td>
+        <td><p>Thrown when <code class="typeparamref">TDescendant</code> does not declare a public or non-public constructor that
+accepts <a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

@@ -60,6 +60,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.EndPointBuilder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.EndPointBuilder.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.EndPointBuilder",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.EndPointBuilder.yml\" sourcestartlinenumber=\"1\">Builds handlers and middleware that belong to a single route endpoint.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.ErrorDetails.yml",
       "output": {
         ".html": {
@@ -172,6 +186,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteEndPointExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.NanoRouteEndPointExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.NanoRouteEndPointExtensions",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.NanoRouteEndPointExtensions.yml\" sourcestartlinenumber=\"1\">Adds endpoint-building helpers to route scope builders.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.NanoRouteExceptionExtensions.yml",
       "output": {
         ".html": {
@@ -266,7 +294,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.QueryParsingConfig",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.QueryParsingConfig.yml\" sourcestartlinenumber=\"1\">Configures how <xref href=\"NanoRoute.NanoRouteQueryExtensions.AddQueryBindings%60%601(%60%600%2cSystem.String)\" data-throw-if-not-resolved=\"false\"></xref> parses query strings.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.QueryParsingConfig.yml\" sourcestartlinenumber=\"1\">Configures how query-binding middleware parses query strings.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -309,6 +337,20 @@
       "IsMRef": true,
       "Title": "NanoRoute.RouteScopeBuilder",
       "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouteScopeBuilder.yml\" sourcestartlinenumber=\"1\">Builder responsible for configuring a route scope and its child route tree.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.Router-2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.Router-2.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.Router<TDescendant, TConfig>",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Router-2.yml\" sourcestartlinenumber=\"1\">Provides the self-typed base for concrete router implementations with strongly typed configuration.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -364,21 +406,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RouterFactoryDelegate<TRouter, TConfig>",
-      "Summary": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.RoutingContext.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.RoutingContext.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.RoutingContext",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RoutingContext.yml\" sourcestartlinenumber=\"1\">Provides shared access to the route tree used during building and routing.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterFactoryDelegate-2.yml\" sourcestartlinenumber=\"1\">Creates a router instance from a configured <xref href=\"NanoRoute.RouterBuilder%602\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -393,6 +421,48 @@
       "IsMRef": true,
       "Title": "NanoRoute.SyncValueParserDelegate",
       "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.SyncValueParserDelegate.yml\" sourcestartlinenumber=\"1\">Represents a synchronous value parser.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.TypedExceptionNormalizer-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.TypedExceptionNormalizer-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.TypedExceptionNormalizer<TException>",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.TypedExceptionNormalizer-1.yml\" sourcestartlinenumber=\"1\">Converts an unexpected exception of a specific type into an enriched <xref href=\"System.Net.Http.HttpRequestException\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.TypedRequestEndpointHandlerDelegate-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.TypedRequestEndpointHandlerDelegate-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.TypedRequestEndpointHandlerDelegate<TRequestContext>",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.TypedRequestEndpointHandlerDelegate-1.yml\" sourcestartlinenumber=\"1\">Represents a typed endpoint handler in the router pipeline.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.TypedRequestHandlerDelegate-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.TypedRequestHandlerDelegate-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.TypedRequestHandlerDelegate<TRequestContext>",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.TypedRequestHandlerDelegate-1.yml\" sourcestartlinenumber=\"1\">Represents a typed request handler in the router pipeline.</p>\n"
     },
     {
       "type": "ManagedReference",
