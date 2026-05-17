@@ -97,7 +97,7 @@ public interface IUserRepository
 }
 ```
 
-`ApiGatewayHttpApiV2Router.CreateBuilder()` uses the same builder APIs as the core package. Prefer endpoint builders such as `AddEndPoint()` for application routes; typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects.
+`ApiGatewayHttpApiV2Router.CreateBuilder()` uses the same builder APIs as the core package. Prefer endpoint builders such as `AddEndPoint()` for application routes; typed handlers and endpoint helpers such as `WithJsonBody()` and `WithQueryBindings()` keep route values, query values, JSON bodies, services, and framework values in request objects.
 
 Pass `ILambdaContext.RemainingTime` to `Route()` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 
@@ -109,6 +109,11 @@ Pass `ILambdaContext.RemainingTime` to `Route()` so the adapter can cancel work 
 - Request URIs are built from `RawPath`, `RawQueryString`, the `Host` header, and forwarding metadata.
 - Plain request bodies are exposed as `StringContent`; base64-encoded bodies are exposed as `StreamContent`.
 - `Set-Cookie` response values are returned through the API Gateway `Cookies` collection.
+- Endpoint builders and helpers such as `WithJsonBody()` and `WithQueryBindings()` work under Lambda the same way they do in the core package.
+
+## Hands-On Example
+
+For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/main/Tests/NanoRoute.TestLambda). It wires `ApiGatewayHttpApiV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
 
 ## Documentation
 

@@ -103,6 +103,8 @@ Prefer endpoint builders such as `AddEndPoint()` for application routes. Typed h
 
 The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass `ILambdaContext.RemainingTime` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 
+For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/main/Tests/NanoRoute.TestLambda). It wires `ApiGatewayHttpApiV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
+
 ## Core Types
 
 - [ApiGatewayHttpApiV2Router](https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html)
@@ -124,8 +126,8 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddPrefix("/api/items/*", items => items
-        .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter?:str(min=3)}")
         .AddEndPoint("GET", RouteScopeBuilder.CurrentExact, endpoint => endpoint
+            .WithQueryBindings("{filter?:str(min=3)}")
             .WithHandler(static async (context, _) =>
             {
                 await Task.CompletedTask;
@@ -228,8 +230,8 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddPrefix("/items/{id:int}/*", items => items
-        .AddQueryBindings(["GET"], RouteScopeBuilder.CurrentExact, "{filter?:str(min=3)}")
         .AddEndPoint(["GET"], RouteScopeBuilder.CurrentExact, endpoint => endpoint
+            .WithQueryBindings("{filter?:str(min=3)}")
             .WithHandler(static async (GetItemRequest request) =>
             {
                 Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
@@ -245,10 +247,10 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 - `ConfigureRouting()` customizes `AwsLambdaRouterConfig` before creating a router snapshot.
 - `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
-- `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
-- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` middleware.
-- `AddEndPoint()` and `CreateEndPoint()` capture endpoint verbs and route patterns once; endpoint helpers such as `WithHandler()` and `WithJsonBody()` work under Lambda the same way they do in the core package.
-- `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
+- `AddQueryBindings()` and `EndPointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
+- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndPointBuilder.WithQueryBindings()` middleware.
+- `AddEndPoint()` and `CreateEndPoint()` capture endpoint verbs and route patterns once; endpoint helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` work under Lambda the same way they do in the core package.
+- `AddJsonBody()` and `EndPointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses when explicitly added.
 - `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.
 - `AddHandler<TRequest>()` and `EndPointBuilder.WithHandler<TRequest>()` project `RequestContext` into a typed request object before invoking the handler.
