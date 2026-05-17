@@ -16,8 +16,8 @@ namespace NanoRoute
     /// </summary>
     /// <remarks>
     /// Endpoint builders capture the endpoint route pattern and HTTP verbs once, then let endpoint-aware
-    /// extensions register middleware against that captured endpoint. The underlying route scope remains private;
-    /// extension authors can use <see cref="Metadata"/> for endpoint-scoped build-time settings.
+    /// extensions register middleware against that captured endpoint. Extension authors can use
+    /// <see cref="Prefix"/> when they need access to the endpoint's scoped route builder.
     /// </remarks>
     /// <example>
     /// <code>
@@ -31,8 +31,6 @@ namespace NanoRoute
         private readonly string _matchKind;
 
         private readonly IReadOnlyCollection<string> _verbs;
-
-        private readonly RouteScopeBuilder _prefix;
 
         internal EndPointBuilder(RouteScopeBuilder scope, IEnumerable<string> verbs, string pattern)
         {
@@ -55,7 +53,7 @@ namespace NanoRoute
                     throw new ArgumentException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, pattern.Length > 0 ? pattern.Length - 1 : "-"), nameof(pattern));
             }
 
-            _prefix = scope.CreatePrefix(pattern);
+            Prefix = scope.CreatePrefix(pattern);
 
             _verbs = [.. verbs];
         }
@@ -77,24 +75,19 @@ namespace NanoRoute
         /// </example>
         public EndPointBuilder WithHandler(RequestHandlerDelegate handler)
         {
-            _prefix.AddHandler(_verbs, _matchKind, handler);
+            Prefix.AddHandler(_verbs, _matchKind, handler);
 
             return this;
         }
 
         /// <summary>
-        /// Gets the endpoint-scoped metadata visible to endpoint-aware builder extensions.
+        /// Gets the route scope that backs the endpoint.
         /// </summary>
         /// <remarks>
-        /// The metadata is copied from the parent route scope when the endpoint is created. Later updates made
-        /// through this property stay local to this endpoint scope.
+        /// Endpoint-aware extensions can use this scope to access endpoint-local value parsers, metadata, and
+        /// lower-level handler registration APIs.
         /// </remarks>
-        /// <example>
-        /// <code>
-        /// endpoint.Metadata.Set(new EndpointOptions { RequiresAudit = true });
-        /// </code>
-        /// </example>
-        public BuilderMetadata Metadata => _prefix.Metadata;
+        public RouteScopeBuilder Prefix { get; }
     }
 
     /// <summary>

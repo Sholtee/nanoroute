@@ -95,7 +95,7 @@ public interface IUserRepository
 }
 ```
 
-`AddEndPoint()` is the recommended application-level entry point for most routes: it captures the HTTP verb and route pattern once, then endpoint helpers such as `WithHandler()` and `WithJsonBody()` add endpoint-local middleware without repeating the route. Typed handlers bind route values, JSON bodies, services, and framework values into request objects before your handler runs.
+`AddEndPoint()` is the recommended application-level entry point for most routes: it captures the HTTP verb and route pattern once, then endpoint helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` add endpoint-local middleware without repeating the route. Typed handlers bind route values, query values, JSON bodies, services, and framework values into request objects before your handler runs.
 
 `AddHandler()` is still available when you need lower-level pipeline composition, such as custom middleware chains or manually scoped prefix routes.
 
@@ -105,8 +105,9 @@ public interface IUserRepository
 - Prefix route patterns start with `/` and end with `/*`, for example `/items/*`.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` parsers.
 - `AddPrefix()` and `CreatePrefix()` define scoped route subtrees.
-- `AddQueryBindings()` parses selected query-string values into `RequestContext.Parameters`.
-- Typed handlers can bind route values, query values, services, `RequestContext`, and `CancellationToken` into request objects.
+- `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`.
+- `AddJsonBody()` and `WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
+- Typed handlers can bind route values, query values, JSON bodies, services, `RequestContext`, and `CancellationToken` into request objects.
 - `AddJsonErrorDetails()` turns routing failures into JSON `ErrorDetails` responses.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 

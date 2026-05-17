@@ -14,7 +14,7 @@ NanoRoute.BuilderMetadata.TryGet<T>(out T? value) -> bool
 NanoRoute.CallNextHandlerDelegate
 NanoRoute.ConfigureBuilderDelegate<TConfig>
 NanoRoute.EndPointBuilder
-NanoRoute.EndPointBuilder.Metadata.get -> NanoRoute.BuilderMetadata!
+NanoRoute.EndPointBuilder.Prefix.get -> NanoRoute.RouteScopeBuilder!
 NanoRoute.EndPointBuilder.WithHandler(NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.EndPointBuilder!
 NanoRoute.ErrorDetails
 NanoRoute.ErrorDetails.DeveloperMessages.get -> System.Collections.Generic.IEnumerable<string!>?
@@ -104,13 +104,14 @@ NanoRoute.NanoRoutePrefixExtensions
 NanoRoute.NanoRoutePrefixExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.NanoRoutePrefixExtensions.extension<TBuilder>(TBuilder!).AddPrefix(string! pattern, System.Action<NanoRoute.RouteScopeBuilder!>! configureRoutes) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions
+NanoRoute.NanoRouteQueryExtensions.extension(NanoRoute.EndPointBuilder!)
+NanoRoute.NanoRouteQueryExtensions.extension(NanoRoute.EndPointBuilder!).WithQueryBindings(string! bindings) -> NanoRoute.EndPointBuilder!
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(string! bindings) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(string! pattern, string! bindings) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(string! verb, string! pattern, string! bindings) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(System.Collections.Generic.IEnumerable<string!>! verbs, string! bindings) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, string! bindings) -> TBuilder!
-NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).AddQueryBindings(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern, string! bindings, NanoRoute.ConfigureBuilderDelegate<NanoRoute.QueryParsingConfig!>! oneOffConfigOverride) -> TBuilder!
 NanoRoute.NanoRouteQueryExtensions.extension<TBuilder>(TBuilder!).ConfigureQueryParsing(NanoRoute.ConfigureBuilderDelegate<NanoRoute.QueryParsingConfig!>! configure) -> TBuilder!
 NanoRoute.NanoRouteValueParserExtensions
 NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!)

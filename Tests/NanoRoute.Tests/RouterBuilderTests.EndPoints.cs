@@ -164,20 +164,25 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void EndPointBuilder_Metadata_ShouldExposeEndpointScopedMetadata()
+        public void EndPointBuilder_Prefix_ShouldExposeEndpointScopedRouteScope()
         {
-            _routerBuilder.Metadata.Set(new EndpointMetadata("parent"));
+            EndpointMetadata
+                missing  = new(nameof(missing)),
+                parent   = new(nameof(parent)),
+                endpoint = new(nameof(endpoint));
 
-            EndPointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/items/");
+            _routerBuilder.Metadata.Set(parent);
 
-            Assert.That(endpoint.Metadata.GetOrDefault(new EndpointMetadata("missing")), Is.EqualTo(new EndpointMetadata("parent")));
+            EndPointBuilder endpointBuilder = _routerBuilder.CreateEndPoint("GET", "/items/");
 
-            endpoint.Metadata.Set(new EndpointMetadata("endpoint"));
+            Assert.That(endpointBuilder.Prefix.Metadata.GetOrDefault(missing), Is.EqualTo(parent));
+
+            endpointBuilder.Prefix.Metadata.Set(endpoint);
 
             Assert.Multiple(() =>
             {
-                Assert.That(endpoint.Metadata.GetOrDefault(new EndpointMetadata("missing")), Is.EqualTo(new EndpointMetadata("endpoint")));
-                Assert.That(_routerBuilder.Metadata.GetOrDefault(new EndpointMetadata("missing")), Is.EqualTo(new EndpointMetadata("parent")));
+                Assert.That(endpointBuilder.Prefix.Metadata.GetOrDefault(missing), Is.EqualTo(endpoint));
+                Assert.That(_routerBuilder.Metadata.GetOrDefault(missing), Is.EqualTo(parent));
             });
         }
 

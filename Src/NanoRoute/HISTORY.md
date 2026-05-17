@@ -21,7 +21,7 @@
 - Added `QueryParsingConfig`, `UnexpectedParameterBehavior`, and `ConfigureQueryParsing()` to configure how query bindings handle undeclared query-string parameters.
 - Added typed `AddHandler()` overloads for pattern-only and single-verb registration, matching the rest of the route-scope builder API.
 - Added `NanoRoutePrefixExtensions` as the extension-method home for `AddPrefix()`.
-- Added `EndPointBuilder`, `AddEndPoint()`, `CreateEndPoint()`, and endpoint-scoped `WithHandler()` and `WithJsonBody()` helpers for registering endpoint-local middleware without repeating an endpoint's verbs and pattern.
+- Added `EndPointBuilder`, `AddEndPoint()`, `CreateEndPoint()`, and endpoint-scoped `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` helpers for registering endpoint-local middleware without repeating an endpoint's verbs and pattern.
 
 ### Performance
 

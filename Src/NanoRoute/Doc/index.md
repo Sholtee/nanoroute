@@ -216,7 +216,7 @@ This produces the same effective routes as registering `/api/users/{user_id:int}
 
 ## Endpoint Builders
 
-`AddEndPoint()` and `CreateEndPoint()` capture an endpoint's HTTP verb or verbs and exact or prefix route pattern once. Endpoint-aware helpers such as `WithHandler()` and `WithJsonBody()` then register middleware for that captured endpoint without repeating the route.
+`AddEndPoint()` and `CreateEndPoint()` capture an endpoint's HTTP verb or verbs and exact or prefix route pattern once. Endpoint-aware helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` then register middleware for that captured endpoint without repeating the route.
 
 ```csharp
 public sealed class CreateItemRequest
@@ -229,6 +229,7 @@ HttpListenerRouter router = HttpListenerRouter
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
     .AddEndPoint("POST", "/items/{id:int}/", endpoint => endpoint
+        .WithQueryBindings("{source:str}")
         .WithJsonBody<CreateItemRequest>("body")
         .WithHandler(static async (context, _) =>
         {
@@ -237,13 +238,14 @@ HttpListenerRouter router = HttpListenerRouter
             return HttpResponseMessage.Json(HttpStatusCode.Created, new
             {
                 id = context.Parameters["id"],
+                source = context.Parameters["source"],
                 body = context.Parameters["body"]
             });
         }))
     .CreateRouter();
 ```
 
-Endpoint builders are useful when several pieces of endpoint-local middleware need the same verbs and pattern. Multiple `WithHandler()` calls run in registration order, and each handler can call the supplied `next` delegate to continue the endpoint pipeline. `CreateEndPoint()` returns an `EndPointBuilder` when you want to configure an endpoint incrementally, and `EndPointBuilder.Metadata` stores endpoint-scoped build-time settings for endpoint-aware extensions.
+Endpoint builders are useful when several pieces of endpoint-local middleware need the same verbs and pattern. Multiple `WithHandler()` calls run in registration order, and each handler can call the supplied `next` delegate to continue the endpoint pipeline. `WithQueryBindings()` uses the endpoint's captured verbs and match kind, so query parsing stays local to that endpoint. `CreateEndPoint()` returns an `EndPointBuilder` when you want to configure an endpoint incrementally, and `EndPointBuilder.Prefix` exposes the endpoint's scoped route builder for endpoint-aware extensions that need the lower-level builder surface.
 
 ## Value Parsers
 
@@ -375,7 +377,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`AddQueryBindings()` snapshots the current `QueryParsingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. The overload that accepts a `ConfigureBuilderDelegate<QueryParsingConfig>` applies a one-off override to that query-binding registration without changing builder metadata.
+`AddQueryBindings()` and `WithQueryBindings()` snapshot the current `QueryParsingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. Endpoint builders use the same scoped configuration through `EndPointBuilder.Prefix`.
 
 ## Typed Handlers
 
@@ -545,13 +547,13 @@ This keeps the transport-specific concerns in your own router type while still r
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/*")` creates a scoped child builder for a route subtree.
 - `AddEndPoint()` and `CreateEndPoint()` capture an endpoint's verbs and route pattern once.
-- `EndPointBuilder.WithHandler()` and `WithJsonBody()` register endpoint-local handlers and JSON body middleware.
+- `EndPointBuilder.WithHandler()`, `EndPointBuilder.WithJsonBody()`, and `EndPointBuilder.WithQueryBindings()` register endpoint-local handlers, JSON body middleware, and query bindings.
 - `RouteScopeBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
-- `AddQueryBindings()` binds selected query-string values into `RequestContext.Parameters`.
-- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` middleware.
+- `AddQueryBindings()` and `EndPointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
+- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndPointBuilder.WithQueryBindings()` middleware.
 - `AddHandler<TRequestContext>()` and `EndPointBuilder.WithHandler<TRequestContext>()` project `RequestContext` into a typed request object before invoking the handler.
 - `ConfigureExceptionHandling()` customizes exception normalization used by subsequently registered `AddExceptionHandler()` middleware.
-- `AddJsonBody()` binds JSON request content into `RequestContext.Parameters`.
+- `AddJsonBody()` and `EndPointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
 - `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
