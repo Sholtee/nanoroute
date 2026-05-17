@@ -32,9 +32,9 @@ namespace NanoRoute.Tests
         public void Parse_ShouldRejectNoLiterals(string pattern)
         {
             int offset = 0;
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => LiteralSegmentDefinition.Parse(pattern, ref offset))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => LiteralSegmentDefinition.Parse(pattern, ref offset))!;
 
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset)));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset)));
         }
 
         [Test]

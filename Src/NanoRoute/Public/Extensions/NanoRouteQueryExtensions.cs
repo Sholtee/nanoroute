@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Frozen;
+using System.Net.Http;
 
 namespace NanoRoute
 {
@@ -15,29 +16,61 @@ namespace NanoRoute
     /// <summary>
     /// Defines how query-binding middleware handles query-string parameters that are not declared in the binding descriptor.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// builder.ConfigureQueryParsing(config =&gt; config with
+    /// {
+    ///     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+    /// });
+    /// </code>
+    /// </example>
     public enum UnexpectedParameterBehavior
     {
         /// <summary>
         /// Ignore undeclared query-string parameters.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// builder.ConfigureQueryParsing(config =&gt; config with
+        /// {
+        ///     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Ignore
+        /// });
+        /// </code>
+        /// </example>
         Ignore,
 
         /// <summary>
         /// Reject undeclared query-string parameters with a <c>400 Bad Request</c> error.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// builder.ConfigureQueryParsing(config =&gt; config with
+        /// {
+        ///     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+        /// });
+        /// </code>
+        /// </example>
         Reject,
 
-        // Dangerous since it lets the caller to override parameter values provided by earlier middlewares
+        // Dangerous since it lets the caller override parameter values provided by earlier middlewares
 
         //AcceptAsString
     }
 
     /// <summary>
-    /// Configures how <see cref="NanoRouteQueryExtensions.AddQueryBindings{TBuilder}(TBuilder, string)"/> parses query strings.
+    /// Configures how query-binding middleware parses query strings.
     /// </summary>
     /// <remarks>
     /// Query-binding middleware snapshots the configuration that is current when it is registered.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.ConfigureQueryParsing(config =&gt; config with
+    /// {
+    ///     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+    /// });
+    /// </code>
+    /// </example>
     public sealed record QueryParsingConfig
     {
         /// <summary>
@@ -47,6 +80,15 @@ namespace NanoRoute
         /// The default is <see cref="UnexpectedParameterBehavior.Ignore"/>, so additional query-string keys that are
         /// not present in the binding descriptor do not affect request processing.
         /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is not a defined <see cref="UnexpectedParameterBehavior"/> value.</exception>
+        /// <example>
+        /// <code>
+        /// builder.ConfigureQueryParsing(config =&gt; config with
+        /// {
+        ///     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+        /// });
+        /// </code>
+        /// </example>
         public UnexpectedParameterBehavior UnexpectedParameterBehavior
         {
             get;
@@ -61,14 +103,69 @@ namespace NanoRoute
         /// <summary>
         /// Gets the default query-parsing configuration.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// QueryParsingConfig config = QueryParsingConfig.Default;
+        /// </code>
+        /// </example>
         public static QueryParsingConfig Default { get; } = new();
     }
 
     /// <summary>
     /// Adds query-parameter binding helpers to NanoRoute.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// builder
+    ///     .AddDefaultValueParsers()
+    ///     .AddQueryBindings("{page?:int(min=1)}")
+    ///     .AddHandler("GET", "/items/", (context, _) =&gt; Results.Ok(context.Parameters));
+    /// </code>
+    /// </example>
     public static class NanoRouteQueryExtensions
     {
+        #region Private
+        private static RequestHandlerDelegate CreateHandler(RouteScopeBuilder routeScopeBuilder, string bindings)
+        {
+            Ensure.NotNull(bindings);
+
+            Dictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindingsTmp = new(ReadOnlyMemoryCharComparer.Instance);
+
+            foreach (ParameterDefinition parameterDefinition in DslParser.ParseQueryPattern(bindings))
+            {
+                if (!routeScopeBuilder.ValueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration? parserRegistration))
+                    throw new InvalidOperationException
+                    (
+                        string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parameterDefinition.ValueParser.Name)
+                    );
+
+                parsedBindingsTmp.Add
+                (
+                    parameterDefinition.ParameterName!.AsMemory(),
+                    new ParameterParser
+                    (
+                        parameterDefinition,
+                        parserRegistration.Parse,
+                        parserRegistration.BindArguments(parameterDefinition.ValueParser.RawArguments)
+                    )
+                );
+            }
+
+            FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindings = parsedBindingsTmp.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance);
+
+            QueryParsingConfig config = routeScopeBuilder.Metadata.GetOrDefault(QueryParsingConfig.Default);
+
+            return async (RequestContext context, CallNextHandlerDelegate next) =>
+            {
+                using QueryStringParser queryStringParser = new(context, parsedBindings, config);
+
+                await queryStringParser.Parse();
+
+                return await next();
+            };
+        }
+        #endregion
+
         extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
             /// <summary>
@@ -83,6 +180,18 @@ namespace NanoRoute
             /// method is called inherit the updated configuration; existing child builders keep their own scoped copy.
             /// Registered query-binding middleware snapshots the configuration that is current at registration time.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="configure"/>, or the value returned
+            /// by <paramref name="configure"/> is <see langword="null"/>.
+            /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.ConfigureQueryParsing(config =&gt; config with
+            /// {
+            ///     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
+            /// });
+            /// </code>
+            /// </example>
             public TBuilder ConfigureQueryParsing(ConfigureBuilderDelegate<QueryParsingConfig> configure)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -113,6 +222,14 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
+            /// <example>
+            /// <code>
+            /// builder.AddQueryBindings("{filter?:str}&amp;{page?:int(min=1)}");
+            /// </code>
+            /// </example>
             public TBuilder AddQueryBindings(string bindings) => routeScopeBuilder.AddQueryBindings(HttpVerb.Names, RouteScopeBuilder.CurrentPrefix, bindings);
 
             /// <summary>
@@ -133,6 +250,14 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
+            /// <example>
+            /// <code>
+            /// builder.AddQueryBindings(["GET", "HEAD"], "{filter?:str}&amp;{page?:int(min=1)}");
+            /// </code>
+            /// </example>
             public TBuilder AddQueryBindings(IEnumerable<string> verbs, string bindings) => routeScopeBuilder.AddQueryBindings(verbs, RouteScopeBuilder.CurrentPrefix, bindings);
 
             /// <summary>
@@ -154,6 +279,14 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
+            /// <example>
+            /// <code>
+            /// builder.AddQueryBindings("/items/*", "{filter?:str}&amp;{page?:int(min=1)}");
+            /// </code>
+            /// </example>
             public TBuilder AddQueryBindings(string pattern, string bindings) => routeScopeBuilder.AddQueryBindings(HttpVerb.Names, pattern, bindings);
 
             /// <summary>
@@ -176,6 +309,14 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not supported, <paramref name="pattern"/> has invalid route-template syntax, or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
+            /// <example>
+            /// <code>
+            /// builder.AddQueryBindings("GET", "/items/*", "{filter?:str}&amp;{page?:int(min=1)}");
+            /// </code>
+            /// </example>
             public TBuilder AddQueryBindings(string verb, string pattern, string bindings) => routeScopeBuilder.AddQueryBindings([verb /*will be null checked*/], pattern, bindings);
 
             /// <summary>
@@ -198,82 +339,61 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">
             /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
             /// </exception>
-            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings) => routeScopeBuilder.AddQueryBindings(verbs, pattern, bindings, static config => config);
-
-            /// <summary>
-            /// Parses configured query parameters with a one-off configuration override and stores their values in
-            /// <see cref="RequestContext.Parameters"/>.
-            /// </summary>
-            /// <param name="verbs">The HTTP methods that activate the query-binding middleware.</param>
-            /// <param name="pattern">
-            /// The route pattern where the query-binding middleware should be inserted. Use <c>/</c> to apply it to
-            /// the whole pipeline, or a narrower prefix/exact pattern to scope query binding to selected routes.
-            /// </param>
-            /// <param name="bindings">
-            /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
-            /// </param>
-            /// <param name="oneOffConfigOverride">
-            /// A callback that receives the current <see cref="QueryParsingConfig"/> and returns the configuration
-            /// captured by this query-binding middleware only.
-            /// </param>
-            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
-            /// <remarks>
-            /// Use this overload when one query-binding registration should differ from the builder-scope
-            /// configuration set by <see cref="ConfigureQueryParsing{TBuilder}(TBuilder, ConfigureBuilderDelegate{QueryParsingConfig})"/>.
-            /// The returned configuration is captured at registration time and does not update
-            /// <see cref="RouteScopeBuilder.Metadata"/>.
-            /// </remarks>
-            /// <exception cref="InvalidOperationException">
-            /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
-            /// </exception>
-            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings, ConfigureBuilderDelegate<QueryParsingConfig> oneOffConfigOverride)
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when an entry in <paramref name="verbs"/> is not supported, <paramref name="pattern"/> has invalid route-template syntax, or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
+            /// <example>
+            /// <code>
+            /// builder.AddQueryBindings(["GET", "HEAD"], "/items/*", "{filter?:str}&amp;{page?:int(min=1)}");
+            /// </code>
+            /// </example>
+            public TBuilder AddQueryBindings(IEnumerable<string> verbs, string pattern, string bindings)
             {
                 Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(verbs);
                 Ensure.NotNull(pattern);
-                Ensure.NotNull(bindings);
-                Ensure.NotNull(oneOffConfigOverride);
 
-                Dictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindingsTmp = new(ReadOnlyMemoryCharComparer.Instance);
-
-                foreach (ParameterDefinition parameterDefinition in DslParser.ParseQueryPattern(bindings))
-                {
-                    if (!routeScopeBuilder.ValueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration? parserRegistration))
-                        throw new InvalidOperationException
-                        (
-                            string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parameterDefinition.ValueParser.Name)
-                        );
-
-                    parsedBindingsTmp.Add
-                    (
-                        parameterDefinition.ParameterName!.AsMemory(),
-                        new ParameterParser
-                        (
-                            parameterDefinition,
-                            parserRegistration.Parse,
-                            parserRegistration.BindArguments(parameterDefinition.ValueParser.RawArguments)
-                        )
-                    );
-                }
-
-                FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> parsedBindings = parsedBindingsTmp.ToFrozenDictionary(ReadOnlyMemoryCharComparer.Instance);
-
-                QueryParsingConfig config = oneOffConfigOverride
-                (
-                    routeScopeBuilder.Metadata.GetOrDefault(QueryParsingConfig.Default)
-                );
-                Ensure.NotNull(config);
-
-                routeScopeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
-                {
-                    using QueryStringParser queryStringParser = new(context, parsedBindings, config);
-
-                    await queryStringParser.Parse();
-
-                    return await next();
-                });
+                routeScopeBuilder.AddHandler(verbs, pattern, CreateHandler(routeScopeBuilder, bindings));
 
                 return routeScopeBuilder;
+            }
+        }
+
+        extension(EndPointBuilder endPointBuilder)
+        {
+            /// <summary>
+            /// Parses configured query parameters and stores their values in <see cref="RequestContext.Parameters"/>
+            /// for the current endpoint.
+            /// </summary>
+            /// <param name="bindings">
+            /// A query-parameter descriptor such as <c>{filter:str(min=3)}&amp;{page?:int(min=1)}</c>.
+            /// </param>
+            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
+            /// <remarks>
+            /// The query-binding middleware is registered for the endpoint's captured HTTP methods and route match
+            /// kind. Parsed query values are written into <see cref="RequestContext.Parameters"/>. If that dictionary
+            /// already contains the same key because of route binding, JSON binding, or earlier middleware, the
+            /// query binding overwrites the existing value.
+            /// </remarks>
+            /// <exception cref="InvalidOperationException">
+            /// Thrown when <paramref name="bindings"/> references a value parser that is not registered.
+            /// </exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/> or <paramref name="bindings"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported or <paramref name="bindings"/> has invalid query-binding syntax.</exception>
+            /// <exception cref="HttpRequestException">Thrown during request processing when the query string is invalid for the configured bindings.</exception>
+            /// <example>
+            /// <code>
+            /// endpoint.WithQueryBindings("{filter?:str}&amp;{page?:int(min=1)}");
+            /// </code>
+            /// </example>
+            public EndPointBuilder WithQueryBindings(string bindings)
+            {
+                Ensure.NotNull(endPointBuilder);
+
+                return endPointBuilder.WithHandler
+                (
+                    CreateHandler(endPointBuilder.Prefix, bindings)
+                );
             }
         }
     }

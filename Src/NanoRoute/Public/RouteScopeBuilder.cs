@@ -21,19 +21,38 @@ namespace NanoRoute
     /// <c>/users/{id:int}/</c>. Patterns must start with <c>/</c>, exact patterns must end with <c>/</c>,
     /// prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators such as <c>//</c> are invalid.
     /// </remarks>
-    public class RouteScopeBuilder : RoutingContext
+    /// <example>
+    /// <code>
+    /// builder
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+    /// </code>
+    /// </example>
+    public class RouteScopeBuilder
     {
         /// <summary>
         /// The route pattern that matches the current route scope exactly.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// builder.AddHandler("GET", RouteScopeBuilder.CurrentExact, (context, _) =&gt; Results.Ok());
+        /// </code>
+        /// </example>
         public const string CurrentExact = "/";
 
         /// <summary>
         /// The route pattern that matches the current route scope as a prefix.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// builder.AddHandler("GET", RouteScopeBuilder.CurrentPrefix, (context, next) =&gt; next());
+        /// </code>
+        /// </example>
         public const string CurrentPrefix = "/*";
 
         #region Private
+        private readonly RouteNode _root;
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Dictionary<string, ValueParserRegistration> _valueParsers;
 
@@ -44,7 +63,7 @@ namespace NanoRoute
         {
             RouteNode target = _root;
 
-            foreach(object definition in DslParser.ParseRoutePattern(pattern))
+            foreach (object definition in DslParser.ParseRoutePattern(pattern))
             {
                 switch (definition)
                 {
@@ -74,7 +93,7 @@ namespace NanoRoute
 
                         target = parsedChild;
                         break;
-                    
+
                     case ReadOnlyMemory<char> literalSegmentDefinition:
                         if (!target.LiteralChildren.TryGetValue(literalSegmentDefinition, out RouteNode exactChild))
                         {
@@ -101,16 +120,18 @@ namespace NanoRoute
             return @base.TrimEnd('*') + extensions.TrimStart('/');
         }
 
-        private RouteScopeBuilder(RouteScopeBuilder parent, string pattern): base(parent.GetOrCreateNode(pattern))
+        private RouteScopeBuilder(RouteScopeBuilder parent, string pattern)
         {
+            _root = parent.GetOrCreateNode(pattern);
             _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
-            
+
             BasePattern = JoinPattern(parent.BasePattern, pattern);
             Metadata = parent.Metadata.CreateScope();
         }
 
-        internal RouteScopeBuilder(): base(new RouteNode())
+        internal RouteScopeBuilder()
         {
+            _root = new RouteNode();
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
 
             BasePattern = CurrentPrefix;
@@ -121,7 +142,7 @@ namespace NanoRoute
         /// Creates an immutable snapshot of the current route tree.
         /// </summary>
         /// <returns>A copy of the configured root node.</returns>
-        internal RouteNode GetRoot(bool freeze) => _root.Copy(freeze);
+        internal RouteNode CreateSnapshot() => _root.Copy(freeze: true);
         #endregion
 
         /// <summary>
@@ -131,6 +152,16 @@ namespace NanoRoute
         /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
         /// <returns>The current instance.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="parserName"/>, <paramref name="bindArguments"/>, or
+        /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
+        /// </exception>
+        /// <example>
+        /// <code>
+        /// builder.AddValueParser("slug", static rawArgs =&gt; null, static context =&gt;
+        ///     ValueTask.FromResult(new ValueParseResult(context.Segment.Length &gt; 0, context.Segment.ToString())));
+        /// </code>
+        /// </example>
         public RouteScopeBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
         {
             Ensure.NotNull(parserName);
@@ -156,11 +187,17 @@ namespace NanoRoute
         /// the pipeline with the next compatible handler from the already selected route branch.
         /// </param>
         /// <returns>The current route scope builder instance.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is
+        /// <see langword="null"/>.
+        /// </exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>
         /// <exception cref="InvalidOperationException">
-        /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
-        /// registered yet.
+        /// Thrown when <paramref name="pattern"/> uses an unsupported optional parameter or list parser, references
+        /// a value parser that has not been registered yet, or reuses a parser-backed branch with a different
+        /// parameter name.
         /// </exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
         /// <example>
         /// <code>
         /// builder.AddHandler("GET", "/files/{path:any}/*", (context, next) =&gt;
@@ -210,10 +247,13 @@ namespace NanoRoute
         /// registrations or overrides made on the child scope stay local to that branch.
         /// </remarks>
         /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/*</c>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="pattern"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException">
-        /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
-        /// registered yet.
+        /// Thrown when <paramref name="pattern"/> uses an unsupported optional parameter or list parser, references
+        /// a value parser that has not been registered yet, or reuses a parser-backed branch with a different
+        /// parameter name.
         /// </exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
         /// <example>
         /// <code>
         /// RouteScopeBuilder api = builder.CreatePrefix("/api/*");
@@ -226,7 +266,7 @@ namespace NanoRoute
             Ensure.NotNull(pattern);
 
             if (!pattern.EndsWith(CurrentPrefix))
-                throw new ArgumentException(Resources.ERR_NOT_PREFIX , nameof(pattern));
+                throw new ArgumentException(Resources.ERR_NOT_PREFIX, nameof(pattern));
 
             return new RouteScopeBuilder(this, pattern);
         }
@@ -238,6 +278,11 @@ namespace NanoRoute
         /// For child scopes created with <see cref="CreatePrefix(string)"/>, this dictionary reflects the inherited
         /// registrations plus any overrides added to that child scope.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// bool hasIntParser = builder.ValueParsers.ContainsKey("int");
+        /// </code>
+        /// </example>
         public IReadOnlyDictionary<string, ValueParserRegistration> ValueParsers => _valueParsers;
 
         /// <summary>
@@ -262,6 +307,11 @@ namespace NanoRoute
         /// are made.
         /// </para>
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// builder.Metadata.Set(new MyFeatureOptions { Enabled = true });
+        /// </code>
+        /// </example>
         public BuilderMetadata Metadata { get; }
 
         /// <summary>
@@ -271,6 +321,12 @@ namespace NanoRoute
         /// Each entry is formatted as <c>[Verb] Pattern</c>. Child scopes list only the routes reachable from
         /// their base path, while the root scope lists the whole configured tree.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// foreach (string pattern in builder.Patterns)
+        ///     Console.WriteLine(pattern);
+        /// </code>
+        /// </example>
         public IEnumerable<string> Patterns
         {
             get
@@ -286,7 +342,7 @@ namespace NanoRoute
                     foreach (KeyValuePair<HttpVerb, IList<HandlerRegistration>> handlerRegistrations in node.HandlerRegistrations)
                         foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
                             patterns.Add($"[{handlerRegistrations.Key}] {handlerRegistration.Pattern}");
- 
+
                     foreach (RouteNode childNode in node.LiteralChildren.Values)
                         Walk(childNode, patterns);
 

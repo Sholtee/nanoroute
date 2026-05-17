@@ -169,9 +169,9 @@ namespace NanoRoute.Internals
 
             static int HexToInt(char c)
             {
-                if ((uint)(c - '0') <= 9) return c - '0';
-                if ((uint)(c - 'a') <= 5) return c - 'a' + 10;
-                if ((uint)(c - 'A') <= 5) return c - 'A' + 10;
+                if ((uint) (c - '0') <= 9) return c - '0';
+                if ((uint) (c - 'a') <= 5) return c - 'a' + 10;
+                if ((uint) (c - 'A') <= 5) return c - 'A' + 10;
                 return -1;
             }
         }

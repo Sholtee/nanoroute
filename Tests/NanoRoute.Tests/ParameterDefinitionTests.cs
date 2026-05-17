@@ -69,7 +69,8 @@ namespace NanoRoute.Tests
         [TestCase("some%20value")]
         public void TryParse_ShouldRejectInvalidSegments(string segment)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => Parse(segment))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => Parse(segment))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith("Invalid pattern"));
         }
 

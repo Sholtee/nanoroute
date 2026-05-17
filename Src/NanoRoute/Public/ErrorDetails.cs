@@ -15,6 +15,17 @@ namespace NanoRoute
     /// Instances of this type can be serialized to JSON, XML, or any other format chosen by the caller.
     /// NanoRoute's JSON helpers use it as the default payload shape for error responses.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// var details = new ErrorDetails
+    /// {
+    ///     Title = "Bad Request",
+    ///     Status = HttpStatusCode.BadRequest,
+    ///     TraceId = "01HF...",
+    ///     Errors = ["The id field is required."]
+    /// };
+    /// </code>
+    /// </example>
     public sealed class ErrorDetails
     {
         /// <summary>

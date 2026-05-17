@@ -39,7 +39,7 @@ namespace NanoRoute.Perf
                         requestDelegate: static context =>
                         {
                             // ASP doesn't parse route values during matching (in contrast of NanoRoute)
-                            foreach(string val in context.Request.RouteValues.Values!)
+                            foreach (string val in context.Request.RouteValues.Values!)
                                 _ = int.Parse(val, NumberStyles.Integer, CultureInfo.InvariantCulture);
 
                             context.Response.StatusCode = StatusCodes.Status200OK;

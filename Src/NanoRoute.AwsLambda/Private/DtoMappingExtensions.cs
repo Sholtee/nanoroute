@@ -26,7 +26,7 @@ namespace NanoRoute.AwsLambda
 
         public static Uri CreateUri(this APIGatewayHttpApiV2ProxyRequest request)
         {
-            if 
+            if
             (
                 HostAndPort(request.Headers) is not { Length: > 0 } hostAndPort ||
                 Scheme(request.Headers) is not { Length: > 0 } scheme ||
@@ -70,7 +70,7 @@ namespace NanoRoute.AwsLambda
                 Content = request switch
                 {
                     { IsBase64Encoded: false } and { Body.Length: > 0 } => new StringContent(request.Body),
-                    { IsBase64Encoded: true }  and { Body.Length: > 0 } => new StreamContent
+                    { IsBase64Encoded: true } and { Body.Length: > 0 } => new StreamContent
                     (
                         new MemoryStream
                         (
@@ -97,7 +97,7 @@ namespace NanoRoute.AwsLambda
 
             return requestMessage;
         }
- 
+
         public static async Task<APIGatewayHttpApiV2ProxyResponse> CreateResponse(this HttpResponseMessage responseMessage)
         {
             Dictionary<string, string> headers = new(StringComparer.OrdinalIgnoreCase);
@@ -108,7 +108,7 @@ namespace NanoRoute.AwsLambda
             if (responseMessage.Content is not null)
                 CopyHeaders(responseMessage.Content.Headers, headers, cookies);
 
-            APIGatewayHttpApiV2ProxyResponse response = new() 
+            APIGatewayHttpApiV2ProxyResponse response = new()
             {
                 StatusCode = (int) responseMessage.StatusCode,
                 Headers = headers,

@@ -43,11 +43,11 @@ namespace NanoRoute.Tests
 
             _router = routerBuilder.CreateRouter();
         }
-        
+
         [SetUp]
         public void Setup()
         {
-            Uri baseAddress = new ($"http://localhost:{GetFreePort()}/");
+            Uri baseAddress = new($"http://localhost:{GetFreePort()}/");
 
             _listener = new HttpListener();
             _listener.Prefixes.Add(baseAddress.AbsoluteUri);
@@ -217,7 +217,7 @@ namespace NanoRoute.Tests
         {
             CreateRouter(_ => { });
 
-            Task <HttpResponseMessage> resp = _client.GetAsync(RelativeUri("welcome"));
+            Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri("welcome"));
 
             await HandleRequest();
 
@@ -256,7 +256,7 @@ namespace NanoRoute.Tests
                     };
                 }));
 
-            Task<HttpResponseMessage> resp = _client.PostAsync(RelativeUri("welcome"), new StringContent(JsonSerializer.Serialize(new HelloRequest{ Name = "Spikey" }), Encoding.UTF8, "application/json"));
+            Task<HttpResponseMessage> resp = _client.PostAsync(RelativeUri("welcome"), new StringContent(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }), Encoding.UTF8, "application/json"));
 
             await HandleRequest();
 

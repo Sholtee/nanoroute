@@ -15,8 +15,53 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
+    /// Represents a synchronous value parser.
+    /// </summary>
+    /// <param name="segment">The decoded segment extracted from the request URI.</param>
+    /// <param name="arguments">
+    /// The parser-specific argument payload produced by <see cref="BindArgumentsDelegate"/> during route registration,
+    /// or <see langword="null"/> when the parser was registered without arguments.
+    /// </param>
+    /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
+    /// <remarks>
+    /// Exceptions thrown by the delegate propagate during request processing for matching routes that use the parser.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// routerBuilder.AddValueParser("int", (ReadOnlyMemory&lt;char&gt; segment, object? arguments, out object? parsed) =&gt;
+    /// {
+    ///     var limits = ((int? Min, int? Max)) arguments!;
+    ///
+    ///     if (int.TryParse(segment, out int value))
+    ///     {
+    ///         if (limits.Min.HasValue &amp;&amp; value &lt; limits.Min.Value)
+    ///         {
+    ///             parsed = null;
+    ///             return false;
+    ///         }
+    ///
+    ///         parsed = value;
+    ///         return true;
+    ///     }
+    ///
+    ///     parsed = null;
+    ///     return false;
+    /// });
+    /// </code>
+    /// </example>
+    public delegate bool SyncValueParserDelegate(ReadOnlyMemory<char> segment, object? arguments, out object? parsed);
+
+    /// <summary>
     /// Provides convenience methods for registering value parsers.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// builder
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+    /// </code>
+    /// </example>
     public static class NanoRouteValueParserExtensions
     {
         #region Private
@@ -63,10 +108,21 @@ namespace NanoRoute
             /// <param name="parserName">The name used in route patterns such as <c>{id:int}</c>.</param>
             /// <param name="tryParseDelegate">The synchronous parser to adapt.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
-            public TBuilder AddValueParser(string parserName, SyncValueParserDelegate tryParseDelegate)
-            {
-                return routeScopeBuilder.AddValueParser(parserName, NoArgs, tryParseDelegate);
-            }
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="parserName"/>, or
+            /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
+            /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddValueParser("slug", static (ReadOnlyMemory&lt;char&gt; segment, object? _, out object? parsed) =&gt;
+            /// {
+            ///     parsed = segment.ToString();
+            ///     return segment.Length &gt; 0;
+            /// });
+            /// </code>
+            /// </example>
+            public TBuilder AddValueParser(string parserName, SyncValueParserDelegate tryParseDelegate) =>
+                routeScopeBuilder.AddValueParser(parserName, NoArgs, tryParseDelegate);
 
             /// <summary>
             /// Registers a synchronous parser by adapting it to <see cref="ValueParserDelegate"/> and binding parser arguments once during route registration.
@@ -75,6 +131,15 @@ namespace NanoRoute
             /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
             /// <param name="tryParseDelegate">The synchronous parser to adapt.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="parserName"/>,
+            /// <paramref name="bindArguments"/>, or <paramref name="tryParseDelegate"/> is <see langword="null"/>.
+            /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddValueParser("str", BindStringParserArguments, TryParseStringSegment);
+            /// </code>
+            /// </example>
             public TBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, SyncValueParserDelegate tryParseDelegate)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -97,6 +162,19 @@ namespace NanoRoute
             /// <param name="parserName">The name used in route patterns such as <c>{id:user}</c>.</param>
             /// <param name="tryParseDelegate">The asynchronous parser to register.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="parserName"/>, or
+            /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
+            /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddValueParser("user", static async context =&gt;
+            /// {
+            ///     object? user = await FindUserAsync(context.Segment.ToString(), context.Cancellation);
+            ///     return new ValueParseResult(user is not null, user);
+            /// });
+            /// </code>
+            /// </example>
             public TBuilder AddValueParser(string parserName, ValueParserDelegate tryParseDelegate)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -115,6 +193,15 @@ namespace NanoRoute
             /// <param name="bindArguments">Converts raw parser arguments into a parser-specific payload.</param>
             /// <param name="tryParseDelegate">The asynchronous parser to register.</param>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="parserName"/>,
+            /// <paramref name="bindArguments"/>, or <paramref name="tryParseDelegate"/> is <see langword="null"/>.
+            /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddValueParser("user", BindUserParserArguments, ParseUserAsync);
+            /// </code>
+            /// </example>
             public TBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -135,6 +222,14 @@ namespace NanoRoute
             /// Supported arguments:
             /// <c>min</c>, <c>max</c>.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddIntParser()
+            ///     .AddHandler("GET", "/items/{id:int(min=1)}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+            /// </code>
+            /// </example>
             public TBuilder AddIntParser()
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -200,6 +295,14 @@ namespace NanoRoute
             /// <remarks>
             /// This parser does not support any arguments.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddGuidParser()
+            ///     .AddHandler("GET", "/users/{id:guid}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+            /// </code>
+            /// </example>
             public TBuilder AddGuidParser() => routeScopeBuilder.AddValueParser
             (
                 "guid",
@@ -223,6 +326,14 @@ namespace NanoRoute
             /// <remarks>
             /// This parser does not support any arguments.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddBoolParser()
+            ///     .AddHandler("GET", "/features/{enabled:bool}/", (context, _) =&gt; Results.Ok(context.Parameters["enabled"]));
+            /// </code>
+            /// </example>
             public TBuilder AddBoolParser() => routeScopeBuilder.AddValueParser
             (
                 "bool",
@@ -247,6 +358,14 @@ namespace NanoRoute
             /// Supported arguments:
             /// <c>min</c>, <c>max</c>, <c>pattern</c>.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddStringParser()
+            ///     .AddHandler("GET", "/users/{name:str(min=2)}/", (context, _) =&gt; Results.Ok(context.Parameters["name"]));
+            /// </code>
+            /// </example>
             public TBuilder AddStringParser()
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -276,7 +395,7 @@ namespace NanoRoute
                                     break;
                                 default:
                                     throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, nameof(args));
-                            }                 
+                            }
                         }
 
                         if (min > max)

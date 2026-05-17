@@ -23,7 +23,7 @@ namespace NanoRoute.Internals
         public static ReadOnlyMemory<char> Parse(string pattern, ref int offset)
         {
             if (s_literalSegment.Match(pattern, offset) is not { Success: true, Length: int length })
-                throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
+                throw new ArgumentException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset), nameof(pattern));
 
             ReadOnlyMemory<char> segment = UrlUtils.DecodeUrl(pattern.AsMemory(offset, length), UrlDecodeMode.Path);
 

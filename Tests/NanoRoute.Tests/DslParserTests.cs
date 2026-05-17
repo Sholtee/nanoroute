@@ -87,9 +87,10 @@ namespace NanoRoute.Tests
         [TestCase("items/{id:int}")]
         public void ParseRoutePattern_ShouldRejectPatternsWithoutLeadingSeparator(string pattern)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
 
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, 0)));
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, 0)));
         }
 
         [TestCase("*", 0)]
@@ -98,9 +99,10 @@ namespace NanoRoute.Tests
         [TestCase("/items/{id:int}*/", 15)]
         public void ParseRoutePattern_ShouldRejectInvalidAsterisks(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
 
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [TestCase("//", 1)]
@@ -108,9 +110,9 @@ namespace NanoRoute.Tests
         [TestCase("/items/{id:int}//details/", 16)]
         public void ParseRoutePattern_ShouldRejectRepeatedSeparators(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
 
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [TestCase("/items/bad[segment]", 10)]
@@ -122,9 +124,10 @@ namespace NanoRoute.Tests
         [TestCase("/items/{id:int}tail", 15)]
         public void ParseRoutePattern_ShouldRejectInvalidSeparatorsAfterDefinitions(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => DslParser.ParseRoutePattern(pattern).ToArray())!;
 
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [Test]
@@ -182,9 +185,10 @@ namespace NanoRoute.Tests
         [TestCase("{filter:str}/{page:int}", 12)]
         public void ParseQueryPattern_ShouldRejectInvalidQueryPatternStructure(string pattern, int expectedOffset)
         {
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => DslParser.ParseQueryPattern(pattern).ToArray())!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => DslParser.ParseQueryPattern(pattern).ToArray())!;
 
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
     }
 }

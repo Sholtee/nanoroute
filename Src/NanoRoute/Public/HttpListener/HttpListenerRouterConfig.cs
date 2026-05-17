@@ -8,6 +8,11 @@ namespace NanoRoute
     /// <summary>
     /// Configuration settings for <see cref="HttpListenerRouter"/>.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// HttpListenerRouterConfig config = new();
+    /// </code>
+    /// </example>
     public sealed record HttpListenerRouterConfig : RouterConfig
     {
     }

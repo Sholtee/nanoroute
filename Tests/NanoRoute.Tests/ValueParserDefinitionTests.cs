@@ -114,7 +114,7 @@ namespace NanoRoute.Tests
         public void Parse_ShouldRejectInvalidDefinitions(string definitionText)
         {
             int offset = 0;
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => ValueParserDefinition.Parse(definitionText, ref offset))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => ValueParserDefinition.Parse(definitionText, ref offset))!;
 
             Assert.That(ex.Message, Does.StartWith("Invalid pattern"));
         }

@@ -14,7 +14,16 @@ namespace NanoRoute
     /// </summary>
     /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter"/>.</typeparam>
     /// <typeparam name="TConfig">The configuration type exposed by <see cref="RouterConfig"/>.</typeparam>
-    public sealed class RouterBuilder<TRouter, TConfig> : RouteScopeBuilder where TRouter : Router where TConfig: RouterConfig, new()
+    /// <example>
+    /// <code>
+    /// MyRouter router = MyRouter
+    ///     .CreateBuilder()
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+    ///     .CreateRouter();
+    /// </code>
+    /// </example>
+    public sealed class RouterBuilder<TRouter, TConfig> : RouteScopeBuilder where TRouter : Router where TConfig : RouterConfig, new()
     {
         private readonly RouterFactoryDelegate<TRouter, TConfig> _routerFactory;
 
@@ -24,7 +33,8 @@ namespace NanoRoute
         /// <param name="routerFactory">
         /// A factory that receives this builder and returns a router backed by its current route snapshot.
         /// </param>
-        public RouterBuilder(RouterFactoryDelegate<TRouter, TConfig> routerFactory): base()
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="routerFactory"/> is <see langword="null"/>.</exception>
+        public RouterBuilder(RouterFactoryDelegate<TRouter, TConfig> routerFactory) : base()
         {
             Ensure.NotNull(routerFactory);
 
@@ -38,6 +48,16 @@ namespace NanoRoute
         /// <param name="bindArguments">Converts raw parser arguments into typed values once per route-template branch.</param>
         /// <param name="tryParseDelegate">The delegate that validates and parses a single path segment.</param>
         /// <returns>The current <see cref="RouterBuilder{TRouter, TConfig}"/> instance.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="parserName"/>, <paramref name="bindArguments"/>, or
+        /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
+        /// </exception>
+        /// <example>
+        /// <code>
+        /// builder.AddValueParser("slug", static rawArgs =&gt; null, static context =&gt;
+        ///     ValueTask.FromResult(new ValueParseResult(context.Segment.Length &gt; 0, context.Segment.ToString())));
+        /// </code>
+        /// </example>
         public new RouterBuilder<TRouter, TConfig> AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
         {
             base.AddValueParser(parserName, bindArguments, tryParseDelegate);
@@ -58,8 +78,17 @@ namespace NanoRoute
         /// the pipeline with the next compatible handler from the already selected route branch.
         /// </param>
         /// <returns>The current router instance.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="verb"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is
+        /// <see langword="null"/>.
+        /// </exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="verb"/> is not a supported HTTP method.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <paramref name="pattern"/> references a value parser that has not been registered yet.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when <paramref name="pattern"/> uses an unsupported optional parameter or list parser, references
+        /// a value parser that has not been registered yet, or reuses a parser-backed branch with a different
+        /// parameter name.
+        /// </exception>
         /// <example>
         /// <code>
         /// builder.AddHandler("GET", "/files/{path:any}/*", (context, next) =&gt;
@@ -80,6 +109,17 @@ namespace NanoRoute
         /// </summary>
         /// <param name="updateConfig">A callback that returns the updated <see cref="RouterConfig"/> instance.</param>
         /// <returns>The current builder.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="updateConfig"/> is <see langword="null"/> or returns <see langword="null"/>.
+        /// </exception>
+        /// <example>
+        /// <code>
+        /// builder.ConfigureRouting(config =&gt; config with
+        /// {
+        ///     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
+        /// });
+        /// </code>
+        /// </example>
         public RouterBuilder<TRouter, TConfig> ConfigureRouting(ConfigureBuilderDelegate<TConfig> updateConfig)
         {
             Ensure.NotNull(updateConfig);
@@ -103,6 +143,11 @@ namespace NanoRoute
         /// The created router is an immutable snapshot. Later changes to the builder or its configuration do not
         /// affect routers that have already been created.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// MyRouter router = builder.CreateRouter();
+        /// </code>
+        /// </example>
         public TRouter CreateRouter() => _routerFactory(this);
     }
 }

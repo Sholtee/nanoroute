@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace NanoRoute.Internals
 {
-    internal sealed class ReadOnlyMemoryCharComparer: IEqualityComparer<ReadOnlyMemory<char>>
+    internal sealed class ReadOnlyMemoryCharComparer : IEqualityComparer<ReadOnlyMemory<char>>
     {
         public static ReadOnlyMemoryCharComparer Instance { get; } = new();
 

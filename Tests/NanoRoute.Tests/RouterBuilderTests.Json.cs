@@ -24,6 +24,11 @@ namespace NanoRoute.Tests
     {
         internal delegate RouterBuilder<TestRouter, RouterConfig> ConfigureJsonBodyDelegate(RouterBuilder<TestRouter, RouterConfig> builder);
 
+        private sealed class TestJsonPayload
+        {
+            public string Name { get; set; } = null!;
+        }
+
         private static JsonTypeInfo TestJsonPayloadTypeInfo => JsonSerializerOptions.Web.GetTypeInfo(typeof(TestJsonPayload));
 
         private static IEnumerable<TestCaseData> AddJsonBodyOverloadCases()
@@ -407,6 +412,33 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task WithJsonBody_ShouldDeserializeBodyBeforeEndpointHandler()
+        {
+            TestJsonPayload? payload = null;
+
+            TestRouter router = _routerBuilder
+                .AddEndPoint("POST", "/items/", endpoint => endpoint
+                    .WithJsonBody<TestJsonPayload>("payload")
+                    .WithHandler(async (context, _) =>
+                    {
+                        payload = (TestJsonPayload) context.Parameters["payload"]!;
+                        return new HttpResponseMessage(HttpStatusCode.Created);
+                    }))
+                .CreateRouter();
+
+            HttpRequestMessage request = new(HttpMethod.Post, "https://test.test/items")
+            {
+                Content = new StringContent("{\"name\":\"Spikey\"}", Encoding.UTF8, "application/json")
+            };
+
+            HttpResponseMessage response = await router.Handle(request, s_services);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(payload, Is.Not.Null);
+            Assert.That(payload!.Name, Is.EqualTo("Spikey"));
+        }
+
+        [Test]
         public async Task HttpResponseMessageJson_ShouldSerializeUsingTheProvidedTypeInfo()
         {
             HttpResponseMessage response = HttpResponseMessage.Json(HttpStatusCode.Accepted, new TestJsonPayload { Name = "Spikey" });
@@ -477,6 +509,14 @@ namespace NanoRoute.Tests
 
             ex = Assert.Throws<ArgumentNullException>(() => new JsonErrorDetailsConfig { ErrorDetailsTypeInfo = null! })!;
             Assert.That(ex.ParamName, Is.EqualTo("value"));
+
+            EndPointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/items/");
+
+            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithJsonBody((Type) null!, "payload"))!;
+            Assert.That(ex.ParamName, Is.EqualTo("type"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithJsonBody<TestJsonPayload>(null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("paramName"));
         });
     }
 

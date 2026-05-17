@@ -151,8 +151,9 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddValueParser("int", args => int.Parse(args["min"], CultureInfo.InvariantCulture), new Mock<ValueParserDelegate>(MockBehavior.Strict).Object);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [Test]
@@ -169,8 +170,9 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddValueParser("int", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object);
 
-            InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
-            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.StartWith(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, expectedOffset)));
         }
 
         [TestCase("/path/to/{missing}/")]
@@ -213,7 +215,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/items/{id:int(min=1,max=2)}/", handler)
                 .AddHandler("POST", "/items/{id:int(max=2,min=1)}/", handler);
 
-            RouteNode root = _routerBuilder.GetRoot(true);
+            RouteNode root = _routerBuilder.CreateSnapshot();
 
             Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren, Has.Count.EqualTo(1));
             Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren[0].ParameterParser!.Definition.ParameterName, Is.EqualTo("id"));

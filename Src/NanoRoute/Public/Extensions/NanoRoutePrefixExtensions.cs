@@ -18,6 +18,12 @@ namespace NanoRoute
     /// changes made inside the prefix scope stay local to that child branch.
     /// </para>
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.AddPrefix("/api/*", api =&gt; api
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok()));
+    /// </code>
+    /// </example>
     public static class NanoRoutePrefixExtensions
     {
         extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
@@ -30,10 +36,15 @@ namespace NanoRoute
             /// </param>
             /// <param name="configureRoutes">A callback that configures routes on the child route scope.</param>
             /// <returns>The current builder.</returns>
+            /// <exception cref="ArgumentNullException">
+            /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or
+            /// <paramref name="configureRoutes"/> is <see langword="null"/>.
+            /// </exception>
             /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> does not end with <c>/*</c>.</exception>
+            /// <exception cref="ArgumentException">Thrown when <paramref name="pattern"/> has invalid route-template syntax.</exception>
             /// <exception cref="InvalidOperationException">
-            /// Thrown when <paramref name="pattern"/> is invalid or references a value parser that has not been
-            /// registered yet.
+            /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
+            /// missing value parser, or conflicts with an existing parser-backed branch.
             /// </exception>
             /// <example>
             /// <code>

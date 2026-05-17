@@ -24,7 +24,16 @@ namespace NanoRoute
     /// This adapter converts incoming <see cref="HttpListener"/> traffic into the core
     /// <see cref="HttpRequestMessage"/>/<see cref="HttpResponseMessage"/> pipeline used by NanoRoute.
     /// </remarks>
-    public class HttpListenerRouter: Router
+    /// <example>
+    /// <code>
+    /// HttpListenerRouter router = HttpListenerRouter
+    ///     .CreateBuilder()
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+    ///     .CreateRouter();
+    /// </code>
+    /// </example>
+    public sealed class HttpListenerRouter : Router<HttpListenerRouter, HttpListenerRouterConfig>
     {
         #region Private
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
@@ -35,6 +44,8 @@ namespace NanoRoute
             "Keep-Alive",
             "Server"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
+        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder) { }
 
         private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
@@ -89,8 +100,6 @@ namespace NanoRoute
 
             return requestMessage;
         }
-
-        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig) { }
         #endregion
 
         /// <summary>
@@ -100,6 +109,14 @@ namespace NanoRoute
         /// <param name="services">The service provider exposed to handlers through <see cref="RequestContext.Services"/>.</param>
         /// <param name="cancellation">A token that can cancel request processing and response streaming.</param>
         /// <returns>A task that completes after the router has finished writing the response.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="context"/> or <paramref name="services"/> is <see langword="null"/>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
+        /// <exception cref="HttpRequestException">
+        /// Thrown when no handler matches the request path or a matched handler signals an HTTP failure that is not
+        /// translated by middleware.
+        /// </exception>
         /// <exception cref="OperationCanceledException">
         /// Thrown when the caller cancels <paramref name="cancellation"/>. The listener response is aborted before the
         /// exception is rethrown.
@@ -147,16 +164,5 @@ namespace NanoRoute
                 throw;
             }
         }
-
-        /// <summary>
-        /// Configuration assigned to this instance.
-        /// </summary>
-        public new HttpListenerRouterConfig Config => (HttpListenerRouterConfig) base.Config;
-
-        /// <summary>
-        /// Creates a strongly typed builder for configuring an <see cref="HttpListenerRouter"/>.
-        /// </summary>
-        /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
-        public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static bldr => new HttpListenerRouter(bldr));
     }
 }

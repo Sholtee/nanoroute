@@ -34,51 +34,55 @@ namespace NanoRoute.TestLambda
             })
             .AddJsonErrorDetails()
             .AddDefaultValueParsers()
-            .AddHandler("GET", "/health/", static async (_, _) =>
-            {
-                await Task.Yield();
-
-                return new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent("ok")
-                };
-            })
-            .AddPrefix("/items/{id:int(min=1)}/*", item => item
-                .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter?:str(min=3)}")
-                .AddHandler("GET", RouteScopeBuilder.CurrentExact, static async (context, _) =>
+            .AddEndPoint("GET", "/health/", endpoint => endpoint
+                .WithHandler(static async (_, _) =>
                 {
                     await Task.Yield();
 
-                    return HttpResponseMessage.Json(new
+                    return new HttpResponseMessage(HttpStatusCode.OK)
                     {
-                        id = context.Parameters["id"],
-                        filter = context.Parameters.TryGetValue("filter", out object? filter)
-                            ? filter
-                            : null
-                    });
+                        Content = new StringContent("ok")
+                    };
                 }))
+            .AddPrefix("/items/{id:int(min=1)}/*", item => item
+                .AddEndPoint("GET", RouteScopeBuilder.CurrentExact, endpoint => endpoint
+                    .WithQueryBindings("{filter?:str(min=3)}")
+                    .WithHandler(static async (context, _) =>
+                    {
+                        await Task.Yield();
+
+                        return HttpResponseMessage.Json(new
+                        {
+                            id = context.Parameters["id"],
+                            filter = context.Parameters.TryGetValue("filter", out object? filter)
+                                ? filter
+                                : null
+                        });
+                    })))
             .AddPrefix("/echo/*", echo => echo
-                .AddJsonBody("POST", RouteScopeBuilder.CurrentExact, JsonContext.Default.EchoRequest, "body")
-                .AddHandler("POST", RouteScopeBuilder.CurrentExact, static async (context, _) =>
+                .AddEndPoint("POST", RouteScopeBuilder.CurrentExact, endpoint => endpoint
+                    .WithJsonBody(JsonContext.Default.EchoRequest, "body")
+                    .WithHandler(static async (context, _) =>
+                    {
+                        await Task.Yield();
+
+                        return HttpResponseMessage.Json(context.Parameters["body"]);
+                    })))
+            .AddEndPoint("GET", "/cookies/", endpoint => endpoint
+                .WithHandler(static async (_, _) =>
                 {
                     await Task.Yield();
 
-                    return HttpResponseMessage.Json(context.Parameters["body"]);
+                    HttpResponseMessage response = HttpResponseMessage.Json(new
+                    {
+                        cookies = true
+                    });
+
+                    response.Headers.Add("Set-Cookie", "nano-route-cookie=ok; Path=/; HttpOnly");
+                    response.Headers.Add("X-NanoRoute-Fixture", "aws-lambda");
+
+                    return response;
                 }))
-            .AddHandler("GET", "/cookies/", static async (_, _) =>
-            {
-                await Task.Yield();
-
-                HttpResponseMessage response = HttpResponseMessage.Json(new
-                {
-                    cookies = true
-                });
-
-                response.Headers.Add("Set-Cookie", "nano-route-cookie=ok; Path=/; HttpOnly");
-                response.Headers.Add("X-NanoRoute-Fixture", "aws-lambda");
-
-                return response;
-            })
             .CreateRouter();
 
         /// <summary>

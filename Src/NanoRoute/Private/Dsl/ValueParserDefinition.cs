@@ -76,7 +76,7 @@ namespace NanoRoute.Internals
         public static ValueParserDefinition Parse(string pattern, ref int offset)
         {
             if (s_parserDefinition.Match(pattern, offset) is not { Success: true, Index: int index, Length: int length } parsed || index != offset)
-                throw new InvalidOperationException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset));
+                throw new ArgumentException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset), nameof(pattern));
 
             string parserName = parsed.Groups["parserName"].Value;
             Debug.Assert(!string.IsNullOrEmpty(parserName), "Parser name could not be extracted");
