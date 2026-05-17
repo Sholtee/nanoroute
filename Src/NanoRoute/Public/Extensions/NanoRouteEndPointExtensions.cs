@@ -19,6 +19,13 @@ namespace NanoRoute
     /// extensions register middleware against that captured endpoint. The underlying route scope remains private;
     /// extension authors can use <see cref="Metadata"/> for endpoint-scoped build-time settings.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.AddEndPoint("POST", "/users/", endpoint =&gt; endpoint
+    ///     .WithJsonBody&lt;CreateUserRequest&gt;("body")
+    ///     .WithHandler((context, _) =&gt; CreateUser(context)));
+    /// </code>
+    /// </example>
     public sealed class EndPointBuilder
     {
         private readonly string _matchKind;
@@ -63,6 +70,11 @@ namespace NanoRoute
         /// <returns>The current <see cref="EndPointBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
+        /// <example>
+        /// <code>
+        /// endpoint.WithHandler((context, _) =&gt; Results.Ok(context.Parameters));
+        /// </code>
+        /// </example>
         public EndPointBuilder WithHandler(RequestHandlerDelegate handler)
         {
             _prefix.AddHandler(_verbs, _matchKind, handler);
@@ -77,12 +89,23 @@ namespace NanoRoute
         /// The metadata is copied from the parent route scope when the endpoint is created. Later updates made
         /// through this property stay local to this endpoint scope.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// endpoint.Metadata.Set(new EndpointOptions { RequiresAudit = true });
+        /// </code>
+        /// </example>
         public BuilderMetadata Metadata => _prefix.Metadata;
     }
 
     /// <summary>
     /// Adds endpoint-building helpers to route scope builders.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// builder.AddEndPoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
+    ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
+    /// </code>
+    /// </example>
     public static class NanoRouteEndPointExtensions
     {
         extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
@@ -108,6 +131,11 @@ namespace NanoRoute
             /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
             /// missing value parser, or conflicts with an existing parser-backed branch.
             /// </exception>
+            /// <example>
+            /// <code>
+            /// EndPointBuilder endpoint = builder.CreateEndPoint(["GET", "HEAD"], "/users/{id:int}/");
+            /// </code>
+            /// </example>
             public EndPointBuilder CreateEndPoint(IEnumerable<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -138,6 +166,11 @@ namespace NanoRoute
             /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
             /// missing value parser, or conflicts with an existing parser-backed branch.
             /// </exception>
+            /// <example>
+            /// <code>
+            /// EndPointBuilder endpoint = builder.CreateEndPoint("GET", "/users/{id:int}/");
+            /// </code>
+            /// </example>
             public EndPointBuilder CreateEndPoint(string verb, string pattern)
             {
                 Ensure.NotNull(verb);
@@ -167,6 +200,13 @@ namespace NanoRoute
             /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
             /// missing value parser, or conflicts with an existing parser-backed branch.
             /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddEndPoint(["POST", "PUT"], "/users/{id:int}/", endpoint =&gt; endpoint
+            ///     .WithJsonBody&lt;UpdateUserRequest&gt;("body")
+            ///     .WithHandler((context, _) =&gt; SaveUser(context)));
+            /// </code>
+            /// </example>
             public TBuilder AddEndPoint(IEnumerable<string> verbs, string pattern, Action<EndPointBuilder> configureEndPoint)
             {
                 Ensure.NotNull(configureEndPoint);
@@ -201,6 +241,12 @@ namespace NanoRoute
             /// Thrown when <paramref name="pattern"/> uses unsupported route-template features, references a
             /// missing value parser, or conflicts with an existing parser-backed branch.
             /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddEndPoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
+            ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
+            /// </code>
+            /// </example>
             public TBuilder AddEndPoint(string verb, string pattern, Action<EndPointBuilder> configureEndPoint)
             {
                 Ensure.NotNull(verb);

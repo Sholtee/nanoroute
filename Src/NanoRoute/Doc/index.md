@@ -459,15 +459,17 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .ConfigureExceptionHandling(config => config with
     {
-        ExceptionNormalizers = config.ExceptionNormalizers.SetItem
-        (
-            typeof(NotSupportedException),
-            static ex =>
-            {
-                HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
-                return null!;
-            }
-        )
+        ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+        ([
+            ExceptionNormalizer.For<NotSupportedException>
+            (
+                static ex =>
+                {
+                    HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+                    return null!;
+                }
+            )
+        ])
     })
     .AddExceptionHandler()
     .AddEndPoint("GET", "/items/", endpoint => endpoint

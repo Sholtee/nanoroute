@@ -18,6 +18,12 @@ namespace NanoRoute
     /// changes made inside the prefix scope stay local to that child branch.
     /// </para>
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.AddPrefix("/api/*", api =&gt; api
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok()));
+    /// </code>
+    /// </example>
     public static class NanoRoutePrefixExtensions
     {
         extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder

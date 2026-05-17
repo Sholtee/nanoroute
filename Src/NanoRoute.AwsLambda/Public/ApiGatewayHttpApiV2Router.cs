@@ -18,6 +18,16 @@ namespace NanoRoute.AwsLambda
     /// <summary>
     /// Routes API Gateway HTTP API and Lambda Function URL <see cref="APIGatewayHttpApiV2ProxyRequest"/> instances through a NanoRoute pipeline.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+    ///     .CreateBuilder()
+    ///     .AddJsonErrorDetails()
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; HttpResponseMessage.Json(new { status = "ok" }))
+    ///     .CreateRouter();
+    /// </code>
+    /// </example>
     public sealed class ApiGatewayHttpApiV2Router : Router<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig>
     {
         private ApiGatewayHttpApiV2Router(RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> builder) : base(builder) { }
@@ -38,6 +48,11 @@ namespace NanoRoute.AwsLambda
         /// Thrown when no handler matches the request path or a matched handler signals an HTTP failure that is not
         /// translated by middleware.
         /// </exception>
+        /// <example>
+        /// <code>
+        /// APIGatewayHttpApiV2ProxyResponse response = await router.Route(request, services, context.RemainingTime);
+        /// </code>
+        /// </example>
         public async Task<APIGatewayHttpApiV2ProxyResponse> Route(APIGatewayHttpApiV2ProxyRequest request, IServiceProvider services, TimeSpan remainingTime)
         {
             Ensure.NotNull(request, nameof(request));

@@ -17,6 +17,13 @@ namespace NanoRoute
     /// <summary>
     /// Provides convenience methods for registering value parsers.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// builder
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+    /// </code>
+    /// </example>
     public static class NanoRouteValueParserExtensions
     {
         #region Private
@@ -67,10 +74,17 @@ namespace NanoRoute
             /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="parserName"/>, or
             /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
             /// </exception>
-            public TBuilder AddValueParser(string parserName, SyncValueParserDelegate tryParseDelegate)
-            {
-                return routeScopeBuilder.AddValueParser(parserName, NoArgs, tryParseDelegate);
-            }
+            /// <example>
+            /// <code>
+            /// builder.AddValueParser("slug", static (ReadOnlyMemory&lt;char&gt; segment, object? _, out object? parsed) =&gt;
+            /// {
+            ///     parsed = segment.ToString();
+            ///     return segment.Length &gt; 0;
+            /// });
+            /// </code>
+            /// </example>
+            public TBuilder AddValueParser(string parserName, SyncValueParserDelegate tryParseDelegate) =>
+                routeScopeBuilder.AddValueParser(parserName, NoArgs, tryParseDelegate);
 
             /// <summary>
             /// Registers a synchronous parser by adapting it to <see cref="ValueParserDelegate"/> and binding parser arguments once during route registration.
@@ -83,6 +97,11 @@ namespace NanoRoute
             /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="parserName"/>,
             /// <paramref name="bindArguments"/>, or <paramref name="tryParseDelegate"/> is <see langword="null"/>.
             /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddValueParser("str", BindStringParserArguments, TryParseStringSegment);
+            /// </code>
+            /// </example>
             public TBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, SyncValueParserDelegate tryParseDelegate)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -109,6 +128,15 @@ namespace NanoRoute
             /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="parserName"/>, or
             /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
             /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddValueParser("user", static async context =&gt;
+            /// {
+            ///     object? user = await FindUserAsync(context.Segment.ToString(), context.Cancellation);
+            ///     return new ValueParseResult(user is not null, user);
+            /// });
+            /// </code>
+            /// </example>
             public TBuilder AddValueParser(string parserName, ValueParserDelegate tryParseDelegate)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -131,6 +159,11 @@ namespace NanoRoute
             /// Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="parserName"/>,
             /// <paramref name="bindArguments"/>, or <paramref name="tryParseDelegate"/> is <see langword="null"/>.
             /// </exception>
+            /// <example>
+            /// <code>
+            /// builder.AddValueParser("user", BindUserParserArguments, ParseUserAsync);
+            /// </code>
+            /// </example>
             public TBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -152,6 +185,13 @@ namespace NanoRoute
             /// <c>min</c>, <c>max</c>.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddIntParser()
+            ///     .AddHandler("GET", "/items/{id:int(min=1)}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+            /// </code>
+            /// </example>
             public TBuilder AddIntParser()
             {
                 Ensure.NotNull(routeScopeBuilder);
@@ -218,6 +258,13 @@ namespace NanoRoute
             /// This parser does not support any arguments.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddGuidParser()
+            ///     .AddHandler("GET", "/users/{id:guid}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+            /// </code>
+            /// </example>
             public TBuilder AddGuidParser() => routeScopeBuilder.AddValueParser
             (
                 "guid",
@@ -242,6 +289,13 @@ namespace NanoRoute
             /// This parser does not support any arguments.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddBoolParser()
+            ///     .AddHandler("GET", "/features/{enabled:bool}/", (context, _) =&gt; Results.Ok(context.Parameters["enabled"]));
+            /// </code>
+            /// </example>
             public TBuilder AddBoolParser() => routeScopeBuilder.AddValueParser
             (
                 "bool",
@@ -267,6 +321,13 @@ namespace NanoRoute
             /// <c>min</c>, <c>max</c>, <c>pattern</c>.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddStringParser()
+            ///     .AddHandler("GET", "/users/{name:str(min=2)}/", (context, _) =&gt; Results.Ok(context.Parameters["name"]));
+            /// </code>
+            /// </example>
             public TBuilder AddStringParser()
             {
                 Ensure.NotNull(routeScopeBuilder);

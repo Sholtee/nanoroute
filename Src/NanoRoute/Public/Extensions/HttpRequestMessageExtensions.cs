@@ -14,6 +14,11 @@ namespace NanoRoute
     /// <summary>
     /// <see cref="HttpResponseMessage"/> extensions.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// bool isContentHeader = HttpRequestMessage.ContentHeaders.Contains("Content-Type");
+    /// </code>
+    /// </example>
     public static class HttpRequestMessageExtensions
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -37,6 +42,12 @@ namespace NanoRoute
             /// <summary>
             /// Content header names.
             /// </summary>
+            /// <example>
+            /// <code>
+            /// if (HttpRequestMessage.ContentHeaders.Contains(headerName))
+            ///     request.Content!.Headers.TryAddWithoutValidation(headerName, values);
+            /// </code>
+            /// </example>
             public static FrozenSet<string> ContentHeaders => s_contentHeaders;
         }
     }
