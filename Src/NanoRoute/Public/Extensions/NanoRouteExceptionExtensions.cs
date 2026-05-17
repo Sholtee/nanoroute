@@ -18,6 +18,59 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
+    /// Converts an unexpected exception into an enriched <see cref="HttpRequestException"/>.
+    /// </summary>
+    /// <param name="exception">The exception thrown by a later handler in the routing pipeline.</param>
+    /// <returns>
+    /// The <see cref="HttpRequestException"/> that should be thrown by the exception-handling middleware.
+    /// </returns>
+    /// <remarks>
+    /// Normalizers are configured with <see cref="NanoRouteExceptionExtensions.ConfigureExceptionHandling{TBuilder}(TBuilder, ConfigureBuilderDelegate{ExceptionHandlingConfig})"/>.
+    /// They run only for exception types registered in <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/>.
+    /// Existing <see cref="HttpRequestException"/> and <see cref="OperationCanceledException"/> values are not
+    /// normalized by <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/>.
+    /// Exceptions thrown by a normalizer propagate from the exception-handling middleware.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.ConfigureExceptionHandling(config =&gt; config with
+    /// {
+    ///     ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+    ///     ([
+    ///         ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+    ///         (
+    ///             static ex =&gt; new HttpRequestException("Bad state", ex, HttpStatusCode.Conflict)
+    ///         )
+    ///     ])
+    /// });
+    /// </code>
+    /// </example>
+    public delegate HttpRequestException ExceptionNormalizer(Exception exception);
+
+    /// <summary>
+    /// Converts an unexpected exception of a specific type into an enriched <see cref="HttpRequestException"/>.
+    /// </summary>
+    /// <typeparam name="TException">The concrete exception type handled by the normalizer.</typeparam>
+    /// <param name="exception">The exception thrown by a later handler in the routing pipeline.</param>
+    /// <returns>
+    /// The <see cref="HttpRequestException"/> that should be thrown by the exception-handling middleware.
+    /// </returns>
+    /// <remarks>
+    /// Use this delegate with <c>ExceptionNormalizer.For&lt;TException&gt;(...)</c> to register typed
+    /// normalizers in <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/> without manually casting from
+    /// <see cref="Exception"/>. Normalizers are matched by exact runtime exception type.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+    /// (
+    ///     static ex =&gt; new HttpRequestException("Bad state", ex, HttpStatusCode.Conflict)
+    /// );
+    /// </code>
+    /// </example>
+    public delegate HttpRequestException TypedExceptionNormalizer<TException>(TException exception) where TException : Exception;
+
+    /// <summary>
     /// Configures how <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> normalizes
     /// unexpected exceptions.
     /// </summary>

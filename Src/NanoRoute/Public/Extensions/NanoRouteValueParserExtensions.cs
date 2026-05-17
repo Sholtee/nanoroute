@@ -15,6 +15,44 @@ namespace NanoRoute
     using Properties;
 
     /// <summary>
+    /// Represents a synchronous value parser.
+    /// </summary>
+    /// <param name="segment">The decoded segment extracted from the request URI.</param>
+    /// <param name="arguments">
+    /// The parser-specific argument payload produced by <see cref="BindArgumentsDelegate"/> during route registration,
+    /// or <see langword="null"/> when the parser was registered without arguments.
+    /// </param>
+    /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
+    /// <remarks>
+    /// Exceptions thrown by the delegate propagate during request processing for matching routes that use the parser.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// routerBuilder.AddValueParser("int", (ReadOnlyMemory&lt;char&gt; segment, object? arguments, out object? parsed) =&gt;
+    /// {
+    ///     var limits = ((int? Min, int? Max)) arguments!;
+    ///
+    ///     if (int.TryParse(segment, out int value))
+    ///     {
+    ///         if (limits.Min.HasValue &amp;&amp; value &lt; limits.Min.Value)
+    ///         {
+    ///             parsed = null;
+    ///             return false;
+    ///         }
+    ///
+    ///         parsed = value;
+    ///         return true;
+    ///     }
+    ///
+    ///     parsed = null;
+    ///     return false;
+    /// });
+    /// </code>
+    /// </example>
+    public delegate bool SyncValueParserDelegate(ReadOnlyMemory<char> segment, object? arguments, out object? parsed);
+
+    /// <summary>
     /// Provides convenience methods for registering value parsers.
     /// </summary>
     /// <example>

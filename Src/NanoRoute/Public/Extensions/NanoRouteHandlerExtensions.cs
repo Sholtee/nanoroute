@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +20,54 @@ namespace NanoRoute
 {
     using Internals;
     using Properties;
+
+    /// <summary>
+    /// Represents a typed endpoint handler in the router pipeline.
+    /// </summary>
+    /// <typeparam name="TRequestContext">
+    /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+    /// </typeparam>
+    /// <param name="requestContext">
+    /// The typed request object built from the current <see cref="RequestContext"/>.
+    /// </param>
+    /// <returns>The response produced by the current handler.</returns>
+    /// <remarks>
+    /// This delegate is used by <see cref="NanoRouteHandlerExtensions"/> overloads that do not expose
+    /// <see cref="CallNextHandlerDelegate"/>. The pipeline stops when the handler returns.
+    /// Exceptions thrown by the handler propagate through the routing pipeline unless middleware handles them.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/", request =&gt;
+    ///     Results.Ok(request.Id));
+    /// </code>
+    /// </example>
+    public delegate Task<HttpResponseMessage> TypedRequestEndpointHandlerDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TRequestContext requestContext) where TRequestContext : new();
+
+    /// <summary>
+    /// Represents a typed request handler in the router pipeline.
+    /// </summary>
+    /// <typeparam name="TRequestContext">
+    /// The request-object type populated from the current route parameters, query bindings, services, and special framework values.
+    /// </typeparam>
+    /// <param name="requestContext">
+    /// The typed request object built from the current <see cref="RequestContext"/>.
+    /// </param>
+    /// <param name="callNext">A delegate that invokes the next compatible handler in the pipeline.</param>
+    /// <returns>
+    /// The response produced by the current handler, or by a later handler when <paramref name="callNext"/> is invoked.
+    /// </returns>
+    /// <remarks>
+    /// This delegate is used by <see cref="NanoRouteHandlerExtensions"/> overloads that expose
+    /// <see cref="CallNextHandlerDelegate"/>.
+    /// Exceptions thrown by the handler propagate through the routing pipeline unless middleware handles them.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/*", (request, next) =&gt; next());
+    /// </code>
+    /// </example>
+    public delegate Task<HttpResponseMessage> TypedRequestHandlerDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TRequestContext requestContext, CallNextHandlerDelegate callNext) where TRequestContext : new();
 
     /// <summary>
     /// Describes how a typed handler property is populated.
