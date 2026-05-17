@@ -18,6 +18,14 @@ Use `.gitignore` as the baseline for generated and local environment paths to av
 
 If a broad search becomes necessary, scope it explicitly with exclusions based on `.gitignore` and the generated/local environment folders above.
 
+## Context Compaction Preview
+
+When the conversation is approaching context compaction, or when the developer asks for a context compaction or compactation preview, provide a brief checkpoint-style summary of what should be preserved if the conversation is compacted at that moment.
+
+Include the current goal, newest user request, active repository instructions and constraints, files inspected or changed, decisions made, commands or tests run with important results, blockers, assumptions, and next steps.
+
+Do not claim to know the exact content that would be discarded. For discarded context, describe only broad categories that are likely safe to omit, such as repeated logs, long command output, dead-end exploration, stale discussion, or details that no longer affect the next action.
+
 ## GitHub Issue Workflow
 
 When the developer asks to create a GitHub issue, first write a Markdown issue draft under `Artifacts/github-issues`.
