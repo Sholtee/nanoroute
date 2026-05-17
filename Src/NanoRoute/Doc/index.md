@@ -11,6 +11,7 @@ For AWS Lambda integrations, use the separate `NanoRoute.AwsLambda` package.
 ## Quick Start
 
 ```csharp
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -18,18 +19,34 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
 
+// UserRepository is your application service that implements IUserRepository.
+IServiceProvider services = new ServiceCollection()
+    .AddSingleton<IUserRepository, UserRepository>()
+    .BuildServiceProvider();
+
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddJsonErrorDetails()
-    .AddEndPoint("GET", "/api/users/{user_id:int}/details/", endpoint => endpoint
-        .WithHandler(static async (context, _) =>
+    .AddEndPoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
+        .WithHandler(static async (GetUserRequest request) =>
         {
-            await Task.CompletedTask;
-
-            return HttpResponseMessage.Json(new
+            return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
             {
-                id = context.Parameters["user_id"]
+                Id = request.UserId,
+                Name = await request.Users.GetNameAsync(request.UserId)
+            });
+        }))
+    .AddEndPoint("POST", "/api/users/", endpoint => endpoint
+        .WithJsonBody<CreateUserBody>(nameof(CreateUserRequest.Body))
+        .WithHandler(static async (CreateUserRequest request) =>
+        {
+            int userId = await request.Users.CreateAsync(request.Body.Name);
+
+            return HttpResponseMessage.Json(HttpStatusCode.Created, new UserResponse
+            {
+                Id = userId,
+                Name = request.Body.Name
             });
         }))
     .CreateRouter();
@@ -39,10 +56,46 @@ listener.Prefixes.Add("http://localhost:8080/");
 listener.Start();
 
 HttpListenerContext context = await listener.GetContextAsync();
-await router.Route(context, new ServiceCollection().BuildServiceProvider());
+await router.Route(context, services);
+
+public sealed class GetUserRequest
+{
+    [ValueSource(ValueSource.Parameter, Name = "user_id")]
+    public int UserId { get; set; }
+
+    [ValueSource(ValueSource.ServiceLocator)]
+    public IUserRepository Users { get; set; } = null!;
+}
+
+public sealed class CreateUserRequest
+{
+    public CreateUserBody Body { get; set; } = null!;
+
+    [ValueSource(ValueSource.ServiceLocator)]
+    public IUserRepository Users { get; set; } = null!;
+}
+
+public sealed class CreateUserBody
+{
+    public string Name { get; set; } = string.Empty;
+}
+
+public sealed class UserResponse
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+}
+
+public interface IUserRepository
+{
+    Task<int> CreateAsync(string name);
+
+    Task<string> GetNameAsync(int userId);
+}
 ```
 
-`AddEndPoint()` is the recommended application-level entry point for most routes. It captures an HTTP verb or verbs and a route pattern once, then endpoint helpers such as `WithHandler()` and `WithJsonBody()` add endpoint-local middleware without repeating the route.
+`AddEndPoint()` is the recommended application-level entry point for most routes. It captures an HTTP verb or verbs and a route pattern once, then endpoint helpers such as `WithHandler()` and `WithJsonBody()` add endpoint-local middleware without repeating the route. Typed handlers bind route values, JSON bodies, services, and framework values into request objects before your handler runs.
 
 `AddHandler()` remains available as the lower-level pipeline primitive for custom middleware composition, prefix pipelines, and extension authors.
 

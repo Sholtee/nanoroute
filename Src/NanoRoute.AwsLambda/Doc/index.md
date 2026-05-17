@@ -10,6 +10,7 @@ NanoRoute.AwsLambda targets `netstandard2.0` and `netstandard2.1`.
 
 ```csharp
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -21,17 +22,35 @@ using NanoRoute.AwsLambda;
 
 public sealed class Function
 {
-    private static readonly IServiceProvider Services = new ServiceCollection().BuildServiceProvider();
+    // UserRepository is your application service that implements IUserRepository.
+    private static readonly IServiceProvider Services = new ServiceCollection()
+        .AddSingleton<IUserRepository, UserRepository>()
+        .BuildServiceProvider();
 
     private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
         .CreateBuilder()
         .AddDefaultValueParsers()
         .AddJsonErrorDetails()
-        .AddEndPoint("GET", "/health/", endpoint => endpoint
-            .WithHandler(static async (_, _) =>
+        .AddEndPoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
+            .WithHandler(static async (GetUserRequest request) =>
             {
-                await Task.CompletedTask;
-                return HttpResponseMessage.Json(new { status = "ok" });
+                return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
+                {
+                    Id = request.UserId,
+                    Name = await request.Users.GetNameAsync(request.UserId)
+                });
+            }))
+        .AddEndPoint("POST", "/api/users/", endpoint => endpoint
+            .WithJsonBody<CreateUserBody>(nameof(CreateUserRequest.Body))
+            .WithHandler(static async (CreateUserRequest request) =>
+            {
+                int userId = await request.Users.CreateAsync(request.Body.Name);
+
+                return HttpResponseMessage.Json(HttpStatusCode.Created, new UserResponse
+                {
+                    Id = userId,
+                    Name = request.Body.Name
+                });
             }))
         .CreateRouter();
 
@@ -40,11 +59,47 @@ public sealed class Function
         return Router.Route(request, Services, context.RemainingTime);
     }
 }
+
+public sealed class GetUserRequest
+{
+    [ValueSource(ValueSource.Parameter, Name = "user_id")]
+    public int UserId { get; set; }
+
+    [ValueSource(ValueSource.ServiceLocator)]
+    public IUserRepository Users { get; set; } = null!;
+}
+
+public sealed class CreateUserRequest
+{
+    public CreateUserBody Body { get; set; } = null!;
+
+    [ValueSource(ValueSource.ServiceLocator)]
+    public IUserRepository Users { get; set; } = null!;
+}
+
+public sealed class CreateUserBody
+{
+    public string Name { get; set; } = string.Empty;
+}
+
+public sealed class UserResponse
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+}
+
+public interface IUserRepository
+{
+    Task<int> CreateAsync(string name);
+
+    Task<string> GetNameAsync(int userId);
+}
 ```
 
 `ApiGatewayHttpApiV2Router.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, endpoint builders, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router between Lambda invocations.
 
-Prefer endpoint builders such as `AddEndPoint()` for application routes. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
+Prefer endpoint builders such as `AddEndPoint()` for application routes. Typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
 
 The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass `ILambdaContext.RemainingTime` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 
