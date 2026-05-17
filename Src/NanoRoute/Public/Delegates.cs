@@ -22,6 +22,14 @@ namespace NanoRoute
     /// <returns>
     /// A <typeparamref name="TRouter"/> instance backed by the builder's current route snapshot.
     /// </returns>
+    /// <remarks>
+    /// Exceptions thrown by the factory propagate to the caller of <see cref="RouterBuilder{TRouter, TConfig}.CreateRouter"/>.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// var builder = new RouterBuilder&lt;MyRouter, RouterConfig&gt;(static b =&gt; new MyRouter(b));
+    /// </code>
+    /// </example>
     public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : Router where TConfig : RouterConfig, new();
 
     /// <summary>
@@ -37,6 +45,7 @@ namespace NanoRoute
     /// <remarks>
     /// This delegate runs during route registration, not during request processing. It is the right place to
     /// validate parser arguments, parse numeric limits, or precompile regular expressions once.
+    /// Exceptions thrown by the delegate are reported while the route containing the parser arguments is registered.
     /// </remarks>
     /// <example>
     /// <code>
@@ -68,6 +77,9 @@ namespace NanoRoute
     /// </param>
     /// <param name="parsed">The parsed value when the delegate returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
     /// <returns><see langword="true"/> when the segment is accepted by the parser; otherwise <see langword="false"/>.</returns>
+    /// <remarks>
+    /// Exceptions thrown by the delegate propagate during request processing for matching routes that use the parser.
+    /// </remarks>
     /// <example>
     /// <code>
     /// routerBuilder.AddValueParser("int", (string segment, object? arguments, out object? parsed) =&gt;
@@ -100,6 +112,9 @@ namespace NanoRoute
     /// The parser context, including the decoded route segment, request services, and the linked pipeline cancellation token.
     /// </param>
     /// <returns>A <see cref="ValueParseResult"/> that describes whether the segment matched and what value it produced.</returns>
+    /// <remarks>
+    /// Exceptions thrown by the delegate propagate during request processing for matching routes that use the parser.
+    /// </remarks>
     /// <example>
     /// <code>
     /// routerBuilder.AddValueParser("user", static async (ValueParserContext context) =>
@@ -129,7 +144,13 @@ namespace NanoRoute
     /// use <see cref="RouteScopeBuilder.Metadata"/> can use this delegate shape for scoped builder settings.
     /// A module registration should capture the configuration visible when it is registered; later
     /// <c>ConfigureXxx()</c> calls affect later registrations, not registrations that already exist.
+    /// Exceptions thrown by the delegate propagate from the configuration method that invoked it.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.ConfigureRouting(config =&gt; config with { ParametersCapacity = 16 });
+    /// </code>
+    /// </example>
     public delegate TConfig ConfigureBuilderDelegate<TConfig>(TConfig config);
 
     /// <summary>
@@ -144,8 +165,46 @@ namespace NanoRoute
     /// They run only for exception types registered in <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/>.
     /// Existing <see cref="HttpRequestException"/> and <see cref="OperationCanceledException"/> values are not
     /// normalized by <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/>.
+    /// Exceptions thrown by a normalizer propagate from the exception-handling middleware.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.ConfigureExceptionHandling(config =&gt; config with
+    /// {
+    ///     ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+    ///     ([
+    ///         ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+    ///         (
+    ///             static ex =&gt; new HttpRequestException("Bad state", ex, HttpStatusCode.Conflict)
+    ///         )
+    ///     ])
+    /// });
+    /// </code>
+    /// </example>
     public delegate HttpRequestException ExceptionNormalizer(Exception exception);
+
+    /// <summary>
+    /// Converts an unexpected exception of a specific type into an enriched <see cref="HttpRequestException"/>.
+    /// </summary>
+    /// <typeparam name="TException">The concrete exception type handled by the normalizer.</typeparam>
+    /// <param name="exception">The exception thrown by a later handler in the routing pipeline.</param>
+    /// <returns>
+    /// The <see cref="HttpRequestException"/> that should be thrown by the exception-handling middleware.
+    /// </returns>
+    /// <remarks>
+    /// Use this delegate with <c>ExceptionNormalizer.For&lt;TException&gt;(...)</c> to register typed
+    /// normalizers in <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/> without manually casting from
+    /// <see cref="Exception"/>. Normalizers are matched by exact runtime exception type.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+    /// (
+    ///     static ex =&gt; new HttpRequestException("Bad state", ex, HttpStatusCode.Conflict)
+    /// );
+    /// </code>
+    /// </example>
+    public delegate HttpRequestException TypedExceptionNormalizer<TException>(TException exception) where TException : Exception;
 
     /// <summary>
     /// Invokes the next compatible handler in the current routing pipeline.
@@ -182,7 +241,14 @@ namespace NanoRoute
     /// <remarks>
     /// This delegate is used by <see cref="NanoRouteHandlerExtensions"/> overloads that do not expose
     /// <see cref="CallNextHandlerDelegate"/>. The pipeline stops when the handler returns.
+    /// Exceptions thrown by the handler propagate through the routing pipeline unless middleware handles them.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/", request =&gt;
+    ///     Results.Ok(request.Id));
+    /// </code>
+    /// </example>
     public delegate Task<HttpResponseMessage> TypedRequestEndpointHandlerDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TRequestContext requestContext) where TRequestContext : new();
 
     /// <summary>
@@ -201,7 +267,13 @@ namespace NanoRoute
     /// <remarks>
     /// This delegate is used by <see cref="NanoRouteHandlerExtensions"/> overloads that expose
     /// <see cref="CallNextHandlerDelegate"/>.
+    /// Exceptions thrown by the handler propagate through the routing pipeline unless middleware handles them.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/*", (request, next) =&gt; next());
+    /// </code>
+    /// </example>
     public delegate Task<HttpResponseMessage> TypedRequestHandlerDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TRequestContext requestContext, CallNextHandlerDelegate callNext) where TRequestContext : new();
 
     /// <summary>

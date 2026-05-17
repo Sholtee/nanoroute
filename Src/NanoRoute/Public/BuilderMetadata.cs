@@ -23,6 +23,13 @@ namespace NanoRoute
     /// either scope stay local to that scope.
     /// </para>
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder.Metadata.Set(new MyFeatureOptions { Enabled = true });
+    ///
+    /// MyFeatureOptions options = builder.Metadata.GetOrDefault(MyFeatureOptions.Default);
+    /// </code>
+    /// </example>
     public sealed class BuilderMetadata
     {
         private readonly Dictionary<Type, object> _items;
@@ -45,6 +52,11 @@ namespace NanoRoute
         /// <param name="defaultValue">The value to return when the metadata entry is absent.</param>
         /// <returns>The registered metadata value, or <paramref name="defaultValue"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="defaultValue"/> is <see langword="null"/>.</exception>
+        /// <example>
+        /// <code>
+        /// MyFeatureOptions options = builder.Metadata.GetOrDefault(MyFeatureOptions.Default);
+        /// </code>
+        /// </example>
         public T GetOrDefault<T>(T defaultValue) where T : notnull
         {
             Ensure.NotNull(defaultValue);
@@ -59,6 +71,11 @@ namespace NanoRoute
         /// </summary>
         /// <typeparam name="T">The metadata value type.</typeparam>
         /// <returns><see langword="true"/> when an entry was removed; otherwise <see langword="false"/>.</returns>
+        /// <example>
+        /// <code>
+        /// bool removed = builder.Metadata.Remove&lt;MyFeatureOptions&gt;();
+        /// </code>
+        /// </example>
         public bool Remove<T>() where T : notnull => _items.Remove(typeof(T));
 
         /// <summary>
@@ -67,6 +84,11 @@ namespace NanoRoute
         /// <typeparam name="T">The metadata value type.</typeparam>
         /// <param name="value">The metadata value.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <see langword="null"/>.</exception>
+        /// <example>
+        /// <code>
+        /// builder.Metadata.Set(new MyFeatureOptions { Enabled = true });
+        /// </code>
+        /// </example>
         public void Set<T>(T value) where T : notnull
         {
             Ensure.NotNull(value);
@@ -80,6 +102,14 @@ namespace NanoRoute
         /// <typeparam name="T">The metadata value type.</typeparam>
         /// <param name="value">The registered metadata value, when one exists.</param>
         /// <returns><see langword="true"/> when a value exists; otherwise <see langword="false"/>.</returns>
+        /// <example>
+        /// <code>
+        /// if (builder.Metadata.TryGet(out MyFeatureOptions? options))
+        /// {
+        ///     EnableFeature(options);
+        /// }
+        /// </code>
+        /// </example>
         public bool TryGet<T>(out T? value) where T : notnull
         {
             if (_items.TryGetValue(typeof(T), out object? obj))

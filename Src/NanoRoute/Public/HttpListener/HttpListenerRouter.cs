@@ -24,6 +24,15 @@ namespace NanoRoute
     /// This adapter converts incoming <see cref="HttpListener"/> traffic into the core
     /// <see cref="HttpRequestMessage"/>/<see cref="HttpResponseMessage"/> pipeline used by NanoRoute.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// HttpListenerRouter router = HttpListenerRouter
+    ///     .CreateBuilder()
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+    ///     .CreateRouter();
+    /// </code>
+    /// </example>
     public sealed class HttpListenerRouter : Router<HttpListenerRouter, HttpListenerRouterConfig>
     {
         #region Private

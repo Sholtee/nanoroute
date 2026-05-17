@@ -21,16 +21,33 @@ namespace NanoRoute
     /// <c>/users/{id:int}/</c>. Patterns must start with <c>/</c>, exact patterns must end with <c>/</c>,
     /// prefix patterns must end with <c>/*</c>, and repeated <c>/</c> separators such as <c>//</c> are invalid.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// builder
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+    /// </code>
+    /// </example>
     public class RouteScopeBuilder
     {
         /// <summary>
         /// The route pattern that matches the current route scope exactly.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// builder.AddHandler("GET", RouteScopeBuilder.CurrentExact, (context, _) =&gt; Results.Ok());
+        /// </code>
+        /// </example>
         public const string CurrentExact = "/";
 
         /// <summary>
         /// The route pattern that matches the current route scope as a prefix.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// builder.AddHandler("GET", RouteScopeBuilder.CurrentPrefix, (context, next) =&gt; next());
+        /// </code>
+        /// </example>
         public const string CurrentPrefix = "/*";
 
         #region Private
@@ -139,6 +156,12 @@ namespace NanoRoute
         /// Thrown when <paramref name="parserName"/>, <paramref name="bindArguments"/>, or
         /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
         /// </exception>
+        /// <example>
+        /// <code>
+        /// builder.AddValueParser("slug", static rawArgs =&gt; null, static context =&gt;
+        ///     ValueTask.FromResult(new ValueParseResult(context.Segment.Length &gt; 0, context.Segment.ToString())));
+        /// </code>
+        /// </example>
         public RouteScopeBuilder AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
         {
             Ensure.NotNull(parserName);
@@ -255,6 +278,11 @@ namespace NanoRoute
         /// For child scopes created with <see cref="CreatePrefix(string)"/>, this dictionary reflects the inherited
         /// registrations plus any overrides added to that child scope.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// bool hasIntParser = builder.ValueParsers.ContainsKey("int");
+        /// </code>
+        /// </example>
         public IReadOnlyDictionary<string, ValueParserRegistration> ValueParsers => _valueParsers;
 
         /// <summary>
@@ -279,6 +307,11 @@ namespace NanoRoute
         /// are made.
         /// </para>
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// builder.Metadata.Set(new MyFeatureOptions { Enabled = true });
+        /// </code>
+        /// </example>
         public BuilderMetadata Metadata { get; }
 
         /// <summary>
@@ -288,6 +321,12 @@ namespace NanoRoute
         /// Each entry is formatted as <c>[Verb] Pattern</c>. Child scopes list only the routes reachable from
         /// their base path, while the root scope lists the whole configured tree.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// foreach (string pattern in builder.Patterns)
+        ///     Console.WriteLine(pattern);
+        /// </code>
+        /// </example>
         public IEnumerable<string> Patterns
         {
             get

@@ -8,6 +8,11 @@ namespace NanoRoute
     /// <summary>
     /// Stores a named value parser together with its argument binder.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// ValueParserRegistration registration = builder.ValueParsers["int"];
+    /// </code>
+    /// </example>
     public sealed record ValueParserRegistration(string Name, ValueParserDelegate Parse, BindArgumentsDelegate BindArguments);
 }
 

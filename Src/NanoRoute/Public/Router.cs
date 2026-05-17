@@ -23,6 +23,15 @@ namespace NanoRoute
     /// A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
     /// handlers in order until one returns a response without delegating further.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// Router router = MyRouter
+    ///     .CreateBuilder()
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+    ///     .CreateRouter();
+    /// </code>
+    /// </example>
     public abstract class Router
     {
         private readonly RouteNode _root;
@@ -30,11 +39,21 @@ namespace NanoRoute
         /// <summary>
         /// The request property key that stores the trace identifier associated with the current request.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// request.Properties[Router.TraceIdName] = traceId;
+        /// </code>
+        /// </example>
         public const string TraceIdName = "TraceId";
 
         /// <summary>
         /// The request property key that stores the original transport-specific request object.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// request.Properties[Router.OriginalRequestName] = listenerRequest;
+        /// </code>
+        /// </example>
         public const string OriginalRequestName = "OriginalRequest";
 
         /// <summary>
@@ -42,6 +61,9 @@ namespace NanoRoute
         /// </summary>
         /// <param name="routeScopeBuilder">The builder scope whose registered routes are captured by the router.</param>
         /// <param name="config">The configuration assigned to the router instance.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="routeScopeBuilder"/> or <paramref name="config"/> is <see langword="null"/>.
+        /// </exception>
         protected Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config)
         {
             Ensure.NotNull(routeScopeBuilder);
@@ -73,6 +95,11 @@ namespace NanoRoute
         /// <exception cref="OperationCanceledException">
         /// Thrown when the caller cancels the <paramref name="cancellation"/>.
         /// </exception>
+        /// <example>
+        /// <code>
+        /// using HttpResponseMessage response = await Handle(request, services, cancellation);
+        /// </code>
+        /// </example>
         #if DEBUG
         internal
         #endif
@@ -109,6 +136,16 @@ namespace NanoRoute
     /// <see cref="Config"/> property. The concrete router must expose a public or non-public constructor that accepts
     /// <see cref="RouterBuilder{TRouter, TConfig}"/> so the generated factory can create immutable router snapshots.
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// public sealed class MyRouter : Router&lt;MyRouter, RouterConfig&gt;
+    /// {
+    ///     private MyRouter(RouterBuilder&lt;MyRouter, RouterConfig&gt; builder) : base(builder)
+    ///     {
+    ///     }
+    /// }
+    /// </code>
+    /// </example>
     public abstract class Router<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicConstructors)] TDescendant, TConfig>(RouterBuilder<TDescendant, TConfig> bldr) : Router(bldr, bldr.RouterConfig) where TDescendant : Router<TDescendant, TConfig> where TConfig : RouterConfig, new()
     {
         private static readonly Lazy<RouterFactoryDelegate<TDescendant, TConfig>> s_factory = new
@@ -150,6 +187,15 @@ namespace NanoRoute
         /// Creates a strongly typed builder.
         /// </summary>
         /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
+        /// <exception cref="MissingMethodException">
+        /// Thrown when <typeparamref name="TDescendant"/> does not declare a public or non-public constructor that
+        /// accepts <see cref="RouterBuilder{TRouter, TConfig}"/>.
+        /// </exception>
+        /// <example>
+        /// <code>
+        /// RouterBuilder&lt;MyRouter, RouterConfig&gt; builder = MyRouter.CreateBuilder();
+        /// </code>
+        /// </example>
         public static RouterBuilder<TDescendant, TConfig> CreateBuilder() => new(s_factory.Value);
     }
 }

@@ -14,6 +14,15 @@ namespace NanoRoute
     /// </summary>
     /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter"/>.</typeparam>
     /// <typeparam name="TConfig">The configuration type exposed by <see cref="RouterConfig"/>.</typeparam>
+    /// <example>
+    /// <code>
+    /// MyRouter router = MyRouter
+    ///     .CreateBuilder()
+    ///     .AddDefaultValueParsers()
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+    ///     .CreateRouter();
+    /// </code>
+    /// </example>
     public sealed class RouterBuilder<TRouter, TConfig> : RouteScopeBuilder where TRouter : Router where TConfig : RouterConfig, new()
     {
         private readonly RouterFactoryDelegate<TRouter, TConfig> _routerFactory;
@@ -43,6 +52,12 @@ namespace NanoRoute
         /// Thrown when <paramref name="parserName"/>, <paramref name="bindArguments"/>, or
         /// <paramref name="tryParseDelegate"/> is <see langword="null"/>.
         /// </exception>
+        /// <example>
+        /// <code>
+        /// builder.AddValueParser("slug", static rawArgs =&gt; null, static context =&gt;
+        ///     ValueTask.FromResult(new ValueParseResult(context.Segment.Length &gt; 0, context.Segment.ToString())));
+        /// </code>
+        /// </example>
         public new RouterBuilder<TRouter, TConfig> AddValueParser(string parserName, BindArgumentsDelegate bindArguments, ValueParserDelegate tryParseDelegate)
         {
             base.AddValueParser(parserName, bindArguments, tryParseDelegate);
@@ -97,6 +112,14 @@ namespace NanoRoute
         /// <exception cref="ArgumentNullException">
         /// Thrown when <paramref name="updateConfig"/> is <see langword="null"/> or returns <see langword="null"/>.
         /// </exception>
+        /// <example>
+        /// <code>
+        /// builder.ConfigureRouting(config =&gt; config with
+        /// {
+        ///     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
+        /// });
+        /// </code>
+        /// </example>
         public RouterBuilder<TRouter, TConfig> ConfigureRouting(ConfigureBuilderDelegate<TConfig> updateConfig)
         {
             Ensure.NotNull(updateConfig);
@@ -120,6 +143,11 @@ namespace NanoRoute
         /// The created router is an immutable snapshot. Later changes to the builder or its configuration do not
         /// affect routers that have already been created.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// MyRouter router = builder.CreateRouter();
+        /// </code>
+        /// </example>
         public TRouter CreateRouter() => _routerFactory(this);
     }
 }
