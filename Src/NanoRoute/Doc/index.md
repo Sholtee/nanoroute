@@ -28,7 +28,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddJsonErrorDetails()
-    .AddEndPoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
+    .AddEndpoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
         .WithHandler(static async (GetUserRequest request) =>
         {
             return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
@@ -37,7 +37,7 @@ HttpListenerRouter router = HttpListenerRouter
                 Name = await request.Users.GetNameAsync(request.UserId)
             });
         }))
-    .AddEndPoint("POST", "/api/users/", endpoint => endpoint
+    .AddEndpoint("POST", "/api/users/", endpoint => endpoint
         .WithJsonBody<CreateUserBody>(nameof(CreateUserRequest.Body))
         .WithHandler(static async (CreateUserRequest request) =>
         {
@@ -95,7 +95,7 @@ public interface IUserRepository
 }
 ```
 
-`AddEndPoint()` is the recommended application-level entry point for most routes. It captures an HTTP verb or verbs and a route pattern once, then endpoint helpers such as `WithHandler()` and `WithJsonBody()` add endpoint-local middleware without repeating the route. Typed handlers bind route values, JSON bodies, services, and framework values into request objects before your handler runs.
+`AddEndpoint()` is the recommended application-level entry point for most routes. It captures an HTTP verb or verbs and a route pattern once, then endpoint helpers such as `WithHandler()` and `WithJsonBody()` add endpoint-local middleware without repeating the route. Typed handlers bind route values, JSON bodies, services, and framework values into request objects before your handler runs.
 
 `AddHandler()` remains available as the lower-level pipeline primitive for custom middleware composition, prefix pipelines, and extension authors.
 
@@ -108,7 +108,7 @@ public interface IUserRepository
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
-- [EndPointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndPointBuilder.html)
+- [EndpointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
@@ -117,7 +117,7 @@ public interface IUserRepository
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
 - [RequestHandlerDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html)
 - [NanoRouteHandlerExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html)
-- [NanoRouteEndPointExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteEndPointExtensions.html)
+- [NanoRouteEndpointExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteEndpointExtensions.html)
 - [NanoRoutePrefixExtensions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html)
 - [ValueSource](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSource.html)
 - [ValueSourceAttribute](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueSourceAttribute.html)
@@ -148,7 +148,7 @@ HttpListenerRouter router = HttpListenerRouter
         ParametersCapacity = 8
     })
     .AddDefaultValueParsers()
-    .AddEndPoint("GET", "/items/{slug:str}/", endpoint => endpoint
+    .AddEndpoint("GET", "/items/{slug:str}/", endpoint => endpoint
         .WithHandler(static async (context, _) =>
         {
             await Task.CompletedTask;
@@ -197,7 +197,7 @@ builder.AddPrefix("/api/users/{user_id:int}/*", users => users
         context.Parameters["user"] = $"user-{context.Parameters["user_id"]}";
         return await next();
     })
-    .AddEndPoint("GET", "/details/", endpoint => endpoint
+    .AddEndpoint("GET", "/details/", endpoint => endpoint
         .WithHandler(static async (context, _) =>
         {
             await Task.CompletedTask;
@@ -216,7 +216,7 @@ This produces the same effective routes as registering `/api/users/{user_id:int}
 
 ## Endpoint Builders
 
-`AddEndPoint()` and `CreateEndPoint()` capture an endpoint's HTTP verb or verbs and exact or prefix route pattern once. Endpoint-aware helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` then register middleware for that captured endpoint without repeating the route.
+`AddEndpoint()` and `CreateEndpoint()` capture an endpoint's HTTP verb or verbs and exact or prefix route pattern once. Endpoint-aware helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` then register middleware for that captured endpoint without repeating the route.
 
 ```csharp
 public sealed class CreateItemRequest
@@ -228,7 +228,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
-    .AddEndPoint("POST", "/items/{id:int}/", endpoint => endpoint
+    .AddEndpoint("POST", "/items/{id:int}/", endpoint => endpoint
         .WithQueryBindings("{source:str}")
         .WithJsonBody<CreateItemRequest>("body")
         .WithHandler(static async (context, _) =>
@@ -245,7 +245,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-Endpoint builders are useful when several pieces of endpoint-local middleware need the same verbs and pattern. Multiple `WithHandler()` calls run in registration order, and each handler can call the supplied `next` delegate to continue the endpoint pipeline. `WithQueryBindings()` uses the endpoint's captured verbs and match kind, so query parsing stays local to that endpoint. `CreateEndPoint()` returns an `EndPointBuilder` when you want to configure an endpoint incrementally, and `EndPointBuilder.Prefix` exposes the endpoint's scoped route builder for endpoint-aware extensions that need the lower-level builder surface.
+Endpoint builders are useful when several pieces of endpoint-local middleware need the same verbs and pattern. Multiple `WithHandler()` calls run in registration order, and each handler can call the supplied `next` delegate to continue the endpoint pipeline. `WithQueryBindings()` uses the endpoint's captured verbs and match kind, so query parsing stays local to that endpoint. `CreateEndpoint()` returns an `EndpointBuilder` when you want to configure an endpoint incrementally, and `EndpointBuilder.Prefix` exposes the endpoint's scoped route builder for endpoint-aware extensions that need the lower-level builder surface.
 
 ## Value Parsers
 
@@ -331,7 +331,7 @@ HttpListenerRouter router = HttpListenerRouter
     .AddDefaultValueParsers()
     .AddPrefix("/items/*", items => items
         .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}&{tag:str(min=2)[]}")
-        .AddEndPoint("GET", RouteScopeBuilder.CurrentExact, endpoint => endpoint
+        .AddEndpoint("GET", RouteScopeBuilder.CurrentExact, endpoint => endpoint
             .WithHandler(static async (context, _) =>
             {
                 await Task.CompletedTask;
@@ -368,7 +368,7 @@ HttpListenerRouter router = HttpListenerRouter
         UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
     })
     .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}")
-    .AddEndPoint("GET", "/items/", endpoint => endpoint
+    .AddEndpoint("GET", "/items/", endpoint => endpoint
         .WithHandler(static async (context, _) =>
         {
             await Task.CompletedTask;
@@ -377,7 +377,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`AddQueryBindings()` and `WithQueryBindings()` snapshot the current `QueryParsingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. Endpoint builders use the same scoped configuration through `EndPointBuilder.Prefix`.
+`AddQueryBindings()` and `WithQueryBindings()` snapshot the current `QueryParsingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. Endpoint builders use the same scoped configuration through `EndpointBuilder.Prefix`.
 
 ## Typed Handlers
 
@@ -411,7 +411,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddQueryBindings("GET", "/items/{id:int}/", "{query_filter:str(min=3)}")
-    .AddEndPoint("GET", "/items/{id:int}/", endpoint => endpoint
+    .AddEndpoint("GET", "/items/{id:int}/", endpoint => endpoint
         .WithHandler(async (GetItemRequest request) =>
         {
             Item item = await request.Items.GetAsync(request.Id, request.Filter, request.Cancellation);
@@ -441,7 +441,7 @@ Typed endpoint handlers support the same route selection shapes as regular endpo
 They also have middleware-style overloads that receive `CallNextHandlerDelegate`:
 
 ```csharp
-.AddEndPoint(["GET"], "/items/{id:int}/", endpoint => endpoint
+.AddEndpoint(["GET"], "/items/{id:int}/", endpoint => endpoint
     .WithHandler(async (GetItemRequest request, CallNextHandlerDelegate next) =>
     {
         HttpResponseMessage response = await next();
@@ -474,7 +474,7 @@ HttpListenerRouter router = HttpListenerRouter
         ])
     })
     .AddExceptionHandler()
-    .AddEndPoint("GET", "/items/", endpoint => endpoint
+    .AddEndpoint("GET", "/items/", endpoint => endpoint
         .WithHandler((_, _) => throw new NotSupportedException()))
     .CreateRouter();
 ```
@@ -493,7 +493,7 @@ HttpListenerRouter router = HttpListenerRouter
         PopulateErrorInfo = true
     })
     .AddJsonErrorDetails()
-    .AddEndPoint("GET", "/items/", endpoint => endpoint
+    .AddEndpoint("GET", "/items/", endpoint => endpoint
         .WithHandler((_, _) => throw new InvalidOperationException("Boom")))
     .CreateRouter();
 ```
@@ -526,7 +526,7 @@ public sealed class InMemoryRouter : Router<InMemoryRouter, RouterConfig>
 
 InMemoryRouter router = InMemoryRouter
     .CreateBuilder()
-    .AddEndPoint("GET", "/health/", endpoint => endpoint
+    .AddEndpoint("GET", "/health/", endpoint => endpoint
         .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage())))
     .CreateRouter();
 ```
@@ -546,14 +546,14 @@ This keeps the transport-specific concerns in your own router type while still r
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/*")` creates a scoped child builder for a route subtree.
-- `AddEndPoint()` and `CreateEndPoint()` capture an endpoint's verbs and route pattern once.
-- `EndPointBuilder.WithHandler()`, `EndPointBuilder.WithJsonBody()`, and `EndPointBuilder.WithQueryBindings()` register endpoint-local handlers, JSON body middleware, and query bindings.
+- `AddEndpoint()` and `CreateEndpoint()` capture an endpoint's verbs and route pattern once.
+- `EndpointBuilder.WithHandler()`, `EndpointBuilder.WithJsonBody()`, and `EndpointBuilder.WithQueryBindings()` register endpoint-local handlers, JSON body middleware, and query bindings.
 - `RouteScopeBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
-- `AddQueryBindings()` and `EndPointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
-- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndPointBuilder.WithQueryBindings()` middleware.
-- `AddHandler<TRequestContext>()` and `EndPointBuilder.WithHandler<TRequestContext>()` project `RequestContext` into a typed request object before invoking the handler.
+- `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
+- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` middleware.
+- `AddHandler<TRequestContext>()` and `EndpointBuilder.WithHandler<TRequestContext>()` project `RequestContext` into a typed request object before invoking the handler.
 - `ConfigureExceptionHandling()` customizes exception normalization used by subsequently registered `AddExceptionHandler()` middleware.
-- `AddJsonBody()` and `EndPointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
+- `AddJsonBody()` and `EndpointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
 - `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.

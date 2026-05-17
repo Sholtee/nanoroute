@@ -34,7 +34,7 @@ namespace NanoRoute.TestLambda
             })
             .AddJsonErrorDetails()
             .AddDefaultValueParsers()
-            .AddEndPoint("GET", "/health/", endpoint => endpoint
+            .AddEndpoint("GET", "/health/", endpoint => endpoint
                 .WithHandler(static async (_, _) =>
                 {
                     await Task.Yield();
@@ -45,7 +45,7 @@ namespace NanoRoute.TestLambda
                     };
                 }))
             .AddPrefix("/items/{id:int(min=1)}/*", item => item
-                .AddEndPoint("GET", RouteScopeBuilder.CurrentExact, endpoint => endpoint
+                .AddEndpoint("GET", RouteScopeBuilder.CurrentExact, endpoint => endpoint
                     .WithQueryBindings("{filter?:str(min=3)}")
                     .WithHandler(static async (context, _) =>
                     {
@@ -60,7 +60,7 @@ namespace NanoRoute.TestLambda
                         });
                     })))
             .AddPrefix("/echo/*", echo => echo
-                .AddEndPoint("POST", RouteScopeBuilder.CurrentExact, endpoint => endpoint
+                .AddEndpoint("POST", RouteScopeBuilder.CurrentExact, endpoint => endpoint
                     .WithJsonBody(JsonContext.Default.EchoRequest, "body")
                     .WithHandler(static async (context, _) =>
                     {
@@ -68,7 +68,7 @@ namespace NanoRoute.TestLambda
 
                         return HttpResponseMessage.Json(context.Parameters["body"]);
                     })))
-            .AddEndPoint("GET", "/cookies/", endpoint => endpoint
+            .AddEndpoint("GET", "/cookies/", endpoint => endpoint
                 .WithHandler(static async (_, _) =>
                 {
                     await Task.Yield();

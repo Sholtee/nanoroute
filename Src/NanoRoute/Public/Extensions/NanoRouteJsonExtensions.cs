@@ -624,20 +624,20 @@ namespace NanoRoute
             }
         }
 
-        extension(EndPointBuilder endPointBuilder)
+        extension(EndpointBuilder endpointBuilder)
         {
             /// <summary>
             /// Deserializes JSON request bodies into an endpoint parameter using source-generated or custom JSON metadata.
             /// </summary>
             /// <param name="typeInfo">The metadata used to deserialize the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
-            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
+            /// <returns>The current <paramref name="endpointBuilder"/> instance.</returns>
             /// <remarks>
             /// The JSON-binding middleware is registered for the endpoint's captured HTTP methods and route match
             /// kind. The deserialized body is written into <see cref="RequestContext.Parameters"/>, and an existing
             /// value with the same key is overwritten.
             /// </remarks>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/>, <paramref name="typeInfo"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endpointBuilder"/>, <paramref name="typeInfo"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
             /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
             /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
@@ -646,11 +646,11 @@ namespace NanoRoute
             /// endpoint.WithJsonBody(MyJsonContext.Default.CreateUserRequest, "body");
             /// </code>
             /// </example>
-            public EndPointBuilder WithJsonBody(JsonTypeInfo typeInfo, string paramName)
+            public EndpointBuilder WithJsonBody(JsonTypeInfo typeInfo, string paramName)
             {
-                Ensure.NotNull(endPointBuilder);
+                Ensure.NotNull(endpointBuilder);
 
-                return endPointBuilder.WithHandler
+                return endpointBuilder.WithHandler
                 (
                     CreateHandler(typeInfo, paramName)
                 );
@@ -661,8 +661,8 @@ namespace NanoRoute
             /// </summary>
             /// <param name="type">The CLR type expected in the request body.</param>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
-            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/>, <paramref name="type"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <returns>The current <paramref name="endpointBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endpointBuilder"/>, <paramref name="type"/>, or <paramref name="paramName"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
             /// <exception cref="NotSupportedException">Thrown when JSON metadata cannot be resolved for <paramref name="type"/>.</exception>
             /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
@@ -672,11 +672,11 @@ namespace NanoRoute
             /// endpoint.WithJsonBody(typeof(CreateUserRequest), "body");
             /// </code>
             /// </example>
-            public EndPointBuilder WithJsonBody(Type type, string paramName)
+            public EndpointBuilder WithJsonBody(Type type, string paramName)
             {
                 Ensure.NotNull(type);
 
-                return endPointBuilder.WithJsonBody
+                return endpointBuilder.WithJsonBody
                 (
                     JsonSerializerOptions.Web.GetTypeInfo(type),
                     paramName
@@ -688,8 +688,8 @@ namespace NanoRoute
             /// </summary>
             /// <typeparam name="T">The CLR type expected in the request body.</typeparam>
             /// <param name="paramName">The parameter name under which the deserialized body will be stored.</param>
-            /// <returns>The current <paramref name="endPointBuilder"/> instance.</returns>
-            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endPointBuilder"/> or <paramref name="paramName"/> is <see langword="null"/>.</exception>
+            /// <returns>The current <paramref name="endpointBuilder"/> instance.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="endpointBuilder"/> or <paramref name="paramName"/> is <see langword="null"/>.</exception>
             /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
             /// <exception cref="NotSupportedException">Thrown when JSON metadata cannot be resolved for <typeparamref name="T"/>.</exception>
             /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
@@ -699,7 +699,7 @@ namespace NanoRoute
             /// endpoint.WithJsonBody&lt;CreateUserRequest&gt;("body");
             /// </code>
             /// </example>
-            public EndPointBuilder WithJsonBody<T>(string paramName) => endPointBuilder.WithJsonBody(typeof(T), paramName);
+            public EndpointBuilder WithJsonBody<T>(string paramName) => endpointBuilder.WithJsonBody(typeof(T), paramName);
         }
 
         extension(HttpResponseMessage)

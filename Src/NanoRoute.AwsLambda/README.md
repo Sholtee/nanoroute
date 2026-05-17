@@ -6,7 +6,56 @@ The package supports Amazon API Gateway HTTP APIs and Lambda Function URLs that 
 
 NanoRoute.AwsLambda targets `netstandard2.0` and `netstandard2.1`.
 
+## Install
+
+```shell
+dotnet add package NanoRoute.AwsLambda --prerelease
+```
+
 ## Quick Start
+
+Create a reusable router once, then call `Route()` from the Lambda handler with the API Gateway request and `ILambdaContext.RemainingTime`:
+
+```csharp
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using NanoRoute;
+using NanoRoute.AwsLambda;
+
+public sealed class Function
+{
+    private static readonly IServiceProvider Services = new EmptyServiceProvider();
+
+    private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
+        .CreateBuilder()
+        .AddJsonErrorDetails()
+        .AddEndpoint("GET", "/health/", endpoint => endpoint
+            .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("ok")
+            })))
+        .CreateRouter();
+
+    public Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+    {
+        return Router.Route(request, Services, context.RemainingTime);
+    }
+
+    private sealed class EmptyServiceProvider : IServiceProvider
+    {
+        public object? GetService(Type serviceType) => null;
+    }
+}
+```
+
+## Typed Binding Example
+
+The same router builder supports route parameters, JSON request bodies, query bindings, services, and typed request objects. The example below shows a small user API with service resolution:
 
 ```csharp
 using System;
@@ -31,7 +80,7 @@ public sealed class Function
         .CreateBuilder()
         .AddDefaultValueParsers()
         .AddJsonErrorDetails()
-        .AddEndPoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
+        .AddEndpoint("GET", "/api/users/{user_id:int}/", endpoint => endpoint
             .WithHandler(static async (GetUserRequest request) =>
             {
                 return HttpResponseMessage.Json(HttpStatusCode.OK, new UserResponse
@@ -40,7 +89,7 @@ public sealed class Function
                     Name = await request.Users.GetNameAsync(request.UserId)
                 });
             }))
-        .AddEndPoint("POST", "/api/users/", endpoint => endpoint
+        .AddEndpoint("POST", "/api/users/", endpoint => endpoint
             .WithJsonBody<CreateUserBody>(nameof(CreateUserRequest.Body))
             .WithHandler(static async (CreateUserRequest request) =>
             {
@@ -97,7 +146,7 @@ public interface IUserRepository
 }
 ```
 
-`ApiGatewayHttpApiV2Router.CreateBuilder()` uses the same builder APIs as the core package. Prefer endpoint builders such as `AddEndPoint()` for application routes; typed handlers and endpoint helpers such as `WithJsonBody()` and `WithQueryBindings()` keep route values, query values, JSON bodies, services, and framework values in request objects.
+`ApiGatewayHttpApiV2Router.CreateBuilder()` uses the same builder APIs as the core package. Prefer endpoint builders such as `AddEndpoint()` for application routes; typed handlers and endpoint helpers such as `WithJsonBody()` and `WithQueryBindings()` keep route values, query values, JSON bodies, services, and framework values in request objects.
 
 Pass `ILambdaContext.RemainingTime` to `Route()` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 

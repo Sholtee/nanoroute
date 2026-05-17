@@ -1,5 +1,5 @@
 /********************************************************************************
-* RouterBuilderTests.EndPoints.cs                                               *
+* RouterBuilderTests.Endpoints.cs                                               *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -13,17 +13,15 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
-    using Properties;
-
     internal sealed partial class RouterBuilderTests
     {
         private sealed record EndpointMetadata(string Value);
 
         [Test]
-        public async Task AddEndPoint_WithExactPattern_ShouldMatchOnlyExactPath()
+        public async Task AddEndpoint_WithExactPattern_ShouldMatchOnlyExactPath()
         {
             TestRouter router = _routerBuilder
-                .AddEndPoint("GET", "/items/", endpoint => endpoint
+                .AddEndpoint("GET", "/items/", Endpoint => Endpoint
                     .WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
                         Content = new StringContent("exact")
@@ -48,10 +46,10 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task AddEndPoint_WithPrefixPattern_ShouldMatchNestedPaths()
+        public async Task AddEndpoint_WithPrefixPattern_ShouldMatchNestedPaths()
         {
             TestRouter router = _routerBuilder
-                .AddEndPoint("GET", "/files/*", endpoint => endpoint
+                .AddEndpoint("GET", "/files/*", Endpoint => Endpoint
                     .WithHandler(async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
                         Content = new StringContent(context.Request.RequestUri!.AbsolutePath)
@@ -76,10 +74,10 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task AddEndPoint_WithMultipleVerbs_ShouldApplyEndpointHandlersToEachVerb()
+        public async Task AddEndpoint_WithMultipleVerbs_ShouldApplyEndpointHandlersToEachVerb()
         {
             TestRouter router = _routerBuilder
-                .AddEndPoint(["GET", "POST"], "/items/", endpoint => endpoint
+                .AddEndpoint(["GET", "POST"], "/items/", Endpoint => Endpoint
                     .WithHandler(async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
                         Content = new StringContent(context.Request.Method.Method)
@@ -110,12 +108,12 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task AddEndPoint_WithMultipleHandlers_ShouldInvokeHandlersInRegistrationOrder()
+        public async Task AddEndpoint_WithMultipleHandlers_ShouldInvokeHandlersInRegistrationOrder()
         {
             List<string> calls = [];
 
             TestRouter router = _routerBuilder
-                .AddEndPoint("GET", "/items/", endpoint => endpoint
+                .AddEndpoint("GET", "/items/", Endpoint => Endpoint
                     .WithHandler(async (_, next) =>
                     {
                         calls.Add("first");
@@ -146,9 +144,9 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task CreateEndPoint_ShouldAllowDeferredEndpointConfiguration()
+        public async Task CreateEndpoint_ShouldAllowDeferredEndpointConfiguration()
         {
-            EndPointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/deferred/");
+            EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/deferred/");
 
             endpoint.WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
 
@@ -164,7 +162,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void EndPointBuilder_Prefix_ShouldExposeEndpointScopedRouteScope()
+        public void EndpointBuilder_Prefix_ShouldExposeEndpointScopedRouteScope()
         {
             EndpointMetadata
                 missing = new(nameof(missing)),
@@ -173,7 +171,7 @@ namespace NanoRoute.Tests
 
             _routerBuilder.Metadata.Set(parent);
 
-            EndPointBuilder endpointBuilder = _routerBuilder.CreateEndPoint("GET", "/items/");
+            EndpointBuilder endpointBuilder = _routerBuilder.CreateEndpoint("GET", "/items/");
 
             Assert.That(endpointBuilder.Prefix.Metadata.GetOrDefault(missing), Is.EqualTo(parent));
 
@@ -187,60 +185,60 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void EndPointHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
+        public void EndpointHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
-            EndPointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/items/");
+            EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
 
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).CreateEndPoint("GET", "/items/"))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).CreateEndpoint("GET", "/items/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndPoint((IEnumerable<string>) null!, "/items/"))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndpoint((IEnumerable<string>) null!, "/items/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndPoint(["GET"], null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndpoint(["GET"], null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndPoint((string) null!, "/items/"))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndpoint((string) null!, "/items/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddEndPoint(["GET"], "/items/", _ => { }))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddEndpoint(["GET"], "/items/", _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndPoint((IEnumerable<string>) null!, "/items/", _ => { }))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndpoint((IEnumerable<string>) null!, "/items/", _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndPoint(["GET"], null!, _ => { }))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndpoint(["GET"], null!, _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndPoint(["GET"], "/items/", null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("configureEndPoint"));
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndpoint(["GET"], "/items/", null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("configureEndpoint"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndPoint((string) null!, "/items/", _ => { }))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndpoint((string) null!, "/items/", _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
             ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler(null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder) null!).WithJsonBody<TestJsonPayload>("payload"))!;
-            Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
+            ex = Assert.Throws<ArgumentNullException>(() => ((EndpointBuilder) null!).WithJsonBody<TestJsonPayload>("payload"))!;
+            Assert.That(ex.ParamName, Is.EqualTo("endpointBuilder"));
         });
 
         [TestCase("")]
         [TestCase("items")]
         [TestCase("/items")]
-        public void CreateEndPoint_ShouldThrowOnInvalidPattern(string pattern)
+        public void CreateEndpoint_ShouldThrowOnInvalidPattern(string pattern)
         {
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.CreateEndPoint("GET", pattern))!;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.CreateEndpoint("GET", pattern))!;
 
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
             Assert.That(ex.Message, Does.StartWith("Invalid pattern"));
         }
 
         [Test]
-        public void AddEndPoint_ShouldReturnTheOriginalBuilder()
+        public void AddEndpoint_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.AddEndPoint("GET", "/items/", _ => { });
+            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.AddEndpoint("GET", "/items/", _ => { });
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }
