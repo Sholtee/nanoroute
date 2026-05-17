@@ -52,6 +52,7 @@ NanoRoute.NanoRouteEndPointExtensions.extension<TBuilder>(TBuilder!).AddEndPoint
 NanoRoute.NanoRouteEndPointExtensions.extension<TBuilder>(TBuilder!).CreateEndPoint(string! verb, string! pattern) -> NanoRoute.EndPointBuilder!
 NanoRoute.NanoRouteEndPointExtensions.extension<TBuilder>(TBuilder!).CreateEndPoint(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern) -> NanoRoute.EndPointBuilder!
 NanoRoute.NanoRouteExceptionExtensions
+NanoRoute.NanoRouteExceptionExtensions.extension(NanoRoute.ExceptionNormalizer!)
 NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!)
 NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).GetErrorDetails(bool populateErrorInfo = false, string? traceId = null) -> NanoRoute.ErrorDetails!
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!)
@@ -165,6 +166,7 @@ NanoRoute.RouteScopeBuilder.Metadata.get -> NanoRoute.BuilderMetadata!
 NanoRoute.RouteScopeBuilder.Patterns.get -> System.Collections.Generic.IEnumerable<string!>!
 NanoRoute.RouteScopeBuilder.ValueParsers.get -> System.Collections.Generic.IReadOnlyDictionary<string!, NanoRoute.ValueParserRegistration!>!
 NanoRoute.SyncValueParserDelegate
+NanoRoute.TypedExceptionNormalizer<TException>
 NanoRoute.TypedRequestEndpointHandlerDelegate<TRequestContext>
 NanoRoute.TypedRequestHandlerDelegate<TRequestContext>
 NanoRoute.UnexpectedParameterBehavior
@@ -208,6 +210,7 @@ NanoRoute.ValueSourceAttribute.ValueSourceAttribute(NanoRoute.ValueSource source
 static NanoRoute.ExceptionHandlingConfig.Default.get -> NanoRoute.ExceptionHandlingConfig!
 static NanoRoute.HttpRequestMessageExtensions.extension(System.Net.Http.HttpRequestMessage!).ContentHeaders.get -> System.Collections.Frozen.FrozenSet<string!>!
 static NanoRoute.JsonErrorDetailsConfig.Default.get -> NanoRoute.JsonErrorDetailsConfig!
+static NanoRoute.NanoRouteExceptionExtensions.extension(NanoRoute.ExceptionNormalizer!).For<TException>(NanoRoute.TypedExceptionNormalizer<TException!>! normalizer) -> System.Collections.Generic.KeyValuePair<System.Type!, NanoRoute.ExceptionNormalizer!>
 static NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Throw(System.Net.HttpStatusCode status, string! title, params System.Collections.Generic.IEnumerable<string!>! errors) -> void
 static NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Throw(System.Net.HttpStatusCode status, string! title, System.Exception? original = null, System.Collections.Generic.IEnumerable<string!>? errors = null, System.Collections.Generic.IEnumerable<string!>? developerMessages = null) -> void
 static NanoRoute.NanoRouteJsonExtensions.extension(NanoRoute.ErrorDetails!).JsonTypeInfo.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<NanoRoute.ErrorDetails!>!

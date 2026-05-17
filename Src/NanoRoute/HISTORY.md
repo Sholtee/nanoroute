@@ -118,6 +118,7 @@ with:
 
 - `ValueSourceAttribute` now supports `ValueSource.Skip` to leave a typed-handler property untouched.
 - `ValueSourceAttribute` supports named service-locator bindings for keyed services through `Name`.
+- `TypedExceptionNormalizer<TException>` and `ExceptionNormalizer.For<TException>()` simplify registering typed exception normalizers.
 
 ### Migration
 
