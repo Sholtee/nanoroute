@@ -80,8 +80,8 @@ namespace NanoRoute
                     HttpRequestException.Throw
                     (
                         HttpStatusCode.InternalServerError,
-                        Resources.ERR_INTERNAL_ERROR, 
-                        ex, 
+                        Resources.ERR_INTERNAL_ERROR,
+                        ex,
                         developerMessages: ex.InnerExceptions.Select(static ex => ex.ToString())
                     );
                     return null!;

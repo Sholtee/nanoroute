@@ -150,14 +150,14 @@ namespace NanoRoute
 
                 context.Parameters[paramName] = body;
 
-                return await next();        
+                return await next();
             };
 
             [DoesNotReturn]
             static void BadRequest(string error) => HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, error);
         }
 
-        extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder: RouteScopeBuilder
+        extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for the selected HTTP methods.

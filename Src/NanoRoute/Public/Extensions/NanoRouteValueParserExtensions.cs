@@ -357,7 +357,7 @@ namespace NanoRoute
                                     break;
                                 default:
                                     throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, nameof(args));
-                            }                 
+                            }
                         }
 
                         if (min > max)

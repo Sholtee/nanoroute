@@ -155,7 +155,7 @@ namespace NanoRoute
                         source = Expression.Parameter(typeof(RequestContext), nameof(source)),
                         result = Expression.Variable(typeof(TRequestContext), nameof(result));
 
-                    List<Expression> propSetters = 
+                    List<Expression> propSetters =
                     [
                         Expression.Assign
                         (
@@ -208,7 +208,7 @@ namespace NanoRoute
                                         continue;
                                     case Type x when x == typeof(CancellationToken):
                                         SetProperty(static context => context.Cancellation);
-                                        continue;                 
+                                        continue;
                                 }
                                 goto case ValueSource.Parameter;
                             default:

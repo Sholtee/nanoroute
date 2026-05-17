@@ -67,7 +67,7 @@ namespace NanoRoute.Internals
                         combinedIndicator = lowerIndicator ^ upperIndicator,
                         mask = (combinedIndicator & 0x0080u) >> 2;
 
-                    return (char)(chr ^ mask);
+                    return (char) (chr ^ mask);
                 }
 
                 return CharToUpperNonAscii(chr);
@@ -114,10 +114,10 @@ namespace NanoRoute.Internals
                     switch (remainingChars)
                     {
                         case 3:
-                            tail |= (ulong)Unsafe.Add(ref inputRef, i + 2) << 32;
+                            tail |= (ulong) Unsafe.Add(ref inputRef, i + 2) << 32;
                             goto case 2;
                         case 2:
-                            tail |= (ulong)Unsafe.Add(ref inputRef, i + 1) << 16;
+                            tail |= (ulong) Unsafe.Add(ref inputRef, i + 1) << 16;
                             goto case 1;
                         case 1:
                             tail |= Unsafe.Add(ref inputRef, i);
@@ -137,13 +137,13 @@ namespace NanoRoute.Internals
                     // Add Marvin's final 0x80 padding after the remaining UTF-16 bytes.
                     p0 += remainingChars is 2
                         ? 0x80u
-                        : (uint)Unsafe.Add(ref tailRef, remainingChars - 1) | 0x0080_0000u;
+                        : (uint) Unsafe.Add(ref tailRef, remainingChars - 1) | 0x0080_0000u;
                 }
 
                 MarvinBlock(ref p0, ref p1);
                 MarvinBlock(ref p0, ref p1);
 
-                return (int)(p1 ^ p0);
+                return (int) (p1 ^ p0);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -210,7 +210,7 @@ namespace NanoRoute.Internals
                 return chr;
 
             if ((value - 0x00E0u) <= 0x0016u || (value - 0x00F8u) <= 0x0006u)
-                return (char)(chr - 0x20);
+                return (char) (chr - 0x20);
 
             return char.ToUpperInvariant(chr);
         }

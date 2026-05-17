@@ -294,16 +294,16 @@ namespace NanoRoute.Tests
             TypedRequestEndpointHandlerDelegate<TypedRouteRequest> typedHandler = _ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
             TypedRequestHandlerDelegate<TypedRouteRequest> typedPipelineHandler = (_, next) => next();
 
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder)null!).WithHandler(typedHandler))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder) null!).WithHandler(typedHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestEndpointHandlerDelegate<TypedRouteRequest>)null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestEndpointHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder)null!).WithHandler(typedPipelineHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((EndPointBuilder) null!).WithHandler(typedPipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestHandlerDelegate<TypedRouteRequest>)null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithHandler((TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
         });
     }

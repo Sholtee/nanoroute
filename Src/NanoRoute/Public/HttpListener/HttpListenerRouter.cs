@@ -49,7 +49,7 @@ namespace NanoRoute
 
         private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
-            response.StatusCode = (int)responseMessage.StatusCode;
+            response.StatusCode = (int) responseMessage.StatusCode;
 
             CopyResponseHeaders(responseMessage.Headers);
 
