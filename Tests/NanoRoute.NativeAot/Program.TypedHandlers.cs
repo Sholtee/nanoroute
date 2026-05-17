@@ -15,13 +15,13 @@ namespace NanoRoute.NativeAot
     {
         private static void ConfigureTypedHandlerRoutes(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) => builder
             .AddStringParser()
-            .AddEndPoint("GET", "/typed/items/{id:int(min=1)}/", endpoint => endpoint
+            .AddEndpoint("GET", "/typed/items/{id:int(min=1)}/", endpoint => endpoint
                 .WithQueryBindings("{query_filter:str(min=3)}")
                 .WithHandler(static (TypedRequest request) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent($"{request.Service.Prefix}:{request.Id}:{request.Filter}", Encoding.UTF8, "text/plain")
                 })))
-            .AddEndPoint("GET", "/typed/middleware/{id:int(min=1)}/", endpoint => endpoint
+            .AddEndpoint("GET", "/typed/middleware/{id:int(min=1)}/", endpoint => endpoint
                 .WithHandler(static async (TypedMiddlewareRequest request, CallNextHandlerDelegate next) =>
                 {
                     HttpResponseMessage response = await next().ConfigureAwait(false);

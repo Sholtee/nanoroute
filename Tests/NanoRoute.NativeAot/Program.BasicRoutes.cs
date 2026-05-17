@@ -14,12 +14,12 @@ namespace NanoRoute.NativeAot
     {
         private static void ConfigureBasicRoutes(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) => builder
             .AddIntParser()
-            .AddEndPoint("GET", "/health/", endpoint => endpoint
+            .AddEndpoint("GET", "/health/", endpoint => endpoint
                 .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent("healthy", Encoding.UTF8, "text/plain")
                 })))
-            .AddEndPoint("GET", "/items/{id:int(min=1)}/", endpoint => endpoint
+            .AddEndpoint("GET", "/items/{id:int(min=1)}/", endpoint => endpoint
                 .WithHandler(static (context, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent($"item:{context.Parameters["id"]}", Encoding.UTF8, "text/plain")

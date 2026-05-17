@@ -202,7 +202,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddEndPoint("GET", "/items/{id:int}/", endpoint => endpoint
+                .AddEndpoint("GET", "/items/{id:int}/", endpoint => endpoint
                     .WithHandler((TypedRouteRequest request) => Task.FromResult
                     (
                         new HttpResponseMessage(HttpStatusCode.OK)
@@ -227,7 +227,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddEndPoint("GET", "/items/{id:int}/", endpoint => endpoint
+                .AddEndpoint("GET", "/items/{id:int}/", endpoint => endpoint
                     .WithHandler(async (TypedRouteRequest request, CallNextHandlerDelegate next) =>
                     {
                         HttpResponseMessage response = await next();
@@ -290,7 +290,7 @@ namespace NanoRoute.Tests
         [Test]
         public void WithHandler_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            EndpointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/items/");
+            EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
             TypedRequestEndpointHandlerDelegate<TypedRouteRequest> typedHandler = _ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
             TypedRequestHandlerDelegate<TypedRouteRequest> typedPipelineHandler = (_, next) => next();
 

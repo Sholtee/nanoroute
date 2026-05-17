@@ -49,7 +49,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddEndPoint("GET", "/items/", endpoint => endpoint
+                .AddEndpoint("GET", "/items/", endpoint => endpoint
                     .WithQueryBindings("{filter:str(min=3)}&{page?:int(min=1)}")
                     .WithHandler(async (context, _) => new HttpResponseMessage
                     {
@@ -76,7 +76,7 @@ namespace NanoRoute.Tests
                 {
                     UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
                 })
-                .AddEndPoint("GET", "/items/", endpoint => endpoint
+                .AddEndpoint("GET", "/items/", endpoint => endpoint
                     .WithQueryBindings("{filter:str(min=3)}")
                     .WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
@@ -373,7 +373,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureQueryParsing(_ => null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("config"));
 
-            EndpointBuilder endpoint = _routerBuilder.CreateEndPoint("GET", "/items/");
+            EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
 
             ex = Assert.Throws<ArgumentNullException>(() => ((EndpointBuilder) null!).WithQueryBindings(""))!;
             Assert.That(ex.ParamName, Is.EqualTo("endPointBuilder"));

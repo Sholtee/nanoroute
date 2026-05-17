@@ -126,10 +126,10 @@ namespace NanoRoute
             /// </exception>
             /// <example>
             /// <code>
-            /// EndPointBuilder endpoint = builder.CreateEndPoint(["GET", "HEAD"], "/users/{id:int}/");
+            /// EndPointBuilder endpoint = builder.CreateEndpoint(["GET", "HEAD"], "/users/{id:int}/");
             /// </code>
             /// </example>
-            public EndpointBuilder CreateEndPoint(IEnumerable<string> verbs, string pattern)
+            public EndpointBuilder CreateEndpoint(IEnumerable<string> verbs, string pattern)
             {
                 Ensure.NotNull(routeScopeBuilder);
                 Ensure.NotNull(verbs);
@@ -161,14 +161,14 @@ namespace NanoRoute
             /// </exception>
             /// <example>
             /// <code>
-            /// EndPointBuilder endpoint = builder.CreateEndPoint("GET", "/users/{id:int}/");
+            /// EndPointBuilder endpoint = builder.CreateEndpoint("GET", "/users/{id:int}/");
             /// </code>
             /// </example>
-            public EndpointBuilder CreateEndPoint(string verb, string pattern)
+            public EndpointBuilder CreateEndpoint(string verb, string pattern)
             {
                 Ensure.NotNull(verb);
 
-                return routeScopeBuilder.CreateEndPoint([verb], pattern);
+                return routeScopeBuilder.CreateEndpoint([verb], pattern);
             }
 
             /// <summary>
@@ -195,18 +195,18 @@ namespace NanoRoute
             /// </exception>
             /// <example>
             /// <code>
-            /// builder.AddEndPoint(["POST", "PUT"], "/users/{id:int}/", endpoint =&gt; endpoint
+            /// builder.AddEndpoint(["POST", "PUT"], "/users/{id:int}/", endpoint =&gt; endpoint
             ///     .WithJsonBody&lt;UpdateUserRequest&gt;("body")
             ///     .WithHandler((context, _) =&gt; SaveUser(context)));
             /// </code>
             /// </example>
-            public TBuilder AddEndPoint(IEnumerable<string> verbs, string pattern, Action<EndpointBuilder> configureEndPoint)
+            public TBuilder AddEndpoint(IEnumerable<string> verbs, string pattern, Action<EndpointBuilder> configureEndPoint)
             {
                 Ensure.NotNull(configureEndPoint);
 
                 configureEndPoint
                 (
-                    routeScopeBuilder.CreateEndPoint(verbs, pattern)
+                    routeScopeBuilder.CreateEndpoint(verbs, pattern)
                 );
 
                 return routeScopeBuilder;
@@ -236,15 +236,15 @@ namespace NanoRoute
             /// </exception>
             /// <example>
             /// <code>
-            /// builder.AddEndPoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
+            /// builder.AddEndpoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
             ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
             /// </code>
             /// </example>
-            public TBuilder AddEndPoint(string verb, string pattern, Action<EndpointBuilder> configureEndPoint)
+            public TBuilder AddEndpoint(string verb, string pattern, Action<EndpointBuilder> configureEndPoint)
             {
                 Ensure.NotNull(verb);
 
-                return routeScopeBuilder.AddEndPoint([verb], pattern, configureEndPoint);
+                return routeScopeBuilder.AddEndpoint([verb], pattern, configureEndPoint);
             }
         }
     }
