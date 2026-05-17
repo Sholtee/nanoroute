@@ -167,8 +167,8 @@ namespace NanoRoute.Tests
         public void EndPointBuilder_Prefix_ShouldExposeEndpointScopedRouteScope()
         {
             EndpointMetadata
-                missing  = new(nameof(missing)),
-                parent   = new(nameof(parent)),
+                missing = new(nameof(missing)),
+                parent = new(nameof(parent)),
                 endpoint = new(nameof(endpoint));
 
             _routerBuilder.Metadata.Set(parent);

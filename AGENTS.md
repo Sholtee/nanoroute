@@ -47,6 +47,7 @@ Before considering a change complete, verify the items that apply:
   - `Src/NanoRoute*/Doc/index.md`
   - `Src/NanoRoute*/HISTORY.md`
   - `Src/NanoRoute*/README.md`
+- After modifications are otherwise complete, run `dotnet format` to keep code style consistent.
 - Code changes have relevant tests run, and coverage is not decreased. Use `Scripts/Run-Tests.ps1` for the normal test and coverage measurement flow.
 - Native AOT smoke coverage in `Tests/NanoRoute.NativeAot` is updated when behavior changes should be covered there.
 - When a change may affect Native AOT compatibility, publish and run the Native AOT smoke project as the PR workflow does. This includes changes involving reflection, JSON serialization, generated metadata, trimming-sensitive code, or public APIs that should remain usable from Native AOT applications.

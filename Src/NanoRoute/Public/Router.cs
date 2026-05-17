@@ -100,9 +100,9 @@ namespace NanoRoute
         /// using HttpResponseMessage response = await Handle(request, services, cancellation);
         /// </code>
         /// </example>
-        #if DEBUG
+#if DEBUG
         internal
-        #endif
+#endif
         protected async Task<HttpResponseMessage> Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)
         {
             Ensure.NotNull(request);
