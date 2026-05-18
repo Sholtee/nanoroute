@@ -1,5 +1,5 @@
 /********************************************************************************
-* Base64BodyStream.cs                                                           *
+* Base64BodyReaderStream.cs                                                     *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace NanoRoute.AwsLambda
 {
     [SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by tests and intended for request-body mapping in a follow-up change.")]
-    internal sealed class Base64BodyStream(string body) : Stream
+    internal sealed class Base64BodyReaderStream(string body) : Stream
     {
         #region Private
         private readonly byte[] _stagedBytes = new byte[3];
@@ -40,7 +40,6 @@ namespace NanoRoute.AwsLambda
             return bytesToCopy;
         }
 
-#if NETSTANDARD2_1_OR_GREATER
         private int DecodeStep(byte[] buffer, int offset, int count)
         {
             ReadOnlySpan<char> bodySpan = _remainingBody.Span;
@@ -61,84 +60,7 @@ namespace NanoRoute.AwsLambda
 
             return written;
         }
-#else
-        private int DecodeStep(byte[] buffer, int offset, int count)
-        {
-            ReadOnlySpan<char> bodySpan = _remainingBody.Span;
 
-            int
-                written = 0,
-                consumed = 0;
-
-            while (count - written >= 3 && bodySpan.Length - consumed >= 4)
-            {
-                char
-                    c0 = bodySpan[consumed],
-                    c1 = bodySpan[consumed + 1],
-                    c2 = bodySpan[consumed + 2],
-                    c3 = bodySpan[consumed + 3];
-
-                int save =
-                    (DecodeBase64Rank(c0) << 18) |
-                    (DecodeBase64Rank(c1) << 12) |
-                    (DecodeBase64Rank(c2) << 6) |
-                     DecodeBase64Rank(c3);
-
-                buffer[offset + written++] = (byte) (save >> 16);
-
-                if (c2 is not '=')
-                    buffer[offset + written++] = (byte) (save >> 8);
-
-                if (c3 is not '=')
-                    buffer[offset + written++] = (byte) save;
-
-                consumed += 4;
-            }
-
-            _remainingBody = _remainingBody.Slice(consumed);
-
-            if (written is 0 && !_remainingBody.IsEmpty)
-                throw new FormatException();
-
-            return written;
-
-            static int DecodeBase64Rank(char ch)
-            {
-                if (ch >= s_base64Ranks.Length)
-                    throw new FormatException();
-
-                int rank = s_base64Ranks[ch];
-                if (rank < 0)
-                    throw new FormatException();
-
-                return rank;
-            }
-        }
-
-        private static readonly sbyte[] s_base64Ranks = CreateBase64Ranks();
-
-        private static sbyte[] CreateBase64Ranks()
-        {
-            sbyte[] ranks = new sbyte[128];
-
-            ranks.AsSpan().Fill(-1);
-
-            for (char ch = 'A'; ch <= 'Z'; ch++)
-                ranks[ch] = (sbyte) (ch - 'A');
-
-            for (char ch = 'a'; ch <= 'z'; ch++)
-                ranks[ch] = (sbyte) (ch - 'a' + 26);
-
-            for (char ch = '0'; ch <= '9'; ch++)
-                ranks[ch] = (sbyte) (ch - '0' + 52);
-
-            ranks['+'] = 62;
-            ranks['/'] = 63;
-            ranks['='] = 0;
-
-            return ranks;
-        }
-#endif
         protected override void Dispose(bool disposing)
         {
             _disposed = true;
@@ -165,7 +87,7 @@ namespace NanoRoute.AwsLambda
                 throw new ArgumentOutOfRangeException(nameof(count));
 
             if (_disposed)
-                throw new ObjectDisposedException(nameof(Base64BodyStream));
+                throw new ObjectDisposedException(nameof(Base64BodyReaderStream));
 
             if (count is 0)
                 return 0;

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Description>AWS Lambda adapters for NanoRoute.</Description>
     <Version>1.0.0-preview2</Version>
     <PackageTags>$(PackageTags);AWS;Lambda;ApiGateway</PackageTags>

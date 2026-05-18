@@ -6,7 +6,6 @@
     <Product>$(MSBuildProjectName)</Product>
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <RootNamespace>$(MSBuildProjectName)</RootNamespace>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <IsPackable>true</IsPackable>
     <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>

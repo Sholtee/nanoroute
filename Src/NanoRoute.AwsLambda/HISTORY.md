@@ -5,6 +5,7 @@
 ### Breaking Changes
 
 - Changed `AwsLambdaRouterConfig` to an immutable record, following the core `RouterConfig` model.
+- Dropped the `netstandard2.0` target from NanoRoute.AwsLambda because the AWS Lambda .NET runtime does not support legacy .NET Framework hosts; the adapter now targets `netstandard2.1`.
 
 ### Added
 

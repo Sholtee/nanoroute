@@ -1,5 +1,5 @@
 /********************************************************************************
-* Base64BodyStreamTests.cs                                                      *
+* Base64BodyReaderStream.cs                                                     *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -14,14 +14,14 @@ using NUnit.Framework;
 namespace NanoRoute.AwsLambda.Tests
 {
     [TestFixture]
-    internal sealed class Base64BodyStreamTests
+    internal sealed class Base64BodyReaderStreamTests
     {
         [Test]
         public void Read_ShouldDecodeFullBuffer()
         {
             byte[] expected = { 0, 1, 2, 253, 254, 255 };
 
-            using Base64BodyStream stream = new(Convert.ToBase64String(expected));
+            using Base64BodyReaderStream stream = new(Convert.ToBase64String(expected));
             byte[] actual = new byte[expected.Length];
 
             Assert.That(stream.Read(actual, 0, actual.Length), Is.EqualTo(expected.Length));
@@ -72,7 +72,7 @@ namespace NanoRoute.AwsLambda.Tests
         [Test]
         public void Read_ShouldReturnEofForEmptyInput()
         {
-            using Base64BodyStream stream = new("");
+            using Base64BodyReaderStream stream = new("");
 
             Assert.That(stream.Read(new byte[1], 0, 1), Is.Zero);
         }
@@ -80,7 +80,7 @@ namespace NanoRoute.AwsLambda.Tests
         [Test]
         public void ReadAsync_ShouldReturnCanceledTaskWhenCancellationIsRequested()
         {
-            using Base64BodyStream stream = new("");
+            using Base64BodyReaderStream stream = new("");
             using CancellationTokenSource cts = new();
             cts.Cancel();
 
@@ -92,20 +92,17 @@ namespace NanoRoute.AwsLambda.Tests
         [TestCaseSource(nameof(RoundTripCases))]
         public async Task ReadAsync_ShouldRoundTripBclEncodedPayloads(byte[] expected, int bufferSize)
         {
-            using Base64BodyStream stream = new(Convert.ToBase64String(expected));
+            using Base64BodyReaderStream stream = new(Convert.ToBase64String(expected));
             byte[] actual = new byte[expected.Length];
-#if NETCOREAPP
+
             Assert.That(await stream.ReadAsync(actual.AsMemory(), CancellationToken.None), Is.EqualTo(expected.Length));
-#else
-            Assert.That(await stream.ReadAsync(actual, 0, actual.Length), Is.EqualTo(expected.Length));
-#endif
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
         public void UnsupportedMembers_ShouldBehaveAsReadOnlyNonSeekableStream()
         {
-            using Base64BodyStream stream = new("");
+            using Base64BodyReaderStream stream = new("");
 
             Assert.That(stream.CanRead, Is.True);
             Assert.That(stream.CanSeek, Is.False);
@@ -142,7 +139,7 @@ namespace NanoRoute.AwsLambda.Tests
 
         private static byte[] ReadAll(string encoded, int bufferSize)
         {
-            using Base64BodyStream stream = new(encoded);
+            using Base64BodyReaderStream stream = new(encoded);
             using MemoryStream output = new();
             byte[] buffer = new byte[bufferSize];
 

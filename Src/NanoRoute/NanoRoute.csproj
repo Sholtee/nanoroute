@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Description>A minimalistic, dependency-light routing library for `HttpRequestMessage` pipelines.</Description>
     <Version>1.0.0-preview3</Version>
   </PropertyGroup>

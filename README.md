@@ -95,5 +95,6 @@ nanoroute/
 
 ## Target Frameworks
 
-- Library: `netstandard2.0` and `netstandard2.1`
+- Core library: `netstandard2.0` and `netstandard2.1`
+- AWS Lambda adapter: `netstandard2.1`
 - Native AOT validation: `Tests/NanoRoute.NativeAot`
