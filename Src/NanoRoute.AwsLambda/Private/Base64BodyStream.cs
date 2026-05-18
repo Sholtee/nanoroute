@@ -50,9 +50,40 @@ namespace NanoRoute.AwsLambda
                 written = 0,
                 consumed = 0;
 
-            for (int state = 0, save = 0; consumed < bodySpan.Length && count - written >= 3;)
+            while (count - written >= 3 && bodySpan.Length - consumed >= 4)
             {
-                char ch = bodySpan[consumed++];
+                char
+                    c0 = bodySpan[consumed],
+                    c1 = bodySpan[consumed + 1],
+                    c2 = bodySpan[consumed + 2],
+                    c3 = bodySpan[consumed + 3];
+
+                int save =
+                    (DecodeBase64Rank(c0) << 18) |
+                    (DecodeBase64Rank(c1) << 12) |
+                    (DecodeBase64Rank(c2) <<  6) |
+                     DecodeBase64Rank(c3);
+
+                buffer[offset + written++] = (byte) (save >> 16);
+
+                if (c2 is not '=')
+                    buffer[offset + written++] = (byte) (save >> 8);
+
+                if (c3 is not '=')
+                    buffer[offset + written++] = (byte) save;
+
+                consumed += 4;
+            }
+
+            _remainingBody = _remainingBody.Slice(consumed);
+
+            if (written is 0 && !_remainingBody.IsEmpty)
+                throw new FormatException();
+
+            return written;
+
+            static int DecodeBase64Rank(char ch)
+            {
                 if (ch >= s_base64Ranks.Length)
                     throw new FormatException();
 
@@ -60,28 +91,8 @@ namespace NanoRoute.AwsLambda
                 if (rank < 0)
                     throw new FormatException();
 
-                save = (save << 6) | rank;
-
-                if (++state is not 4)
-                    continue;
-
-                buffer[offset + written++] = (byte) (save >> 16);
-
-                char previousChar = bodySpan[consumed - 2];
-                if (previousChar is not '=')
-                    buffer[offset + written++] = (byte) (save >> 8);
-
-                char lastChar = bodySpan[consumed - 1];
-                if (lastChar is not '=')
-                    buffer[offset + written++] = (byte) save;
-
-                state = 0;
-                save = 0;
+                return rank;
             }
-
-            _remainingBody = _remainingBody.Slice(consumed);
-
-            return written;
         }
 
         private static sbyte[] CreateBase64Ranks()
