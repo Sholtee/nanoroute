@@ -15,8 +15,6 @@ namespace NanoRoute.AwsLambda
     internal sealed class Base64BodyStream(string body) : Stream
     {
         #region Private
-        private static readonly sbyte[] s_base64Ranks = CreateBase64Ranks();
-
         private readonly byte[] _stagedBytes = new byte[3];
         private ReadOnlyMemory<char> _remainingBody = body.AsMemory();
         private Memory<byte> _remainingStagedBytes;
@@ -42,6 +40,28 @@ namespace NanoRoute.AwsLambda
             return bytesToCopy;
         }
 
+#if NETSTANDARD2_1_OR_GREATER
+        private int DecodeStep(byte[] buffer, int offset, int count)
+        {
+            ReadOnlySpan<char> bodySpan = _remainingBody.Span;
+            int inputLength = Math.Min(bodySpan.Length / 4, count / 3) * 4;
+
+            if (inputLength is 0)
+            {
+                if (!bodySpan.IsEmpty)
+                    throw new FormatException();
+
+                return 0;
+            }
+
+            if (!Convert.TryFromBase64Chars(bodySpan.Slice(0, inputLength), buffer.AsSpan(offset, count), out int written))
+                throw new FormatException();
+
+            _remainingBody = _remainingBody.Slice(inputLength);
+
+            return written;
+        }
+#else
         private int DecodeStep(byte[] buffer, int offset, int count)
         {
             ReadOnlySpan<char> bodySpan = _remainingBody.Span;
@@ -61,7 +81,7 @@ namespace NanoRoute.AwsLambda
                 int save =
                     (DecodeBase64Rank(c0) << 18) |
                     (DecodeBase64Rank(c1) << 12) |
-                    (DecodeBase64Rank(c2) <<  6) |
+                    (DecodeBase64Rank(c2) << 6) |
                      DecodeBase64Rank(c3);
 
                 buffer[offset + written++] = (byte) (save >> 16);
@@ -95,6 +115,8 @@ namespace NanoRoute.AwsLambda
             }
         }
 
+        private static readonly sbyte[] s_base64Ranks = CreateBase64Ranks();
+
         private static sbyte[] CreateBase64Ranks()
         {
             sbyte[] ranks = new sbyte[128];
@@ -116,7 +138,7 @@ namespace NanoRoute.AwsLambda
 
             return ranks;
         }
-
+#endif
         protected override void Dispose(bool disposing)
         {
             _disposed = true;
