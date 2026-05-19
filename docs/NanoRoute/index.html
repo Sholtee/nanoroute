@@ -186,6 +186,7 @@ public interface IUserRepository
 <p><code>ParametersCapacity</code> sets the initial capacity of the per-request <code>RequestContext.Parameters</code> dictionary. Raise it when most requests collect several route parameters, query bindings, or middleware-added values and you want to avoid resizing.</p>
 <h2 id="module-configuration">Module Configuration</h2>
 <p>Some builder modules expose <code>ConfigureXxx()</code> methods for settings that are shared by later registrations in the same route scope. This supports a &quot;configure once, use anywhere&quot; style when several route registrations should use the same module behavior.</p>
+<p>The same pattern also gives composite helpers a clean configuration path. A helper can register lower-level middleware internally while still honoring the configuration that was already stored in the builder scope. This keeps configuration close to the module it affects instead of adding pass-through callback overloads to every higher-level helper that happens to use that module.</p>
 <pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .ConfigureJsonErrorDetails(config =&gt; config with
@@ -439,7 +440,7 @@ HttpListenerRouter router = HttpListenerRouter
 </code></pre>
 <h2 id="exception-handling">Exception Handling</h2>
 <p><code>AddExceptionHandler()</code> adds middleware that converts unexpected exceptions into enriched <code>HttpRequestException</code> values. Existing <code>HttpRequestException</code> values are passed through unchanged, and <code>OperationCanceledException</code> still propagates to the caller.</p>
-<p>Use <code>ConfigureExceptionHandling()</code> before <code>AddExceptionHandler()</code> when you want to customize how specific exception types are normalized:</p>
+<p>Use <code>ConfigureExceptionHandling()</code> before registering exception-handling middleware when you want to customize how specific exception types are normalized:</p>
 <pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .ConfigureExceptionHandling(config =&gt; config with
@@ -461,7 +462,7 @@ HttpListenerRouter router = HttpListenerRouter
         .WithHandler((_, _) =&gt; throw new NotSupportedException()))
     .CreateRouter();
 </code></pre>
-<p><code>AddExceptionHandler()</code> snapshots the current <code>ExceptionHandlingConfig</code> at registration time. Prefix scopes follow the normal <code>RouteScopeBuilder.Metadata</code> scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.</p>
+<p><code>AddExceptionHandler()</code> snapshots the current <code>ExceptionHandlingConfig</code> at registration time. Higher-level helpers that register exception handling internally follow the same rule, so the exception-handling configuration can be customized even when you do not call <code>AddExceptionHandler()</code> directly. Prefix scopes follow the normal <code>RouteScopeBuilder.Metadata</code> scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.</p>
 <h2 id="json-error-details">JSON Error Details</h2>
 <p><code>AddJsonErrorDetails()</code> turns routing and normalized exception failures into JSON <code>ErrorDetails</code> responses. Configure the error payload before adding the middleware when you want to include developer diagnostics or customize <code>ErrorDetails</code> serialization:</p>
 <pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
@@ -476,6 +477,28 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 </code></pre>
 <p><code>PopulateErrorInfo</code> can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details.</p>
+<p><code>AddJsonErrorDetails()</code> also registers exception handling internally so unexpected exceptions are normalized before they are rendered as JSON. If you want to customize that normalization, call <code>ConfigureExceptionHandling()</code> before <code>AddJsonErrorDetails()</code>; the internally registered exception handler snapshots the current <code>ExceptionHandlingConfig</code> just like a direct <code>AddExceptionHandler()</code> call would.</p>
+<pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .ConfigureExceptionHandling(config =&gt; config with
+    {
+        ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+        ([
+            ExceptionNormalizer.For&lt;NotSupportedException&gt;
+            (
+                static ex =&gt;
+                {
+                    HttpRequestException.Throw(HttpStatusCode.BadRequest, &quot;Not supported&quot;, ex);
+                    return null!;
+                }
+            )
+        ])
+    })
+    .AddJsonErrorDetails()
+    .AddEndpoint(&quot;GET&quot;, &quot;/items/&quot;, endpoint =&gt; endpoint
+        .WithHandler((_, _) =&gt; throw new NotSupportedException()))
+    .CreateRouter();
+</code></pre>
 <p><code>AddJsonErrorDetails()</code> snapshots the current <code>JsonErrorDetailsConfig</code> at registration time. Prefix scopes follow the normal <code>RouteScopeBuilder.Metadata</code> scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.</p>
 <h2 id="custom-routers">Custom Routers</h2>
 <p>If <code>HttpListenerRouter</code> is not the transport you want, derive from <code>Router&lt;TDescendant, TConfig&gt;</code> and expose your own entry point that prepares an <code>HttpRequestMessage</code>, invokes <code>Handle()</code>, and deals with the returned <code>HttpResponseMessage</code>.</p>
