@@ -80,13 +80,11 @@ namespace NanoRoute.AwsLambda.Tests
         [Test]
         public void ReadAsync_ShouldReturnCanceledTaskWhenCancellationIsRequested()
         {
-            using Base64BodyReaderStream stream = new("");
+            using Base64BodyReaderStream stream = new("AQ==");
             using CancellationTokenSource cts = new();
             cts.Cancel();
 
-            Task<int> read = stream.ReadAsync(new byte[1], 0, 1, cts.Token);
-
-            Assert.That(read.IsCanceled, Is.True);
+            Assert.ThrowsAsync<OperationCanceledException>(() => stream.ReadAsync(new byte[1], 0, 1, cts.Token));
         }
 
         [TestCaseSource(nameof(RoundTripCases))]

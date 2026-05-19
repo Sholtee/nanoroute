@@ -4,14 +4,12 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace NanoRoute.AwsLambda
 {
-    [SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by tests and intended for request-body mapping in a follow-up change.")]
     internal sealed class Base64BodyReaderStream(string body) : Stream
     {
         #region Private
@@ -21,29 +19,23 @@ namespace NanoRoute.AwsLambda
 
         private bool _disposed;
 
-        private int CopyStagedBytes(byte[] buffer, ref int offset, ref int count)
+        private int CopyStagedBytes(ref Span<byte> buffer)
         {
-            int bytesToCopy = Math.Min(_remainingStagedBytes.Length, count);
+            int bytesToCopy = Math.Min(_remainingStagedBytes.Length, buffer.Length);
             if (bytesToCopy is 0)
                 return 0;
 
-            _remainingStagedBytes.Slice(0, bytesToCopy).CopyTo
-            (
-                buffer.AsMemory(offset, bytesToCopy)
-            );
-
+            _remainingStagedBytes.Span.Slice(0, bytesToCopy).CopyTo(buffer.Slice(0, bytesToCopy));
             _remainingStagedBytes = _remainingStagedBytes.Slice(bytesToCopy);
-
-            offset += bytesToCopy;
-            count -= bytesToCopy;
+            buffer = buffer.Slice(bytesToCopy);
 
             return bytesToCopy;
         }
 
-        private int DecodeStep(byte[] buffer, int offset, int count)
+        private int DecodeStep(Span<byte> buffer)
         {
             ReadOnlySpan<char> bodySpan = _remainingBody.Span;
-            int inputLength = Math.Min(bodySpan.Length / 4, count / 3) * 4;
+            int inputLength = Math.Min(bodySpan.Length / 4, buffer.Length / 3) * 4;
 
             if (inputLength is 0)
             {
@@ -53,12 +45,62 @@ namespace NanoRoute.AwsLambda
                 return 0;
             }
 
-            if (!Convert.TryFromBase64Chars(bodySpan.Slice(0, inputLength), buffer.AsSpan(offset, count), out int written))
+            if (!Convert.TryFromBase64Chars(bodySpan.Slice(0, inputLength), buffer, out int written))
                 throw new FormatException();
 
             _remainingBody = _remainingBody.Slice(inputLength);
 
             return written;
+        }
+
+        private int ReadCore(Span<byte> buffer, CancellationToken cancellation)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(Base64BodyReaderStream));
+
+            if (buffer.IsEmpty)
+                return 0;
+
+            int read = CopyStagedBytes(ref buffer);
+
+            while (buffer.Length >= 3 && !_remainingBody.IsEmpty)
+            {
+                cancellation.ThrowIfCancellationRequested();
+
+                int decoded = DecodeStep(buffer);
+                if (decoded is 0)
+                    break;
+
+                buffer = buffer.Slice(decoded);
+                read += decoded;
+            }
+
+            if (!buffer.IsEmpty && !_remainingBody.IsEmpty)
+            {
+                cancellation.ThrowIfCancellationRequested();
+
+                int stagedByteCount = DecodeStep(_stagedBytes);
+                if (stagedByteCount is not 0)
+                {
+                    _remainingStagedBytes = _stagedBytes.AsMemory(0, stagedByteCount);
+
+                    read += CopyStagedBytes(ref buffer);
+                }
+            }
+
+            return read;
+        }
+
+        private static void ValidateBufferArguments(byte[] buffer, int offset, int count)
+        {
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+
+            if (offset < 0 || offset > buffer.Length)
+                throw new ArgumentOutOfRangeException(nameof(offset));
+
+            if (count < 0 || count > buffer.Length - offset)
+                throw new ArgumentOutOfRangeException(nameof(count));
         }
 
         protected override void Dispose(bool disposing)
@@ -77,54 +119,27 @@ namespace NanoRoute.AwsLambda
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ValidateBufferArguments(buffer, offset, count);
 
-            if (offset < 0 || offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-
-            if (count < 0 || count > buffer.Length - offset)
-                throw new ArgumentOutOfRangeException(nameof(count));
-
-            if (_disposed)
-                throw new ObjectDisposedException(nameof(Base64BodyReaderStream));
-
-            if (count is 0)
-                return 0;
-
-            int read = CopyStagedBytes(buffer, ref offset, ref count);
-
-            while (count >= 3 && !_remainingBody.IsEmpty)
-            {
-                int decoded = DecodeStep(buffer, offset, count);
-                if (decoded is 0)
-                    break;
-
-                offset += decoded;
-                count -= decoded;
-                read += decoded;
-            }
-
-            while (count > 0 && !_remainingBody.IsEmpty)
-            {
-                int stagedByteCount = DecodeStep(_stagedBytes, 0, _stagedBytes.Length);
-                if (stagedByteCount is 0)
-                    break;
-
-                _remainingStagedBytes = _stagedBytes.AsMemory(0, stagedByteCount);
-
-                read += CopyStagedBytes(buffer, ref offset, ref count);
-            }
-
-            return read;
+            return ReadCore(buffer.AsSpan(offset, count), CancellationToken.None);
         }
 
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return Task.FromCanceled<int>(cancellationToken);
+        public override int Read(Span<byte> buffer) => ReadCore(buffer, CancellationToken.None);
 
-            return Task.FromResult(Read(buffer, offset, count));
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellation)
+        {
+            ValidateBufferArguments(buffer, offset, count);
+
+            await Task.Yield();
+
+            return ReadCore(buffer.AsSpan(offset, count), cancellation);
+        }
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellation)
+        {
+            await Task.Yield();
+
+            return ReadCore(buffer.Span, cancellation);
         }
 
         #region Not Supported members
