@@ -70,7 +70,10 @@ namespace NanoRoute.Internals
 
         private char[]? _decodedSegmentBuffer;
 
-        // DelimitedSegment is a mutable struct: keep this field non-readonly so MoveNext() updates the cursor
+        // Keep DelimitedSegment instead of Uri.Segments: UrlSegmentBenchmarks shows it avoids eager segment
+        // array/string allocation and preserves this cursor's lazy traversal model.
+        //
+        // DelimitedSegment is mutable, so keep this field non-readonly to let MoveNext() update the cursor
         // itself instead of a defensive copy.
         private DelimitedSegment _segment = SplitUri(uri);
 

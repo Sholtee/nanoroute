@@ -165,6 +165,8 @@ Created routers are immutable snapshots: later route or configuration changes on
 
 Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same route scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
 
+The same pattern also gives composite helpers a clean configuration path. A helper can register lower-level middleware internally while still honoring the configuration that was already stored in the builder scope. This keeps configuration close to the module it affects instead of adding pass-through callback overloads to every higher-level helper that happens to use that module.
+
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
@@ -454,7 +456,7 @@ They also have middleware-style overloads that receive `CallNextHandlerDelegate`
 
 `AddExceptionHandler()` adds middleware that converts unexpected exceptions into enriched `HttpRequestException` values. Existing `HttpRequestException` values are passed through unchanged, and `OperationCanceledException` still propagates to the caller.
 
-Use `ConfigureExceptionHandling()` before `AddExceptionHandler()` when you want to customize how specific exception types are normalized:
+Use `ConfigureExceptionHandling()` before registering exception-handling middleware when you want to customize how specific exception types are normalized:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
@@ -479,7 +481,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
+`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Higher-level helpers that register exception handling internally follow the same rule, so the exception-handling configuration can be customized even when you do not call `AddExceptionHandler()` directly. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
 
 ## JSON Error Details
 
@@ -499,6 +501,31 @@ HttpListenerRouter router = HttpListenerRouter
 ```
 
 `PopulateErrorInfo` can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details.
+
+`AddJsonErrorDetails()` also registers exception handling internally so unexpected exceptions are normalized before they are rendered as JSON. If you want to customize that normalization, call `ConfigureExceptionHandling()` before `AddJsonErrorDetails()`; the internally registered exception handler snapshots the current `ExceptionHandlingConfig` just like a direct `AddExceptionHandler()` call would.
+
+```csharp
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .ConfigureExceptionHandling(config => config with
+    {
+        ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+        ([
+            ExceptionNormalizer.For<NotSupportedException>
+            (
+                static ex =>
+                {
+                    HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+                    return null!;
+                }
+            )
+        ])
+    })
+    .AddJsonErrorDetails()
+    .AddEndpoint("GET", "/items/", endpoint => endpoint
+        .WithHandler((_, _) => throw new NotSupportedException()))
+    .CreateRouter();
+```
 
 `AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
 

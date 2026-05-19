@@ -36,6 +36,18 @@ After the developer accepts the issue description, create the issue by calling `
 
 The GitHub token is expected to be configured by the developer for the script. Do not perform token setup or extra GitHub tasks. After the script completes, return the issue link printed by the script.
 
+## Performance Testing Workflow
+
+When the developer asks to performance test, benchmark, compare throughput, or investigate allocations, use the BenchmarkDotNet harness in `Tests/NanoRoute.Perf`.
+
+Place new performance tests in the `Tests/NanoRoute.Perf` project. Follow the existing benchmark style: keep each benchmark class focused on the behavior being measured, name benchmark classes with the `Benchmarks` suffix, and include baseline/comparison cases when the request is about a regression or alternative implementation.
+
+Run performance tests with `Scripts/Run-PerfTests.ps1`. Pass a BenchmarkDotNet filter as the first positional argument when a focused run is enough, for example `.\Scripts\Run-PerfTests.ps1 "*Routing*"`.
+
+The performance script builds `Tests/NanoRoute.Perf/NanoRoute.Perf.csproj` in Release, clears generated `Artifacts` and `BIN` output, runs the generated `NanoRoute.Perf.exe`, and writes BenchmarkDotNet output under `Artifacts/BenchmarkDotNet`.
+
+For performance-sensitive code changes, add or update focused benchmarks and run `Scripts/Run-PerfTests.ps1` with the narrowest useful filter. Report the filter used, the benchmark summary location, and the important timing/allocation results.
+
 ## Definition of Done
 
 Before considering a change complete, verify the items that apply:
