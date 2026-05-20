@@ -11,12 +11,16 @@ namespace NanoRoute.Perf
 {
     using Internals;
 
-    public class EnumParsingBenchmark
+    [MemoryDiagnoser]
+    public class EnumParsingBenchmarks
     {
-        [Params("Get", "Invalid")]
+        [Params("GET", "Get", "Invalid")]
         public string Value { get; set; } = null!;
 
+        [Benchmark(Baseline = true)]
+        public bool BclEnumTryParse() => Enum.TryParse(Value, ignoreCase: true, out HttpVerb _);
+
         [Benchmark]
-        public bool TryParse() => Enum.TryParse(Value, ignoreCase: true, out HttpVerb _);
+        public bool TryParseFast() => HttpVerb.TryParseFast(Value, out HttpVerb _);
     }
 }

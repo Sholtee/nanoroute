@@ -28,7 +28,7 @@ namespace NanoRoute.Internals
 
         private static HttpVerb ParseVerb(HttpRequestMessage request)
         {
-            if (!Enum.TryParse(request.Method.Method, ignoreCase: true, out HttpVerb verb))
+            if (!HttpVerb.TryParseFast(request.Method.Method, out HttpVerb verb))
                 throw new ArgumentException
                 (
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(request)
