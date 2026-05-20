@@ -90,7 +90,7 @@
     </tbody>
   </table>
   <h5 id="NanoRoute_RequestHandlerDelegate_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>Middleware may signal HTTP failures by calling <code>HttpRequestException.Throw(...)</code>. When
+  <div class="markdown level0 remarks"><p>Handler may signal HTTP failures by calling <code>HttpRequestException.Throw(...)</code>. When
 <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</a>, or equivalent custom
 middleware is registered, those exceptions can be translated into structured error responses. Use
 <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__">ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a>
