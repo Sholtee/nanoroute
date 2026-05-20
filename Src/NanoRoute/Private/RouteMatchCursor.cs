@@ -21,9 +21,11 @@ namespace NanoRoute.Internals
         public required HandlerRegistration HandlerRegistration { get; init; }
 
         public required Dictionary<string, object?> AttachedParameters { get; init; }
+
+        public required ReadOnlyMemory<char> RemainingPath { get; init; }
     }
 
-    internal sealed class RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation) : IAsyncEnumerator<RouteMatch>
+    internal sealed class RouteMatchCursor : IAsyncEnumerator<RouteMatch>
     {
         #region Private
         private enum BranchKind
@@ -59,14 +61,15 @@ namespace NanoRoute.Internals
 
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
-        private readonly BranchOrder _branchOrder = routerConfig.MatchingPrecedence switch
-        {
-            MatchingPrecedence.LiteralFirst => new BranchOrder(BranchKind.Literal, BranchKind.Parsed),
-            MatchingPrecedence.ParameterizedFirst => new BranchOrder(BranchKind.Parsed, BranchKind.Literal),
-            _ => default  // dead code
-        };
+        private readonly BranchOrder _branchOrder;
 
-        private readonly Dictionary<string, object?> _parameters = new(routerConfig.ParametersCapacity, StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, object?> _parameters;
+
+        private readonly HttpVerb _verb;
+
+        private readonly CancellationToken _cancellation;
+
+        private readonly IServiceProvider _services;
 
         private char[]? _decodedSegmentBuffer;
 
@@ -75,11 +78,13 @@ namespace NanoRoute.Internals
         //
         // DelimitedSegment is mutable, so keep this field non-readonly to let MoveNext() update the cursor
         // itself instead of a defensive copy.
-        private DelimitedSegment _segment = SplitUri(uri);
+        private DelimitedSegment _segment;
 
-        private MatchPhase _phase = MatchPhase.EmitHandlers;
+        private MatchPhase _phase;
 
-        private ReadOnlyMemory<char> _decodedSegment;
+        private ReadOnlyMemory<char>
+            _decodedSegment,
+            _remainingPath;
 
         private IList<HandlerRegistration>? _handlers;
 
@@ -87,17 +92,7 @@ namespace NanoRoute.Internals
             _handlerIndex,
             _nextDecodedSegment;
 
-        private static DelimitedSegment SplitUri(Uri uri)
-        {
-            DelimitedSegment result = new
-            (
-                // Escaped path, not percent decoded -> "/path%2Fto%2Fsomewhere/" will be treated as a single segment
-                uri.AbsolutePath.AsMemory(),
-                '/'
-            );
-            result.MoveNext();
-            return result;
-        }
+        private RouteNode _node;
 
         private ReadOnlyMemory<char> GetSegmentForMatching()
         {
@@ -107,7 +102,7 @@ namespace NanoRoute.Internals
             if (current.Span.IndexOf('%') < 0)
                 return current;
 
-            char[] decodedSegmentBuffer = _decodedSegmentBuffer ??= s_arrayPool.Rent(uri.AbsolutePath.Length);
+            char[] decodedSegmentBuffer = _decodedSegmentBuffer ??= s_arrayPool.Rent(_segment.Original.Length);
 
             if (!UrlUtils.TryDecodeUrl(current.Span, decodedSegmentBuffer.AsSpan(_nextDecodedSegment), UrlDecodeMode.Path, out int charsWritten))
                 HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_DECODING_FAILED);
@@ -126,11 +121,11 @@ namespace NanoRoute.Internals
 
         private void AdvanceToNextSegment(RouteNode nextNode)
         {
-            node = nextNode;
-
+            _node = nextNode;
             _handlerIndex = 0;
             _handlers = null;
             _decodedSegment = default;
+            _remainingPath = _segment.Remaining;
 
             _segment.MoveNext();
         }
@@ -138,7 +133,7 @@ namespace NanoRoute.Internals
         private bool TryEmitHandler()
         {
             // Retrieve the handler list on the first iteration
-            if (_handlers is null && !node.HandlerRegistrations.TryGetValue(verb, out _handlers))
+            if (_handlers is null && !_node.HandlerRegistrations.TryGetValue(_verb, out _handlers))
                 return false;
 
             while (_handlerIndex < _handlers.Count)
@@ -148,7 +143,12 @@ namespace NanoRoute.Internals
                 if (_segment.HasValue && !candidate.IsPrefix)
                     continue;
 
-                Current = new RouteMatch { HandlerRegistration = candidate, AttachedParameters = _parameters };
+                Current = new RouteMatch
+                {
+                    HandlerRegistration = candidate,
+                    RemainingPath = _remainingPath,
+                    AttachedParameters = _parameters
+                };
                 return true;
             }
 
@@ -164,7 +164,7 @@ namespace NanoRoute.Internals
 
         private bool TryLiteralBranch()
         {
-            if (!node.LiteralChildren.TryGetValue(_decodedSegment, out RouteNode branchNode))
+            if (!_node.LiteralChildren.TryGetValue(_decodedSegment, out RouteNode branchNode))
                 return false;
 
             AdvanceToNextSegment(branchNode);
@@ -173,9 +173,9 @@ namespace NanoRoute.Internals
 
         private ValueTask<bool> TryParsedBranchAsync(int startIndex = 0)
         {
-            for (int i = startIndex; i < node.ParsedChildren.Count; i++)
+            for (int i = startIndex; i < _node.ParsedChildren.Count; i++)
             {
-                RouteNode branchNode = node.ParsedChildren[i];
+                RouteNode branchNode = _node.ParsedChildren[i];
                 ParameterParser parser = branchNode.ParameterParser!;
 
                 ValueTask<ValueParseResult> parseResult = parser.Parse
@@ -183,9 +183,9 @@ namespace NanoRoute.Internals
                     new ValueParserContext
                     {
                         Segment = _decodedSegment,
-                        Services = services,
+                        Services = _services,
                         Arguments = parser.Arguments,
-                        Cancellation = cancellation
+                        Cancellation = _cancellation
                     }
                 );
 
@@ -221,6 +221,30 @@ namespace NanoRoute.Internals
         }
         #endregion
 
+        public RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation)
+        {
+            _segment = new DelimitedSegment
+            (
+                // Escaped path, not percent decoded -> "/path%2Fto%2Fsomewhere/" will be treated as a single segment
+                uri.AbsolutePath.AsMemory(),
+                '/'
+            );
+            _branchOrder = routerConfig.MatchingPrecedence switch
+            {
+                MatchingPrecedence.LiteralFirst => new BranchOrder(BranchKind.Literal, BranchKind.Parsed),
+                MatchingPrecedence.ParameterizedFirst => new BranchOrder(BranchKind.Parsed, BranchKind.Literal),
+                _ => default  // dead code (valid values enforced by the RouterConfig class)
+            };
+            _parameters = new Dictionary<string, object?>(routerConfig.ParametersCapacity, StringComparer.OrdinalIgnoreCase);
+            _phase = MatchPhase.EmitHandlers;
+            _verb = verb;
+            _cancellation = cancellation;
+            _services = services;
+            _node = node; 
+
+            AdvanceToNextSegment(node);
+        }
+
         public RouteMatch Current { get; private set; }
 
         public ValueTask DisposeAsync()
@@ -235,7 +259,7 @@ namespace NanoRoute.Internals
         {
             while (_phase is not MatchPhase.Done)
             {
-                cancellation.ThrowIfCancellationRequested();
+                _cancellation.ThrowIfCancellationRequested();
 
                 switch (_phase)
                 {
