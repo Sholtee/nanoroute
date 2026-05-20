@@ -42,14 +42,9 @@ namespace NanoRoute.Internals
             EmitHandlers,
 
             /// <summary>
-            /// Explore the branch category that currently has higher precedence.
+            /// Explore child branches according to the configured precedence.
             /// </summary>
-            FirstBranch,
-
-            /// <summary>
-            /// Explore the remaining branch category after the preferred one has been attempted.
-            /// </summary>
-            SecondBranch,
+            Branch,
 
             /// <summary>
             /// Terminating step
@@ -82,9 +77,7 @@ namespace NanoRoute.Internals
 
         private MatchPhase _phase;
 
-        private ReadOnlyMemory<char>
-            _decodedSegment,
-            _remainingPath;
+        private ReadOnlyMemory<char> _remainingPath;
 
         private IList<HandlerRegistration>? _handlers;
 
@@ -121,10 +114,11 @@ namespace NanoRoute.Internals
 
         private void AdvanceToNextSegment(RouteNode nextNode)
         {
+            _cancellation.ThrowIfCancellationRequested();
+
             _node = nextNode;
             _handlerIndex = 0;
             _handlers = null;
-            _decodedSegment = default;
             _remainingPath = _segment.Remaining;
 
             _segment.MoveNext();
@@ -155,23 +149,45 @@ namespace NanoRoute.Internals
             return false;
         }
 
-        private ValueTask<bool> TryBranchAsync(BranchKind branchKind) => branchKind switch
+        private ValueTask<bool> TryBranchAsync(BranchKind branchKind, ReadOnlyMemory<char> decodedSegment) => branchKind switch
         {
-            BranchKind.Literal => new ValueTask<bool>(TryLiteralBranch()),
-            BranchKind.Parsed => TryParsedBranchAsync(),
+            BranchKind.Literal => new ValueTask<bool>(TryLiteralBranch(decodedSegment)),
+            BranchKind.Parsed => TryParsedBranchAsync(decodedSegment),
             _ => throw new ArgumentOutOfRangeException(nameof(branchKind))
         };
 
-        private bool TryLiteralBranch()
+        private ValueTask<bool> TryBranchPairAsync(ReadOnlyMemory<char> decodedSegment)
         {
-            if (!_node.LiteralChildren.TryGetValue(_decodedSegment, out RouteNode branchNode))
+            ValueTask<bool> firstBranchMatched = TryBranchAsync(_branchOrder.First, decodedSegment);
+
+            if (!firstBranchMatched.IsCompletedSuccessfully)
+                return TryBranchPairAwaitedAsync(firstBranchMatched, decodedSegment);
+
+            if (firstBranchMatched.Result)
+                return new ValueTask<bool>(true);
+
+            return TryBranchAsync(_branchOrder.Second, decodedSegment);
+        }
+
+        // Keep TryBranchPairAsync() state-machine-free while the preferred branch completes synchronously
+        private async ValueTask<bool> TryBranchPairAwaitedAsync(ValueTask<bool> firstBranchMatched, ReadOnlyMemory<char> decodedSegment)
+        {
+            if (await firstBranchMatched)
+                return true;
+
+            return await TryBranchAsync(_branchOrder.Second, decodedSegment);
+        }
+
+        private bool TryLiteralBranch(ReadOnlyMemory<char> decodedSegment)
+        {
+            if (!_node.LiteralChildren.TryGetValue(decodedSegment, out RouteNode branchNode))
                 return false;
 
             AdvanceToNextSegment(branchNode);
             return true;
         }
 
-        private ValueTask<bool> TryParsedBranchAsync(int startIndex = 0)
+        private ValueTask<bool> TryParsedBranchAsync(ReadOnlyMemory<char> decodedSegment, int startIndex = 0)
         {
             for (int i = startIndex; i < _node.ParsedChildren.Count; i++)
             {
@@ -182,7 +198,7 @@ namespace NanoRoute.Internals
                 (
                     new ValueParserContext
                     {
-                        Segment = _decodedSegment,
+                        Segment = decodedSegment,
                         Services = _services,
                         Arguments = parser.Arguments,
                         Cancellation = _cancellation
@@ -190,7 +206,7 @@ namespace NanoRoute.Internals
                 );
 
                 if (!parseResult.IsCompletedSuccessfully)
-                    return TryParsedBranchAwaitedAsync(parseResult, i, branchNode);
+                    return TryParsedBranchAwaitedAsync(parseResult, decodedSegment, i, branchNode);
 
                 if (TryAcceptParsedBranch(branchNode, parseResult.Result))
                     return new ValueTask<bool>(true);
@@ -200,12 +216,12 @@ namespace NanoRoute.Internals
         }
 
         // Keep TryParsedBranchAsync() state-machine-free while branch matching completes synchronously
-        private async ValueTask<bool> TryParsedBranchAwaitedAsync(ValueTask<ValueParseResult> parseResult, int branchIndex, RouteNode branchNode)
+        private async ValueTask<bool> TryParsedBranchAwaitedAsync(ValueTask<ValueParseResult> parseResult, ReadOnlyMemory<char> decodedSegment, int branchIndex, RouteNode branchNode)
         {
             if (TryAcceptParsedBranch(branchNode, await parseResult))
                 return true;
 
-            return await TryParsedBranchAsync(branchIndex + 1);
+            return await TryParsedBranchAsync(decodedSegment, branchIndex + 1);
         }
 
         private bool TryAcceptParsedBranch(RouteNode branchNode, ValueParseResult parseResult)
@@ -240,7 +256,7 @@ namespace NanoRoute.Internals
             _verb = verb;
             _cancellation = cancellation;
             _services = services;
-            _node = node; 
+            _node = node;
 
             AdvanceToNextSegment(node);
         }
@@ -267,11 +283,11 @@ namespace NanoRoute.Internals
                         if (TryEmitHandler())
                             return new ValueTask<bool>(true);
 
-                        // No handler terminated the pipeline, go to the first branch
-                        _phase = MatchPhase.FirstBranch;
+                        // No handler terminated the pipeline, go to the branch matching phase.
+                        _phase = MatchPhase.Branch;
                         break;
 
-                    case MatchPhase.FirstBranch:
+                    case MatchPhase.Branch:
                         if (!_segment.HasValue)
                         {
                             _phase = MatchPhase.Done;
@@ -280,23 +296,13 @@ namespace NanoRoute.Internals
 
                         // Decode only when the matcher is about to inspect the segment. Prefix handlers can still run
                         // without paying this cost and they can catch invalid escape errors, too.
-                        _decodedSegment = GetSegmentForMatching();
+                        ReadOnlyMemory<char> decodedSegment = GetSegmentForMatching();
 
-                        ValueTask<bool> firstBranchMatched = TryBranchAsync(_branchOrder.First);
-                        if (!firstBranchMatched.IsCompletedSuccessfully)
-                            return MoveNextAwaitedAsync(firstBranchMatched, MatchPhase.EmitHandlers, MatchPhase.SecondBranch);
+                        ValueTask<bool> branchMatched = TryBranchPairAsync(decodedSegment);
+                        if (!branchMatched.IsCompletedSuccessfully)
+                            return MoveNextAwaitedAsync(branchMatched, MatchPhase.EmitHandlers, MatchPhase.Done);
 
-                        _phase = firstBranchMatched.Result ? MatchPhase.EmitHandlers : MatchPhase.SecondBranch;
-                        break;
-
-                    case MatchPhase.SecondBranch:
-                        Debug.Assert(_segment.HasValue, "Second branch should not be reached when there is no segment to process");
-
-                        ValueTask<bool> secondBranchMatched = TryBranchAsync(_branchOrder.Second);
-                        if (!secondBranchMatched.IsCompletedSuccessfully)
-                            return MoveNextAwaitedAsync(secondBranchMatched, MatchPhase.EmitHandlers, MatchPhase.Done);
-
-                        _phase = secondBranchMatched.Result ? MatchPhase.EmitHandlers : MatchPhase.Done;
+                        _phase = branchMatched.Result ? MatchPhase.EmitHandlers : MatchPhase.Done;
                         break;
 
                     default:
