@@ -3,7 +3,6 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -26,15 +25,10 @@ namespace NanoRoute.Internals
     internal static class HttpVerbExtensions
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private static readonly IReadOnlyCollection<string> _names = Enum.GetNames(typeof(HttpVerb));
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly IReadOnlyCollection<string> _havingBody = [HttpVerb.Post.ToString(), HttpVerb.Put.ToString(), HttpVerb.Patch.ToString()];
 
         extension(HttpVerb)
         {
-            public static IReadOnlyCollection<string> Names => _names;
-
             public static IReadOnlyCollection<string> HavingBody => _havingBody;
         }
     }

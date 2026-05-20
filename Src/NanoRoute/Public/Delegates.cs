@@ -81,7 +81,7 @@ namespace NanoRoute
     /// The response produced by the current handler, or by a later handler when <paramref name="callNext"/> is invoked.
     /// </returns>
     /// <remarks>
-    /// Middleware may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
+    /// Handler may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
     /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder)"/>, or equivalent custom
     /// middleware is registered, those exceptions can be translated into structured error responses. Use
     /// <see cref="NanoRouteJsonExtensions.ConfigureJsonErrorDetails{TBuilder}(TBuilder, ConfigureBuilderDelegate{JsonErrorDetailsConfig})"/>
