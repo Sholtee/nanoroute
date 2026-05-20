@@ -16,11 +16,11 @@ namespace NanoRoute.Internals
         {
             public static readonly IReadOnlyCollection<string> Names = Enum.GetNames(typeof(TEnum));
 
-            public static readonly FrozenDictionary<string, TEnum> EnumMapper = Enum
-                .GetValues(typeof(TEnum))
-                .Cast<TEnum>()
-                .ToDictionary(static v => v.ToString())
-                .ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
+            public static readonly FrozenDictionary<string, TEnum> EnumMapper = 
+                //Enum.GetValues(typeof(TEnum)) cannot be used here as it is not AOT compatible
+                Names
+                    .ToDictionary(static name => name, static name => (TEnum) Enum.Parse(typeof(TEnum), name))
+                    .ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
         }
 
         extension<TEnum>(TEnum) where TEnum : Enum
