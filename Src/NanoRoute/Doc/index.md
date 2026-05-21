@@ -132,6 +132,7 @@ public interface IUserRepository
 - Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
 - The parameter name is optional. Segments like `{int}` still validate the path but do not add an entry to `RequestContext.Parameters`.
 - When multiple handlers match within the selected route branch, NanoRoute evaluates compatible handlers from shorter prefixes toward more specific matches.
+- `RequestContext.RemainingPath` is updated for each matched handler. Prefix handlers receive the unmatched path tail with its leading `/`, exact handlers receive an empty value when no path remains, and query strings are not included.
 - At the same path depth, `RouterConfig.MatchingPrecedence` decides whether literal or parameterized child segments are selected first.
 - Once NanoRoute selects a child branch at a given depth, it does not return to sibling branches later in the pipeline.
 
@@ -215,6 +216,8 @@ HttpListenerRouter router = builder.CreateRouter();
 ```
 
 This produces the same effective routes as registering `/api/users/{user_id:int}/*` and `/api/users/{user_id:int}/details/` directly, but keeps repeated base patterns out of endpoint registrations.
+
+Inside prefix middleware, `context.RemainingPath` exposes the current request path tail that has not been matched by that handler's route pattern. For `/api/users/{user_id:int}/*` handling `/api/users/42/details`, the value is `/details`; the final `/details/` endpoint sees an empty value.
 
 ## Endpoint Builders
 

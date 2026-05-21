@@ -88,7 +88,7 @@ namespace NanoRoute.Internals
         }
         #endregion
 
-        public RequestPipeline(RouteNode root, HttpRequestMessage request, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation): base
+        public RequestPipeline(RouteNode root, HttpRequestMessage request, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation) : base
         (
             root,
             ParseVerb(request.Method.Method),

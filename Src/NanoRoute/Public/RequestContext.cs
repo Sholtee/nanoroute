@@ -14,8 +14,9 @@ namespace NanoRoute
     /// Carries request-specific data through the NanoRoute handler pipeline.
     /// </summary>
     /// <remarks>
-    /// Handlers can use <see cref="Parameters"/> to share values, <see cref="Services"/> to resolve 
-    /// dependencies, and <see cref="Cancellation"/> to observe caller-initiated cancellation. 
+    /// Handlers can use <see cref="Parameters"/> to share values, <see cref="RemainingPath"/> to inspect the
+    /// unmatched path tail, <see cref="Services"/> to resolve dependencies, and <see cref="Cancellation"/> to
+    /// observe caller-initiated cancellation.
     /// <see cref="Parameters"/> is a shared mutable dictionary for the active pipeline so handlers may overwrite values
     /// that were written earlier by other handlers.
     /// </remarks>
@@ -61,8 +62,18 @@ namespace NanoRoute
         public required HttpRequestMessage Request { get; init; }
 
         /// <summary>
-        /// 
+        /// Gets the request path portion that has not been consumed by the current route match.
         /// </summary>
+        /// <remarks>
+        /// The value comes from <see cref="Uri.AbsolutePath"/> and does not include the query string. Prefix
+        /// handlers receive the unmatched tail with the leading slash before the next segment, such as
+        /// <c>/details</c>. Exact handlers receive an empty value when no path remains.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// string tail = requestContext.RemainingPath.ToString();
+        /// </code>
+        /// </example>
         public required ReadOnlyMemory<char> RemainingPath { get; init; }
 
         /// <summary>

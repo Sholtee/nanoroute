@@ -269,7 +269,7 @@ namespace NanoRoute.Internals
 
         public HttpVerb Verb { get; }
 
-        public bool Completed => _phase is MatchPhase.Branch;
+        public bool Completed => _phase is MatchPhase.Done;
 
         public ValueTask DisposeAsync()
         {

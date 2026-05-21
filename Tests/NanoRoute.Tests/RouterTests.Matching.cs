@@ -131,6 +131,36 @@ namespace NanoRoute.Tests
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Exactly(2));
         }
 
+        [Test]
+        public async Task Handle_ShouldExposeRemainingPathForEachMatchedHandler()
+        {
+            List<string> remainingPaths = [];
+
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddHandler("GET", "/*", async (context, next) =>
+                {
+                    remainingPaths.Add(context.RemainingPath.ToString());
+                    return await next();
+                })
+                .AddHandler("GET", "/api/*", async (context, next) =>
+                {
+                    remainingPaths.Add(context.RemainingPath.ToString());
+                    return await next();
+                })
+                .AddHandler("GET", "/api/users/{id:int}/", (context, _) =>
+                {
+                    remainingPaths.Add(context.RemainingPath.ToString());
+                    return Task.FromResult(s_response);
+                })
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/api/users/42?include=details");
+
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            Assert.That(remainingPaths, Is.EqualTo(new[] { "/api/users/42", "/users/42", string.Empty }));
+        }
+
         [TestCase("/path/to/explicit/something/")]
         [TestCase("/path/to/{some_str:any}/something/")]
         public async Task Handle_ShouldSupportMultipleHandlersAgainstTheSamePattern(string pattern)
