@@ -56,6 +56,7 @@ namespace NanoRoute.Tests
             root.LiteralChildren.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/users");
+            Assert.That(cursor.Completed, Is.False);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
             Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
@@ -63,6 +64,7 @@ namespace NanoRoute.Tests
             Assert.That(cursor.Current.AttachedParameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed);
         }
 
         [Test]
@@ -78,6 +80,7 @@ namespace NanoRoute.Tests
             root.LiteralChildren.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/health");
+            Assert.That(cursor.Completed, Is.False);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
             Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
@@ -85,6 +88,7 @@ namespace NanoRoute.Tests
             Assert.That(cursor.Current.AttachedParameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed);
         }
 
         [Test]
@@ -96,6 +100,7 @@ namespace NanoRoute.Tests
             root.HandlerRegistrations[HttpVerb.Get] = [handler];
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/health");
+            Assert.That(cursor.Completed, Is.False);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
             Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
@@ -103,6 +108,7 @@ namespace NanoRoute.Tests
             Assert.That(cursor.Current.AttachedParameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed);
         }
 
         [TestCase(MatchingPrecedence.LiteralFirst, "/items/value/")]

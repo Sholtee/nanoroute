@@ -25,7 +25,7 @@ namespace NanoRoute.Internals
         public required ReadOnlyMemory<char> RemainingPath { get; init; }
     }
 
-    internal sealed class RouteMatchCursor : IAsyncEnumerator<RouteMatch>
+    internal class RouteMatchCursor : IAsyncEnumerator<RouteMatch>
     {
         #region Private
         private enum BranchKind
@@ -59,12 +59,6 @@ namespace NanoRoute.Internals
         private readonly BranchOrder _branchOrder;
 
         private readonly Dictionary<string, object?> _parameters;
-
-        private readonly HttpVerb _verb;
-
-        private readonly CancellationToken _cancellation;
-
-        private readonly IServiceProvider _services;
 
         private char[]? _decodedSegmentBuffer;
 
@@ -114,7 +108,7 @@ namespace NanoRoute.Internals
 
         private void AdvanceToNextSegment(RouteNode nextNode)
         {
-            _cancellation.ThrowIfCancellationRequested();
+            Cancellation.ThrowIfCancellationRequested();
 
             _node = nextNode;
             _handlerIndex = 0;
@@ -127,7 +121,7 @@ namespace NanoRoute.Internals
         private bool TryEmitHandler()
         {
             // Retrieve the handler list on the first iteration
-            if (_handlers is null && !_node.HandlerRegistrations.TryGetValue(_verb, out _handlers))
+            if (_handlers is null && !_node.HandlerRegistrations.TryGetValue(Verb, out _handlers))
                 return false;
 
             while (_handlerIndex < _handlers.Count)
@@ -156,8 +150,12 @@ namespace NanoRoute.Internals
             _ => throw new ArgumentOutOfRangeException(nameof(branchKind))
         };
 
-        private ValueTask<bool> TryBranchPairAsync(ReadOnlyMemory<char> decodedSegment)
+        private ValueTask<bool> TryBranchPairAsync()
         {
+            // Decode only when the matcher is about to inspect the segment. Prefix handlers can still run
+            // without paying this cost and they can catch invalid escape errors, too.
+            ReadOnlyMemory<char> decodedSegment = GetSegmentForMatching();
+
             ValueTask<bool> firstBranchMatched = TryBranchAsync(_branchOrder.First, decodedSegment);
 
             if (!firstBranchMatched.IsCompletedSuccessfully)
@@ -199,9 +197,9 @@ namespace NanoRoute.Internals
                     new ValueParserContext
                     {
                         Segment = decodedSegment,
-                        Services = _services,
+                        Services = Services,
                         Arguments = parser.Arguments,
-                        Cancellation = _cancellation
+                        Cancellation = Cancellation
                     }
                 );
 
@@ -230,6 +228,7 @@ namespace NanoRoute.Internals
                 return false;
 
             if (branchNode.ParameterParser!.Definition.ParameterName is { Length: > 0 } parameterName)
+                // This will overwrite any existing parameter on the given key
                 _parameters[parameterName] = parseResult.Parsed;
 
             AdvanceToNextSegment(branchNode);
@@ -253,15 +252,24 @@ namespace NanoRoute.Internals
             };
             _parameters = new Dictionary<string, object?>(routerConfig.ParametersCapacity, StringComparer.OrdinalIgnoreCase);
             _phase = MatchPhase.EmitHandlers;
-            _verb = verb;
-            _cancellation = cancellation;
-            _services = services;
             _node = node;
+
+            Cancellation = cancellation;
+            Services = services;
+            Verb = verb;
 
             AdvanceToNextSegment(node);
         }
 
         public RouteMatch Current { get; private set; }
+
+        public CancellationToken Cancellation { get; }
+
+        public IServiceProvider Services { get; }
+
+        public HttpVerb Verb { get; }
+
+        public bool Completed => _phase is MatchPhase.Branch;
 
         public ValueTask DisposeAsync()
         {
@@ -275,7 +283,7 @@ namespace NanoRoute.Internals
         {
             while (_phase is not MatchPhase.Done)
             {
-                _cancellation.ThrowIfCancellationRequested();
+                Cancellation.ThrowIfCancellationRequested();
 
                 switch (_phase)
                 {
@@ -294,11 +302,7 @@ namespace NanoRoute.Internals
                             break;
                         }
 
-                        // Decode only when the matcher is about to inspect the segment. Prefix handlers can still run
-                        // without paying this cost and they can catch invalid escape errors, too.
-                        ReadOnlyMemory<char> decodedSegment = GetSegmentForMatching();
-
-                        ValueTask<bool> branchMatched = TryBranchPairAsync(decodedSegment);
+                        ValueTask<bool> branchMatched = TryBranchPairAsync();
                         if (!branchMatched.IsCompletedSuccessfully)
                             return MoveNextAwaitedAsync(branchMatched, MatchPhase.EmitHandlers, MatchPhase.Done);
 

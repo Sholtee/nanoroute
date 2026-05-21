@@ -61,6 +61,11 @@ namespace NanoRoute
         public required HttpRequestMessage Request { get; init; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public required ReadOnlyMemory<char> RemainingPath { get; init; }
+
+        /// <summary>
         /// Gets the cancellation token for the active request.
         /// </summary>
         /// <example>
