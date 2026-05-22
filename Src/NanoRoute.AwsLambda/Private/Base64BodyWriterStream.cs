@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Buffers;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -14,9 +15,11 @@ namespace NanoRoute.AwsLambda
     internal sealed class Base64BodyWriterStream : Stream
     {
         #region Private
+        private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
+
         private StringBuilder _body = new();
         private byte[] _stagedBytes = new byte[3];
-        private char[] _encodedChars = new char[4096];
+        private char[] _encodedChars = s_arrayPool.Rent(4096);
 
         private int _stagedByteCount;
 
@@ -85,6 +88,8 @@ namespace NanoRoute.AwsLambda
         {
             _body = null!;
             _stagedBytes = null!;
+
+            s_arrayPool.Return(_encodedChars, clearArray: false);
             _encodedChars = null!;
 
             base.Dispose(disposing);
