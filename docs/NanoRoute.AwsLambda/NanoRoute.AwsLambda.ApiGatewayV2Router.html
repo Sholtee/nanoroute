@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Class ApiGatewayHttpApiV2Router | NanoRoute.AwsLambda </title>
+      <title>Class ApiGatewayV2Router | NanoRoute.AwsLambda </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Class ApiGatewayHttpApiV2Router | NanoRoute.AwsLambda ">
+      <meta name="title" content="Class ApiGatewayV2Router | NanoRoute.AwsLambda ">
     
     <meta name="description" content="Routes API Gateway HTTP API and Lambda Function URL  instances through a NanoRoute pipeline.">
       <link rel="shortcut icon" href="Icon.png">
@@ -35,11 +35,11 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router">
 
 
 
-  <h1 id="NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router" data-uid="NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router" class="text-break">Class ApiGatewayHttpApiV2Router</h1>
+  <h1 id="NanoRoute_AwsLambda_ApiGatewayV2Router" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router" class="text-break">Class ApiGatewayV2Router</h1>
   <div class="markdown level0 summary"><p>Routes API Gateway HTTP API and Lambda Function URL <span class="xref">Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest</span> instances through a NanoRoute pipeline.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -47,16 +47,16 @@
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router</a></div>
-    <div class="level2"><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router</a>&lt;<a class="xref" href="NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html">ApiGatewayHttpApiV2Router</a>, <a class="xref" href="NanoRoute.AwsLambda.AwsLambdaRouterConfig.html">AwsLambdaRouterConfig</a>&gt;</div>
-    <div class="level3"><span class="xref">ApiGatewayHttpApiV2Router</span></div>
+    <div class="level2"><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router</a>&lt;<a class="xref" href="NanoRoute.AwsLambda.ApiGatewayV2Router.html">ApiGatewayV2Router</a>, <a class="xref" href="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html">ApiGatewayV2RouterConfig</a>&gt;</div>
+    <div class="level3"><span class="xref">ApiGatewayV2Router</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router&lt;ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig&gt;.CreateBuilder()</a>
+      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt;.CreateBuilder()</a>
     </div>
     <div>
-      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router&lt;ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig&gt;.Config</a>
+      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt;.Config</a>
     </div>
     <div>
       <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router.TraceIdName</a>
@@ -88,12 +88,12 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a>.<a class="xref" href="NanoRoute.AwsLambda.html">AwsLambda</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.AwsLambda.dll</h6>
-  <h5 id="NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_syntax">Syntax</h5>
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2Router_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class ApiGatewayHttpApiV2Router : Router&lt;ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class ApiGatewayV2Router : Router&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt;</code></pre>
   </div>
-  <h5 id="NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2Router_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
@@ -102,8 +102,8 @@
 
   <h3 id="methods">Methods
 </h3>
-  <a id="NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_Route_" data-uid="NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route*"></a>
-  <h4 id="NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan_" data-uid="NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,System.TimeSpan)">Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)</h4>
+  <a id="NanoRoute_AwsLambda_ApiGatewayV2Router_Route_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router.Route*"></a>
+  <h4 id="NanoRoute_AwsLambda_ApiGatewayV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,System.TimeSpan)">Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -157,7 +157,7 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan__examples">Examples</h5>
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan__examples">Examples</h5>
   <pre><code class="lang-csharp">APIGatewayHttpApiV2ProxyResponse response = await router.Route(request, services, context.RemainingTime);</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>

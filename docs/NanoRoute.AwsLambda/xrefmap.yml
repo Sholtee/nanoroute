@@ -7,174 +7,174 @@ references:
   commentId: N:NanoRoute.AwsLambda
   fullName: NanoRoute.AwsLambda
   nameWithType: NanoRoute.AwsLambda
-- uid: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router
-  name: ApiGatewayHttpApiV2Router
-  href: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html
-  commentId: T:NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router
-  fullName: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router
-  nameWithType: ApiGatewayHttpApiV2Router
-- uid: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,System.TimeSpan)
+- uid: NanoRoute.AwsLambda.ApiGatewayV2Router
+  name: ApiGatewayV2Router
+  href: NanoRoute.AwsLambda.ApiGatewayV2Router.html
+  commentId: T:NanoRoute.AwsLambda.ApiGatewayV2Router
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2Router
+  nameWithType: ApiGatewayV2Router
+- uid: NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,System.TimeSpan)
   name: Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)
-  href: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html#NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan_
-  commentId: M:NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,System.TimeSpan)
-  fullName: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest, System.IServiceProvider, System.TimeSpan)
-  nameWithType: ApiGatewayHttpApiV2Router.Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)
-- uid: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route*
+  href: NanoRoute.AwsLambda.ApiGatewayV2Router.html#NanoRoute_AwsLambda_ApiGatewayV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan_
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,System.TimeSpan)
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest, System.IServiceProvider, System.TimeSpan)
+  nameWithType: ApiGatewayV2Router.Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)
+- uid: NanoRoute.AwsLambda.ApiGatewayV2Router.Route*
   name: Route
-  href: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html#NanoRoute_AwsLambda_ApiGatewayHttpApiV2Router_Route_
-  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route
-  fullName: NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.Route
-  nameWithType: ApiGatewayHttpApiV2Router.Route
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig
-  name: AwsLambdaRouterConfig
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html
-  commentId: T:NanoRoute.AwsLambda.AwsLambdaRouterConfig
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig
-  nameWithType: AwsLambdaRouterConfig
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.#ctor
-  name: AwsLambdaRouterConfig()
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig__ctor
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.#ctor
+  href: NanoRoute.AwsLambda.ApiGatewayV2Router.html#NanoRoute_AwsLambda_ApiGatewayV2Router_Route_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2Router.Route
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2Router.Route
+  nameWithType: ApiGatewayV2Router.Route
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig
+  name: ApiGatewayV2RouterConfig
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html
+  commentId: T:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig
+  nameWithType: ApiGatewayV2RouterConfig
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.#ctor
+  name: ApiGatewayV2RouterConfig()
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig__ctor
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.#ctor
   name.vb: New()
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.AwsLambdaRouterConfig()
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.New()
-  nameWithType: AwsLambdaRouterConfig.AwsLambdaRouterConfig()
-  nameWithType.vb: AwsLambdaRouterConfig.New()
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.#ctor*
-  name: AwsLambdaRouterConfig
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig__ctor_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.#ctor
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ApiGatewayV2RouterConfig()
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.New()
+  nameWithType: ApiGatewayV2RouterConfig.ApiGatewayV2RouterConfig()
+  nameWithType.vb: ApiGatewayV2RouterConfig.New()
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.#ctor*
+  name: ApiGatewayV2RouterConfig
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig__ctor_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.#ctor
   name.vb: New
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.AwsLambdaRouterConfig
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.New
-  nameWithType: AwsLambdaRouterConfig.AwsLambdaRouterConfig
-  nameWithType.vb: AwsLambdaRouterConfig.New
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.EqualityContract
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ApiGatewayV2RouterConfig
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.New
+  nameWithType: ApiGatewayV2RouterConfig.ApiGatewayV2RouterConfig
+  nameWithType.vb: ApiGatewayV2RouterConfig.New
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.EqualityContract
   name: EqualityContract
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_EqualityContract
-  commentId: P:NanoRoute.AwsLambda.AwsLambdaRouterConfig.EqualityContract
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.EqualityContract
-  nameWithType: AwsLambdaRouterConfig.EqualityContract
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.EqualityContract*
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_EqualityContract
+  commentId: P:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.EqualityContract
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.EqualityContract
+  nameWithType: ApiGatewayV2RouterConfig.EqualityContract
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.EqualityContract*
   name: EqualityContract
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_EqualityContract_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.EqualityContract
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.EqualityContract
-  nameWithType: AwsLambdaRouterConfig.EqualityContract
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  name: Equals(AwsLambdaRouterConfig?)
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_NanoRoute_AwsLambda_AwsLambdaRouterConfig_
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  name.vb: Equals(AwsLambdaRouterConfig)
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.AwsLambda.AwsLambdaRouterConfig?)
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  nameWithType: AwsLambdaRouterConfig.Equals(AwsLambdaRouterConfig?)
-  nameWithType.vb: AwsLambdaRouterConfig.Equals(AwsLambdaRouterConfig)
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.RouterConfig)
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_EqualityContract_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.EqualityContract
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.EqualityContract
+  nameWithType: ApiGatewayV2RouterConfig.EqualityContract
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  name: Equals(ApiGatewayV2RouterConfig?)
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_Equals_NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  name.vb: Equals(ApiGatewayV2RouterConfig)
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig?)
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  nameWithType: ApiGatewayV2RouterConfig.Equals(ApiGatewayV2RouterConfig?)
+  nameWithType.vb: ApiGatewayV2RouterConfig.Equals(ApiGatewayV2RouterConfig)
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(NanoRoute.RouterConfig)
   name: Equals(RouterConfig?)
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_NanoRoute_RouterConfig_
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.RouterConfig)
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_Equals_NanoRoute_RouterConfig_
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(NanoRoute.RouterConfig)
   name.vb: Equals(RouterConfig)
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.RouterConfig?)
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(NanoRoute.RouterConfig)
-  nameWithType: AwsLambdaRouterConfig.Equals(RouterConfig?)
-  nameWithType.vb: AwsLambdaRouterConfig.Equals(RouterConfig)
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(System.Object)
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(NanoRoute.RouterConfig?)
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(NanoRoute.RouterConfig)
+  nameWithType: ApiGatewayV2RouterConfig.Equals(RouterConfig?)
+  nameWithType.vb: ApiGatewayV2RouterConfig.Equals(RouterConfig)
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(System.Object)
   name: Equals(object?)
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_System_Object_
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(System.Object)
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_Equals_System_Object_
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(System.Object)
   name.vb: Equals(Object)
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(object?)
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals(Object)
-  nameWithType: AwsLambdaRouterConfig.Equals(object?)
-  nameWithType.vb: AwsLambdaRouterConfig.Equals(Object)
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals*
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(object?)
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals(Object)
+  nameWithType: ApiGatewayV2RouterConfig.Equals(object?)
+  nameWithType.vb: ApiGatewayV2RouterConfig.Equals(Object)
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals*
   name: Equals
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_Equals_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.Equals
-  nameWithType: AwsLambdaRouterConfig.Equals
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.GetHashCode
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_Equals_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals
+  nameWithType: ApiGatewayV2RouterConfig.Equals
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.GetHashCode
   name: GetHashCode()
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_GetHashCode
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.GetHashCode
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.GetHashCode()
-  nameWithType: AwsLambdaRouterConfig.GetHashCode()
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.GetHashCode*
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_GetHashCode
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.GetHashCode
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.GetHashCode()
+  nameWithType: ApiGatewayV2RouterConfig.GetHashCode()
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.GetHashCode*
   name: GetHashCode
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_GetHashCode_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.GetHashCode
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.GetHashCode
-  nameWithType: AwsLambdaRouterConfig.GetHashCode
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.LambdaTimeoutBuffer
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_GetHashCode_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.GetHashCode
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.GetHashCode
+  nameWithType: ApiGatewayV2RouterConfig.GetHashCode
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer
   name: LambdaTimeoutBuffer
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_LambdaTimeoutBuffer
-  commentId: P:NanoRoute.AwsLambda.AwsLambdaRouterConfig.LambdaTimeoutBuffer
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.LambdaTimeoutBuffer
-  nameWithType: AwsLambdaRouterConfig.LambdaTimeoutBuffer
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.LambdaTimeoutBuffer*
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_LambdaTimeoutBuffer
+  commentId: P:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer
+  nameWithType: ApiGatewayV2RouterConfig.LambdaTimeoutBuffer
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer*
   name: LambdaTimeoutBuffer
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_LambdaTimeoutBuffer_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.LambdaTimeoutBuffer
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.LambdaTimeoutBuffer
-  nameWithType: AwsLambdaRouterConfig.LambdaTimeoutBuffer
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.PrintMembers(System.Text.StringBuilder)
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_LambdaTimeoutBuffer_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer
+  nameWithType: ApiGatewayV2RouterConfig.LambdaTimeoutBuffer
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.PrintMembers(System.Text.StringBuilder)
   name: PrintMembers(StringBuilder)
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_PrintMembers_System_Text_StringBuilder_
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.PrintMembers(System.Text.StringBuilder)
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.PrintMembers(System.Text.StringBuilder)
-  nameWithType: AwsLambdaRouterConfig.PrintMembers(StringBuilder)
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.PrintMembers*
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_PrintMembers_System_Text_StringBuilder_
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.PrintMembers(System.Text.StringBuilder)
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.PrintMembers(System.Text.StringBuilder)
+  nameWithType: ApiGatewayV2RouterConfig.PrintMembers(StringBuilder)
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.PrintMembers*
   name: PrintMembers
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_PrintMembers_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.PrintMembers
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.PrintMembers
-  nameWithType: AwsLambdaRouterConfig.PrintMembers
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.ToString
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_PrintMembers_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.PrintMembers
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.PrintMembers
+  nameWithType: ApiGatewayV2RouterConfig.PrintMembers
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ToString
   name: ToString()
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_ToString
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.ToString
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.ToString()
-  nameWithType: AwsLambdaRouterConfig.ToString()
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.ToString*
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_ToString
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ToString
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ToString()
+  nameWithType: ApiGatewayV2RouterConfig.ToString()
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ToString*
   name: ToString
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_ToString_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.ToString
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.ToString
-  nameWithType: AwsLambdaRouterConfig.ToString
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Equality(NanoRoute.AwsLambda.AwsLambdaRouterConfig,NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  name: operator ==(AwsLambdaRouterConfig?, AwsLambdaRouterConfig?)
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_op_Equality_NanoRoute_AwsLambda_AwsLambdaRouterConfig_NanoRoute_AwsLambda_AwsLambdaRouterConfig_
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Equality(NanoRoute.AwsLambda.AwsLambdaRouterConfig,NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  name.vb: =(AwsLambdaRouterConfig, AwsLambdaRouterConfig)
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.operator ==(NanoRoute.AwsLambda.AwsLambdaRouterConfig?, NanoRoute.AwsLambda.AwsLambdaRouterConfig?)
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.=(NanoRoute.AwsLambda.AwsLambdaRouterConfig, NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  nameWithType: AwsLambdaRouterConfig.operator ==(AwsLambdaRouterConfig?, AwsLambdaRouterConfig?)
-  nameWithType.vb: AwsLambdaRouterConfig.=(AwsLambdaRouterConfig, AwsLambdaRouterConfig)
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Equality*
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_ToString_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ToString
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ToString
+  nameWithType: ApiGatewayV2RouterConfig.ToString
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.op_Equality(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig,NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  name: operator ==(ApiGatewayV2RouterConfig?, ApiGatewayV2RouterConfig?)
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_op_Equality_NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.op_Equality(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig,NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  name.vb: =(ApiGatewayV2RouterConfig, ApiGatewayV2RouterConfig)
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.operator ==(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig?, NanoRoute.AwsLambda.ApiGatewayV2RouterConfig?)
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.=(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig, NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  nameWithType: ApiGatewayV2RouterConfig.operator ==(ApiGatewayV2RouterConfig?, ApiGatewayV2RouterConfig?)
+  nameWithType.vb: ApiGatewayV2RouterConfig.=(ApiGatewayV2RouterConfig, ApiGatewayV2RouterConfig)
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.op_Equality*
   name: operator ==
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_op_Equality_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Equality
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_op_Equality_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.op_Equality
   name.vb: =
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.operator ==
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.=
-  nameWithType: AwsLambdaRouterConfig.operator ==
-  nameWithType.vb: AwsLambdaRouterConfig.=
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Inequality(NanoRoute.AwsLambda.AwsLambdaRouterConfig,NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  name: operator !=(AwsLambdaRouterConfig?, AwsLambdaRouterConfig?)
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_op_Inequality_NanoRoute_AwsLambda_AwsLambdaRouterConfig_NanoRoute_AwsLambda_AwsLambdaRouterConfig_
-  commentId: M:NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Inequality(NanoRoute.AwsLambda.AwsLambdaRouterConfig,NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  name.vb: <>(AwsLambdaRouterConfig, AwsLambdaRouterConfig)
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.operator !=(NanoRoute.AwsLambda.AwsLambdaRouterConfig?, NanoRoute.AwsLambda.AwsLambdaRouterConfig?)
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.<>(NanoRoute.AwsLambda.AwsLambdaRouterConfig, NanoRoute.AwsLambda.AwsLambdaRouterConfig)
-  nameWithType: AwsLambdaRouterConfig.operator !=(AwsLambdaRouterConfig?, AwsLambdaRouterConfig?)
-  nameWithType.vb: AwsLambdaRouterConfig.<>(AwsLambdaRouterConfig, AwsLambdaRouterConfig)
-- uid: NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Inequality*
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.operator ==
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.=
+  nameWithType: ApiGatewayV2RouterConfig.operator ==
+  nameWithType.vb: ApiGatewayV2RouterConfig.=
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.op_Inequality(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig,NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  name: operator !=(ApiGatewayV2RouterConfig?, ApiGatewayV2RouterConfig?)
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_op_Inequality_NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_
+  commentId: M:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.op_Inequality(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig,NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  name.vb: <>(ApiGatewayV2RouterConfig, ApiGatewayV2RouterConfig)
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.operator !=(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig?, NanoRoute.AwsLambda.ApiGatewayV2RouterConfig?)
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.<>(NanoRoute.AwsLambda.ApiGatewayV2RouterConfig, NanoRoute.AwsLambda.ApiGatewayV2RouterConfig)
+  nameWithType: ApiGatewayV2RouterConfig.operator !=(ApiGatewayV2RouterConfig?, ApiGatewayV2RouterConfig?)
+  nameWithType.vb: ApiGatewayV2RouterConfig.<>(ApiGatewayV2RouterConfig, ApiGatewayV2RouterConfig)
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.op_Inequality*
   name: operator !=
-  href: NanoRoute.AwsLambda.AwsLambdaRouterConfig.html#NanoRoute_AwsLambda_AwsLambdaRouterConfig_op_Inequality_
-  commentId: Overload:NanoRoute.AwsLambda.AwsLambdaRouterConfig.op_Inequality
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_op_Inequality_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.op_Inequality
   name.vb: <>
-  fullName: NanoRoute.AwsLambda.AwsLambdaRouterConfig.operator !=
-  fullName.vb: NanoRoute.AwsLambda.AwsLambdaRouterConfig.<>
-  nameWithType: AwsLambdaRouterConfig.operator !=
-  nameWithType.vb: AwsLambdaRouterConfig.<>
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.operator !=
+  fullName.vb: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.<>
+  nameWithType: ApiGatewayV2RouterConfig.operator !=
+  nameWithType.vb: ApiGatewayV2RouterConfig.<>
