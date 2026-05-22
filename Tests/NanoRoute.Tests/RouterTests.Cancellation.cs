@@ -102,7 +102,7 @@ namespace NanoRoute.Tests
             _request.RequestUri = new Uri("https://www.exmaple.com/");
 
             ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("request"));
+            Assert.That(ex.ParamName, Is.EqualTo("verb"));
             Assert.That(ex.Message, Does.Contain(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "BREW")));
         }
     }

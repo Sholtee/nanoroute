@@ -21,7 +21,8 @@ namespace NanoRoute.Perf
 
                 private static readonly Task<HttpResponseMessage> s_responseTask = Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 
-                private readonly TestRouter _router = new RouterBuilder<TestRouter, RouterConfig>(static bldr => new TestRouter(bldr))
+                private readonly TestRouter _router = TestRouter
+                    .CreateBuilder()
                     .AddDefaultValueParsers()
                     .AddHandler("GET", routePattern, static (_, _) => s_responseTask)
                     .CreateRouter();
@@ -32,7 +33,7 @@ namespace NanoRoute.Perf
 
                 public Task Match() => _router.Route(_request, s_services);
 
-                private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router(builder, builder.RouterConfig)
+                private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router<TestRouter, RouterConfig>(builder)
                 {
                     public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) => Handle(request, services, cancellation);
                 }

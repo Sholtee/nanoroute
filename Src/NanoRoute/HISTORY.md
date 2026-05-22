@@ -22,6 +22,7 @@
 - Added typed `AddHandler()` overloads for pattern-only and single-verb registration, matching the rest of the route-scope builder API.
 - Added `NanoRoutePrefixExtensions` as the extension-method home for `AddPrefix()`.
 - Added `EndpointBuilder`, `AddEndpoint()`, `CreateEndpoint()`, and endpoint-scoped `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` helpers for registering endpoint-local middleware without repeating an endpoint's verbs and pattern.
+- Added `RequestContext.RemainingPath` to expose the unmatched request path tail to handlers.
 
 ### Performance
 

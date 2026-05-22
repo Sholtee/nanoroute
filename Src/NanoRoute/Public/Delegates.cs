@@ -75,13 +75,13 @@ namespace NanoRoute
     /// <summary>
     /// Represents a request handler in the router pipeline.
     /// </summary>
-    /// <param name="requestContext">The current request context, including parsed route parameters and services.</param>
+    /// <param name="requestContext">The current request context, including parsed route parameters, remaining path, and services.</param>
     /// <param name="callNext">A delegate that invokes the next compatible handler in the pipeline.</param>
     /// <returns>
     /// The response produced by the current handler, or by a later handler when <paramref name="callNext"/> is invoked.
     /// </returns>
     /// <remarks>
-    /// Middleware may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
+    /// Handler may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
     /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder)"/>, or equivalent custom
     /// middleware is registered, those exceptions can be translated into structured error responses. Use
     /// <see cref="NanoRouteJsonExtensions.ConfigureJsonErrorDetails{TBuilder}(TBuilder, ConfigureBuilderDelegate{JsonErrorDetailsConfig})"/>

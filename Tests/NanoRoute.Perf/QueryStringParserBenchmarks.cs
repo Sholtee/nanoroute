@@ -147,6 +147,7 @@ namespace NanoRoute.Perf
             Parameters = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
             Services = s_services,
             Request = new HttpRequestMessage(HttpMethod.Get, uri),
+            RemainingPath = default,
             Cancellation = CancellationToken.None
         };
 

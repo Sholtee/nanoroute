@@ -50,6 +50,8 @@ namespace NanoRoute.Internals
 
         public ReadOnlyMemory<char> Current { get; private set; }
 
+        public readonly ReadOnlyMemory<char> Remaining => _next > DONE ? Original.Slice(Math.Max(0, _next - 1)) : default;
+
         public ReadOnlyMemory<char> Original { get; } = original;
 
         public readonly bool HasValue => Current.Length > 0;

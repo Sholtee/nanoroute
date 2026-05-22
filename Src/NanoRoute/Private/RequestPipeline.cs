@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -13,33 +14,16 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class RequestPipeline(RouteNode root, RouterConfig routerConfig, HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation) : IAsyncDisposable
+    internal sealed class RequestPipeline : RouteMatchCursor
     {
         #region Private
-        private readonly RouteMatchCursor _matches = new
-        (
-            root,
-            ParseVerb(request),
-            request.RequestUri,
-            services,
-            routerConfig,
-            cancellation
-        );
+        private readonly HttpRequestMessage _request;
 
-        private static HttpVerb ParseVerb(HttpRequestMessage request)
-        {
-            if (!Enum.TryParse(request.Method.Method, ignoreCase: true, out HttpVerb verb))
-                throw new ArgumentException
-                (
-                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(request)
-                );
-
-            return verb;
-        }
+        private readonly CallNextHandlerDelegate _callNextHandler;
 
         private Task<HttpResponseMessage> CallNextHandler()
         {
-            ValueTask<bool> matched = _matches.MoveNextAsync();
+            ValueTask<bool> matched = MoveNextAsync();
 
             if (!matched.IsCompletedSuccessfully)
                 return CallNextHandlerAwaitedAsync(matched);
@@ -60,7 +44,7 @@ namespace NanoRoute.Internals
 
         private Task<HttpResponseMessage> InvokeCurrentHandler()
         {
-            RouteMatch match = _matches.Current;
+            RouteMatch match = Current;
 
             RouterEventSource.Info.Write("MatchingHandler", static (request, match) => new
             {
@@ -68,17 +52,18 @@ namespace NanoRoute.Internals
                 Verb = request.Method.Method,
                 Pattern = match.HandlerRegistration.Pattern,
                 ParameterCount = match.AttachedParameters.Count
-            }, request, match);
+            }, _request, match);
 
             RequestContext requestContext = new()
             {
                 Parameters = match.AttachedParameters,
-                Services = services,
-                Request = request,
-                Cancellation = cancellation
+                RemainingPath = match.RemainingPath,
+                Services = Services,
+                Request = _request,
+                Cancellation = Cancellation
             };
 
-            return match.HandlerRegistration.Handler(requestContext, CallNextHandler);
+            return match.HandlerRegistration.Handler(requestContext, _callNextHandler);
         }
 
         private void ThrowNotFound()
@@ -87,14 +72,43 @@ namespace NanoRoute.Internals
             {
                 RequestUri = request.RequestUri.OriginalString,
                 Verb = request.Method.Method
-            }, request);
+            }, _request);
 
             HttpRequestException.Throw(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
         }
+
+        private static HttpVerb ParseVerb(string verb)
+        {
+            if (!HttpVerb.TryParseFast(verb, out HttpVerb parsed))
+                throw new ArgumentException
+                (
+                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, verb), nameof(verb)
+                );
+            return parsed;
+        }
         #endregion
 
-        public ValueTask DisposeAsync() => _matches.DisposeAsync();
+        public RequestPipeline(RouteNode root, HttpRequestMessage request, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation) : base
+        (
+            root,
+            ParseVerb(request.Method.Method),
+            request.RequestUri,
+            services,
+            routerConfig,
+            cancellation
+        )
+        {
+            // Reusing one closed delegate avoids repeated instance method group
+            // conversions, which cost both allocation and time on the handler path.
+            _callNextHandler = CallNextHandler;
+            _request = request;
+        }
 
-        public Task<HttpResponseMessage> RunAsync() => CallNextHandler();
+        public Task<HttpResponseMessage> RunAsync()
+        {
+            Debug.Assert(!Completed, $"{nameof(RunAsync)} can be called only once.");
+
+            return CallNextHandler();
+        }
     }
 }

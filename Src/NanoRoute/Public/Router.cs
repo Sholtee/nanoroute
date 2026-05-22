@@ -114,7 +114,7 @@ namespace NanoRoute
                 Verb = request.Method.Method
             }, request);
 
-            await using RequestPipeline pipeline = new(_root, Config, request, services, cancellation);
+            await using RequestPipeline pipeline = new(_root, request, services, Config, cancellation);
 
             return await pipeline.RunAsync();
         }

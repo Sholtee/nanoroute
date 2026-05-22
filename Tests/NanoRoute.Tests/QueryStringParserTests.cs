@@ -55,14 +55,14 @@ namespace NanoRoute.Tests
             return result;
         }
 
-        private static RequestContext CreateContext(Dictionary<string, object?> parameters, Uri uri, IServiceProvider services, CancellationToken cancellation = default) =>
-            new()
-            {
-                Parameters = parameters,
-                Services = services,
-                Request = new HttpRequestMessage(HttpMethod.Get, uri),
-                Cancellation = cancellation
-            };
+        private static RequestContext CreateContext(Dictionary<string, object?> parameters, Uri uri, IServiceProvider services, CancellationToken cancellation = default) => new()
+        {
+            Parameters = parameters,
+            Services = services,
+            Request = new HttpRequestMessage(HttpMethod.Get, uri),
+            RemainingPath = default,
+            Cancellation = cancellation
+        };
 
         private static async ValueTask Parse(RequestContext context, IReadOnlyDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters, QueryParsingConfig? config = null)
         {

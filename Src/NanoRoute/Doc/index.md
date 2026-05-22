@@ -132,6 +132,7 @@ public interface IUserRepository
 - Parser-backed segments use registered parsers such as `{user_id:int}`, `{int}`, or `{slug:str(min=3,max=32)}`.
 - The parameter name is optional. Segments like `{int}` still validate the path but do not add an entry to `RequestContext.Parameters`.
 - When multiple handlers match within the selected route branch, NanoRoute evaluates compatible handlers from shorter prefixes toward more specific matches.
+- `RequestContext.RemainingPath` is updated for each matched handler. Prefix handlers receive the unmatched path tail with its leading `/`, exact handlers receive an empty value when no path remains, and query strings are not included.
 - At the same path depth, `RouterConfig.MatchingPrecedence` decides whether literal or parameterized child segments are selected first.
 - Once NanoRoute selects a child branch at a given depth, it does not return to sibling branches later in the pipeline.
 
@@ -164,6 +165,8 @@ Created routers are immutable snapshots: later route or configuration changes on
 ## Module Configuration
 
 Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same route scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
+
+The same pattern also gives composite helpers a clean configuration path. A helper can register lower-level middleware internally while still honoring the configuration that was already stored in the builder scope. This keeps configuration close to the module it affects instead of adding pass-through callback overloads to every higher-level helper that happens to use that module.
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
@@ -213,6 +216,8 @@ HttpListenerRouter router = builder.CreateRouter();
 ```
 
 This produces the same effective routes as registering `/api/users/{user_id:int}/*` and `/api/users/{user_id:int}/details/` directly, but keeps repeated base patterns out of endpoint registrations.
+
+Inside prefix middleware, `context.RemainingPath` exposes the current request path tail that has not been matched by that handler's route pattern. For `/api/users/{user_id:int}/*` handling `/api/users/42/details`, the value is `/details`; the final `/details/` endpoint sees an empty value.
 
 ## Endpoint Builders
 
@@ -454,7 +459,7 @@ They also have middleware-style overloads that receive `CallNextHandlerDelegate`
 
 `AddExceptionHandler()` adds middleware that converts unexpected exceptions into enriched `HttpRequestException` values. Existing `HttpRequestException` values are passed through unchanged, and `OperationCanceledException` still propagates to the caller.
 
-Use `ConfigureExceptionHandling()` before `AddExceptionHandler()` when you want to customize how specific exception types are normalized:
+Use `ConfigureExceptionHandling()` before registering exception-handling middleware when you want to customize how specific exception types are normalized:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
@@ -479,7 +484,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
+`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Higher-level helpers that register exception handling internally follow the same rule, so the exception-handling configuration can be customized even when you do not call `AddExceptionHandler()` directly. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
 
 ## JSON Error Details
 
@@ -499,6 +504,31 @@ HttpListenerRouter router = HttpListenerRouter
 ```
 
 `PopulateErrorInfo` can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details.
+
+`AddJsonErrorDetails()` also registers exception handling internally so unexpected exceptions are normalized before they are rendered as JSON. If you want to customize that normalization, call `ConfigureExceptionHandling()` before `AddJsonErrorDetails()`; the internally registered exception handler snapshots the current `ExceptionHandlingConfig` just like a direct `AddExceptionHandler()` call would.
+
+```csharp
+HttpListenerRouter router = HttpListenerRouter
+    .CreateBuilder()
+    .ConfigureExceptionHandling(config => config with
+    {
+        ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+        ([
+            ExceptionNormalizer.For<NotSupportedException>
+            (
+                static ex =>
+                {
+                    HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+                    return null!;
+                }
+            )
+        ])
+    })
+    .AddJsonErrorDetails()
+    .AddEndpoint("GET", "/items/", endpoint => endpoint
+        .WithHandler((_, _) => throw new NotSupportedException()))
+    .CreateRouter();
+```
 
 `AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
 
