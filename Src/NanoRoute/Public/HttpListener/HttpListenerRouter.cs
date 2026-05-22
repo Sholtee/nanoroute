@@ -57,10 +57,10 @@ namespace NanoRoute
             {
                 CopyResponseHeaders(responseMessage.Content.Headers);
 
-                using Stream buffer = await responseMessage.Content.ReadAsStreamAsync();
+                using Stream buffer = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
 
                 // https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/IO/Stream.cs#L126
-                await buffer.CopyToAsync(response.OutputStream, 81920, cancellation);
+                await buffer.CopyToAsync(response.OutputStream, 81920, cancellation).ConfigureAwait(false);
             }
 
             response.Close();
@@ -154,9 +154,9 @@ namespace NanoRoute
 
             try
             {
-                using HttpResponseMessage response = await Handle(request, services, cancellation);
+                using HttpResponseMessage response = await Handle(request, services, cancellation).ConfigureAwait(false);
 
-                await HandleResponse(response, context.Response, cancellation);
+                await HandleResponse(response, context.Response, cancellation).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {

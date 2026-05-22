@@ -1,5 +1,5 @@
 /********************************************************************************
-* AwsLambdaRouterConfig.cs                                                      *
+* ApiGatewayV2RouterConfig.cs                                                   *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -18,7 +18,7 @@ namespace NanoRoute.AwsLambda
     /// });
     /// </code>
     /// </example>
-    public sealed record AwsLambdaRouterConfig : RouterConfig
+    public sealed record ApiGatewayV2RouterConfig : RouterConfig
     {
         /// <summary>
         /// Gets or sets the amount of time reserved before the Lambda invocation timeout is reached.
@@ -37,9 +37,7 @@ namespace NanoRoute.AwsLambda
             get;
             init
             {
-                if (value < TimeSpan.Zero)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, TimeSpan.Zero);
                 field = value;
             }
         } = TimeSpan.FromSeconds(1);

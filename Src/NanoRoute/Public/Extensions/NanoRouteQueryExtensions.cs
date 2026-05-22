@@ -159,9 +159,9 @@ namespace NanoRoute
             {
                 using QueryStringParser queryStringParser = new(context, parsedBindings, config);
 
-                await queryStringParser.Parse();
+                await queryStringParser.Parse().ConfigureAwait(false);
 
-                return await next();
+                return await next().ConfigureAwait(false);
             };
         }
         #endregion

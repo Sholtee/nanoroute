@@ -36,10 +36,10 @@ namespace NanoRoute.Internals
 
         private async Task<HttpResponseMessage> CallNextHandlerAwaitedAsync(ValueTask<bool> matched)
         {
-            if (!await matched)
+            if (!await matched.ConfigureAwait(false))
                 ThrowNotFound();
 
-            return await InvokeCurrentHandler();
+            return await InvokeCurrentHandler().ConfigureAwait(false);
         }
 
         private Task<HttpResponseMessage> InvokeCurrentHandler()
