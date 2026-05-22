@@ -55,8 +55,8 @@ namespace NanoRoute.AwsLambda
         /// </example>
         public async Task<APIGatewayHttpApiV2ProxyResponse> Route(APIGatewayHttpApiV2ProxyRequest request, IServiceProvider services, TimeSpan remainingTime)
         {
-            Ensure.NotNull(request, nameof(request));
-            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(request);
+            Ensure.NotNull(services);
 
             TimeSpan cancellationDelay = remainingTime - Config.LambdaTimeoutBuffer;
             if (cancellationDelay <= TimeSpan.Zero)

@@ -93,8 +93,7 @@ namespace NanoRoute.AwsLambda
 
         private static void ValidateBufferArguments(byte[] buffer, int offset, int count)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            Ensure.NotNull(buffer);
 
             if (offset < 0 || offset > buffer.Length)
                 throw new ArgumentOutOfRangeException(nameof(offset));
