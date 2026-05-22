@@ -16,7 +16,7 @@ namespace NanoRoute.Internals
         {
             public static readonly IReadOnlyCollection<string> Names = Enum.GetNames(typeof(TEnum));
 
-            public static readonly FrozenDictionary<string, TEnum> EnumMapper = 
+            public static readonly FrozenDictionary<string, TEnum> EnumMapper =
                 //Enum.GetValues(typeof(TEnum)) cannot be used here as it is not AOT compatible
                 Names
                     .ToDictionary(static name => name, static name => (TEnum) Enum.Parse(typeof(TEnum), name))

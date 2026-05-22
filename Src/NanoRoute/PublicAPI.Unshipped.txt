@@ -132,6 +132,8 @@ NanoRoute.RequestContext.Cancellation.get -> System.Threading.CancellationToken
 NanoRoute.RequestContext.Cancellation.init -> void
 NanoRoute.RequestContext.Parameters.get -> System.Collections.Generic.Dictionary<string!, object?>!
 NanoRoute.RequestContext.Parameters.init -> void
+NanoRoute.RequestContext.RemainingPath.get -> System.ReadOnlyMemory<char>
+NanoRoute.RequestContext.RemainingPath.init -> void
 NanoRoute.RequestContext.Request.get -> System.Net.Http.HttpRequestMessage!
 NanoRoute.RequestContext.Request.init -> void
 NanoRoute.RequestContext.RequestContext() -> void

@@ -15,8 +15,9 @@ namespace NanoRoute.Tests
 {
     using Internals;
 
-    [TestFixture]
-    internal sealed class RouteMatchCursorTests
+    [TestFixture(true)]
+    [TestFixture(false)]
+    internal sealed class RouteMatchCursorTests(bool freezeRoot)
     {
         private static readonly RequestHandlerDelegate s_handler = static (_, _) => Task.FromResult(new HttpResponseMessage());
 
@@ -30,9 +31,9 @@ namespace NanoRoute.Tests
             return definition;
         }
 
-        private static RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingPrecedence matchingPrecedence = MatchingPrecedence.LiteralFirst) => new
+        private RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingPrecedence matchingPrecedence = MatchingPrecedence.LiteralFirst) => new
         (
-            root,
+            root.Copy(freezeRoot),
             HttpVerb.Get,
             new Uri($"https://www.example.com{path}", UriKind.Absolute),
             new Mock<IServiceProvider>(MockBehavior.Strict).Object,
@@ -55,12 +56,59 @@ namespace NanoRoute.Tests
             root.LiteralChildren.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/users");
+            Assert.That(cursor.Completed, Is.False);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
             Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.Current.RemainingPath.ToString(), Is.Empty);
             Assert.That(cursor.Current.AttachedParameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed);
+        }
+
+        [Test]
+        public async Task MoveNextAsync_ShouldMatchPrefixBranches()
+        {
+            HandlerRegistration handler = new(s_handler, "/api/*");
+
+            RouteNode
+                root = new(),
+                api = new();
+
+            api.HandlerRegistrations[HttpVerb.Get] = [handler];
+            root.LiteralChildren.Add("api".AsMemory(), api);
+
+            RouteMatchCursor cursor = CreateCursor(root, "/api/health");
+            Assert.That(cursor.Completed, Is.False);
+
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.Current.RemainingPath.ToString(), Is.EqualTo("/health"));
+            Assert.That(cursor.Current.AttachedParameters, Is.Empty);
+
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed);
+        }
+
+        [Test]
+        public async Task MoveNextAsync_ShouldReportRemainingPathForRootPrefix()
+        {
+            HandlerRegistration handler = new(s_handler, "/*");
+
+            RouteNode root = new();
+            root.HandlerRegistrations[HttpVerb.Get] = [handler];
+
+            RouteMatchCursor cursor = CreateCursor(root, "/api/health");
+            Assert.That(cursor.Completed, Is.False);
+
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.Current.RemainingPath.ToString(), Is.EqualTo("/api/health"));
+            Assert.That(cursor.Current.AttachedParameters, Is.Empty);
+
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed);
         }
 
         [TestCase(MatchingPrecedence.LiteralFirst, "/items/value/")]
