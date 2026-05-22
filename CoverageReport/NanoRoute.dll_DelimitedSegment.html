@@ -41,7 +41,7 @@
 <table>
 <tr>
 <th>Covered lines:</th>
-<td class="limit-width right" title="27">27</td>
+<td class="limit-width right" title="28">28</td>
 </tr>
 <tr>
 <th>Uncovered lines:</th>
@@ -49,15 +49,15 @@
 </tr>
 <tr>
 <th>Coverable lines:</th>
-<td class="limit-width right" title="27">27</td>
+<td class="limit-width right" title="28">28</td>
 </tr>
 <tr>
 <th>Total lines:</th>
-<td class="limit-width right" title="57">57</td>
+<td class="limit-width right" title="59">59</td>
 </tr>
 <tr>
 <th>Line coverage:</th>
-<td class="limit-width right" title="27 of 27">100%</td>
+<td class="limit-width right" title="28 of 28">100%</td>
 </tr>
 </table>
 </div>
@@ -106,7 +106,7 @@
 <thead><tr><th>Method</th><th>Blocks covered <a href="https://en.wikipedia.org/wiki/Code_coverage" target="_blank"><i class="icon-info-circled"></i></a></th><th>Blocks not covered <a href="https://en.wikipedia.org/wiki/Code_coverage" target="_blank"><i class="icon-info-circled"></i></a></th></tr></thead>
 <tbody>
 <tr><td title="MoveNext()"><a href="#file0_line17" class="navigatetohash">MoveNext()</a></td><td>30</td><td>0</td></tr>
-<tr><td title="DelimitedSegment(System.ReadOnlyMemory&lt;char&gt;, char)"><a href="#file0_line53" class="navigatetohash">DelimitedSegment(...)</a></td><td>1</td><td>0</td></tr>
+<tr><td title="DelimitedSegment(System.ReadOnlyMemory&lt;char&gt;, char)"><a href="#file0_line55" class="navigatetohash">DelimitedSegment(...)</a></td><td>1</td><td>0</td></tr>
 </tbody>
 </table>
 </div>
@@ -168,21 +168,24 @@
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line50"></a><code>50</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line51"></a><code>51</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;ReadOnlyMemory&lt;char&gt;&nbsp;Current&nbsp;{&nbsp;get;&nbsp;private&nbsp;set;&nbsp;}</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line52"></a><code>52</code></td><td></td><td class="lightgray"><code></code></td></tr>
-<tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line53"></a><code>53</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;ReadOnlyMemory&lt;char&gt;&nbsp;Original&nbsp;{&nbsp;get;&nbsp;}&nbsp;=&nbsp;original;</code></td></tr>
+<tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line53"></a><code>53</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;readonly&nbsp;ReadOnlyMemory&lt;char&gt;&nbsp;Remaining&nbsp;=&gt;&nbsp;_next&nbsp;&gt;&nbsp;DONE&nbsp;?&nbsp;Original.Slice(Math.Max(0,&nbsp;_next&nbsp;-&nbsp;1))&nbsp;:&nbsp;defaul</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line54"></a><code>54</code></td><td></td><td class="lightgray"><code></code></td></tr>
-<tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line55"></a><code>55</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;readonly&nbsp;bool&nbsp;HasValue&nbsp;=&gt;&nbsp;Current.Length&nbsp;&gt;&nbsp;0;</code></td></tr>
-<tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line56"></a><code>56</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
-<tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line57"></a><code>57</code></td><td></td><td class="lightgray"><code>}</code></td></tr>
+<tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line55"></a><code>55</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;ReadOnlyMemory&lt;char&gt;&nbsp;Original&nbsp;{&nbsp;get;&nbsp;}&nbsp;=&nbsp;original;</code></td></tr>
+<tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line56"></a><code>56</code></td><td></td><td class="lightgray"><code></code></td></tr>
+<tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line57"></a><code>57</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;readonly&nbsp;bool&nbsp;HasValue&nbsp;=&gt;&nbsp;Current.Length&nbsp;&gt;&nbsp;0;</code></td></tr>
+<tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line58"></a><code>58</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
+<tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line59"></a><code>59</code></td><td></td><td class="lightgray"><code>}</code></td></tr>
 </tbody>
 </table>
 </div>
-<div class="footer">Generated by: ReportGenerator 5.5.0.0<br />05/20/2026 - 04:35:29<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="https://reportgenerator.io">reportgenerator.io</a></div></div>
+<div class="footer">Generated by: ReportGenerator 5.5.0.0<br />05/22/2026 - 02:09:48<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="https://reportgenerator.io">reportgenerator.io</a></div></div>
 <div class="containerright">
 <div class="containerrightfixed">
 <h1>Methods/Properties</h1>
 <a href="#file0_line17" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - MoveNext()"><i class="icon-cube"></i>MoveNext()</a><br />
-<a href="#file0_line53" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - DelimitedSegment(System.ReadOnlyMemory&lt;char&gt;, char)"><i class="icon-cube"></i>DelimitedSegment(System.ReadOnlyMemory&lt;char&gt;, char)</a><br />
-<a href="#file0_line55" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - HasValue()"><i class="icon-wrench"></i>HasValue()</a><br />
+<a href="#file0_line53" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Remaining()"><i class="icon-wrench"></i>Remaining()</a><br />
+<a href="#file0_line55" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - DelimitedSegment(System.ReadOnlyMemory&lt;char&gt;, char)"><i class="icon-cube"></i>DelimitedSegment(System.ReadOnlyMemory&lt;char&gt;, char)</a><br />
+<a href="#file0_line57" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - HasValue()"><i class="icon-wrench"></i>HasValue()</a><br />
 <br/></div>
 </div></div>
 <script type="text/javascript">

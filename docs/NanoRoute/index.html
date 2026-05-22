@@ -161,6 +161,7 @@ public interface IUserRepository
 <li>Parser-backed segments use registered parsers such as <code>{user_id:int}</code>, <code>{int}</code>, or <code>{slug:str(min=3,max=32)}</code>.</li>
 <li>The parameter name is optional. Segments like <code>{int}</code> still validate the path but do not add an entry to <code>RequestContext.Parameters</code>.</li>
 <li>When multiple handlers match within the selected route branch, NanoRoute evaluates compatible handlers from shorter prefixes toward more specific matches.</li>
+<li><code>RequestContext.RemainingPath</code> is updated for each matched handler. Prefix handlers receive the unmatched path tail with its leading <code>/</code>, exact handlers receive an empty value when no path remains, and query strings are not included.</li>
 <li>At the same path depth, <code>RouterConfig.MatchingPrecedence</code> decides whether literal or parameterized child segments are selected first.</li>
 <li>Once NanoRoute selects a child branch at a given depth, it does not return to sibling branches later in the pipeline.</li>
 </ul>
@@ -227,6 +228,7 @@ builder.AddPrefix(&quot;/api/users/{user_id:int}/*&quot;, users =&gt; users
 HttpListenerRouter router = builder.CreateRouter();
 </code></pre>
 <p>This produces the same effective routes as registering <code>/api/users/{user_id:int}/*</code> and <code>/api/users/{user_id:int}/details/</code> directly, but keeps repeated base patterns out of endpoint registrations.</p>
+<p>Inside prefix middleware, <code>context.RemainingPath</code> exposes the current request path tail that has not been matched by that handler's route pattern. For <code>/api/users/{user_id:int}/*</code> handling <code>/api/users/42/details</code>, the value is <code>/details</code>; the final <code>/details/</code> endpoint sees an empty value.</p>
 <h2 id="endpoint-builders">Endpoint Builders</h2>
 <p><code>AddEndpoint()</code> and <code>CreateEndpoint()</code> capture an endpoint's HTTP verb or verbs and exact or prefix route pattern once. Endpoint-aware helpers such as <code>WithHandler()</code>, <code>WithJsonBody()</code>, and <code>WithQueryBindings()</code> then register middleware for that captured endpoint without repeating the route.</p>
 <pre><code class="lang-csharp">public sealed class CreateItemRequest
