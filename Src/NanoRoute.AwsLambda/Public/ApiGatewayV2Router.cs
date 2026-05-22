@@ -1,5 +1,5 @@
 /********************************************************************************
-* ApiGatewayHttpApiV2Router.cs                                                  *
+* ApiGatewayV2Router.cs                                                         *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -20,7 +20,7 @@ namespace NanoRoute.AwsLambda
     /// </summary>
     /// <example>
     /// <code>
-    /// ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+    /// ApiGatewayV2Router router = ApiGatewayV2Router
     ///     .CreateBuilder()
     ///     .AddJsonErrorDetails()
     ///     .AddDefaultValueParsers()
@@ -28,9 +28,9 @@ namespace NanoRoute.AwsLambda
     ///     .CreateRouter();
     /// </code>
     /// </example>
-    public sealed class ApiGatewayHttpApiV2Router : Router<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig>
+    public sealed class ApiGatewayV2Router : Router<ApiGatewayV2Router, ApiGatewayV2RouterConfig>
     {
-        private ApiGatewayHttpApiV2Router(RouterBuilder<ApiGatewayHttpApiV2Router, AwsLambdaRouterConfig> builder) : base(builder) { }
+        private ApiGatewayV2Router(RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> builder) : base(builder) { }
 
         /// <summary>
         /// Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.

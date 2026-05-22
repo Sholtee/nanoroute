@@ -27,7 +27,7 @@ public sealed class Function
         .AddSingleton<IUserRepository, UserRepository>()
         .BuildServiceProvider();
 
-    private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
+    private static readonly ApiGatewayV2Router Router = ApiGatewayV2Router
         .CreateBuilder()
         .AddDefaultValueParsers()
         .AddJsonErrorDetails()
@@ -97,18 +97,18 @@ public interface IUserRepository
 }
 ```
 
-`ApiGatewayHttpApiV2Router.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, endpoint builders, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router between Lambda invocations.
+`ApiGatewayV2Router.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, endpoint builders, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router between Lambda invocations.
 
 Prefer endpoint builders such as `AddEndpoint()` for application routes. Typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
 
 The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass `ILambdaContext.RemainingTime` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 
-For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/master/Tests/NanoRoute.TestLambda). It wires `ApiGatewayHttpApiV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
+For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/master/Tests/NanoRoute.TestLambda). It wires `ApiGatewayV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
 
 ## Core Types
 
-- [ApiGatewayHttpApiV2Router](https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.ApiGatewayHttpApiV2Router.html)
-- [AwsLambdaRouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.AwsLambdaRouterConfig.html)
+- [ApiGatewayV2Router](https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.ApiGatewayV2Router.html)
+- [ApiGatewayV2RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute.AwsLambda/NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html)
 
 ## Routing
 
@@ -121,7 +121,7 @@ using System.Net.Http;
 using NanoRoute;
 using NanoRoute.AwsLambda;
 
-ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
@@ -154,7 +154,7 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 
 ## Request Mapping
 
-`ApiGatewayHttpApiV2Router` converts the API Gateway event into an `HttpRequestMessage` before executing the NanoRoute pipeline.
+`ApiGatewayV2Router` converts the API Gateway event into an `HttpRequestMessage` before executing the NanoRoute pipeline.
 
 - The request URI is built from `RawPath`, `RawQueryString`, the `Host` header, and the request scheme.
 - The scheme is read from `Forwarded: proto=...`, `X-Forwarded-Proto`, or inferred as `https` for Lambda Function URL domains.
@@ -182,10 +182,10 @@ Pass `ILambdaContext.RemainingTime` to `Route()`. By default, the adapter starts
 
 If the invocation is already inside that safety window, the request is cancelled immediately and the adapter returns a `504 Gateway Timeout` JSON error response.
 
-Use `AwsLambdaRouterConfig.LambdaTimeoutBuffer` when your function needs a different safety window:
+Use `ApiGatewayV2RouterConfig.LambdaTimeoutBuffer` when your function needs a different safety window:
 
 ```csharp
-ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
     .ConfigureRouting(config => config with
     {
@@ -225,7 +225,7 @@ public sealed class GetItemRequest
     public CancellationToken Cancellation { get; set; }
 }
 
-ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
@@ -242,9 +242,9 @@ ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
 
 ## Common Building Blocks
 
-- `ApiGatewayHttpApiV2Router.CreateBuilder()` starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.
-- `AwsLambdaRouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`, and adds `LambdaTimeoutBuffer`.
-- `ConfigureRouting()` customizes `AwsLambdaRouterConfig` before creating a router snapshot.
+- `ApiGatewayV2Router.CreateBuilder()` starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.
+- `ApiGatewayV2RouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`, and adds `LambdaTimeoutBuffer`.
+- `ConfigureRouting()` customizes `ApiGatewayV2RouterConfig` before creating a router snapshot.
 - `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
 - `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.

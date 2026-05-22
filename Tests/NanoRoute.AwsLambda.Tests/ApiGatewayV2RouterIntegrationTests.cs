@@ -1,5 +1,5 @@
 /********************************************************************************
-* ApiGatewayHttpApiV2RouterIntegrationTests.cs                                  *
+* ApiGatewayV2RouterIntegrationTests.cs                                  *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -19,7 +19,7 @@ namespace NanoRoute.AwsLambda.Tests
 {
     [TestFixture]
     [NonParallelizable]
-    internal sealed class ApiGatewayHttpApiV2RouterIntegrationTests
+    internal sealed class ApiGatewayV2RouterIntegrationTests
     {
         private const string LAMBDA_URL_ENV_VAR = "NANOROUTE_TEST_LAMBDA_URL";
 

@@ -31,7 +31,7 @@ public sealed class Function
 {
     private static readonly IServiceProvider Services = new EmptyServiceProvider();
 
-    private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
+    private static readonly ApiGatewayV2Router Router = ApiGatewayV2Router
         .CreateBuilder()
         .AddJsonErrorDetails()
         .AddEndpoint("GET", "/health/", endpoint => endpoint
@@ -76,7 +76,7 @@ public sealed class Function
         .AddSingleton<IUserRepository, UserRepository>()
         .BuildServiceProvider();
 
-    private static readonly ApiGatewayHttpApiV2Router Router = ApiGatewayHttpApiV2Router
+    private static readonly ApiGatewayV2Router Router = ApiGatewayV2Router
         .CreateBuilder()
         .AddDefaultValueParsers()
         .AddJsonErrorDetails()
@@ -146,7 +146,7 @@ public interface IUserRepository
 }
 ```
 
-`ApiGatewayHttpApiV2Router.CreateBuilder()` uses the same builder APIs as the core package. Prefer endpoint builders such as `AddEndpoint()` for application routes; typed handlers and endpoint helpers such as `WithJsonBody()` and `WithQueryBindings()` keep route values, query values, JSON bodies, services, and framework values in request objects.
+`ApiGatewayV2Router.CreateBuilder()` uses the same builder APIs as the core package. Prefer endpoint builders such as `AddEndpoint()` for application routes; typed handlers and endpoint helpers such as `WithJsonBody()` and `WithQueryBindings()` keep route values, query values, JSON bodies, services, and framework values in request objects.
 
 Pass `ILambdaContext.RemainingTime` to `Route()` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
 
@@ -162,7 +162,7 @@ Pass `ILambdaContext.RemainingTime` to `Route()` so the adapter can cancel work 
 
 ## Hands-On Example
 
-For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/master/Tests/NanoRoute.TestLambda). It wires `ApiGatewayHttpApiV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
+For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/master/Tests/NanoRoute.TestLambda). It wires `ApiGatewayV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
 
 ## Documentation
 

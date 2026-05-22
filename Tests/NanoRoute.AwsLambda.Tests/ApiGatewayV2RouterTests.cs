@@ -1,5 +1,5 @@
 /********************************************************************************
-* ApiGatewayHttpApiV2RouterTests.cs                                             *
+* ApiGatewayV2RouterTests.cs                                             *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -18,12 +18,12 @@ using NUnit.Framework;
 namespace NanoRoute.AwsLambda.Tests
 {
     [TestFixture]
-    internal sealed class ApiGatewayHttpApiV2RouterTests
+    internal sealed class ApiGatewayV2RouterTests
     {
         [Test]
         public async Task Route_ShouldRouteApiGatewayRequest()
         {
-            ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+            ApiGatewayV2Router router = ApiGatewayV2Router
                 .CreateBuilder()
                 .AddHandler("GET", "/health/", static (context, _) =>
                 {
@@ -58,7 +58,7 @@ namespace NanoRoute.AwsLambda.Tests
         [Test]
         public async Task Route_ShouldReturnGatewayTimeoutWhenRemainingTimeIsTooShort()
         {
-            ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+            ApiGatewayV2Router router = ApiGatewayV2Router
                 .CreateBuilder()
                 .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
@@ -83,7 +83,7 @@ namespace NanoRoute.AwsLambda.Tests
         [Test]
         public async Task Route_ShouldRespectConfiguredLambdaTimeoutBuffer()
         {
-            ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+            ApiGatewayV2Router router = ApiGatewayV2Router
                 .CreateBuilder()
                 .ConfigureRouting(static config => config with { LambdaTimeoutBuffer = TimeSpan.FromSeconds(5) })
                 .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
@@ -102,7 +102,7 @@ namespace NanoRoute.AwsLambda.Tests
         [Test]
         public async Task Route_ShouldAllowZeroLambdaTimeoutBuffer()
         {
-            ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router
+            ApiGatewayV2Router router = ApiGatewayV2Router
                 .CreateBuilder()
                 .ConfigureRouting(static config => config with { LambdaTimeoutBuffer = TimeSpan.Zero })
                 .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
@@ -123,7 +123,7 @@ namespace NanoRoute.AwsLambda.Tests
         {
             ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>
             (
-                static () => new AwsLambdaRouterConfig { LambdaTimeoutBuffer = TimeSpan.FromTicks(-1) }
+                static () => new ApiGatewayV2RouterConfig { LambdaTimeoutBuffer = TimeSpan.FromTicks(-1) }
             )!;
 
             Assert.That(ex.ParamName, Is.EqualTo("value"));
@@ -132,7 +132,7 @@ namespace NanoRoute.AwsLambda.Tests
         [Test]
         public void Route_ShouldBeNullCheckedForRequest()
         {
-            ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router.CreateBuilder().CreateRouter();
+            ApiGatewayV2Router router = ApiGatewayV2Router.CreateBuilder().CreateRouter();
 
             ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>
             (
@@ -145,7 +145,7 @@ namespace NanoRoute.AwsLambda.Tests
         [Test]
         public void Route_ShouldBeNullCheckedForServices()
         {
-            ApiGatewayHttpApiV2Router router = ApiGatewayHttpApiV2Router.CreateBuilder().CreateRouter();
+            ApiGatewayV2Router router = ApiGatewayV2Router.CreateBuilder().CreateRouter();
 
             ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>
             (

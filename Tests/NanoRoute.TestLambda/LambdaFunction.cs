@@ -26,7 +26,7 @@ namespace NanoRoute.TestLambda
     {
         private static readonly IServiceProvider s_services = new EmptyServiceProvider();
 
-        private static readonly ApiGatewayHttpApiV2Router s_router = ApiGatewayHttpApiV2Router
+        private static readonly ApiGatewayV2Router s_router = ApiGatewayV2Router
             .CreateBuilder()
             .ConfigureJsonErrorDetails(config => config with
             {
