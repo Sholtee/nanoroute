@@ -52,7 +52,15 @@ namespace NanoRoute.Internals
             Done
         }
 
-        private readonly record struct BranchOrder(BranchKind First, BranchKind Second);
+        private readonly record struct BranchOrder(BranchKind First, BranchKind Second)
+        {
+            public static BranchOrder From(MatchingPrecedence matchingPrecedence) => matchingPrecedence switch
+            {
+                MatchingPrecedence.LiteralFirst => new BranchOrder(BranchKind.Literal, BranchKind.Parsed),
+                MatchingPrecedence.ParameterizedFirst => new BranchOrder(BranchKind.Parsed, BranchKind.Literal),
+                _ => throw new ArgumentOutOfRangeException(nameof(matchingPrecedence))  // dead code (valid values enforced by the RouterConfig class)
+            };
+        }
 
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
@@ -100,9 +108,9 @@ namespace NanoRoute.Internals
         }
 
         // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
-        private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched, MatchPhase successPhase, MatchPhase failurePhase)
+        private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched)
         {
-            _phase = await branchMatched ? successPhase : failurePhase;
+            _phase = await branchMatched ? MatchPhase.EmitHandlers : MatchPhase.Done;
             return await MoveNextAsync();
         }
 
@@ -244,12 +252,7 @@ namespace NanoRoute.Internals
                 uri.AbsolutePath.AsMemory(),
                 '/'
             );
-            _branchOrder = routerConfig.MatchingPrecedence switch
-            {
-                MatchingPrecedence.LiteralFirst => new BranchOrder(BranchKind.Literal, BranchKind.Parsed),
-                MatchingPrecedence.ParameterizedFirst => new BranchOrder(BranchKind.Parsed, BranchKind.Literal),
-                _ => default  // dead code (valid values enforced by the RouterConfig class)
-            };
+            _branchOrder = BranchOrder.From(routerConfig.MatchingPrecedence);
             _parameters = new Dictionary<string, object?>(routerConfig.ParametersCapacity, StringComparer.OrdinalIgnoreCase);
             _phase = MatchPhase.EmitHandlers;
             _node = node;
@@ -304,7 +307,7 @@ namespace NanoRoute.Internals
 
                         ValueTask<bool> branchMatched = TryBranchPairAsync();
                         if (!branchMatched.IsCompletedSuccessfully)
-                            return MoveNextAwaitedAsync(branchMatched, MatchPhase.EmitHandlers, MatchPhase.Done);
+                            return MoveNextAwaitedAsync(branchMatched);
 
                         _phase = branchMatched.Result ? MatchPhase.EmitHandlers : MatchPhase.Done;
                         break;
