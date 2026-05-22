@@ -4,7 +4,7 @@ NanoRoute.AwsLambda adds AWS Lambda adapters for NanoRoute while keeping the cor
 
 The package supports Amazon API Gateway HTTP APIs and Lambda Function URLs that invoke Lambda functions with payload format version `2.0`. It translates `APIGatewayHttpApiV2ProxyRequest` events into `HttpRequestMessage` instances, runs the normal NanoRoute pipeline, and converts the produced `HttpResponseMessage` into an `APIGatewayHttpApiV2ProxyResponse`.
 
-NanoRoute.AwsLambda targets `netstandard2.1`.
+NanoRoute.AwsLambda targets `net8.0`.
 
 ## Quick Start
 
