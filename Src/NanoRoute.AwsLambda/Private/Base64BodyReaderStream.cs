@@ -55,8 +55,7 @@ namespace NanoRoute.AwsLambda
 
         private int ReadCore(Span<byte> buffer, CancellationToken cancellation)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(nameof(Base64BodyReaderStream));
+            ObjectDisposedException.ThrowIf(_disposed, this);
 
             if (buffer.IsEmpty)
                 return 0;
@@ -89,17 +88,6 @@ namespace NanoRoute.AwsLambda
             }
 
             return read;
-        }
-
-        private static void ValidateBufferArguments(byte[] buffer, int offset, int count)
-        {
-            Ensure.NotNull(buffer);
-
-            if (offset < 0 || offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-
-            if (count < 0 || count > buffer.Length - offset)
-                throw new ArgumentOutOfRangeException(nameof(count));
         }
 
         protected override void Dispose(bool disposing)

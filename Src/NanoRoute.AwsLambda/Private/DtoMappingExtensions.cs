@@ -31,7 +31,7 @@ namespace NanoRoute.AwsLambda
                 HostAndPort(request.Headers) is not { Length: > 0 } hostAndPort ||
                 Scheme(request.Headers) is not { Length: > 0 } scheme ||
                 // Parse the base URI as a URI so host:port and IPv6 literals are handled correctly
-                !Uri.TryCreate($"{scheme}://{hostAndPort}", UriKind.Absolute, out Uri baseUri)
+                !Uri.TryCreate($"{scheme}://{hostAndPort}", UriKind.Absolute, out Uri? baseUri)
             )
                 throw new InvalidOperationException(Resources.ERR_UNKNOWN_URI);
 
@@ -45,7 +45,7 @@ namespace NanoRoute.AwsLambda
 
             static string? HostAndPort(IDictionary<string, string> headers)
             {
-                if (headers.TryGetValue("host" /*AWS lowercases the header names*/, out string hostAndPort))
+                if (headers.TryGetValue("host" /*AWS lowercases the header names*/, out string? hostAndPort))
                     return hostAndPort;
 
                 return null;
@@ -53,10 +53,10 @@ namespace NanoRoute.AwsLambda
 
             static string? Scheme(IDictionary<string, string> headers)
             {
-                if (headers.TryGetValue("forwarded", out string forwarded) && s_protoMatcher.Match(forwarded) is { Success: true } match)
+                if (headers.TryGetValue("forwarded", out string? forwarded) && s_protoMatcher.Match(forwarded) is { Success: true } match)
                     return match.Groups["proto"].Value;
 
-                if (headers.TryGetValue("x-forwarded-proto", out string proto))
+                if (headers.TryGetValue("x-forwarded-proto", out string? proto))
                     return proto;
 
                 return null;
@@ -89,8 +89,8 @@ namespace NanoRoute.AwsLambda
                 headers.TryAddWithoutValidation(header.Key, header.Value);
             }
 
-            requestMessage.Properties[Router.OriginalRequestName] = request;
-            requestMessage.Properties[Router.TraceIdName] = request.RequestContext.RequestId;
+            requestMessage.Options.Set(new HttpRequestOptionsKey<APIGatewayHttpApiV2ProxyRequest>(Router.OriginalRequestName), request);
+            requestMessage.Options.Set(new HttpRequestOptionsKey<string>(Router.TraceIdName), request.RequestContext.RequestId);
 
             return requestMessage;
         }
@@ -115,7 +115,7 @@ namespace NanoRoute.AwsLambda
                 {
                     case StringContent stringContent:
                     {
-                        if (await stringContent.ReadAsStringAsync() is { Length: > 0 } body)
+                        if (await stringContent.ReadAsStringAsync().ConfigureAwait(false) is { Length: > 0 } body)
                             response.Body = body;
                         break;
                     }
@@ -123,7 +123,7 @@ namespace NanoRoute.AwsLambda
                     {
                         using Base64BodyWriterStream destination = new();
 
-                        await byteContent.CopyToAsync(destination);
+                        await byteContent.CopyToAsync(destination).ConfigureAwait(false);
 
                         if (destination.GetBody() is { Length: > 0 } body)
                         {

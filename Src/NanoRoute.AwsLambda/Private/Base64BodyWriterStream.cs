@@ -39,11 +39,7 @@ namespace NanoRoute.AwsLambda
             }
         }
 
-        private void EnsureNotDisposed()
-        {
-            if (_body is null)
-                throw new ObjectDisposedException(nameof(Base64BodyWriterStream));
-        }
+        private void EnsureNotDisposed() => ObjectDisposedException.ThrowIf(_body is null, this);
 
         private void WriteCore(ReadOnlySpan<byte> buffer, CancellationToken cancellation)
         {
@@ -121,7 +117,7 @@ namespace NanoRoute.AwsLambda
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            Ensure.NotNull(buffer);
+            ArgumentNullException.ThrowIfNull(buffer);
 
             if (offset < 0 || offset > buffer.Length)
                 throw new ArgumentOutOfRangeException(nameof(offset));

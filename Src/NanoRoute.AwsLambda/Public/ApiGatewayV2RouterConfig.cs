@@ -37,9 +37,7 @@ namespace NanoRoute.AwsLambda
             get;
             init
             {
-                if (value < TimeSpan.Zero)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, TimeSpan.Zero);
                 field = value;
             }
         } = TimeSpan.FromSeconds(1);
