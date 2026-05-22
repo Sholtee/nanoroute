@@ -110,8 +110,8 @@ namespace NanoRoute.Internals
         // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
         private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched)
         {
-            _phase = await branchMatched ? MatchPhase.EmitHandlers : MatchPhase.Done;
-            return await MoveNextAsync();
+            _phase = await branchMatched.ConfigureAwait(false) ? MatchPhase.EmitHandlers : MatchPhase.Done;
+            return await MoveNextAsync().ConfigureAwait(false);
         }
 
         private void AdvanceToNextSegment(RouteNode nextNode)
@@ -178,10 +178,10 @@ namespace NanoRoute.Internals
         // Keep TryBranchPairAsync() state-machine-free while the preferred branch completes synchronously
         private async ValueTask<bool> TryBranchPairAwaitedAsync(ValueTask<bool> firstBranchMatched, ReadOnlyMemory<char> decodedSegment)
         {
-            if (await firstBranchMatched)
+            if (await firstBranchMatched.ConfigureAwait(false))
                 return true;
 
-            return await TryBranchAsync(_branchOrder.Second, decodedSegment);
+            return await TryBranchAsync(_branchOrder.Second, decodedSegment).ConfigureAwait(false);
         }
 
         private bool TryLiteralBranch(ReadOnlyMemory<char> decodedSegment)
@@ -224,10 +224,10 @@ namespace NanoRoute.Internals
         // Keep TryParsedBranchAsync() state-machine-free while branch matching completes synchronously
         private async ValueTask<bool> TryParsedBranchAwaitedAsync(ValueTask<ValueParseResult> parseResult, ReadOnlyMemory<char> decodedSegment, int branchIndex, RouteNode branchNode)
         {
-            if (TryAcceptParsedBranch(branchNode, await parseResult))
+            if (TryAcceptParsedBranch(branchNode, await parseResult.ConfigureAwait(false)))
                 return true;
 
-            return await TryParsedBranchAsync(decodedSegment, branchIndex + 1);
+            return await TryParsedBranchAsync(decodedSegment, branchIndex + 1).ConfigureAwait(false);
         }
 
         private bool TryAcceptParsedBranch(RouteNode branchNode, ValueParseResult parseResult)

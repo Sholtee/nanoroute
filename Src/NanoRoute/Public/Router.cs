@@ -116,7 +116,7 @@ namespace NanoRoute
 
             await using RequestPipeline pipeline = new(_root, request, services, Config, cancellation);
 
-            return await pipeline.RunAsync();
+            return await pipeline.RunAsync().ConfigureAwait(false);
         }
 
         /// <summary>

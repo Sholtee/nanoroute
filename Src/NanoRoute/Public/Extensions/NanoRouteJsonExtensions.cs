@@ -135,13 +135,13 @@ namespace NanoRoute
                 if (!JSON_MEDIA_TYPE.Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
                     BadRequest(Resources.ERR_BAD_CONTENT_TYPE);
 
-                Stream contentStream = await content.ReadAsStreamAsync();
+                Stream contentStream = await content.ReadAsStreamAsync().ConfigureAwait(false);
 
                 object? body = null;
 
                 try
                 {
-                    body = await JsonSerializer.DeserializeAsync(contentStream, typeInfo, context.Cancellation);
+                    body = await JsonSerializer.DeserializeAsync(contentStream, typeInfo, context.Cancellation).ConfigureAwait(false);
                 }
                 catch (JsonException ex)
                 {
@@ -150,7 +150,7 @@ namespace NanoRoute
 
                 context.Parameters[paramName] = body;
 
-                return await next();
+                return await next().ConfigureAwait(false);
             };
 
             [DoesNotReturn]
@@ -602,7 +602,7 @@ namespace NanoRoute
                     {
                         try
                         {
-                            return await next();
+                            return await next().ConfigureAwait(false);
                         }
                         catch (HttpRequestException ex)
                         {

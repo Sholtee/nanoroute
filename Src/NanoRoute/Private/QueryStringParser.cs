@@ -41,8 +41,8 @@ namespace NanoRoute.Internals
         // If a parser really suspends, this helper resumes the current parameter and finishes the loop.
         private async ValueTask ParseAwaitedAsync(ParameterParser expectedParameter, ValueTask<ValueParseResult> parseResult)
         {
-            AcceptParameter(expectedParameter.Definition, await parseResult);
-            await Parse();
+            AcceptParameter(expectedParameter.Definition, await parseResult.ConfigureAwait(false));
+            await Parse().ConfigureAwait(false);
         }
 
         private void AcceptParameter(ParameterDefinition parameterDefinition, ValueParseResult parseResult)

@@ -37,7 +37,7 @@ namespace NanoRoute.Perf
         {
             using Base64BodyReaderStream stream = new(_encodedBody);
 
-            int 
+            int
                 total = 0,
                 read;
 

@@ -335,7 +335,7 @@ namespace NanoRoute
                 {
                     try
                     {
-                        return await next();
+                        return await next().ConfigureAwait(false);
                     }
                     catch (Exception ex) when (ex is not (HttpRequestException or OperationCanceledException /*needs to be handled from user code*/))
                     {
