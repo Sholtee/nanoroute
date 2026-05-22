@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Src\NanoRoute.AwsLambda\NanoRoute.AwsLambda.csproj" />
     <ProjectReference Include="..\..\Src\NanoRoute\NanoRoute.csproj" />
   </ItemGroup>
 
