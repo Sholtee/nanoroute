@@ -106,7 +106,7 @@ namespace NanoRoute.Internals
                 return false;
 
             foreach (KeyValuePair<string, string> kvp in otherDef.RawArguments)
-                if (!RawArguments.TryGetValue(kvp.Key, out string val) || !kvp.Value.Equals(val, StringComparison.OrdinalIgnoreCase))
+                if (!RawArguments.TryGetValue(kvp.Key, out string val) || !kvp.Value.Equals(val, StringComparison.Ordinal /* values must match literally*/))
                     return false;
 
             return true;
