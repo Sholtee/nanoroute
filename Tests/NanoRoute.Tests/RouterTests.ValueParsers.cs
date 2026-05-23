@@ -312,7 +312,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task AddRegexParser_ShouldRespectPatternAndCaseSensitiveParameters()
+        public async Task AddRegexParser_ShouldDefaultToCaseInsensitiveMatchingAndRespectCaseSensitiveParameter()
         {
             Mock<RequestHandlerDelegate>
                 constrainedHandler = new(MockBehavior.Strict),

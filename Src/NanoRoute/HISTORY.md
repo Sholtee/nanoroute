@@ -24,7 +24,7 @@
 - Added `NanoRoutePrefixExtensions` as the extension-method home for `AddPrefix()`.
 - Added `EndpointBuilder`, `AddEndpoint()`, `CreateEndpoint()`, and endpoint-scoped `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` helpers for registering endpoint-local middleware without repeating an endpoint's verbs and pattern.
 - Added `RequestContext.RemainingPath` to expose the unmatched request path tail to handlers.
-- Added the built-in `regex` value parser with a required `pattern` argument, optional `timeoutMs` and `caseSensitive` matching, and timeout handling that treats timed-out matches as non-matches.
+- Added the built-in `regex` value parser with a required `pattern` argument, optional `timeoutMs` defaulting to 50 ms, case-insensitive matching by default, optional `caseSensitive` matching, and timeout handling that treats timed-out matches as non-matches.
 
 ### Performance
 

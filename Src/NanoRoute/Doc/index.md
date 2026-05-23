@@ -313,7 +313,7 @@ Built-in parsers use the same mechanism:
 
 - `int` supports `min` and `max`.
 - `str` supports `min` and `max`.
-- `regex` supports required `pattern`, optional `timeoutMs` that defaults to `100`, and optional `caseSensitive`; timed-out matches are treated as non-matches.
+- `regex` supports required `pattern`, optional `timeoutMs` that defaults to `50`, and optional `caseSensitive` that defaults to `false`; timed-out matches are treated as non-matches.
 - `guid` and `bool` do not take arguments.
 
 ## Value Parser Syntax

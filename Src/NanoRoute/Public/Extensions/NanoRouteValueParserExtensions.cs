@@ -446,7 +446,7 @@ namespace NanoRoute
             /// <remarks>
             /// Supported arguments:
             /// <c>pattern</c>, <c>timeoutMs</c>, <c>caseSensitive</c>. The <c>pattern</c> argument is required,
-            /// <c>timeoutMs</c> defaults to <c>100</c>, and <c>caseSensitive</c> defaults to <see langword="true"/>.
+            /// <c>timeoutMs</c> defaults to <c>50</c>, and <c>caseSensitive</c> defaults to <see langword="false"/>.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
             /// <example>
@@ -466,7 +466,7 @@ namespace NanoRoute
                     bindArguments: static (IReadOnlyDictionary<string, string> args) =>
                     {
                         string? pattern = null;
-                        int timeoutMs = 100;
+                        int timeoutMs = 50;
                         bool caseSensitive = false;
 
                         foreach (KeyValuePair<string, string> arg in args)

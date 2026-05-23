@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Moq;
@@ -251,10 +252,10 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/items/{value:regex(pattern='^[a-z]+$')}/", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["value"]!) })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/items/spikey") }, s_services);
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/items/SPIKEY") }, s_services);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("spikey"));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("SPIKEY"));
         }
 
         [TestCase("/items/{value:int(min=20,max=10)}/")]
@@ -338,6 +339,24 @@ namespace NanoRoute.Tests
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("args"));
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
+        }
+
+        [Test]
+        public void AddRegexParser_ShouldDefaultTimeoutTo50Milliseconds()
+        {
+            _routerBuilder.AddRegexParser();
+
+            object parserArguments = _routerBuilder.ValueParsers["regex"].BindArguments(new Dictionary<string, string>
+            {
+                ["pattern"] = "^[a-z]+$"
+            })!;
+
+            Regex regex = (Regex) parserArguments
+                .GetType()
+                .GetProperty("Pattern")!
+                .GetValue(parserArguments)!;
+
+            Assert.That(regex.MatchTimeout, Is.EqualTo(TimeSpan.FromMilliseconds(50)));
         }
 
         [Test]
