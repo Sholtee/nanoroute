@@ -134,7 +134,7 @@ public interface IUserRepository
 
 - Exact route patterns start and end with `/`, for example `/items/`.
 - Prefix route patterns start with `/` and end with `/*`, for example `/items/*`.
-- `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` parsers.
+- `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` parsers.
 - `AddPrefix()` and `CreatePrefix()` define scoped route subtrees.
 - `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`.
 - `AddJsonBody()` and `WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.

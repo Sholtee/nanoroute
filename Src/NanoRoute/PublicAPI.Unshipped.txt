@@ -119,6 +119,7 @@ NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddBoolP
 NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddDefaultValueParsers() -> TBuilder!
 NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddGuidParser() -> TBuilder!
 NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddIntParser() -> TBuilder!
+NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddRegexParser() -> TBuilder!
 NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddStringParser() -> TBuilder!
 NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.SyncValueParserDelegate! tryParseDelegate) -> TBuilder!
 NanoRoute.NanoRouteValueParserExtensions.extension<TBuilder>(TBuilder!).AddValueParser(string! parserName, NanoRoute.BindArgumentsDelegate! bindArguments, NanoRoute.ValueParserDelegate! tryParseDelegate) -> TBuilder!

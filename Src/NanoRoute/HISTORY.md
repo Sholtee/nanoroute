@@ -14,6 +14,7 @@
 - Moved pattern-only and multi-verb `AddHandler()` overloads from builder instance methods to extension methods in the `NanoRoute` namespace. The single-verb `AddHandler(string verb, string pattern, ...)` overload remains on `RouteScopeBuilder` and strongly typed router builders.
 - Changed prefix-route patterns to use a trailing `/*` marker. A trailing `/` is now an exact route pattern, `RouteScopeBuilder.CurrentExact` is `/`, and `RouteScopeBuilder.CurrentPrefix` is `/*`.
 - Renamed `ValueSource.Context` to `ValueSource.Parameter` to describe that typed handlers read from `RequestContext.Parameters`.
+- Removed the `pattern` argument from the built-in `str` value parser. Use the new `regex` parser for regex-constrained route values.
 
 ### Added
 
@@ -23,6 +24,7 @@
 - Added `NanoRoutePrefixExtensions` as the extension-method home for `AddPrefix()`.
 - Added `EndpointBuilder`, `AddEndpoint()`, `CreateEndpoint()`, and endpoint-scoped `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` helpers for registering endpoint-local middleware without repeating an endpoint's verbs and pattern.
 - Added `RequestContext.RemainingPath` to expose the unmatched request path tail to handlers.
+- Added the built-in `regex` value parser with a required `pattern` argument, optional `timeoutMs` and `caseSensitive` matching, and timeout handling that treats timed-out matches as non-matches.
 
 ### Performance
 

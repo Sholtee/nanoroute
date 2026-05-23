@@ -445,8 +445,8 @@ namespace NanoRoute
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Supported arguments:
-            /// <c>pattern</c>, <c>timeoutMs</c>, <c>caseSensitive</c>. The <c>pattern</c> and
-            /// <c>timeoutMs</c> arguments are required, and <c>caseSensitive</c> defaults to <see langword="true"/>.
+            /// <c>pattern</c>, <c>timeoutMs</c>, <c>caseSensitive</c>. The <c>pattern</c> argument is required,
+            /// <c>timeoutMs</c> defaults to <c>100</c>, and <c>caseSensitive</c> defaults to <see langword="true"/>.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
             /// <example>
