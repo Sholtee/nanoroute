@@ -1165,6 +1165,21 @@ references:
   fullName.vb: NanoRoute.NanoRouteValueParserExtensions.AddIntParser(Of TBuilder)(TBuilder)
   nameWithType: NanoRouteValueParserExtensions.AddIntParser<TBuilder>(TBuilder)
   nameWithType.vb: NanoRouteValueParserExtensions.AddIntParser(Of TBuilder)(TBuilder)
+- uid: NanoRoute.NanoRouteValueParserExtensions.AddRegexParser*
+  name: AddRegexParser
+  href: NanoRoute.NanoRouteValueParserExtensions.html#NanoRoute_NanoRouteValueParserExtensions_AddRegexParser_
+  commentId: Overload:NanoRoute.NanoRouteValueParserExtensions.AddRegexParser
+  fullName: NanoRoute.NanoRouteValueParserExtensions.AddRegexParser
+  nameWithType: NanoRouteValueParserExtensions.AddRegexParser
+- uid: NanoRoute.NanoRouteValueParserExtensions.AddRegexParser``1(``0)
+  name: AddRegexParser<TBuilder>(TBuilder)
+  href: NanoRoute.NanoRouteValueParserExtensions.html#NanoRoute_NanoRouteValueParserExtensions_AddRegexParser__1___0_
+  commentId: M:NanoRoute.NanoRouteValueParserExtensions.AddRegexParser``1(``0)
+  name.vb: AddRegexParser(Of TBuilder)(TBuilder)
+  fullName: NanoRoute.NanoRouteValueParserExtensions.AddRegexParser<TBuilder>(TBuilder)
+  fullName.vb: NanoRoute.NanoRouteValueParserExtensions.AddRegexParser(Of TBuilder)(TBuilder)
+  nameWithType: NanoRouteValueParserExtensions.AddRegexParser<TBuilder>(TBuilder)
+  nameWithType.vb: NanoRouteValueParserExtensions.AddRegexParser(Of TBuilder)(TBuilder)
 - uid: NanoRoute.NanoRouteValueParserExtensions.AddStringParser*
   name: AddStringParser
   href: NanoRoute.NanoRouteValueParserExtensions.html#NanoRoute_NanoRouteValueParserExtensions_AddStringParser_

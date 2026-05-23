@@ -313,7 +313,8 @@ RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = Http
 <p>Built-in parsers use the same mechanism:</p>
 <ul>
 <li><code>int</code> supports <code>min</code> and <code>max</code>.</li>
-<li><code>str</code> supports <code>min</code>, <code>max</code>, and <code>pattern</code>.</li>
+<li><code>str</code> supports <code>min</code> and <code>max</code>.</li>
+<li><code>regex</code> supports required <code>pattern</code>, optional <code>timeoutMs</code> that defaults to <code>50</code>, and optional <code>caseSensitive</code> that defaults to <code>false</code>; timed-out matches are treated as non-matches.</li>
 <li><code>guid</code> and <code>bool</code> do not take arguments.</li>
 </ul>
 <h2 id="value-parser-syntax">Value Parser Syntax</h2>
@@ -325,7 +326,7 @@ RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = Http
 <li>List parser syntax is supported for query bindings only, not route path parameters.</li>
 <li>Parser arguments support <code>null</code>, <code>true</code> or <code>false</code>, numbers, and single-quoted strings with <code>\'</code> escaping.</li>
 </ul>
-<p>Use <code>AddValueParser()</code> to register custom parsers, or <code>AddDefaultValueParsers()</code> to register the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code> parsers.</p>
+<p>Use <code>AddValueParser()</code> to register custom parsers, or <code>AddDefaultValueParsers()</code> to register the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, <code>str</code>, and <code>regex</code> parsers.</p>
 <h2 id="query-bindings">Query Bindings</h2>
 <p><code>AddQueryBindings()</code> lets you validate and parse selected query-string values with the same registered value parsers used by route segments.</p>
 <pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
@@ -538,7 +539,7 @@ InMemoryRouter router = InMemoryRouter
 <ul>
 <li><code>HttpListenerRouter.CreateBuilder()</code> starts a strongly typed builder for <code>HttpListener</code> scenarios.</li>
 <li><code>ConfigureRouting()</code> customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.</li>
-<li><code>AddDefaultValueParsers()</code> registers the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code> value parsers.</li>
+<li><code>AddDefaultValueParsers()</code> registers the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, <code>str</code>, and <code>regex</code> value parsers.</li>
 <li><code>AddPrefix(&quot;/prefix/*&quot;, ...)</code> configures a scoped route subtree and returns the current builder.</li>
 <li><code>CreatePrefix(&quot;/prefix/*&quot;)</code> creates a scoped child builder for a route subtree.</li>
 <li><code>AddEndpoint()</code> and <code>CreateEndpoint()</code> capture an endpoint's verbs and route pattern once.</li>

@@ -224,7 +224,7 @@
     </tbody>
   </table>
   <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers__1___0__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This convenience method registers parsers named <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code>.
+  <div class="markdown level1 remarks"><p>This convenience method registers parsers named <code>int</code>, <code>guid</code>, <code>bool</code>, <code>str</code>, and <code>regex</code>.
 Existing registrations with the same names are overwritten.</p>
 </div>
   <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddDefaultValueParsers__1___0__examples">Examples</h5>
@@ -411,6 +411,89 @@ Existing registrations with the same names are overwritten.</p>
       </tr>
     </tbody>
   </table>
+  <a id="NanoRoute_NanoRouteValueParserExtensions_AddRegexParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddRegexParser*"></a>
+  <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddRegexParser__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddRegexParser``1(``0)">AddRegexParser&lt;TBuilder&gt;(TBuilder)</h4>
+  <div class="markdown level1 summary"><p>Registers the built-in <code>regex</code> value parser.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddRegexParser&lt;TBuilder&gt;(this TBuilder routeScopeBuilder) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddRegexParser__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Supported arguments:
+<code>pattern</code>, <code>timeoutMs</code>, <code>caseSensitive</code>. The <code>pattern</code> argument is required,
+<code>timeoutMs</code> defaults to <code>50</code>, and <code>caseSensitive</code> defaults to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</div>
+  <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddRegexParser__1___0__examples">Examples</h5>
+  <pre><code class="lang-csharp">builder
+    .AddRegexParser()
+    .AddHandler("GET", "/tags/{slug:regex(pattern='^[a-z]+$',timeoutMs=50)}/", (context, _) =&gt; Results.Ok(context.Parameters["slug"]));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <a id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddStringParser*"></a>
   <h4 id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser__1___0_" data-uid="NanoRoute.NanoRouteValueParserExtensions.AddStringParser``1(``0)">AddStringParser&lt;TBuilder&gt;(TBuilder)</h4>
   <div class="markdown level1 summary"><p>Registers the built-in <code>str</code> value parser.</p>
@@ -470,7 +553,7 @@ Existing registrations with the same names are overwritten.</p>
   </table>
   <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser__1___0__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Supported arguments:
-<code>min</code>, <code>max</code>, <code>pattern</code>.</p>
+<code>min</code>, <code>max</code>.</p>
 </div>
   <h5 id="NanoRoute_NanoRouteValueParserExtensions_AddStringParser__1___0__examples">Examples</h5>
   <pre><code class="lang-csharp">builder
