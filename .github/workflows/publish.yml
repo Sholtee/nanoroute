@@ -13,6 +13,10 @@ on:
       project:
         description: "Project"
         required: true
+        type: choice
+        options:
+          - NanoRoute
+          - NanoRoute.AwsLambda
 
 permissions:
   contents: write
@@ -38,16 +42,20 @@ jobs:
 
       - name: Create NuGet package
         shell: pwsh
-        run: ./Scripts/Create-NuGetPackages.ps1 "${{ inputs.project }}"
+        env:
+          NANOROUTE_PROJECT: ${{ inputs.project }}
+        run: ./Scripts/Create-NuGetPackages.ps1 $env:NANOROUTE_PROJECT
 
       - name: Publish NuGet package
         shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
           $packages = @(Get-ChildItem -Path ./Artifacts/NuGet -File -Filter *.nupkg)
           if ($packages.Length -ne 1) { throw "Expected exactly one package but found $($packages.Length)" }
 
           foreach ($package in $packages) {
-            dotnet nuget push $package.FullName --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+            dotnet nuget push $package.FullName --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
             if (!$?) { throw "Package publishing failed: $($package.Name)" }
           }
 
