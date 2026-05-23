@@ -248,7 +248,7 @@ namespace NanoRoute.Tests
         {
             TestRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .AddHandler("GET", "/items/{value:regex(pattern='^[a-z]+$',timeoutMs=50)}/", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["value"]!) })
+                .AddHandler("GET", "/items/{value:regex(pattern='^[a-z]+$')}/", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["value"]!) })
                 .CreateRouter();
 
             HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/items/spikey") }, s_services);

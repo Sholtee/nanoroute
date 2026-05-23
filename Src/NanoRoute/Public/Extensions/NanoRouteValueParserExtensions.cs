@@ -467,7 +467,7 @@ namespace NanoRoute
                     {
                         string? pattern = null;
                         int timeoutMs = 100;
-                        bool caseSensitive = true;
+                        bool caseSensitive = false;
 
                         foreach (KeyValuePair<string, string> arg in args)
                         {

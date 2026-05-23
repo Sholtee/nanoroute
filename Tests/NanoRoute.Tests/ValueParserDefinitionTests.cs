@@ -152,11 +152,12 @@ namespace NanoRoute.Tests
 
         [TestCase("int(min=3)", "INT(MIN=3)", true)]
         [TestCase("int(min=3)[]", "INT(MIN=3)[]", true)]
-        [TestCase("STR(pattern='[a-z]+',text='hello')", "str(PATTERN='[A-Z]+',TEXT='HELLO')", true)]
+        [TestCase("REGEX(pattern='[a-z]+',timeoutMs=50)", "regex(PATTERN='[a-z]+',TIMEOUTMS=50)", true)]
         [TestCase("int", "INT()", true)]
         [TestCase("int[]", "int", false)]
         [TestCase("int(min=3,max=5)", "int(min=3)", false)]
         [TestCase("str(min=3)", "str(max=3)", false)]
+        [TestCase("regex(pattern='[a-z]+',timeoutMs=50)", "regex(pattern='[A-Z]+',timeoutMs=50)", false)]
         [TestCase("int(min=3)", "int(min=4)", false)]
         [TestCase("int(min=3)", "str(min=3)", false)]
         public void Equals_ShouldMatchTheExpectedContract(string leftDefinition, string rightDefinition, bool expected)
