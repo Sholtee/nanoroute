@@ -312,7 +312,8 @@ RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListen
 Built-in parsers use the same mechanism:
 
 - `int` supports `min` and `max`.
-- `str` supports `min`, `max`, and `pattern`.
+- `str` supports `min` and `max`.
+- `regex` supports required `pattern`, optional `timeoutMs` that defaults to `50`, and optional `caseSensitive` that defaults to `false`; timed-out matches are treated as non-matches.
 - `guid` and `bool` do not take arguments.
 
 ## Value Parser Syntax
@@ -324,7 +325,7 @@ Built-in parsers use the same mechanism:
 - List parser syntax is supported for query bindings only, not route path parameters.
 - Parser arguments support `null`, `true` or `false`, numbers, and single-quoted strings with `\'` escaping.
 
-Use `AddValueParser()` to register custom parsers, or `AddDefaultValueParsers()` to register the built-in `int`, `guid`, `bool`, and `str` parsers.
+Use `AddValueParser()` to register custom parsers, or `AddDefaultValueParsers()` to register the built-in `int`, `guid`, `bool`, `str`, and `regex` parsers.
 
 ## Query Bindings
 
@@ -573,7 +574,7 @@ This keeps the transport-specific concerns in your own router type while still r
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
 - `ConfigureRouting()` customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.
-- `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` value parsers.
+- `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/*")` creates a scoped child builder for a route subtree.
 - `AddEndpoint()` and `CreateEndpoint()` capture an endpoint's verbs and route pattern once.

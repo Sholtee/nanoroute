@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Moq;
@@ -243,6 +244,20 @@ namespace NanoRoute.Tests
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo(expectedValue.ToString()));
         }
 
+        [Test]
+        public async Task AddDefaultValueParsers_ShouldRegisterTheRegexParser()
+        {
+            TestRouter router = _routerBuilder
+                .AddDefaultValueParsers()
+                .AddHandler("GET", "/items/{value:regex(pattern='^[a-z]+$')}/", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["value"]!) })
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage { RequestUri = new Uri("https://test.test/items/SPIKEY") }, s_services);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("SPIKEY"));
+        }
+
         [TestCase("/items/{value:int(min=20,max=10)}/")]
         [TestCase("/items/{value:int(foo=10)}/")]
         [TestCase("/items/{value:int(min='oops')}/")]
@@ -252,6 +267,14 @@ namespace NanoRoute.Tests
         [TestCase("/items/{value:str(max=false)}/")]
         [TestCase("/items/{value:str(pattern='[')}/")]
         [TestCase("/items/{value:str(foo='bar')}/")]
+        [TestCase("/items/{value:regex}/")]
+        [TestCase("/items/{value:regex(timeoutMs=50)}/")]
+        [TestCase("/items/{value:regex(pattern='[',timeoutMs=50)}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs=0)}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs=-1)}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs='oops')}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs=50,caseSensitive='oops')}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs=50,foo='bar')}/")]
         public void AddDefaultValueParsers_ShouldRejectSemanticallyInvalidBuiltInParserArguments(string pattern)
         {
             _routerBuilder.AddDefaultValueParsers();
@@ -301,6 +324,41 @@ namespace NanoRoute.Tests
             Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
         }
 
+        [TestCase("/items/{value:regex}/")]
+        [TestCase("/items/{value:regex(timeoutMs=50)}/")]
+        [TestCase("/items/{value:regex(pattern='[',timeoutMs=50)}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs=0)}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs=-1)}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs='oops')}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs=50,caseSensitive='oops')}/")]
+        [TestCase("/items/{value:regex(pattern='^[a-z]+$',timeoutMs=50,foo='bar')}/")]
+        public void AddRegexParser_ShouldRejectInvalidArguments(string pattern)
+        {
+            _routerBuilder.AddRegexParser();
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _routerBuilder.AddHandler("GET", pattern, new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("args"));
+            Assert.That(ex.Message, Does.StartWith(Resources.ERR_INVALID_PARSERS_ARGS));
+        }
+
+        [Test]
+        public void AddRegexParser_ShouldDefaultTimeoutTo50Milliseconds()
+        {
+            _routerBuilder.AddRegexParser();
+
+            object parserArguments = _routerBuilder.ValueParsers["regex"].BindArguments(new Dictionary<string, string>
+            {
+                ["pattern"] = "^[a-z]+$"
+            })!;
+
+            Regex regex = (Regex) parserArguments
+                .GetType()
+                .GetProperty("Pattern")!
+                .GetValue(parserArguments)!;
+
+            Assert.That(regex.MatchTimeout, Is.EqualTo(TimeSpan.FromMilliseconds(50)));
+        }
+
         [Test]
         public void AddValueParser_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
@@ -326,6 +384,9 @@ namespace NanoRoute.Tests
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<TestRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
+            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
+
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddRegexParser((RouterBuilder<TestRouter, RouterConfig>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
         });
     }

@@ -273,7 +273,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task AddStringParser_ShouldRespectMinMaxAndPatternParameters()
+        public async Task AddStringParser_ShouldRespectMinAndMaxParameters()
         {
             Mock<RequestHandlerDelegate>
                 constrainedHandler = new(MockBehavior.Strict),
@@ -297,7 +297,7 @@ namespace NanoRoute.Tests
 
             TestRouter router = _routerBuilder
                 .AddStringParser()
-                .AddHandler("GET", "/tags/{slug:str(min=3,max=3,pattern='^[a-z]+$')}/", constrainedHandler.Object)
+                .AddHandler("GET", "/tags/{slug:str(min=3,max=3)}/", constrainedHandler.Object)
                 .AddHandler("GET", "/tags/{slug:str}/", fallbackHandler.Object)
                 .CreateRouter();
 
@@ -309,6 +309,87 @@ namespace NanoRoute.Tests
 
             constrainedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
             fallbackHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
+        }
+
+        [Test]
+        public async Task AddRegexParser_ShouldDefaultToCaseInsensitiveMatchingAndRespectCaseSensitiveParameter()
+        {
+            Mock<RequestHandlerDelegate>
+                constrainedHandler = new(MockBehavior.Strict),
+                fallbackHandler = new(MockBehavior.Strict),
+                caseInsensitiveHandler = new(MockBehavior.Strict);
+
+            constrainedHandler
+                .Setup(h => h.Invoke
+                (
+                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["slug"], "abc")),
+                    It.IsAny<CallNextHandlerDelegate>()
+                ))
+                .ReturnsAsync(s_response);
+
+            fallbackHandler
+                .Setup(h => h.Invoke
+                (
+                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["slug"], "ABC")),
+                    It.IsAny<CallNextHandlerDelegate>()
+                ))
+                .ReturnsAsync(s_response);
+
+            caseInsensitiveHandler
+                .Setup(h => h.Invoke
+                (
+                    It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["slug"], "ABC")),
+                    It.IsAny<CallNextHandlerDelegate>()
+                ))
+                .ReturnsAsync(s_response);
+
+            TestRouter router = _routerBuilder
+                .AddRegexParser()
+                .AddStringParser()
+                .AddHandler("GET", "/tags/{slug:regex(pattern='^[a-z]+$',caseSensitive=true)}/", constrainedHandler.Object)
+                .AddHandler("GET", "/tags/{slug:str}/", fallbackHandler.Object)
+                .AddHandler("GET", "/labels/{slug:regex(pattern='^[a-z]+$')}/", caseInsensitiveHandler.Object)
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/tags/abc");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/tags/ABC");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/labels/ABC");
+            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+
+            constrainedHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
+            fallbackHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
+            caseInsensitiveHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
+        }
+
+        [Test]
+        public async Task AddRegexParser_ShouldTreatTimedOutMatchesAsNonMatches()
+        {
+            _routerBuilder.AddRegexParser();
+
+            ValueParserRegistration parser = _routerBuilder.ValueParsers["regex"];
+
+            object? parserArguments = parser.BindArguments(new Dictionary<string, string>
+            {
+                // The nested quantified pattern catastrophically backtracks when a long run of 'a'
+                // characters is followed by a non-matching tail. The 1 ms timeout forces Regex to
+                // throw RegexMatchTimeoutException, which the parser converts into a non-match.
+                ["pattern"] = "^(a+)+$",
+                ["timeoutMs"] = "1"
+            });
+
+            ValueParseResult result = await parser.Parse(new ValueParserContext
+            {
+                Segment = $"{new string('a', 20)}!".AsMemory(),
+                Services = new Mock<IServiceProvider>(MockBehavior.Loose).Object,
+                Arguments = parserArguments
+            });
+
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Parsed, Is.Null);
         }
 
         [TestCase("/items/{value:int}/")]

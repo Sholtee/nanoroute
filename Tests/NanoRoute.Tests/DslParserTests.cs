@@ -56,7 +56,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseRoutePattern_ShouldIgnoreSeparatorsInsideParserArguments()
         {
-            object[] definitions = DslParser.ParseRoutePattern("/{value:str(pattern='/')}/cica/").ToArray();
+            object[] definitions = DslParser.ParseRoutePattern("/{value:regex(pattern='/',timeoutMs=50)}/cica/").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(2));
             Assert.That(definitions[0], Is.InstanceOf<ParameterDefinition>());
@@ -64,7 +64,7 @@ namespace NanoRoute.Tests
 
             ParameterDefinition parameter = (ParameterDefinition) definitions[0];
             Assert.That(parameter.ParameterName, Is.EqualTo("value"));
-            Assert.That(parameter.ValueParser, Is.EqualTo(ParseValue("str(pattern='/')")));
+            Assert.That(parameter.ValueParser, Is.EqualTo(ParseValue("regex(pattern='/',timeoutMs=50)")));
             Assert.That(((ReadOnlyMemory<char>) definitions[1]).ToString(), Is.EqualTo("cica"));
         }
 
@@ -141,13 +141,13 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseQueryPattern_ShouldReturnParameterDefinitions()
         {
-            ParameterDefinition[] definitions = DslParser.ParseQueryPattern("{filter:str(pattern='[a-z]+')}&{page?:int(min=1)}").ToArray();
+            ParameterDefinition[] definitions = DslParser.ParseQueryPattern("{filter:regex(pattern='[a-z]+',timeoutMs=50)}&{page?:int(min=1)}").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(2));
 
             Assert.That(definitions[0].ParameterName, Is.EqualTo("filter"));
             Assert.That(definitions[0].IsOptional, Is.False);
-            Assert.That(definitions[0].ValueParser, Is.EqualTo(ParseValue("str(pattern='[a-z]+')")));
+            Assert.That(definitions[0].ValueParser, Is.EqualTo(ParseValue("regex(pattern='[a-z]+',timeoutMs=50)")));
 
             Assert.That(definitions[1].ParameterName, Is.EqualTo("page"));
             Assert.That(definitions[1].IsOptional, Is.True);
@@ -169,12 +169,12 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseQueryPattern_ShouldIgnoreSeparatorsInsideParserArguments()
         {
-            ParameterDefinition[] definitions = DslParser.ParseQueryPattern("{filter:str(pattern='a&b')}&{page:int}").ToArray();
+            ParameterDefinition[] definitions = DslParser.ParseQueryPattern("{filter:regex(pattern='a&b',timeoutMs=50)}&{page:int}").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(2));
 
             Assert.That(definitions[0].ParameterName, Is.EqualTo("filter"));
-            Assert.That(definitions[0].ValueParser, Is.EqualTo(ParseValue("str(pattern='a&b')")));
+            Assert.That(definitions[0].ValueParser, Is.EqualTo(ParseValue("regex(pattern='a&b',timeoutMs=50)")));
 
             Assert.That(definitions[1].ParameterName, Is.EqualTo("page"));
             Assert.That(definitions[1].ValueParser, Is.EqualTo(ParseValue("int")));

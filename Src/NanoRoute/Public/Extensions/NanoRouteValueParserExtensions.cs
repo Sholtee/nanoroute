@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -67,7 +68,9 @@ namespace NanoRoute
         #region Private
         private readonly record struct IntParserArguments(int? Min, int? Max);
 
-        private readonly record struct StringParserArguments(int? Min, int? Max, Regex? Pattern);
+        private readonly record struct StringParserArguments(int? Min, int? Max);
+
+        private readonly record struct RegexParserArguments(Regex Pattern);
 
         private static readonly ValueTask<ValueParseResult> s_false = new(new ValueParseResult(false, null));
 
@@ -87,13 +90,31 @@ namespace NanoRoute
             return result;
         }
 
-        private static Regex ParseRegexArgument(string value, string paramName)
+        private static bool ParseBoolArgument(string value, string paramName)
         {
+            if (!bool.TryParse(value, out bool result))
+                throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, paramName);
+
+            return result;
+        }
+
+        private static Regex ParseRegexArgument(string value, bool caseSensitive, int timeoutMs, string paramName)
+        {
+            if (timeoutMs <= 0)
+                throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, paramName);
+
+            RegexOptions options = RuntimeFeature.IsDynamicCodeSupported
+                ? RegexOptions.Compiled
+                : RegexOptions.None;
+
+            if (!caseSensitive)
+                options |= RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
+
             try
             {
-                return new Regex(value);
+                return new Regex(value, options, TimeSpan.FromMilliseconds(timeoutMs));
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException ex)  // catches ArgumentOutOfRangeException too
             {
                 throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, paramName, ex);
             }
@@ -356,7 +377,7 @@ namespace NanoRoute
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
             /// Supported arguments:
-            /// <c>min</c>, <c>max</c>, <c>pattern</c>.
+            /// <c>min</c>, <c>max</c>.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
             /// <example>
@@ -378,7 +399,6 @@ namespace NanoRoute
                         int?
                             min = null,
                             max = null;
-                        Regex? pattern = null;
 
                         foreach (KeyValuePair<string, string> arg in args)
                         {
@@ -390,9 +410,6 @@ namespace NanoRoute
                                 case "max":
                                     max = ParseIntArgument(arg.Value, nameof(args));
                                     break;
-                                case "pattern":
-                                    pattern = ParseRegexArgument(arg.Value, nameof(args));
-                                    break;
                                 default:
                                     throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, nameof(args));
                             }
@@ -401,7 +418,7 @@ namespace NanoRoute
                         if (min > max)
                             throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, nameof(args));
 
-                        return new StringParserArguments(min, max, pattern);
+                        return new StringParserArguments(min, max);
                     },
                     tryParseDelegate: static (ValueParserContext context) =>
                     {
@@ -415,8 +432,77 @@ namespace NanoRoute
 
                         string segmentStr = context.Segment.ToString();
 
-                        if (args.Pattern?.IsMatch(segmentStr) is false)
+                        return new ValueTask<ValueParseResult>(new ValueParseResult(true, segmentStr));
+                    }
+                );
+
+                return routeScopeBuilder;
+            }
+
+            /// <summary>
+            /// Registers the built-in <c>regex</c> value parser.
+            /// </summary>
+            /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
+            /// <remarks>
+            /// Supported arguments:
+            /// <c>pattern</c>, <c>timeoutMs</c>, <c>caseSensitive</c>. The <c>pattern</c> argument is required,
+            /// <c>timeoutMs</c> defaults to <c>50</c>, and <c>caseSensitive</c> defaults to <see langword="false"/>.
+            /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// builder
+            ///     .AddRegexParser()
+            ///     .AddHandler("GET", "/tags/{slug:regex(pattern='^[a-z]+$',timeoutMs=50)}/", (context, _) =&gt; Results.Ok(context.Parameters["slug"]));
+            /// </code>
+            /// </example>
+            public TBuilder AddRegexParser()
+            {
+                Ensure.NotNull(routeScopeBuilder);
+
+                routeScopeBuilder.AddValueParser
+                (
+                    "regex",
+                    bindArguments: static (IReadOnlyDictionary<string, string> args) =>
+                    {
+                        string? pattern = null;
+                        int timeoutMs = 50;
+                        bool caseSensitive = false;
+
+                        foreach (KeyValuePair<string, string> arg in args)
+                        {
+                            switch (arg.Key.ToLower())
+                            {
+                                case "pattern":
+                                    pattern = arg.Value;
+                                    break;
+                                case "timeoutms":
+                                    timeoutMs = ParseIntArgument(arg.Value, nameof(args));
+                                    break;
+                                case "casesensitive":
+                                    caseSensitive = ParseBoolArgument(arg.Value, nameof(args));
+                                    break;
+                                default:
+                                    throw new ArgumentException(Resources.ERR_INVALID_PARSERS_ARGS, nameof(args));
+                            }
+                        }
+
+                        return new RegexParserArguments(ParseRegexArgument(pattern!, caseSensitive, timeoutMs, nameof(args)));
+                    },
+                    tryParseDelegate: static (ValueParserContext context) =>
+                    {
+                        RegexParserArguments args = (RegexParserArguments) context.Arguments!;
+                        string segmentStr = context.Segment.ToString();
+
+                        try
+                        {
+                            if (!args.Pattern.IsMatch(segmentStr))
+                                return s_false;
+                        }
+                        catch (RegexMatchTimeoutException)
+                        {
                             return s_false;
+                        }
 
                         return new ValueTask<ValueParseResult>(new ValueParseResult(true, segmentStr));
                     }
@@ -430,7 +516,7 @@ namespace NanoRoute
             /// </summary>
             /// <returns>The current <paramref name="routeScopeBuilder"/> instance.</returns>
             /// <remarks>
-            /// This convenience method registers parsers named <c>int</c>, <c>guid</c>, <c>bool</c>, and <c>str</c>.
+            /// This convenience method registers parsers named <c>int</c>, <c>guid</c>, <c>bool</c>, <c>str</c>, and <c>regex</c>.
             /// Existing registrations with the same names are overwritten.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.</exception>
@@ -449,7 +535,8 @@ namespace NanoRoute
                     .AddIntParser()
                     .AddGuidParser()
                     .AddBoolParser()
-                    .AddStringParser();
+                    .AddStringParser()
+                    .AddRegexParser();
 
                 return routeScopeBuilder;
             }
