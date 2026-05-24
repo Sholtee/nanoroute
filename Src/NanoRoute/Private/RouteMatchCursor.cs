@@ -275,7 +275,10 @@ namespace NanoRoute.Internals
         public ValueTask DisposeAsync()
         {
             if (_decodedSegmentBuffer is not null)
+            {
                 s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
+                _decodedSegmentBuffer = null;
+            }
 
             return default;
         }
