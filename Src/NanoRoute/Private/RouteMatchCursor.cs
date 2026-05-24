@@ -116,8 +116,6 @@ namespace NanoRoute.Internals
 
         private void AdvanceToNextSegment(RouteNode nextNode)
         {
-            Cancellation.ThrowIfCancellationRequested();
-
             _node = nextNode;
             _handlerIndex = 0;
             _handlers = null;
@@ -284,7 +282,7 @@ namespace NanoRoute.Internals
 
         public ValueTask<bool> MoveNextAsync()
         {
-            while (_phase is not MatchPhase.Done)
+            while (!Completed)
             {
                 Cancellation.ThrowIfCancellationRequested();
 
