@@ -141,6 +141,30 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task Handle_ShouldAwaitPendingValueParserDuringInitialMatch()
+        {
+            TaskCompletionSource<ValueParseResult> parserResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            TestRouter router = _routerBuilder
+                .AddValueParser("str", _ => new ValueTask<ValueParseResult>(parserResult.Task))
+                .AddHandler("GET", "/files/{name:str}/", (context, _) =>
+                {
+                    Assert.That(context.Parameters["name"], Is.EqualTo("delayed"));
+                    return Task.FromResult(s_response);
+                })
+                .CreateRouter();
+
+            _request.RequestUri = new Uri("https://www.exmaple.com/files/delayed");
+
+            Task<HttpResponseMessage> response = router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+            Assert.That(response.IsCompleted, Is.False);
+
+            parserResult.SetResult(new ValueParseResult(true, "delayed"));
+
+            Assert.That(await response, Is.EqualTo(s_response));
+        }
+
+        [Test]
         public async Task Handle_ShouldPassBoundParserArgumentsToValueParsers()
         {
             (int Min, string Text) boundArguments = (3, "it's okay");

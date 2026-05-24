@@ -30,6 +30,19 @@ namespace NanoRoute.AwsLambda.Tests
         }
 
         [Test]
+        public void ReadSpan_ShouldDecodePayload()
+        {
+            byte[] expected = { 0, 1, 2, 3, 4, 5 };
+
+            using Base64BodyReaderStream stream = new(Convert.ToBase64String(expected));
+            byte[] actual = new byte[expected.Length];
+
+            Assert.That(stream.Read(actual.AsSpan()), Is.EqualTo(expected.Length));
+            Assert.That(actual, Is.EqualTo(expected));
+            Assert.That(stream.Read(actual.AsSpan()), Is.Zero);
+        }
+
+        [Test]
         public void Read_ShouldDecodeThroughTinyBuffers()
         {
             byte[] expected = { 0, 1, 2, 3, 4, 252, 253, 254, 255 };
