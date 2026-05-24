@@ -225,3 +225,4 @@ static NanoRoute.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseM
 static NanoRoute.NanoRouteJsonExtensions.extension(System.Net.Http.HttpResponseMessage!).Json<T>(T? body) -> System.Net.Http.HttpResponseMessage!
 static NanoRoute.QueryParsingConfig.Default.get -> NanoRoute.QueryParsingConfig!
 static NanoRoute.Router<TDescendant, TConfig>.CreateBuilder() -> NanoRoute.RouterBuilder<TDescendant!, TConfig!>!
+static NanoRoute.ValueParseResult.False.get -> NanoRoute.ValueParseResult

@@ -400,7 +400,7 @@ namespace NanoRoute.Tests
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => Parse
             (
                 CreateContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase), new Uri("https://test.test/items?filter=abc"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, CancellationToken.None),
-                CreateExpectedParameters(("filter", false, CreateParser(static _ => new ValueTask<ValueParseResult>(new ValueParseResult(false, null)))))
+                CreateExpectedParameters(("filter", false, CreateParser(static _ => new ValueTask<ValueParseResult>(ValueParseResult.False))))
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));

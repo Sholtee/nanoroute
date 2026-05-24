@@ -279,6 +279,21 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task AddJsonErrorDetails_ShouldHonorConfiguredVerbs()
+        {
+            TestRouter router = _routerBuilder
+                .AddJsonErrorDetails(new[] { "POST" })
+                .AddHandler("POST", "/fail/", (_, _) => throw new InvalidOperationException("handled"))
+                .AddHandler("GET", "/fail/", (_, _) => throw new InvalidOperationException("unhandled verb"))
+                .CreateRouter();
+
+            HttpResponseMessage response = await router.Handle(new HttpRequestMessage(HttpMethod.Post, "https://test.test/fail"), s_services);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(async () => await router.Handle(new HttpRequestMessage(HttpMethod.Get, "https://test.test/fail"), s_services), Throws.InstanceOf<InvalidOperationException>());
+        }
+
+        [Test]
         public async Task AddJsonBody_ShouldDeserializeTheRequestBodyIntoTheConfiguredParameter()
         {
             TestJsonPayload? body = null;

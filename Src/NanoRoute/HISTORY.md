@@ -1,5 +1,11 @@
 # History
 
+## 1.0.0-preview4
+
+### Added
+
+- Added `ValueParseResult.False` as a reusable non-match result for asynchronous value parsers.
+
 ## 1.0.0-preview3
 
 ### Breaking Changes

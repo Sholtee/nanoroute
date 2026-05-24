@@ -72,7 +72,7 @@ namespace NanoRoute
 
         private readonly record struct RegexParserArguments(Regex Pattern);
 
-        private static readonly ValueTask<ValueParseResult> s_false = new(new ValueParseResult(false, null));
+        private static readonly ValueTask<ValueParseResult> s_false = new(ValueParseResult.False);
 
         private static object? NoArgs(IReadOnlyDictionary<string, string> rawArgs)
         {

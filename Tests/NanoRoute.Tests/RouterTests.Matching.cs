@@ -243,8 +243,8 @@ namespace NanoRoute.Tests
                 mockStringParser = new(MockBehavior.Strict);
 
             Dictionary<string, object?>
-                paramz_1 = null!,
-                paramz_2 = null!;
+                params_1 = null!,
+                params_2 = null!;
 
             mockIntParser
                 .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")))
@@ -258,7 +258,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (cntx, next) =>
                 {
-                    paramz_1 = cntx.Parameters;
+                    params_1 = cntx.Parameters;
                     return s_response;
                 });
 
@@ -266,7 +266,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (cntx, next) =>
                 {
-                    paramz_2 = cntx.Parameters;
+                    params_2 = cntx.Parameters;
                     return await next();
                 });
 
@@ -281,8 +281,8 @@ namespace NanoRoute.Tests
             _request.RequestUri = new Uri("https://www.exmaple.com/api/users/whatev/1986/dosomething");
 
             Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
-            Assert.That(paramz_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
-            Assert.That(paramz_2, Is.Null);
+            Assert.That(params_1, Is.EqualTo(new Dictionary<string, object> { ["prefix"] = "whatev", ["user_id"] = 1986 }));
+            Assert.That(params_2, Is.Null);
             mockIntParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")), Times.Once);
             mockStringParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "whatev")), Times.Once);
             mockStringParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")), Times.Never);
@@ -299,8 +299,9 @@ namespace NanoRoute.Tests
                 mockIntHandler = new(MockBehavior.Strict),
                 mockStringHandler = new(MockBehavior.Strict);
 
-            object? failedParse = null;
-            object? successfulParse = "abc";
+            object?
+                failedParse = null,
+                successfulParse = "abc";
 
             mockIntParser
                 .Setup(p => p.Invoke(It.Is<ReadOnlyMemory<char>>(segment => segment.ToString() == "abc"), It.IsAny<object?>(), out failedParse))

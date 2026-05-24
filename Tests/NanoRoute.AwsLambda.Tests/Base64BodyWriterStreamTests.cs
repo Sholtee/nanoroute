@@ -26,6 +26,17 @@ namespace NanoRoute.AwsLambda.Tests
         }
 
         [Test]
+        public void WriteSpan_ShouldEncodePayload()
+        {
+            byte[] bytes = { 0, 1, 2, 3, 4, 5 };
+
+            using Base64BodyWriterStream stream = new();
+            stream.Write(bytes.AsSpan());
+
+            Assert.That(stream.GetBody(), Is.EqualTo(Convert.ToBase64String(bytes)));
+        }
+
+        [Test]
         public void Write_ShouldEncodeThroughTinyWrites()
         {
             byte[] bytes = { 0, 1, 2, 3, 4, 252, 253, 254, 255 };
@@ -76,6 +87,16 @@ namespace NanoRoute.AwsLambda.Tests
 
             stream.Write(new byte[] { 3 }, 0, 1);
             Assert.That(stream.GetBody(), Is.EqualTo("AQID"));
+        }
+
+        [Test]
+        public async Task FlushAsync_ShouldCompleteWithoutChangingBody()
+        {
+            using Base64BodyWriterStream stream = new();
+
+            await stream.FlushAsync(CancellationToken.None);
+
+            Assert.That(stream.GetBody(), Is.Empty);
         }
 
         [Test]
@@ -133,6 +154,18 @@ namespace NanoRoute.AwsLambda.Tests
             Assert.Throws<NotSupportedException>(() => stream.Read(new byte[1], 0, 1));
 #pragma warning restore CA2022
             Assert.DoesNotThrow(() => stream.Flush());
+        }
+
+        [Test]
+        public void Write_ShouldValidateBufferArguments()
+        {
+            using Base64BodyWriterStream stream = new();
+            byte[] buffer = new byte[2];
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => stream.Write(buffer, -1, 1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => stream.Write(buffer, buffer.Length + 1, 0));
+            Assert.Throws<ArgumentOutOfRangeException>(() => stream.Write(buffer, 0, -1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => stream.Write(buffer, 1, buffer.Length));
         }
 
         [Test]
