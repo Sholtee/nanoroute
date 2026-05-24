@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>AWS Lambda adapters for NanoRoute.</Description>
-    <Version>1.0.0-preview2</Version>
+    <Version>1.0.0-preview3</Version>
     <PackageTags>$(PackageTags);AWS;Lambda;ApiGateway</PackageTags>
   </PropertyGroup>
 
