@@ -166,7 +166,7 @@ namespace NanoRoute.Tests
                 .Returns((ValueParserContext context) =>
                 {
                     Assert.That(context.Arguments, Is.Null);
-                    return new ValueTask<ValueParseResult>(new ValueParseResult(false, null));
+                    return new ValueTask<ValueParseResult>(ValueParseResult.False);
                 });
 
             mockStringParser
@@ -342,7 +342,7 @@ namespace NanoRoute.Tests
             ValueTask<bool> pendingMove = cursor.MoveNextAsync();
             Assert.That(pendingMove.IsCompleted, Is.False);
 
-            parserResult.SetResult(new ValueParseResult(false, null));
+            parserResult.SetResult(ValueParseResult.False);
 
             Assert.That(await pendingMove, Is.True);
             Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
@@ -431,7 +431,7 @@ namespace NanoRoute.Tests
             ValueTask<bool> pendingMove = cursor.MoveNextAsync();
             Assert.That(pendingMove.IsCompleted, Is.False);
 
-            parserResult.SetResult(new ValueParseResult(false, null));
+            parserResult.SetResult(ValueParseResult.False);
 
             Assert.That(await pendingMove, Is.False);
             Assert.That(cursor.Completed, Is.True);

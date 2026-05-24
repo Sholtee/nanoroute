@@ -59,8 +59,8 @@ namespace NanoRoute
     /// <code>
     /// routerBuilder.AddValueParser("user", static async (ValueParserContext context) =&gt;
     /// {
-    ///     if (!Guid.TryParse(context.Segment, out Guid userId))
-    ///         return new ValueParseResult(false, null);
+    ///     if (!Guid.TryParse(context.Segment.ToString(), out Guid userId))
+    ///         return ValueParseResult.False;
     ///
     ///     object? user = await context
     ///         .Services
@@ -139,7 +139,25 @@ namespace NanoRoute
     /// return new ValueParseResult(true, parsedValue);
     /// </code>
     /// </example>
-    public readonly record struct ValueParseResult(bool Success, object? Parsed);
+    public readonly record struct ValueParseResult(bool Success, object? Parsed)
+    {
+        /// <summary>
+        /// Gets a failed parser result with <see cref="Success"/> set to <see langword="false"/> and
+        /// <see cref="Parsed"/> set to <see langword="null"/>.
+        /// </summary>
+        /// <remarks>
+        /// Return this value when the current route branch should be treated as a non-match.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// if (!Guid.TryParse(context.Segment.ToString(), out Guid id))
+        ///     return ValueParseResult.False;
+        ///
+        /// return new ValueParseResult(true, id);
+        /// </code>
+        /// </example>
+        public static ValueParseResult False { get; } = new ValueParseResult(false, null);
+    }
 
     /// <summary>
     /// Stores a named value parser together with its argument binder.

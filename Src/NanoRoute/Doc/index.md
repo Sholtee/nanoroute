@@ -301,13 +301,15 @@ RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListen
     .AddValueParser("user", static async (ValueParserContext context) =>
     {
         if (!Guid.TryParse(context.Segment.Span, out Guid userId))
-            return new ValueParseResult(false, null);
+            return ValueParseResult.False;
 
         IUserRepository repository = context.Services.GetRequiredService<IUserRepository>();
         object? user = await repository.TryGetAsync(userId, context.Cancellation);
         return new ValueParseResult(user is not null, user);
     });
 ```
+
+Asynchronous parsers can return `ValueParseResult.False` for the common non-match result where `Success` is `false` and `Parsed` is `null`.
 
 Built-in parsers use the same mechanism:
 
