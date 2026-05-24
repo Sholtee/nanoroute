@@ -141,27 +141,44 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Handle_ShouldAwaitPendingValueParserDuringInitialMatch()
+        public async Task Handle_ShouldAwaitPendingValueParser()
         {
             TaskCompletionSource<ValueParseResult> parserResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+            Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+            Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
+            Mock<IServiceProvider> mockServices = new(MockBehavior.Loose);
+
+            mockParser
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "delayed" && context.Services == mockServices.Object)))
+                .Returns((ValueParserContext _) => new ValueTask<ValueParseResult>(parserResult.Task));
+
+            mockHandler
+                .Setup(handler => handler.Invoke
+                (
+                    It.Is<RequestContext>(context => context.Request == _request && Equals(context.Parameters["name"], "delayed")),
+                    It.IsAny<CallNextHandlerDelegate>()
+                ))
+                .ReturnsAsync(s_response);
+
             TestRouter router = _routerBuilder
-                .AddValueParser("str", _ => new ValueTask<ValueParseResult>(parserResult.Task))
-                .AddHandler("GET", "/files/{name:str}/", (context, _) =>
-                {
-                    Assert.That(context.Parameters["name"], Is.EqualTo("delayed"));
-                    return Task.FromResult(s_response);
-                })
+                .AddValueParser("str", mockParser.Object)
+                .AddHandler("GET", "/files/{name:str}/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/delayed");
 
-            Task<HttpResponseMessage> response = router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+            Task<HttpResponseMessage> response = router.Handle(_request, mockServices.Object);
             Assert.That(response.IsCompleted, Is.False);
+
+            mockParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "delayed" && context.Services == mockServices.Object)), Times.Once);
+            mockHandler.Verify(handler => handler.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Never);
 
             parserResult.SetResult(new ValueParseResult(true, "delayed"));
 
             Assert.That(await response, Is.EqualTo(s_response));
+
+            mockHandler.Verify(handler => handler.Invoke(It.Is<RequestContext>(context => context.Request == _request && Equals(context.Parameters["name"], "delayed")), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
         [Test]
