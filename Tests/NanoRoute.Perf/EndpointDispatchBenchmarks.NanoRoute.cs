@@ -1,5 +1,5 @@
 /********************************************************************************
-* RoutingBenchmarks.NanoRoute.cs                                                *
+* EndpointDispatchBenchmarks.NanoRoute.cs                                       *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace NanoRoute.Perf
 {
-    public partial class RoutingBenchmarks
+    public partial class EndpointDispatchBenchmarks
     {
-        private sealed class NanoRouteRouterFactory : IRouterFactory
+        private sealed class NanoRouteEndpointDispatcherFactory : IEndpointDispatcherFactory
         {
-            private sealed class NanoRouteRouter(string routePattern, Uri requestUri) : IRouter
+            private sealed class NanoRouteEndpointDispatcher(RoutingBenchmarkScenario scenario) : IEndpointDispatcher
             {
                 private static readonly IServiceProvider s_services = new NoopServiceProvider();
 
@@ -24,14 +24,14 @@ namespace NanoRoute.Perf
                 private readonly TestRouter _router = TestRouter
                     .CreateBuilder()
                     .AddDefaultValueParsers()
-                    .AddHandler("GET", routePattern, static (_, _) => s_responseTask)
+                    .AddHandler("GET", scenario.Pattern, static (_, _) => s_responseTask)
                     .CreateRouter();
 
-                private readonly HttpRequestMessage _request = new(HttpMethod.Get, requestUri);
+                private readonly HttpRequestMessage _request = new(HttpMethod.Get, scenario.RequestUri);
 
                 public void Dispose() => _request.Dispose();
 
-                public Task Match() => _router.Route(_request, s_services);
+                public Task Dispatch() => _router.Route(_request, s_services);
 
                 private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router<TestRouter, RouterConfig>(builder)
                 {
@@ -44,7 +44,7 @@ namespace NanoRoute.Perf
                 }
             }
 
-            public IRouter Create(string pattern, Uri requestUri) => new NanoRouteRouter(pattern, requestUri);
+            public IEndpointDispatcher Create(RoutingBenchmarkScenario scenario) => new NanoRouteEndpointDispatcher(scenario);
 
             public override string ToString() => "NanoRoute Router";
         }
