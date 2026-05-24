@@ -117,6 +117,40 @@
 
   <h3 id="properties">Properties
 </h3>
+  <a id="NanoRoute_ValueParseResult_False_" data-uid="NanoRoute.ValueParseResult.False*"></a>
+  <h4 id="NanoRoute_ValueParseResult_False" data-uid="NanoRoute.ValueParseResult.False">False</h4>
+  <div class="markdown level1 summary"><p>Gets a failed parser result with <a class="xref" href="NanoRoute.ValueParseResult.html#NanoRoute_ValueParseResult_Success">Success</a> set to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> and
+<a class="xref" href="NanoRoute.ValueParseResult.html#NanoRoute_ValueParseResult_Parsed">Parsed</a> set to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueParseResult False { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.ValueParseResult.html">ValueParseResult</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_ValueParseResult_False_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Return this value when the current route branch should be treated as a non-match.</p>
+</div>
+  <h5 id="NanoRoute_ValueParseResult_False_examples">Examples</h5>
+  <pre><code class="lang-csharp">if (!Guid.TryParse(context.Segment.ToString(), out Guid id))
+    return ValueParseResult.False;
+
+return new ValueParseResult(true, id);</code></pre>
+
   <a id="NanoRoute_ValueParseResult_Parsed_" data-uid="NanoRoute.ValueParseResult.Parsed*"></a>
   <h4 id="NanoRoute_ValueParseResult_Parsed" data-uid="NanoRoute.ValueParseResult.Parsed">Parsed</h4>
   <div class="markdown level1 summary"><p>The parsed value when <code class="paramref">Success</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>; otherwise <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>

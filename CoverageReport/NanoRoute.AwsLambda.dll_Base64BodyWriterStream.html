@@ -36,16 +36,16 @@
 <div class="card">
 <div class="card-header">Line coverage</div>
 <div class="card-body">
-<div class="large cardpercentagebar cardpercentagebar8">92%</div>
+<div class="large cardpercentagebar cardpercentagebar2">97%</div>
 <div class="table">
 <table>
 <tr>
 <th>Covered lines:</th>
-<td class="limit-width right" title="75">75</td>
+<td class="limit-width right" title="79">79</td>
 </tr>
 <tr>
 <th>Uncovered lines:</th>
-<td class="limit-width right" title="6">6</td>
+<td class="limit-width right" title="2">2</td>
 </tr>
 <tr>
 <th>Coverable lines:</th>
@@ -57,7 +57,7 @@
 </tr>
 <tr>
 <th>Line coverage:</th>
-<td class="limit-width right" title="75 of 81">92.5%</td>
+<td class="limit-width right" title="79 of 81">97.5%</td>
 </tr>
 </table>
 </div>
@@ -112,13 +112,13 @@
 <tr><td title="WriteCore(System.ReadOnlySpan&lt;byte&gt;, System.Threading.CancellationToken)"><a href="#file0_line45" class="navigatetohash">WriteCore(...)</a></td><td>31</td><td>0</td></tr>
 <tr><td title="Dispose(bool)"><a href="#file0_line84" class="navigatetohash">Dispose(...)</a></td><td>3</td><td>0</td></tr>
 <tr><td title="GetBody()"><a href="#file0_line102" class="navigatetohash">GetBody()</a></td><td>14</td><td>2</td></tr>
-<tr><td title="Write(byte[], int, int)"><a href="#file0_line119" class="navigatetohash">Write(...)</a></td><td>12</td><td>6</td></tr>
-<tr><td title="Write(System.ReadOnlySpan&lt;byte&gt;)"><a href="#file0_line138" class="navigatetohash">Write(...)</a></td><td>0</td><td>3</td></tr>
+<tr><td title="Write(byte[], int, int)"><a href="#file0_line119" class="navigatetohash">Write(...)</a></td><td>18</td><td>0</td></tr>
+<tr><td title="Write(System.ReadOnlySpan&lt;byte&gt;)"><a href="#file0_line138" class="navigatetohash">Write(...)</a></td><td>3</td><td>0</td></tr>
 <tr><td title="Seek(long, System.IO.SeekOrigin)"><a href="#file0_line148" class="navigatetohash">Seek(...)</a></td><td>2</td><td>0</td></tr>
 <tr><td title="SetLength(long)"><a href="#file0_line150" class="navigatetohash">SetLength(...)</a></td><td>2</td><td>0</td></tr>
 <tr><td title="Read(byte[], int, int)"><a href="#file0_line152" class="navigatetohash">Read(...)</a></td><td>2</td><td>0</td></tr>
 <tr><td title="Flush()"><a href="#file0_line162" class="navigatetohash">Flush()</a></td><td>1</td><td>0</td></tr>
-<tr><td title="FlushAsync(System.Threading.CancellationToken)"><a href="#file0_line164" class="navigatetohash">FlushAsync(...)</a></td><td>0</td><td>2</td></tr>
+<tr><td title="FlushAsync(System.Threading.CancellationToken)"><a href="#file0_line164" class="navigatetohash">FlushAsync(...)</a></td><td>2</td><td>0</td></tr>
 </tbody>
 </table>
 </div>
@@ -249,11 +249,11 @@
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line119"></a><code>119</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line120"></a><code>120</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArgumentNullException.ThrowIfNull(buffer);</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line121"></a><code>121</code></td><td></td><td class="lightgray"><code></code></td></tr>
-<tr class="coverableline" title="Partially covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'orange'}}"><td class="orange">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line122"></a><code>122</code></td><td></td><td class="lightorange"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(offset&nbsp;&lt;&nbsp;0&nbsp;||&nbsp;offset&nbsp;&gt;&nbsp;buffer.Length)</code></td></tr>
-<tr class="coverableline" title="Not covered (0 visits)" data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><a id="file0_line123"></a><code>123</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;ArgumentOutOfRangeException(nameof(offset));</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line122"></a><code>122</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(offset&nbsp;&lt;&nbsp;0&nbsp;||&nbsp;offset&nbsp;&gt;&nbsp;buffer.Length)</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line123"></a><code>123</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;ArgumentOutOfRangeException(nameof(offset));</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line124"></a><code>124</code></td><td></td><td class="lightgray"><code></code></td></tr>
-<tr class="coverableline" title="Partially covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'orange'}}"><td class="orange">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line125"></a><code>125</code></td><td></td><td class="lightorange"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(count&nbsp;&lt;&nbsp;0&nbsp;||&nbsp;count&nbsp;&gt;&nbsp;buffer.Length&nbsp;-&nbsp;offset)</code></td></tr>
-<tr class="coverableline" title="Not covered (0 visits)" data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><a id="file0_line126"></a><code>126</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;ArgumentOutOfRangeException(nameof(count));</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line125"></a><code>125</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(count&nbsp;&lt;&nbsp;0&nbsp;||&nbsp;count&nbsp;&gt;&nbsp;buffer.Length&nbsp;-&nbsp;offset)</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line126"></a><code>126</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;ArgumentOutOfRangeException(nameof(count));</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line127"></a><code>127</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line128"></a><code>128</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WriteCore(buffer.AsSpan(offset,&nbsp;count),&nbsp;CancellationToken.None);</code></td></tr>
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line129"></a><code>129</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
@@ -265,7 +265,7 @@
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line135"></a><code>135</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WriteCore(buffer.AsSpan(offset,&nbsp;count),&nbsp;cancellation);</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line136"></a><code>136</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line137"></a><code>137</code></td><td></td><td class="lightgray"><code></code></td></tr>
-<tr class="coverableline" title="Not covered (0 visits)" data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><a id="file0_line138"></a><code>138</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;override&nbsp;void&nbsp;Write(ReadOnlySpan&lt;byte&gt;&nbsp;buffer)&nbsp;=&gt;&nbsp;WriteCore(buffer,&nbsp;CancellationToken.None);</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line138"></a><code>138</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;override&nbsp;void&nbsp;Write(ReadOnlySpan&lt;byte&gt;&nbsp;buffer)&nbsp;=&gt;&nbsp;WriteCore(buffer,&nbsp;CancellationToken.None);</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line139"></a><code>139</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line140"></a><code>140</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;override&nbsp;async&nbsp;ValueTask&nbsp;WriteAsync(ReadOnlyMemory&lt;byte&gt;&nbsp;buffer,&nbsp;CancellationToken&nbsp;cancellation)</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line141"></a><code>141</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</code></td></tr>
@@ -291,14 +291,14 @@
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line161"></a><code>161</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line162"></a><code>162</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;override&nbsp;void&nbsp;Flush()&nbsp;{&nbsp;}</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line163"></a><code>163</code></td><td></td><td class="lightgray"><code></code></td></tr>
-<tr class="coverableline" title="Not covered (0 visits)" data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><a id="file0_line164"></a><code>164</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;override&nbsp;Task&nbsp;FlushAsync(CancellationToken&nbsp;cancellation)&nbsp;=&gt;&nbsp;Task.CompletedTask;</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line164"></a><code>164</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;override&nbsp;Task&nbsp;FlushAsync(CancellationToken&nbsp;cancellation)&nbsp;=&gt;&nbsp;Task.CompletedTask;</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line165"></a><code>165</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#endregion</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line166"></a><code>166</code></td><td></td><td class="lightgray"><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line167"></a><code>167</code></td><td></td><td class="lightgray"><code>}</code></td></tr>
 </tbody>
 </table>
 </div>
-<div class="footer">Generated by: ReportGenerator 5.5.0.0<br />05/23/2026 - 04:48:37<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="https://reportgenerator.io">reportgenerator.io</a></div></div>
+<div class="footer">Generated by: ReportGenerator 5.5.0.0<br />05/24/2026 - 04:44:21<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="https://reportgenerator.io">reportgenerator.io</a></div></div>
 <div class="containerright">
 <div class="containerrightfixed">
 <h1>Methods/Properties</h1>
@@ -309,8 +309,8 @@
 <a href="#file0_line45" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - WriteCore(System.ReadOnlySpan&lt;byte&gt;, System.Threading.CancellationToken)"><i class="icon-cube"></i>WriteCore(System.ReadOnlySpan&lt;byte&gt;, System.Threading.CancellationToken)</a><br />
 <a href="#file0_line84" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Dispose(bool)"><i class="icon-cube"></i>Dispose(bool)</a><br />
 <a href="#file0_line102" class="navigatetohash percentagebar percentagebar90" title="Line coverage: 91.6% - GetBody()"><i class="icon-cube"></i>GetBody()</a><br />
-<a href="#file0_line119" class="navigatetohash percentagebar percentagebar70" title="Line coverage: 75% - Write(byte[], int, int)"><i class="icon-cube"></i>Write(byte[], int, int)</a><br />
-<a href="#file0_line138" class="navigatetohash percentagebar percentagebar0" title="Line coverage: 0% - Write(System.ReadOnlySpan&lt;byte&gt;)"><i class="icon-cube"></i>Write(System.ReadOnlySpan&lt;byte&gt;)</a><br />
+<a href="#file0_line119" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Write(byte[], int, int)"><i class="icon-cube"></i>Write(byte[], int, int)</a><br />
+<a href="#file0_line138" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Write(System.ReadOnlySpan&lt;byte&gt;)"><i class="icon-cube"></i>Write(System.ReadOnlySpan&lt;byte&gt;)</a><br />
 <a href="#file0_line148" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Seek(long, System.IO.SeekOrigin)"><i class="icon-cube"></i>Seek(long, System.IO.SeekOrigin)</a><br />
 <a href="#file0_line150" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - SetLength(long)"><i class="icon-cube"></i>SetLength(long)</a><br />
 <a href="#file0_line152" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Read(byte[], int, int)"><i class="icon-cube"></i>Read(byte[], int, int)</a><br />
@@ -318,7 +318,7 @@
 <a href="#file0_line158" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Position()"><i class="icon-wrench"></i>Position()</a><br />
 <a href="#file0_line159" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Position(long)"><i class="icon-wrench"></i>Position(long)</a><br />
 <a href="#file0_line162" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Flush()"><i class="icon-cube"></i>Flush()</a><br />
-<a href="#file0_line164" class="navigatetohash percentagebar percentagebar0" title="Line coverage: 0% - FlushAsync(System.Threading.CancellationToken)"><i class="icon-cube"></i>FlushAsync(System.Threading.CancellationToken)</a><br />
+<a href="#file0_line164" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - FlushAsync(System.Threading.CancellationToken)"><i class="icon-cube"></i>FlushAsync(System.Threading.CancellationToken)</a><br />
 <br/></div>
 </div></div>
 <script type="text/javascript">

@@ -303,13 +303,14 @@ RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = Http
     .AddValueParser(&quot;user&quot;, static async (ValueParserContext context) =&gt;
     {
         if (!Guid.TryParse(context.Segment.Span, out Guid userId))
-            return new ValueParseResult(false, null);
+            return ValueParseResult.False;
 
         IUserRepository repository = context.Services.GetRequiredService&lt;IUserRepository&gt;();
         object? user = await repository.TryGetAsync(userId, context.Cancellation);
         return new ValueParseResult(user is not null, user);
     });
 </code></pre>
+<p>Asynchronous parsers can return <code>ValueParseResult.False</code> for the common non-match result where <code>Success</code> is <code>false</code> and <code>Parsed</code> is <code>null</code>.</p>
 <p>Built-in parsers use the same mechanism:</p>
 <ul>
 <li><code>int</code> supports <code>min</code> and <code>max</code>.</li>

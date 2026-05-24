@@ -36,16 +36,16 @@
 <div class="card">
 <div class="card-header">Line coverage</div>
 <div class="card-body">
-<div class="large cardpercentagebar cardpercentagebar4">96%</div>
+<div class="large cardpercentagebar cardpercentagebar2">98%</div>
 <div class="table">
 <table>
 <tr>
 <th>Covered lines:</th>
-<td class="limit-width right" title="135">135</td>
+<td class="limit-width right" title="138">138</td>
 </tr>
 <tr>
 <th>Uncovered lines:</th>
-<td class="limit-width right" title="5">5</td>
+<td class="limit-width right" title="2">2</td>
 </tr>
 <tr>
 <th>Coverable lines:</th>
@@ -57,7 +57,7 @@
 </tr>
 <tr>
 <th>Line coverage:</th>
-<td class="limit-width right" title="135 of 140">96.4%</td>
+<td class="limit-width right" title="138 of 140">98.5%</td>
 </tr>
 </table>
 </div>
@@ -107,17 +107,17 @@
 <tbody>
 <tr><td title="From(NanoRoute.MatchingPrecedence)"><a href="#file0_line57" class="navigatetohash">From(...)</a></td><td>5</td><td>2</td></tr>
 <tr><td title="RouteMatchCursor()"><a href="#file0_line65" class="navigatetohash">RouteMatchCursor()</a></td><td>2</td><td>0</td></tr>
-<tr><td title="GetSegmentForMatching()"><a href="#file0_line93" class="navigatetohash">GetSegmentForMatching()</a></td><td>18</td><td>4</td></tr>
+<tr><td title="GetSegmentForMatching()"><a href="#file0_line93" class="navigatetohash">GetSegmentForMatching()</a></td><td>22</td><td>0</td></tr>
 <tr><td title="AdvanceToNextSegment(NanoRoute.Internals.RouteNode)"><a href="#file0_line118" class="navigatetohash">AdvanceToNextSegment(...)</a></td><td>5</td><td>0</td></tr>
 <tr><td title="TryEmitHandler()"><a href="#file0_line130" class="navigatetohash">TryEmitHandler()</a></td><td>25</td><td>0</td></tr>
 <tr><td title="TryBranchAsync(NanoRoute.Internals.RouteMatchCursor.BranchKind, System.ReadOnlyMemory&lt;char&gt;)"><a href="#file0_line154" class="navigatetohash">TryBranchAsync(...)</a></td><td>6</td><td>2</td></tr>
-<tr><td title="TryBranchPairAsync()"><a href="#file0_line162" class="navigatetohash">TryBranchPairAsync()</a></td><td>13</td><td>2</td></tr>
+<tr><td title="TryBranchPairAsync()"><a href="#file0_line162" class="navigatetohash">TryBranchPairAsync()</a></td><td>15</td><td>0</td></tr>
 <tr><td title="TryLiteralBranch(System.ReadOnlyMemory&lt;char&gt;)"><a href="#file0_line188" class="navigatetohash">TryLiteralBranch(...)</a></td><td>7</td><td>0</td></tr>
 <tr><td title="TryParsedBranchAsync(System.ReadOnlyMemory&lt;char&gt;, int)"><a href="#file0_line197" class="navigatetohash">TryParsedBranchAsync(...)</a></td><td>29</td><td>0</td></tr>
 <tr><td title="TryAcceptParsedBranch(NanoRoute.Internals.RouteNode, NanoRoute.ValueParseResult)"><a href="#file0_line234" class="navigatetohash">TryAcceptParsedBranch(...)</a></td><td>17</td><td>0</td></tr>
 <tr><td title="RouteMatchCursor(NanoRoute.Internals.RouteNode, NanoRoute.Internals.HttpVerb, System.Uri, System.IServiceProvider, NanoRoute.RouterConfig, System.Threading.CancellationToken)"><a href="#file0_line247" class="navigatetohash">RouteMatchCursor(...)</a></td><td>11</td><td>0</td></tr>
 <tr><td title="DisposeAsync()"><a href="#file0_line278" class="navigatetohash">DisposeAsync()</a></td><td>5</td><td>0</td></tr>
-<tr><td title="MoveNextAsync()"><a href="#file0_line286" class="navigatetohash">MoveNextAsync()</a></td><td>25</td><td>5</td></tr>
+<tr><td title="MoveNextAsync()"><a href="#file0_line286" class="navigatetohash">MoveNextAsync()</a></td><td>27</td><td>3</td></tr>
 </tbody>
 </table>
 </div>
@@ -229,7 +229,7 @@
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line100"></a><code>100</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char[]&nbsp;decodedSegmentBuffer&nbsp;=&nbsp;_decodedSegmentBuffer&nbsp;??=&nbsp;s_arrayPool.Rent(_segment.Original.Length);</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line101"></a><code>101</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line102"></a><code>102</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(!UrlUtils.TryDecodeUrl(current.Span,&nbsp;decodedSegmentBuffer.AsSpan(_nextDecodedSegment),&nbsp;UrlDecodeMode.Pat</code></td></tr>
-<tr class="coverableline" title="Not covered (0 visits)" data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><a id="file0_line103"></a><code>103</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpRequestException.Throw(HttpStatusCode.BadRequest,&nbsp;Resources.ERR_BAD_REQUEST,&nbsp;Resources.ERR_DECODING_</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line103"></a><code>103</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpRequestException.Throw(HttpStatusCode.BadRequest,&nbsp;Resources.ERR_BAD_REQUEST,&nbsp;Resources.ERR_DECODING_</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line104"></a><code>104</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line105"></a><code>105</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReadOnlyMemory&lt;char&gt;&nbsp;decodedSegment&nbsp;=&nbsp;decodedSegmentBuffer.AsMemory(_nextDecodedSegment,&nbsp;charsWritten);</code></td></tr>
 <tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line106"></a><code>106</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_nextDecodedSegment&nbsp;+=&nbsp;charsWritten;</code></td></tr>
@@ -296,7 +296,7 @@
 <tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line167"></a><code>167</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ValueTask&lt;bool&gt;&nbsp;firstBranchMatched&nbsp;=&nbsp;TryBranchAsync(_branchOrder.First,&nbsp;decodedSegment);</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line168"></a><code>168</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line169"></a><code>169</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(!firstBranchMatched.IsCompletedSuccessfully)</code></td></tr>
-<tr class="coverableline" title="Not covered (0 visits)" data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><a id="file0_line170"></a><code>170</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;TryBranchPairAwaitedAsync(firstBranchMatched,&nbsp;decodedSegment);</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line170"></a><code>170</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;TryBranchPairAwaitedAsync(firstBranchMatched,&nbsp;decodedSegment);</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line171"></a><code>171</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line172"></a><code>172</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(firstBranchMatched.Result)</code></td></tr>
 <tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line173"></a><code>173</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;ValueTask&lt;bool&gt;(true);</code></td></tr>
@@ -436,7 +436,7 @@
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line307"></a><code>307</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line308"></a><code>308</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ValueTask&lt;bool&gt;&nbsp;branchMatched&nbsp;=&nbsp;TryBranchPairAsync();</code></td></tr>
 <tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line309"></a><code>309</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(!branchMatched.IsCompletedSuccessfully)</code></td></tr>
-<tr class="coverableline" title="Not covered (0 visits)" data-coverage="{'AllTestMethods': {'VC': '0', 'LVS': 'red'}}"><td class="red">&nbsp;</td><td class="leftmargin rightmargin right">0</td><td class="rightmargin right"><a id="file0_line310"></a><code>310</code></td><td></td><td class="lightred"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;MoveNextAwaitedAsync(branchMatched);</code></td></tr>
+<tr class="coverableline" title="Covered (1 visits)" data-coverage="{'AllTestMethods': {'VC': '1', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">1</td><td class="rightmargin right"><a id="file0_line310"></a><code>310</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;MoveNextAwaitedAsync(branchMatched);</code></td></tr>
 <tr class="" title="Not coverable" data-coverage="{'AllTestMethods': {'VC': '', 'LVS': 'gray'}}"><td class="gray">&nbsp;</td><td class="leftmargin rightmargin right"></td><td class="rightmargin right"><a id="file0_line311"></a><code>311</code></td><td></td><td class="lightgray"><code></code></td></tr>
 <tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line312"></a><code>312</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_phase&nbsp;=&nbsp;branchMatched.Result&nbsp;?&nbsp;MatchPhase.EmitHandlers&nbsp;:&nbsp;MatchPhase.Done;</code></td></tr>
 <tr class="coverableline" title="Covered (2 visits)" data-coverage="{'AllTestMethods': {'VC': '2', 'LVS': 'green'}}"><td class="green">&nbsp;</td><td class="leftmargin rightmargin right">2</td><td class="rightmargin right"><a id="file0_line313"></a><code>313</code></td><td></td><td class="lightgreen"><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;</code></td></tr>
@@ -454,24 +454,24 @@
 </tbody>
 </table>
 </div>
-<div class="footer">Generated by: ReportGenerator 5.5.0.0<br />05/23/2026 - 04:48:37<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="https://reportgenerator.io">reportgenerator.io</a></div></div>
+<div class="footer">Generated by: ReportGenerator 5.5.0.0<br />05/24/2026 - 04:44:21<br /><a href="https://github.com/danielpalme/ReportGenerator">GitHub</a> | <a href="https://reportgenerator.io">reportgenerator.io</a></div></div>
 <div class="containerright">
 <div class="containerrightfixed">
 <h1>Methods/Properties</h1>
 <a href="#file0_line57" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - From(NanoRoute.MatchingPrecedence)"><i class="icon-cube"></i>From(NanoRoute.MatchingPrecedence)</a><br />
 <a href="#file0_line65" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - RouteMatchCursor()"><i class="icon-cube"></i>RouteMatchCursor()</a><br />
-<a href="#file0_line93" class="navigatetohash percentagebar percentagebar90" title="Line coverage: 90.9% - GetSegmentForMatching()"><i class="icon-cube"></i>GetSegmentForMatching()</a><br />
+<a href="#file0_line93" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - GetSegmentForMatching()"><i class="icon-cube"></i>GetSegmentForMatching()</a><br />
 <a href="#file0_line118" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - AdvanceToNextSegment(NanoRoute.Internals.RouteNode)"><i class="icon-cube"></i>AdvanceToNextSegment(NanoRoute.Internals.RouteNode)</a><br />
 <a href="#file0_line130" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - TryEmitHandler()"><i class="icon-cube"></i>TryEmitHandler()</a><br />
 <a href="#file0_line154" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - TryBranchAsync(NanoRoute.Internals.RouteMatchCursor.BranchKind, System.ReadOnlyMemory&lt;char&gt;)"><i class="icon-cube"></i>TryBranchAsync(NanoRoute.Internals.RouteMatchCursor.BranchKind, System.ReadOnlyMemory&lt;char&gt;)</a><br />
-<a href="#file0_line162" class="navigatetohash percentagebar percentagebar80" title="Line coverage: 88.8% - TryBranchPairAsync()"><i class="icon-cube"></i>TryBranchPairAsync()</a><br />
+<a href="#file0_line162" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - TryBranchPairAsync()"><i class="icon-cube"></i>TryBranchPairAsync()</a><br />
 <a href="#file0_line188" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - TryLiteralBranch(System.ReadOnlyMemory&lt;char&gt;)"><i class="icon-cube"></i>TryLiteralBranch(System.ReadOnlyMemory&lt;char&gt;)</a><br />
 <a href="#file0_line197" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - TryParsedBranchAsync(System.ReadOnlyMemory&lt;char&gt;, int)"><i class="icon-cube"></i>TryParsedBranchAsync(System.ReadOnlyMemory&lt;char&gt;, int)</a><br />
 <a href="#file0_line234" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - TryAcceptParsedBranch(NanoRoute.Internals.RouteNode, NanoRoute.ValueParseResult)"><i class="icon-cube"></i>TryAcceptParsedBranch(NanoRoute.Internals.RouteNode, NanoRoute.ValueParseResult)</a><br />
 <a href="#file0_line247" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - RouteMatchCursor(NanoRoute.Internals.RouteNode, NanoRoute.Internals.HttpVerb, System.Uri, System.IServiceProvider, NanoRoute.RouterConfig, System.Threading.CancellationToken)"><i class="icon-cube"></i>RouteMatchCursor(NanoRoute.Internals.RouteNode, NanoRoute.Internals.HttpVerb, System.Uri, System.IServiceProvider, NanoRoute.RouterConfig, System.Threading.CancellationToken)</a><br />
 <a href="#file0_line275" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - Completed()"><i class="icon-wrench"></i>Completed()</a><br />
 <a href="#file0_line278" class="navigatetohash percentagebar percentagebar100" title="Line coverage: 100% - DisposeAsync()"><i class="icon-cube"></i>DisposeAsync()</a><br />
-<a href="#file0_line286" class="navigatetohash percentagebar percentagebar80" title="Line coverage: 86.9% - MoveNextAsync()"><i class="icon-cube"></i>MoveNextAsync()</a><br />
+<a href="#file0_line286" class="navigatetohash percentagebar percentagebar90" title="Line coverage: 91.3% - MoveNextAsync()"><i class="icon-cube"></i>MoveNextAsync()</a><br />
 <br/></div>
 </div></div>
 <script type="text/javascript">

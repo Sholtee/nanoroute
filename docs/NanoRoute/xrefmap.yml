@@ -1829,6 +1829,18 @@ references:
   fullName.vb: NanoRoute.ValueParseResult.New
   nameWithType: ValueParseResult.ValueParseResult
   nameWithType.vb: ValueParseResult.New
+- uid: NanoRoute.ValueParseResult.False
+  name: "False"
+  href: NanoRoute.ValueParseResult.html#NanoRoute_ValueParseResult_False
+  commentId: P:NanoRoute.ValueParseResult.False
+  fullName: NanoRoute.ValueParseResult.False
+  nameWithType: ValueParseResult.False
+- uid: NanoRoute.ValueParseResult.False*
+  name: "False"
+  href: NanoRoute.ValueParseResult.html#NanoRoute_ValueParseResult_False_
+  commentId: Overload:NanoRoute.ValueParseResult.False
+  fullName: NanoRoute.ValueParseResult.False
+  nameWithType: ValueParseResult.False
 - uid: NanoRoute.ValueParseResult.Parsed
   name: Parsed
   href: NanoRoute.ValueParseResult.html#NanoRoute_ValueParseResult_Parsed

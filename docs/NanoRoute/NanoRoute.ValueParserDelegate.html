@@ -89,8 +89,8 @@
   <h5 id="NanoRoute_ValueParserDelegate_examples"><strong>Examples</strong></h5>
   <pre><code class="lang-csharp">routerBuilder.AddValueParser("user", static async (ValueParserContext context) =&gt;
 {
-    if (!Guid.TryParse(context.Segment, out Guid userId))
-        return new ValueParseResult(false, null);
+    if (!Guid.TryParse(context.Segment.ToString(), out Guid userId))
+        return ValueParseResult.False;
 
     object? user = await context
         .Services
