@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -304,6 +305,75 @@ namespace NanoRoute.Tests
             mockIntParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "1986")), Times.Once);
             mockStringParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Never);
         }
+
+        [Test]
+        public async Task MoveNextAsync_ShouldAwaitParameterizedBranchBeforeLiteralFallback()
+        {
+            TaskCompletionSource<ValueParseResult> parserResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+
+            mockParser
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "literal")))
+                .Returns((ValueParserContext _) => new ValueTask<ValueParseResult>(parserResult.Task));
+
+            HandlerRegistration handler = new(s_handler, "/items/literal/");
+
+            RouteNode
+                root = new(),
+                items = new(),
+                literal = new(),
+                parsed = new()
+                {
+                    ParameterParser = new ParameterParser
+                    (
+                        Parse("{id:str}"),
+                        mockParser.Object,
+                        null
+                    )
+                };
+
+            literal.HandlerRegistrations[HttpVerb.Get] = [handler];
+            items.LiteralChildren.Add("literal".AsMemory(), literal);
+            items.ParsedChildren.Add(parsed);
+            root.LiteralChildren.Add("items".AsMemory(), items);
+
+            RouteMatchCursor cursor = CreateCursor(root, "/items/literal", MatchingPrecedence.ParameterizedFirst);
+
+            ValueTask<bool> pendingMove = cursor.MoveNextAsync();
+            Assert.That(pendingMove.IsCompleted, Is.False);
+
+            parserResult.SetResult(new ValueParseResult(false, null));
+
+            Assert.That(await pendingMove, Is.True);
+            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+
+            mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
+        }
+
+        [Test]
+        public async Task MoveNextAsync_ShouldRejectInvalidPathEscapes()
+        {
+            RouteNode
+                root = new(),
+                files = new(),
+                parsed = new()
+                {
+                    ParameterParser = new ParameterParser
+                    (
+                        Parse("{name:str}"),
+                        static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())),
+                        null
+                    )
+                };
+
+            files.ParsedChildren.Add(parsed);
+            root.LiteralChildren.Add("files".AsMemory(), files);
+
+            await using RouteMatchCursor cursor = CreateCursor(root, "/files/%C0%AF");
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(async () => await cursor.MoveNextAsync())!;
+            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+        }
     }
 }
-
