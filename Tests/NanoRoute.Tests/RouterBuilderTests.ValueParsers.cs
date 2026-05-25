@@ -219,7 +219,7 @@ namespace NanoRoute.Tests
             RouteNode root = _routerBuilder.CreateSnapshot();
 
             Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren, Has.Count.EqualTo(1));
-            Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren[0].ParameterParser!.Definition.ParameterName, Is.EqualTo("id"));
+            Assert.That(root.LiteralChildren["items".AsMemory()].ParsedChildren[0].Key.Definition.ParameterName, Is.EqualTo("id"));
         }
 
         private static IEnumerable<TestCaseData> AddDefaultValueParsers_ShouldRegisterTheBuiltInParsers_Cases()

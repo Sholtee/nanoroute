@@ -78,7 +78,7 @@ namespace NanoRoute
                             .ParsedChildren
                             .SingleOrDefault(c => c.Key.Definition.ValueParser.Equals(parameterDefinition.ValueParser));
 
-                        if (parsedChild.Equals(default))
+                        if (parsedChild.Equals(default(KeyValuePair<ParameterParser, RouteNode>)))
                         {
                             parsedChild = new KeyValuePair<ParameterParser, RouteNode>
                             (
