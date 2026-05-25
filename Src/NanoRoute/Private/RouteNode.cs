@@ -105,14 +105,13 @@ namespace NanoRoute.Internals
                         static kvp => (IList<HandlerRegistration>) kvp.Value.ToImmutableArray()
                     );
 
-                if (HandlerRegistrations.Count is 0 && (LiteralChildren.Count is 0 || ParsedChildren.Count is 0))
-                {
-                    if (LiteralChildren.Count is 1)
-                        SingleBranch = LiteralChildren.Single();
-
-                    else if (ParsedChildren.Count is 1)
-                        SingleBranch = ParsedChildren.Single();
-                }
+                if (HandlerRegistrations.Count is 0)
+                    SingleBranch = (LiteralChildren.Count, ParsedChildren.Count) switch
+                    {
+                        (1, 0) => LiteralChildren.Single(),
+                        (0, 1) => ParsedChildren.Single(),
+                        _ => default
+                    };
 
                 Frozen = true;
             }
