@@ -16,7 +16,7 @@ namespace NanoRoute.Internals
         /// Valid patterns: <c>/</c>, <c>/segment/</c>, <c>/*</c>, <c>/segment/*</c>
         /// Invalid patterns: <c></c>, <c>/segment*</c>, <c>/segment/*/[another_segment]</c>
         /// </summary>
-        public static IEnumerable<object> ParseRoutePattern(string pattern)
+        public static IEnumerable<object> ParseRoutePattern(string pattern)  // TODO: Convert to Union type when it will be available
         {
             int offset = 0;
 

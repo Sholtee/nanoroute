@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -89,6 +90,34 @@ namespace NanoRoute.Internals
 
         private RouteNode _node;
 
+        #region Async helpers
+        // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
+        private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched)
+        {
+            _phase = await branchMatched.ConfigureAwait(false) ? MatchPhase.EmitHandlers : MatchPhase.Done;
+            return await MoveNextAsync().ConfigureAwait(false);
+        }
+
+        private async ValueTask<bool> TryAcceptParsedBranchAwaitedAsync(KeyValuePair<ParameterParser, RouteNode> parsedChild, ValueTask<ValueParseResult> parseResult) =>
+            TryAcceptParsedBranch(parsedChild, await parseResult.ConfigureAwait(false));
+
+        private async ValueTask<bool> TryBranchPairAwaitedAsync(ValueTask<bool> firstBranchMatched, ReadOnlyMemory<char> decodedSegment)
+        {
+            if (await firstBranchMatched.ConfigureAwait(false))
+                return true;
+
+            return await TryBranchAsync(_branchOrder.Second, decodedSegment).ConfigureAwait(false);
+        }
+
+        private async ValueTask<bool> TryParsedBranchAwaitedAsync(KeyValuePair<ParameterParser, RouteNode> parsedChild, ValueTask<ValueParseResult> parseResult, ReadOnlyMemory<char> decodedSegment, int branchIndex)
+        {
+            if (TryAcceptParsedBranch(parsedChild, await parseResult.ConfigureAwait(false)))
+                return true;
+
+            return await TryParsedBranchAsync(decodedSegment, branchIndex + 1).ConfigureAwait(false);
+        }
+        #endregion
+
         private ReadOnlyMemory<char> GetSegmentForMatching()
         {
             ReadOnlyMemory<char> current = _segment.Current;
@@ -107,13 +136,7 @@ namespace NanoRoute.Internals
             return decodedSegment;
         }
 
-        // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
-        private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched)
-        {
-            _phase = await branchMatched.ConfigureAwait(false) ? MatchPhase.EmitHandlers : MatchPhase.Done;
-            return await MoveNextAsync().ConfigureAwait(false);
-        }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AdvanceToNextSegment(RouteNode nextNode)
         {
             _node = nextNode;
@@ -149,6 +172,7 @@ namespace NanoRoute.Internals
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ValueTask<bool> TryBranchAsync(BranchKind branchKind, ReadOnlyMemory<char> decodedSegment) => branchKind switch
         {
             BranchKind.Literal => new ValueTask<bool>(TryLiteralBranch(decodedSegment)),
@@ -156,11 +180,45 @@ namespace NanoRoute.Internals
             _ => throw new ArgumentOutOfRangeException(nameof(branchKind))
         };
 
+        private ValueTask<bool> TrySingleBranch(RouteSingleBranch singleBranch, ReadOnlyMemory<char> decodedSegment)
+        {
+            switch (singleBranch)
+            {
+                case KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch:
+                    if (ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, decodedSegment))
+                    {
+                        AdvanceToNextSegment(literalBranch.Value);
+                        return new ValueTask<bool>(true);
+                    }
+
+                    return new ValueTask<bool>(false);
+
+                case KeyValuePair<ParameterParser, RouteNode> parsedBranch:
+                    ValueTask<ValueParseResult> parseResult = ParseSegment(decodedSegment, parsedBranch.Key);
+
+                    if (!parseResult.IsCompletedSuccessfully)
+                        return TryAcceptParsedBranchAwaitedAsync(parsedBranch, parseResult);
+
+                    return new ValueTask<bool>
+                    (
+                        TryAcceptParsedBranch(parsedBranch, parseResult.Result)
+                    );
+
+                case null:
+                    Debug.Fail("Single branch not set");
+                    return new ValueTask<bool>(false);
+            }
+        }
+
         private ValueTask<bool> TryBranchPairAsync()
         {
             // Decode only when the matcher is about to inspect the segment. Prefix handlers can still run
             // without paying this cost and they can catch invalid escape errors, too.
             ReadOnlyMemory<char> decodedSegment = GetSegmentForMatching();
+
+            // In case of union types null pattern checks whether the Value is null
+            if (_node.SingleBranch is not null)
+                return TrySingleBranch(_node.SingleBranch, decodedSegment);
 
             ValueTask<bool> firstBranchMatched = TryBranchAsync(_branchOrder.First, decodedSegment);
 
@@ -173,15 +231,7 @@ namespace NanoRoute.Internals
             return TryBranchAsync(_branchOrder.Second, decodedSegment);
         }
 
-        // Keep TryBranchPairAsync() state-machine-free while the preferred branch completes synchronously
-        private async ValueTask<bool> TryBranchPairAwaitedAsync(ValueTask<bool> firstBranchMatched, ReadOnlyMemory<char> decodedSegment)
-        {
-            if (await firstBranchMatched.ConfigureAwait(false))
-                return true;
-
-            return await TryBranchAsync(_branchOrder.Second, decodedSegment).ConfigureAwait(false);
-        }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryLiteralBranch(ReadOnlyMemory<char> decodedSegment)
         {
             if (!_node.LiteralChildren.TryGetValue(decodedSegment, out RouteNode branchNode))
@@ -191,53 +241,47 @@ namespace NanoRoute.Internals
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ValueTask<ValueParseResult> ParseSegment(ReadOnlyMemory<char> decodedSegment, ParameterParser parser) => parser.Parse
+        (
+            new ValueParserContext
+            {
+                Segment = decodedSegment,
+                Services = Services,
+                Arguments = parser.Arguments,
+                Cancellation = Cancellation
+            }
+        );
+
         private ValueTask<bool> TryParsedBranchAsync(ReadOnlyMemory<char> decodedSegment, int startIndex = 0)
         {
             for (int i = startIndex; i < _node.ParsedChildren.Count; i++)
             {
-                RouteNode branchNode = _node.ParsedChildren[i];
-                ParameterParser parser = branchNode.ParameterParser!;
+                KeyValuePair<ParameterParser, RouteNode> parsedChild = _node.ParsedChildren[i];
 
-                ValueTask<ValueParseResult> parseResult = parser.Parse
-                (
-                    new ValueParserContext
-                    {
-                        Segment = decodedSegment,
-                        Services = Services,
-                        Arguments = parser.Arguments,
-                        Cancellation = Cancellation
-                    }
-                );
+                ValueTask<ValueParseResult> parseResult = ParseSegment(decodedSegment, parsedChild.Key);
 
                 if (!parseResult.IsCompletedSuccessfully)
-                    return TryParsedBranchAwaitedAsync(parseResult, decodedSegment, i, branchNode);
+                    return TryParsedBranchAwaitedAsync(parsedChild, parseResult, decodedSegment, i);
 
-                if (TryAcceptParsedBranch(branchNode, parseResult.Result))
+                if (TryAcceptParsedBranch(parsedChild, parseResult.Result))
                     return new ValueTask<bool>(true);
             }
 
             return new ValueTask<bool>(false);
         }
 
-        // Keep TryParsedBranchAsync() state-machine-free while branch matching completes synchronously
-        private async ValueTask<bool> TryParsedBranchAwaitedAsync(ValueTask<ValueParseResult> parseResult, ReadOnlyMemory<char> decodedSegment, int branchIndex, RouteNode branchNode)
-        {
-            if (TryAcceptParsedBranch(branchNode, await parseResult.ConfigureAwait(false)))
-                return true;
-
-            return await TryParsedBranchAsync(decodedSegment, branchIndex + 1).ConfigureAwait(false);
-        }
-
-        private bool TryAcceptParsedBranch(RouteNode branchNode, ValueParseResult parseResult)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool TryAcceptParsedBranch(KeyValuePair<ParameterParser, RouteNode> parsedChild, ValueParseResult parseResult)
         {
             if (!parseResult.Success)
                 return false;
 
-            if (branchNode.ParameterParser!.Definition.ParameterName is { Length: > 0 } parameterName)
+            if (parsedChild.Key.Definition.ParameterName is { Length: > 0 } parameterName)
                 // This will overwrite any existing parameter on the given key
                 _parameters[parameterName] = parseResult.Parsed;
 
-            AdvanceToNextSegment(branchNode);
+            AdvanceToNextSegment(parsedChild.Value);
             return true;
         }
         #endregion
@@ -292,7 +336,8 @@ namespace NanoRoute.Internals
                 switch (_phase)
                 {
                     case MatchPhase.EmitHandlers:
-                        if (TryEmitHandler())
+                        // when _node.SingleBranch is not null means this node has no handlers, therefore TryEmitHandler() will return false anyway
+                        if (_node.SingleBranch is null && TryEmitHandler())
                             return new ValueTask<bool>(true);
 
                         // No handler terminated the pipeline, go to the branch matching phase.
@@ -315,7 +360,7 @@ namespace NanoRoute.Internals
 
                     default:
                         Debug.Fail($"Unknown phase: {_phase}");
-                        break;
+                        return new ValueTask<bool>(false);
                 }
             }
 

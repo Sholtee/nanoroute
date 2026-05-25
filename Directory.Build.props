@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <LangVersion>14</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Authors>Denes Solti</Authors>
     <Nullable>enable</Nullable>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>

@@ -53,6 +53,7 @@ nanoroute/
 |   |   |-- Private/                    Internal implementation details
 |   |   |   |-- Dsl/                    Route DSL parsing helpers
 |   |   |   |-- LowLevel/               Low-level path and buffer helpers
+|   |   |   |-- Polyfills/              Local compatibility shims for compiler/runtime features
 |   |   |-- Properties/                 Resources and generated metadata
 |   |   |-- Public/                     Public API surface
 |   |   |   |-- Extensions/             Public extension methods
