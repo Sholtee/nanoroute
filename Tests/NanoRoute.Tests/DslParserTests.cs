@@ -25,24 +25,32 @@ namespace NanoRoute.Tests
             return parsed;
         }
 
+        private static ReadOnlyMemory<char> AssertLiteralDefinition(ParsedRoutePattern definition)
+        {
+            Assert.That(definition.Value, Is.InstanceOf<ReadOnlyMemory<char>>());
+            return (ReadOnlyMemory<char>) definition.Value!;
+        }
+
+        private static ParameterDefinition AssertParameterDefinition(ParsedRoutePattern definition)
+        {
+            Assert.That(definition.Value, Is.InstanceOf<ParameterDefinition>());
+            return (ParameterDefinition) definition.Value!;
+        }
+
         [Test]
         public void ParseRoutePattern_ShouldReturnLiteralAndParameterDefinitions()
         {
-            object[] definitions = DslParser.ParseRoutePattern("/items/{id:int(min=1)}/details/").ToArray();
+            ParsedRoutePattern[] definitions = DslParser.ParseRoutePattern("/items/{id:int(min=1)}/details/").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(3));
-            Assert.That(definitions[0], Is.InstanceOf<ReadOnlyMemory<char>>());
-            Assert.That(definitions[1], Is.InstanceOf<ParameterDefinition>());
-            Assert.That(definitions[2], Is.InstanceOf<ReadOnlyMemory<char>>());
+            Assert.That(AssertLiteralDefinition(definitions[0]).ToString(), Is.EqualTo("items"));
 
-            Assert.That(((ReadOnlyMemory<char>) definitions[0]).ToString(), Is.EqualTo("items"));
-
-            ParameterDefinition parameter = (ParameterDefinition) definitions[1];
+            ParameterDefinition parameter = AssertParameterDefinition(definitions[1]);
             Assert.That(parameter.ParameterName, Is.EqualTo("id"));
             Assert.That(parameter.IsOptional, Is.False);
             Assert.That(parameter.ValueParser, Is.EqualTo(ParseValue("int(min=1)")));
 
-            Assert.That(((ReadOnlyMemory<char>) definitions[2]).ToString(), Is.EqualTo("details"));
+            Assert.That(AssertLiteralDefinition(definitions[2]).ToString(), Is.EqualTo("details"));
         }
 
         [Test]
@@ -56,16 +64,14 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseRoutePattern_ShouldIgnoreSeparatorsInsideParserArguments()
         {
-            object[] definitions = DslParser.ParseRoutePattern("/{value:regex(pattern='/',timeoutMs=50)}/cica/").ToArray();
+            ParsedRoutePattern[] definitions = DslParser.ParseRoutePattern("/{value:regex(pattern='/',timeoutMs=50)}/cica/").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(2));
-            Assert.That(definitions[0], Is.InstanceOf<ParameterDefinition>());
-            Assert.That(definitions[1], Is.InstanceOf<ReadOnlyMemory<char>>());
 
-            ParameterDefinition parameter = (ParameterDefinition) definitions[0];
+            ParameterDefinition parameter = AssertParameterDefinition(definitions[0]);
             Assert.That(parameter.ParameterName, Is.EqualTo("value"));
             Assert.That(parameter.ValueParser, Is.EqualTo(ParseValue("regex(pattern='/',timeoutMs=50)")));
-            Assert.That(((ReadOnlyMemory<char>) definitions[1]).ToString(), Is.EqualTo("cica"));
+            Assert.That(AssertLiteralDefinition(definitions[1]).ToString(), Is.EqualTo("cica"));
         }
 
         [TestCase("/*", 0)]
