@@ -63,9 +63,9 @@ namespace NanoRoute
         {
             RouteNode target = _root;
 
-            foreach (object definition in DslParser.ParseRoutePattern(pattern))
+            foreach (ParsedRoutePattern parsedPattern in DslParser.ParseRoutePattern(pattern))
             {
-                switch (definition)
+                switch (parsedPattern)
                 {
                     case ParameterDefinition parameterDefinition:
                         if (!_valueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration parserRegistration))
