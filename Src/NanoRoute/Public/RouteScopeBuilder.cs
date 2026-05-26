@@ -63,7 +63,7 @@ namespace NanoRoute
         {
             RouteNode target = _root;
 
-            foreach (ParsedRoutePattern parsedPattern in DslParser.ParseRoutePattern(pattern))
+            foreach (object parsedPattern in DslParser.ParseRoutePattern(pattern))
             {
                 switch (parsedPattern)
                 {

@@ -25,22 +25,22 @@ namespace NanoRoute.Tests
             return parsed;
         }
 
-        private static ReadOnlyMemory<char> AssertLiteralDefinition(ParsedRoutePattern definition)
+        private static ReadOnlyMemory<char> AssertLiteralDefinition(object definition)
         {
-            Assert.That(definition.Value, Is.InstanceOf<ReadOnlyMemory<char>>());
-            return (ReadOnlyMemory<char>) definition.Value!;
+            Assert.That(definition, Is.InstanceOf<ReadOnlyMemory<char>>());
+            return (ReadOnlyMemory<char>) definition;
         }
 
-        private static ParameterDefinition AssertParameterDefinition(ParsedRoutePattern definition)
+        private static ParameterDefinition AssertParameterDefinition(object definition)
         {
-            Assert.That(definition.Value, Is.InstanceOf<ParameterDefinition>());
-            return (ParameterDefinition) definition.Value!;
+            Assert.That(definition, Is.InstanceOf<ParameterDefinition>());
+            return (ParameterDefinition) definition;
         }
 
         [Test]
         public void ParseRoutePattern_ShouldReturnLiteralAndParameterDefinitions()
         {
-            ParsedRoutePattern[] definitions = DslParser.ParseRoutePattern("/items/{id:int(min=1)}/details/").ToArray();
+            object[] definitions = DslParser.ParseRoutePattern("/items/{id:int(min=1)}/details/").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(3));
             Assert.That(AssertLiteralDefinition(definitions[0]).ToString(), Is.EqualTo("items"));
@@ -64,7 +64,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ParseRoutePattern_ShouldIgnoreSeparatorsInsideParserArguments()
         {
-            ParsedRoutePattern[] definitions = DslParser.ParseRoutePattern("/{value:regex(pattern='/',timeoutMs=50)}/cica/").ToArray();
+            object[] definitions = DslParser.ParseRoutePattern("/{value:regex(pattern='/',timeoutMs=50)}/cica/").ToArray();
 
             Assert.That(definitions, Has.Length.EqualTo(2));
 

@@ -153,7 +153,7 @@ namespace NanoRoute.Tests
 
             RouteNode frozenLiteral = literalRoot.Copy(freeze: true);
 
-            Assert.That(frozenLiteral.SingleBranch.Value, Is.EqualTo(frozenLiteral.LiteralChildren.Single()));
+            Assert.That(frozenLiteral.SingleBranch, Is.EqualTo(frozenLiteral.LiteralChildren.Single()));
         }
 
         [Test]
@@ -167,7 +167,7 @@ namespace NanoRoute.Tests
 
             RouteNode frozenParsed = parsedRoot.Copy(freeze: true);
 
-            Assert.That(frozenParsed.SingleBranch.Value, Is.EqualTo(frozenParsed.ParsedChildren[0]));
+            Assert.That(frozenParsed.SingleBranch, Is.EqualTo(frozenParsed.ParsedChildren[0]));
         }
 
         [Test]

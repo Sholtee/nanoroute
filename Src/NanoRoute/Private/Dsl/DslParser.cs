@@ -10,15 +10,13 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal readonly union ParsedRoutePattern(ParameterDefinition, ReadOnlyMemory<char>);
-
     internal static class DslParser
     {
         /// <summary>
         /// Valid patterns: <c>/</c>, <c>/segment/</c>, <c>/*</c>, <c>/segment/*</c>
         /// Invalid patterns: <c></c>, <c>/segment*</c>, <c>/segment/*/[another_segment]</c>
         /// </summary>
-        public static IEnumerable<ParsedRoutePattern> ParseRoutePattern(string pattern)
+        public static IEnumerable<object> ParseRoutePattern(string pattern)
         {
             int offset = 0;
 

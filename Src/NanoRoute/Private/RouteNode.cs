@@ -11,8 +11,6 @@ using System.Linq;
 
 namespace NanoRoute.Internals
 {
-    internal readonly union RouteSingleBranch(KeyValuePair<ReadOnlyMemory<char>, RouteNode>, KeyValuePair<ParameterParser, RouteNode>);
-
     /// <summary>
     /// Represents a node in the per-verb route tree.
     /// </summary>
@@ -41,7 +39,7 @@ namespace NanoRoute.Internals
         /// <summary>
         /// Gets the only branch reachable from this node when it has no handlers and a single child branch kind.
         /// </summary>
-        public RouteSingleBranch SingleBranch { get; }
+        public object? SingleBranch { get; }
 
         public RouteNode()
         {

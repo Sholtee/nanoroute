@@ -180,7 +180,7 @@ namespace NanoRoute.Internals
             _ => throw new ArgumentOutOfRangeException(nameof(branchKind))
         };
 
-        private ValueTask<bool> TrySingleBranch(RouteSingleBranch singleBranch, ReadOnlyMemory<char> decodedSegment)
+        private ValueTask<bool> TrySingleBranch(object singleBranch, ReadOnlyMemory<char> decodedSegment)
         {
             switch (singleBranch)
             {
@@ -204,7 +204,7 @@ namespace NanoRoute.Internals
                         TryAcceptParsedBranch(parsedBranch, parseResult.Result)
                     );
 
-                case null:
+                default:
                     Debug.Fail("Single branch not set");
                     return new ValueTask<bool>(false);
             }
@@ -216,7 +216,6 @@ namespace NanoRoute.Internals
             // without paying this cost and they can catch invalid escape errors, too.
             ReadOnlyMemory<char> decodedSegment = GetSegmentForMatching();
 
-            // In case of union types null pattern checks whether the Value is null
             if (_node.SingleBranch is not null)
                 return TrySingleBranch(_node.SingleBranch, decodedSegment);
 
