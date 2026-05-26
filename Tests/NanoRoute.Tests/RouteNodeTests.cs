@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using System.Linq;
 
 using Moq;
 using NUnit.Framework;
@@ -28,16 +29,20 @@ namespace NanoRoute.Tests
             return definition;
         }
 
+        private static KeyValuePair<ParameterParser, RouteNode> ParsedBranch(string segment, RouteNode node) => new
+        (
+            new ParameterParser
+            (
+                Parse(segment),
+                new Mock<ValueParserDelegate>(MockBehavior.Strict).Object,
+                null
+            ),
+            node
+        );
+
         [Test]
         public void Copy_ShouldCloneTheWholeTree_WhenMutableCopyIsRequested()
         {
-            ParameterParser parser = new
-            (
-                Parse("{id:str}"),
-                new Mock<ValueParserDelegate>(MockBehavior.Strict).Object,
-                Arguments: null
-            );
-
             RequestHandlerDelegate
                 rootHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
                 literalHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object,
@@ -50,9 +55,9 @@ namespace NanoRoute.Tests
             literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(literalHandler, "/users/")];
             root.LiteralChildren.Add("users".AsMemory(), literalChild);
 
-            RouteNode parsedChild = new() { ParameterParser = parser };
+            RouteNode parsedChild = new();
             parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(parsedHandler, "/{id:str}/")];
-            root.ParsedChildren.Add(parsedChild);
+            root.ParsedChildren.Add(ParsedBranch("{id:str}", parsedChild));
 
             RouteNode copy = root.Copy(freeze: false);
 
@@ -72,11 +77,11 @@ namespace NanoRoute.Tests
                 Assert.That(copy.LiteralChildren["users".AsMemory()].HandlerRegistrations[HttpVerb.Post], Is.EquivalentTo(literalChild.HandlerRegistrations[HttpVerb.Post]));
 
                 Assert.That(copy.ParsedChildren, Is.Not.SameAs(root.ParsedChildren));
-                Assert.That(copy.ParsedChildren, Is.TypeOf<List<RouteNode>>());
+                Assert.That(copy.ParsedChildren, Is.TypeOf<List<KeyValuePair<ParameterParser, RouteNode>>>());
                 Assert.That(copy.ParsedChildren, Has.Count.EqualTo(1));
-                Assert.That(copy.ParsedChildren[0], Is.Not.SameAs(parsedChild));
-                Assert.That(copy.ParsedChildren[0].ParameterParser, Is.EqualTo(parser));
-                Assert.That(copy.ParsedChildren[0].HandlerRegistrations[HttpVerb.Get], Is.EquivalentTo(parsedChild.HandlerRegistrations[HttpVerb.Get]));
+                Assert.That(copy.ParsedChildren[0].Key, Is.EqualTo(root.ParsedChildren[0].Key));
+                Assert.That(copy.ParsedChildren[0].Value, Is.Not.SameAs(parsedChild));
+                Assert.That(copy.ParsedChildren[0].Value.HandlerRegistrations[HttpVerb.Get], Is.EquivalentTo(parsedChild.HandlerRegistrations[HttpVerb.Get]));
             });
         }
 
@@ -92,17 +97,9 @@ namespace NanoRoute.Tests
             literalChild.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(handler, "/users/")];
             root.LiteralChildren.Add("users".AsMemory(), literalChild);
 
-            RouteNode parsedChild = new()
-            {
-                ParameterParser = new ParameterParser
-                (
-                    Parse("{id:str}"),
-                    new Mock<ValueParserDelegate>(MockBehavior.Strict).Object,
-                    Arguments: null
-                )
-            };
+            RouteNode parsedChild = new();
             parsedChild.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(handler, "/{id:str}/")];
-            root.ParsedChildren.Add(parsedChild);
+            root.ParsedChildren.Add(ParsedBranch("{id:str}", parsedChild));
 
             RouteNode copy = root.Copy(freeze: true);
 
@@ -110,10 +107,10 @@ namespace NanoRoute.Tests
             {
                 Assert.That(copy.HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
                 Assert.That(copy.LiteralChildren, Is.InstanceOf<FrozenDictionary<ReadOnlyMemory<char>, RouteNode>>());
-                Assert.That(copy.ParsedChildren, Is.InstanceOf<ImmutableArray<RouteNode>>());
+                Assert.That(copy.ParsedChildren, Is.InstanceOf<ImmutableArray<KeyValuePair<ParameterParser, RouteNode>>>());
 
                 Assert.That(copy.LiteralChildren["users".AsMemory()].HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
-                Assert.That(copy.ParsedChildren[0].HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
+                Assert.That(copy.ParsedChildren[0].Value.HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
             });
         }
 
@@ -134,7 +131,7 @@ namespace NanoRoute.Tests
 
             root.HandlerRegistrations[HttpVerb.Get].Add(new HandlerRegistration(addedLaterHandler, "/after/"));
             root.LiteralChildren.Add("admins".AsMemory(), new RouteNode());
-            root.ParsedChildren.Add(new RouteNode());
+            root.ParsedChildren.Add(ParsedBranch("{id:str}", new RouteNode()));
 
             Assert.Multiple(() =>
             {
@@ -143,6 +140,54 @@ namespace NanoRoute.Tests
                 Assert.That(snapshot.LiteralChildren.ContainsKey("admins".AsMemory()), Is.False);
                 Assert.That(snapshot.ParsedChildren, Is.Empty);
             });
+        }
+
+        [Test]
+        public void Copy_ShouldSetSingleBranch_WhenFrozenCopyHasOnlyOneLiteralBranch()
+        {
+            RouteNode
+                literalRoot = new(),
+                literalChild = new();
+
+            literalRoot.LiteralChildren.Add("users".AsMemory(), literalChild);
+
+            RouteNode frozenLiteral = literalRoot.Copy(freeze: true);
+
+            Assert.That(frozenLiteral.SingleBranch, Is.EqualTo(frozenLiteral.LiteralChildren.Single()));
+        }
+
+        [Test]
+        public void Copy_ShouldSetSingleBranch_WhenFrozenCopyHasOnlyOneParsedBranch()
+        {
+            RouteNode
+                parsedRoot = new(),
+                parsedChild = new();
+
+            parsedRoot.ParsedChildren.Add(ParsedBranch("{id:str}", parsedChild));
+
+            RouteNode frozenParsed = parsedRoot.Copy(freeze: true);
+
+            Assert.That(frozenParsed.SingleBranch, Is.EqualTo(frozenParsed.ParsedChildren[0]));
+        }
+
+        [Test]
+        public void Copy_ShouldNotSetSingleBranch_WhenFrozenCopyHasHandlers()
+        {
+            RouteNode withHandler = new();
+            withHandler.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/")];
+            withHandler.LiteralChildren.Add("users".AsMemory(), new RouteNode());
+
+            Assert.That(withHandler.Copy(freeze: true).SingleBranch is null, Is.True);
+        }
+
+        [Test]
+        public void Copy_ShouldNotSetSingleBranch_WhenFrozenCopyHasMultipleBranchKinds()
+        {
+            RouteNode withMixedBranches = new();
+            withMixedBranches.LiteralChildren.Add("users".AsMemory(), new RouteNode());
+            withMixedBranches.ParsedChildren.Add(ParsedBranch("{id:str}", new RouteNode()));
+
+            Assert.That(withMixedBranches.Copy(freeze: true).SingleBranch is null, Is.True);
         }
     }
 }

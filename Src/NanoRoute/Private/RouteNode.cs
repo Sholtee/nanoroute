@@ -22,43 +22,41 @@ namespace NanoRoute.Internals
         public IDictionary<HttpVerb, IList<HandlerRegistration>> HandlerRegistrations { get; }
 
         /// <summary>
-        /// Gets the parser used by this node when it represents a parameterized segment.
-        /// </summary>
-        public ParameterParser? ParameterParser { get; init; }
-
-        /// <summary>
         /// Gets literal child nodes keyed by case-insensitive segment value.
         /// </summary>
         public IDictionary<ReadOnlyMemory<char>, RouteNode> LiteralChildren { get; }
 
         /// <summary>
-        /// Gets parser-based child nodes evaluated after literal matches.
+        /// Gets parser-based child nodes.
         /// </summary>
-        public IList<RouteNode> ParsedChildren { get; }
+        public IList<KeyValuePair<ParameterParser, RouteNode>> ParsedChildren { get; }
 
         /// <summary>
         /// Returns true if this node is read-only.
         /// </summary>
         public bool Frozen { get; }
 
+        /// <summary>
+        /// Gets the only branch reachable from this node when it has no handlers and a single child branch kind.
+        /// </summary>
+        public object? SingleBranch { get; }
+
         public RouteNode()
         {
             HandlerRegistrations = new Dictionary<HttpVerb, IList<HandlerRegistration>>();
             LiteralChildren = new Dictionary<ReadOnlyMemory<char>, RouteNode>(ReadOnlyMemoryCharComparer.Instance);
-            ParsedChildren = new List<RouteNode>();
+            ParsedChildren = new List<KeyValuePair<ParameterParser, RouteNode>>();
         }
 
         private RouteNode(RouteNode src, bool freeze)
         {
-            ParameterParser = src.ParameterParser;
-
             if (!freeze)
             {
                 CopyCollection
                 (
                     src.ParsedChildren,
-                    ParsedChildren = new List<RouteNode>(src.ParsedChildren.Count),
-                    static c => c.Copy(freeze: false)
+                    ParsedChildren = new List<KeyValuePair<ParameterParser, RouteNode>>(src.ParsedChildren.Count),
+                    static kvp => new KeyValuePair<ParameterParser, RouteNode>(kvp.Key, kvp.Value.Copy(freeze: false))
                 );
 
                 CopyCollection
@@ -91,7 +89,10 @@ namespace NanoRoute.Internals
                 );
 
                 ParsedChildren = src.ParsedChildren
-                    .Select(static node => node.Copy(freeze: true))
+                    .Select
+                    (
+                        static kvp => new KeyValuePair<ParameterParser, RouteNode>(kvp.Key, kvp.Value.Copy(freeze: true))
+                    )
                     .ToImmutableArray();
 
                 HandlerRegistrations = src
@@ -101,6 +102,14 @@ namespace NanoRoute.Internals
                         static kvp => kvp.Key,
                         static kvp => (IList<HandlerRegistration>) kvp.Value.ToImmutableArray()
                     );
+
+                if (HandlerRegistrations.Count is 0)
+                    SingleBranch = (LiteralChildren.Count, ParsedChildren.Count) switch
+                    {
+                        (1, 0) => LiteralChildren.Single(),
+                        (0, 1) => ParsedChildren.Single(),
+                        _ => default
+                    };
 
                 Frozen = true;
             }

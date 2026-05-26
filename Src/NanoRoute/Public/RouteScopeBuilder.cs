@@ -63,9 +63,9 @@ namespace NanoRoute
         {
             RouteNode target = _root;
 
-            foreach (object definition in DslParser.ParseRoutePattern(pattern))
+            foreach (object parsedPattern in DslParser.ParseRoutePattern(pattern))
             {
-                switch (definition)
+                switch (parsedPattern)
                 {
                     case ParameterDefinition parameterDefinition:
                         if (!_valueParsers.TryGetValue(parameterDefinition.ValueParser.Name, out ValueParserRegistration parserRegistration))
@@ -74,24 +74,29 @@ namespace NanoRoute
                                 string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parameterDefinition.ValueParser.Name)
                             );
 
-                        if (target.ParsedChildren.SingleOrDefault(cc => cc.ParameterParser!.Definition.ValueParser.Equals(parameterDefinition.ValueParser)) is not { } parsedChild)
+                        KeyValuePair<ParameterParser, RouteNode> parsedChild = target
+                            .ParsedChildren
+                            .SingleOrDefault(c => c.Key.Definition.ValueParser.Equals(parameterDefinition.ValueParser));
+
+                        if (parsedChild.Equals(default(KeyValuePair<ParameterParser, RouteNode>)))
                         {
-                            parsedChild = new RouteNode()
-                            {
-                                ParameterParser = new ParameterParser
+                            parsedChild = new KeyValuePair<ParameterParser, RouteNode>
+                            (
+                                new ParameterParser
                                 (
                                     parameterDefinition,
                                     parserRegistration.Parse,
                                     parserRegistration.BindArguments(parameterDefinition.ValueParser.RawArguments)
-                                )
-                            };
+                                ),
+                                new RouteNode()
+                            );
 
                             target.ParsedChildren.Add(parsedChild);
                         }
-                        else if (!StringComparer.OrdinalIgnoreCase.Equals(parsedChild.ParameterParser!.Definition.ParameterName, parameterDefinition.ParameterName))
+                        else if (!StringComparer.OrdinalIgnoreCase.Equals(parsedChild.Key.Definition.ParameterName, parameterDefinition.ParameterName))
                             throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
 
-                        target = parsedChild;
+                        target = parsedChild.Value;
                         break;
 
                     case ReadOnlyMemory<char> literalSegmentDefinition:
@@ -346,8 +351,8 @@ namespace NanoRoute
                     foreach (RouteNode childNode in node.LiteralChildren.Values)
                         Walk(childNode, patterns);
 
-                    foreach (RouteNode childNode in node.ParsedChildren)
-                        Walk(childNode, patterns);
+                    foreach (KeyValuePair<ParameterParser, RouteNode> childNode in node.ParsedChildren)
+                        Walk(childNode.Value, patterns);
                 }
             }
         }

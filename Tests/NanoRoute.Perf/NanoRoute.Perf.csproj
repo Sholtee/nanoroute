@@ -20,6 +20,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="EndpointDispatchBenchmarks.*.cs">
+      <DependentUpon>EndpointDispatchBenchmarks.cs</DependentUpon>
+    </Compile>
+    <Compile Update="MatcherBenchmarks.*.cs">
+      <DependentUpon>MatcherBenchmarks.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Src\NanoRoute.AwsLambda\NanoRoute.AwsLambda.csproj" />
     <ProjectReference Include="..\..\Src\NanoRoute\NanoRoute.csproj" />
   </ItemGroup>
