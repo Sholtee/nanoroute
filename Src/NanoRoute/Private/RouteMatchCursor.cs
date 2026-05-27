@@ -67,6 +67,8 @@ namespace NanoRoute.Internals
 
         private readonly BranchOrder _branchOrder;
 
+        private readonly RouteNode _root;
+
         private readonly Dictionary<string, object?> _parameters;
 
         private char[]? _decodedSegmentBuffer;
@@ -94,7 +96,7 @@ namespace NanoRoute.Internals
         // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
         private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched)
         {
-            _phase = await branchMatched.ConfigureAwait(false) ? MatchPhase.EmitHandlers : MatchPhase.Done;
+            _phase = await branchMatched.ConfigureAwait(false) ? GetPhaseAfterMatchedBranch() : MatchPhase.Done;
             return await MoveNextAsync().ConfigureAwait(false);
         }
 
@@ -139,6 +141,8 @@ namespace NanoRoute.Internals
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AdvanceToNextSegment(RouteNode nextNode)
         {
+            Cancellation.ThrowIfCancellationRequested();
+
             _node = nextNode;
             _handlerIndex = 0;
             _handlers = null;
@@ -173,6 +177,11 @@ namespace NanoRoute.Internals
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private MatchPhase GetPhaseAfterMatchedBranch() => _node.HandlerRegistrations.Count is 0
+            ? MatchPhase.Branch
+            : MatchPhase.EmitHandlers;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ValueTask<bool> TryBranchAsync(BranchKind branchKind, ReadOnlyMemory<char> decodedSegment) => branchKind switch
         {
             BranchKind.Literal => new ValueTask<bool>(TryLiteralBranch(decodedSegment)),
@@ -180,9 +189,9 @@ namespace NanoRoute.Internals
             _ => throw new ArgumentOutOfRangeException(nameof(branchKind))
         };
 
-        private ValueTask<bool> TrySingleBranch(object singleBranch, ReadOnlyMemory<char> decodedSegment)
+        private ValueTask<bool> TrySingleBranch(ReadOnlyMemory<char> decodedSegment)
         {
-            switch (singleBranch)
+            switch (_node.SingleBranch)
             {
                 case KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch:
                     if (ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, decodedSegment))
@@ -217,7 +226,7 @@ namespace NanoRoute.Internals
             ReadOnlyMemory<char> decodedSegment = GetSegmentForMatching();
 
             if (_node.SingleBranch is not null)
-                return TrySingleBranch(_node.SingleBranch, decodedSegment);
+                return TrySingleBranch(decodedSegment);
 
             ValueTask<bool> firstBranchMatched = TryBranchAsync(_branchOrder.First, decodedSegment);
 
@@ -296,7 +305,7 @@ namespace NanoRoute.Internals
             _branchOrder = BranchOrder.From(routerConfig.MatchingPrecedence);
             _parameters = new Dictionary<string, object?>(routerConfig.ParametersCapacity, StringComparer.OrdinalIgnoreCase);
             _phase = MatchPhase.EmitHandlers;
-            _node = node;
+            _root = _node = node;
 
             Cancellation = cancellation;
             Services = services;
@@ -315,6 +324,17 @@ namespace NanoRoute.Internals
 
         public bool Completed => _phase is MatchPhase.Done;
 
+        public void Reset()
+        {
+            _segment = new DelimitedSegment(_segment.Original, _segment.Separator);
+            _parameters.Clear();
+            _phase = MatchPhase.EmitHandlers;
+            _nextDecodedSegment = 0;
+            _remainingPath = default;
+
+            AdvanceToNextSegment(_root);
+        }
+
         public ValueTask DisposeAsync()
         {
             if (_decodedSegmentBuffer is not null)
@@ -330,18 +350,15 @@ namespace NanoRoute.Internals
         {
             while (!Completed)
             {
-                Cancellation.ThrowIfCancellationRequested();
-
                 switch (_phase)
                 {
                     case MatchPhase.EmitHandlers:
-                        // when _node.SingleBranch is not null means this node has no handlers, therefore TryEmitHandler() will return false anyway
-                        if (_node.SingleBranch is null && TryEmitHandler())
+                        if (_node.HandlerRegistrations.Count is not 0 && TryEmitHandler())
                             return new ValueTask<bool>(true);
 
                         // No handler terminated the pipeline, go to the branch matching phase.
                         _phase = MatchPhase.Branch;
-                        break;
+                        goto case MatchPhase.Branch;
 
                     case MatchPhase.Branch:
                         if (!_segment.HasValue)
@@ -354,7 +371,7 @@ namespace NanoRoute.Internals
                         if (!branchMatched.IsCompletedSuccessfully)
                             return MoveNextAwaitedAsync(branchMatched);
 
-                        _phase = branchMatched.Result ? MatchPhase.EmitHandlers : MatchPhase.Done;
+                        _phase = branchMatched.Result ? GetPhaseAfterMatchedBranch() : MatchPhase.Done;
                         break;
 
                     default:
