@@ -96,7 +96,7 @@ namespace NanoRoute.Internals
         // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
         private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched)
         {
-            _phase = await branchMatched.ConfigureAwait(false) ? GetPhaseAfterMatchedBranch() : MatchPhase.Done;
+            _phase = await branchMatched.ConfigureAwait(false) ? GetPhaseForCurrentNode() : MatchPhase.Done;
             return await MoveNextAsync().ConfigureAwait(false);
         }
 
@@ -177,7 +177,7 @@ namespace NanoRoute.Internals
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private MatchPhase GetPhaseAfterMatchedBranch() => _node.HandlerRegistrations.Count is 0
+        private MatchPhase GetPhaseForCurrentNode() => _node.HandlerRegistrations.Count is 0
             ? MatchPhase.Branch
             : MatchPhase.EmitHandlers;
 
@@ -304,7 +304,6 @@ namespace NanoRoute.Internals
             );
             _branchOrder = BranchOrder.From(routerConfig.MatchingPrecedence);
             _parameters = new Dictionary<string, object?>(routerConfig.ParametersCapacity, StringComparer.OrdinalIgnoreCase);
-            _phase = MatchPhase.EmitHandlers;
             _root = _node = node;
 
             Cancellation = cancellation;
@@ -312,6 +311,7 @@ namespace NanoRoute.Internals
             Verb = verb;
 
             AdvanceToNextSegment(node);
+            _phase = GetPhaseForCurrentNode();
         }
 
         public RouteMatch Current { get; private set; }
@@ -328,11 +328,11 @@ namespace NanoRoute.Internals
         {
             _segment = new DelimitedSegment(_segment.Original, _segment.Separator);
             _parameters.Clear();
-            _phase = MatchPhase.EmitHandlers;
             _nextDecodedSegment = 0;
             _remainingPath = default;
 
             AdvanceToNextSegment(_root);
+            _phase = GetPhaseForCurrentNode();
         }
 
         public ValueTask DisposeAsync()
@@ -353,7 +353,7 @@ namespace NanoRoute.Internals
                 switch (_phase)
                 {
                     case MatchPhase.EmitHandlers:
-                        if (_node.HandlerRegistrations.Count is not 0 && TryEmitHandler())
+                        if (TryEmitHandler())
                             return new ValueTask<bool>(true);
 
                         // No handler terminated the pipeline, go to the branch matching phase.
@@ -371,7 +371,7 @@ namespace NanoRoute.Internals
                         if (!branchMatched.IsCompletedSuccessfully)
                             return MoveNextAwaitedAsync(branchMatched);
 
-                        _phase = branchMatched.Result ? GetPhaseAfterMatchedBranch() : MatchPhase.Done;
+                        _phase = branchMatched.Result ? GetPhaseForCurrentNode() : MatchPhase.Done;
                         break;
 
                     default:
