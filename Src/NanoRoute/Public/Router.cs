@@ -34,7 +34,7 @@ namespace NanoRoute
     /// </example>
     public abstract class Router
     {
-        private readonly RouteNode _root;
+        private readonly RequestPipeline _requestPipeline;
 
         /// <summary>
         /// The request property key that stores the trace identifier associated with the current request.
@@ -69,7 +69,7 @@ namespace NanoRoute
             Ensure.NotNull(routeScopeBuilder);
             Ensure.NotNull(config);
 
-            _root = routeScopeBuilder.CreateSnapshot();
+            _requestPipeline = new RequestPipeline(routeScopeBuilder.CreateSnapshot(), config);
             Config = config;
         }
 
@@ -103,7 +103,7 @@ namespace NanoRoute
 #if DEBUG
         internal
 #endif
-        protected async Task<HttpResponseMessage> Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)
+        protected Task<HttpResponseMessage> Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)
         {
             Ensure.NotNull(request);
             Ensure.NotNull(services);
@@ -114,9 +114,7 @@ namespace NanoRoute
                 Verb = request.Method.Method
             }, request);
 
-            await using RequestPipeline pipeline = new(_root, request, services, Config, cancellation);
-
-            return await pipeline.RunAsync().ConfigureAwait(false);
+            return _requestPipeline.RunAsync(request, services, cancellation);
         }
 
         /// <summary>

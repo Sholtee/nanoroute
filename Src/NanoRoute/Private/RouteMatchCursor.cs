@@ -17,16 +17,7 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal readonly struct RouteMatch
-    {
-        public required HandlerRegistration HandlerRegistration { get; init; }
-
-        public required Dictionary<string, object?> AttachedParameters { get; init; }
-
-        public required ReadOnlyMemory<char> RemainingPath { get; init; }
-    }
-
-    internal class RouteMatchCursor : IAsyncEnumerator<RouteMatch>
+    internal class RouteMatchCursor : IAsyncEnumerator<HandlerRegistration>
     {
         #region Private
         private enum BranchKind
@@ -67,10 +58,6 @@ namespace NanoRoute.Internals
 
         private readonly BranchOrder _branchOrder;
 
-        private readonly RouteNode _root;
-
-        private readonly Dictionary<string, object?> _parameters;
-
         private char[]? _decodedSegmentBuffer;
 
         // Keep DelimitedSegment instead of Uri.Segments: UrlSegmentBenchmarks shows it avoids eager segment
@@ -81,8 +68,6 @@ namespace NanoRoute.Internals
         private DelimitedSegment _segment;
 
         private MatchPhase _phase;
-
-        private ReadOnlyMemory<char> _remainingPath;
 
         private IList<HandlerRegistration>? _handlers;
 
@@ -146,7 +131,8 @@ namespace NanoRoute.Internals
             _node = nextNode;
             _handlerIndex = 0;
             _handlers = null;
-            _remainingPath = _segment.Remaining;
+            
+            RemainingPath = _segment.Remaining;
 
             _segment.MoveNext();
         }
@@ -164,12 +150,7 @@ namespace NanoRoute.Internals
                 if (_segment.HasValue && !candidate.IsPrefix)
                     continue;
 
-                Current = new RouteMatch
-                {
-                    HandlerRegistration = candidate,
-                    RemainingPath = _remainingPath,
-                    AttachedParameters = _parameters
-                };
+                Current = candidate;
                 return true;
             }
 
@@ -287,14 +268,14 @@ namespace NanoRoute.Internals
 
             if (parsedChild.Key.Definition.ParameterName is { Length: > 0 } parameterName)
                 // This will overwrite any existing parameter on the given key
-                _parameters[parameterName] = parseResult.Parsed;
+                Parameters[parameterName] = parseResult.Parsed;
 
             AdvanceToNextSegment(parsedChild.Value);
             return true;
         }
         #endregion
 
-        public RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, RouterConfig routerConfig, CancellationToken cancellation)
+        public RouteMatchCursor(RouteNode node, HttpVerb verb, Uri uri, IServiceProvider services, IDictionary<string, object?> parameters, MatchingPrecedence matchingPrecedence, CancellationToken cancellation)
         {
             _segment = new DelimitedSegment
             (
@@ -302,11 +283,11 @@ namespace NanoRoute.Internals
                 uri.AbsolutePath.AsMemory(),
                 '/'
             );
-            _branchOrder = BranchOrder.From(routerConfig.MatchingPrecedence);
-            _parameters = new Dictionary<string, object?>(routerConfig.ParametersCapacity, StringComparer.OrdinalIgnoreCase);
-            _root = _node = node;
+            _branchOrder = BranchOrder.From(matchingPrecedence);
+            _node = node;
 
             Cancellation = cancellation;
+            Parameters = parameters;
             Services = services;
             Verb = verb;
 
@@ -314,26 +295,19 @@ namespace NanoRoute.Internals
             _phase = GetPhaseForCurrentNode();
         }
 
-        public RouteMatch Current { get; private set; }
+        public HandlerRegistration Current { get; private set; } = null!;
+
+        public ReadOnlyMemory<char> RemainingPath { get; private set; }
 
         public CancellationToken Cancellation { get; }
 
         public IServiceProvider Services { get; }
 
+        public IDictionary<string, object?> Parameters { get; }
+
         public HttpVerb Verb { get; }
 
         public bool Completed => _phase is MatchPhase.Done;
-
-        public void Reset()
-        {
-            _segment = new DelimitedSegment(_segment.Original, _segment.Separator);
-            _parameters.Clear();
-            _nextDecodedSegment = 0;
-            _remainingPath = default;
-
-            AdvanceToNextSegment(_root);
-            _phase = GetPhaseForCurrentNode();
-        }
 
         public ValueTask DisposeAsync()
         {

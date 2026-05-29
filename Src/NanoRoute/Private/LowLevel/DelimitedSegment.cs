@@ -4,10 +4,12 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace NanoRoute.Internals
 {
-    internal struct DelimitedSegment(ReadOnlyMemory<char> original, char separator)
+    internal struct DelimitedSegment(ReadOnlyMemory<char> original, char separator): IEnumerator<ReadOnlyMemory<char>>
     {
         private const int DONE = -1;
 
@@ -48,7 +50,17 @@ namespace NanoRoute.Internals
             return true;
         }
 
+        public void Reset()
+        {
+            _next = 0;
+            Current = default;
+        }
+
+        public readonly void Dispose() {}
+
         public ReadOnlyMemory<char> Current { get; private set; }
+
+        readonly object IEnumerator.Current => Current;
 
         public readonly ReadOnlyMemory<char> Remaining => _next > DONE ? Original.Slice(Math.Max(0, _next - 1)) : default;
 
@@ -56,6 +68,6 @@ namespace NanoRoute.Internals
 
         public char Separator { get; } = separator;
 
-        public readonly bool HasValue => Current.Length > 0;
+        public readonly bool HasValue => Current.Length > 0;  
     }
 }
