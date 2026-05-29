@@ -49,8 +49,31 @@ namespace NanoRoute.Perf
 
             for (DelimitedSegment segment = new(LiteralRoutePattern.AsMemory(), '/'); segment.MoveNext();)
             {
-                if (node.SingleBranch is not KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch || !ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, segment.Current))
-                    throw new InvalidOperationException($"Failed to match segment '{segment.Current}'.");
+                ReadOnlyMemory<char> current = segment.Current;
+
+                if (node.SingleBranch is not KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch || !ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, current))
+                    throw new InvalidOperationException($"Failed to match segment '{current}'.");
+
+                node = literalBranch.Value;
+            }
+
+            return node;
+        }
+
+        [Benchmark]
+        public object SearchPercentThenMatchLiteralSegmentsAndWalkGraph()
+        {
+            RouteNode node = _root;
+
+            for (DelimitedSegment segment = new(LiteralRoutePattern.AsMemory(), '/'); segment.MoveNext();)
+            {
+                ReadOnlyMemory<char> current = segment.Current;
+
+                if (current.Span.IndexOf('%') >= 0)
+                    throw new InvalidOperationException($"Unexpected escaped segment '{current}'.");
+
+                if (node.SingleBranch is not KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch || !ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, current))
+                    throw new InvalidOperationException($"Failed to match segment '{current}'.");
 
                 node = literalBranch.Value;
             }
