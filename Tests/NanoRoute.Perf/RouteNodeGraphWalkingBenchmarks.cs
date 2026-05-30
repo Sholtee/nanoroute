@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -25,14 +26,13 @@ namespace NanoRoute.Perf
 
         private const string LiteralRoutePattern = "/api/v1/users/42/orders/7/items/3/details/";
 
+        private static readonly Uri s_requestUri = new($"https://localhost:1986{LiteralRoutePattern}", UriKind.Absolute);
+
         private static readonly Task<HttpResponseMessage> s_responseTask = Task.FromResult(new HttpResponseMessage());
 
         private static readonly RequestHandlerDelegate s_handler = static (_, _) => s_responseTask;
 
         private RouteNode _root = null!;
-
-        [Params(BranchLookup.SingleBranch, BranchLookup.LiteralChildren)]
-        public BranchLookup BranchLookupKind { get; set; }
 
         [GlobalSetup]
         public void Setup() => _root = TestRouter
@@ -41,7 +41,9 @@ namespace NanoRoute.Perf
             .CreateSnapshot();
 
         [Benchmark]
-        public object MatchLiteralSegmentsAndWalkGraph()
+        [Arguments(BranchLookup.SingleBranch)]
+        [Arguments(BranchLookup.LiteralChildren)]
+        public object MatchLiteralSegmentsAndWalkGraph(BranchLookup branchLookupKind)
         {
             RouteNode node = _root;
 
@@ -49,7 +51,7 @@ namespace NanoRoute.Perf
             {
                 ReadOnlyMemory<char> current = segment.Current;
 
-                if (!TryMatchLiteralBranch(node, current, out RouteNode nextNode))
+                if (!TryMatchLiteralBranch(branchLookupKind, node, current, out RouteNode nextNode))
                     throw new InvalidOperationException($"Failed to match segment '{current}'.");
 
                 node = nextNode;
@@ -59,7 +61,9 @@ namespace NanoRoute.Perf
         }
 
         [Benchmark]
-        public object SearchPercentThenMatchLiteralSegmentsAndWalkGraph()
+        [Arguments(BranchLookup.SingleBranch)]
+        [Arguments(BranchLookup.LiteralChildren)]
+        public object SearchPercentThenMatchLiteralSegmentsAndWalkGraph(BranchLookup branchLookupKind)
         {
             RouteNode node = _root;
 
@@ -70,7 +74,7 @@ namespace NanoRoute.Perf
                 if (current.Span.IndexOf('%') >= 0)
                     throw new InvalidOperationException($"Unexpected escaped segment '{current}'.");
 
-                if (!TryMatchLiteralBranch(node, current, out RouteNode nextNode))
+                if (!TryMatchLiteralBranch(branchLookupKind, node, current, out RouteNode nextNode))
                     throw new InvalidOperationException($"Failed to match segment '{current}'.");
 
                 node = nextNode;
@@ -79,9 +83,29 @@ namespace NanoRoute.Perf
             return node;
         }
 
-        private bool TryMatchLiteralBranch(RouteNode node, ReadOnlyMemory<char> segment, out RouteNode nextNode)
+        [Benchmark(OperationsPerInvoke = 1000)]
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "The request URI doesn't contain percent encoded segments so the DisposeAsync() method would do nothing")]
+        public void WalkGraphUsingRouteMatchCursor()
         {
-            switch (BranchLookupKind)
+            RouteMatchCursor cursor = new(_root, HttpVerb.Get, s_requestUri, null!, null!, MatchingPrecedence.LiteralFirst, default);
+
+            for (int i = 0; i < 1000; i++)
+            {
+                ValueTask<bool> result = cursor.TrySingleBranchesAsync();
+
+                if (!result.IsCompletedSuccessfully)
+                    throw new InvalidOperationException("Unexpected async processing");
+
+                if (!result.Result)
+                    throw new InvalidOperationException("Failed to match segment");
+
+                cursor.Reset();
+            }
+        }
+
+        private bool TryMatchLiteralBranch(BranchLookup branchLookupKind, RouteNode node, ReadOnlyMemory<char> segment, out RouteNode nextNode)
+        {
+            switch (branchLookupKind)
             {
                 case BranchLookup.SingleBranch:
                     if (node.SingleBranch is KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch && ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, segment))
@@ -104,7 +128,7 @@ namespace NanoRoute.Perf
                     return false;
 
                 default:
-                    throw new InvalidOperationException($"Unknown branch lookup kind: {BranchLookupKind}.");
+                    throw new InvalidOperationException($"Unknown branch lookup kind: {branchLookupKind}.");
             }
         }
 

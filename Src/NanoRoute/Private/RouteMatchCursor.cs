@@ -17,21 +17,26 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal class RouteMatchCursor : IAsyncEnumerator<HandlerRegistration>
+    internal sealed class RouteMatchCursor : IAsyncEnumerator<HandlerRegistration>
     {
         #region Private
-        private enum BranchKind
+        private enum BranchKind: byte
         {
             Literal,
             Parsed
         }
 
-        private enum MatchPhase
+        private enum MatchPhase: byte
         {
             /// <summary>
             /// Emit all handlers that belong to the current node before descending into child nodes.
             /// </summary>
             EmitHandlers,
+
+            /// <summary>
+            /// TODO
+            /// </summary>
+            SingleBranch,
 
             /// <summary>
             /// Explore child branches according to the configured precedence.
@@ -57,6 +62,8 @@ namespace NanoRoute.Internals
         private static readonly ArrayPool<char> s_arrayPool = ArrayPool<char>.Create();
 
         private readonly BranchOrder _branchOrder;
+
+        private readonly RouteNode _root;
 
         private char[]? _decodedSegmentBuffer;
 
@@ -85,9 +92,6 @@ namespace NanoRoute.Internals
             return await MoveNextAsync().ConfigureAwait(false);
         }
 
-        private async ValueTask<bool> TryAcceptParsedBranchAwaitedAsync(KeyValuePair<ParameterParser, RouteNode> parsedChild, ValueTask<ValueParseResult> parseResult) =>
-            TryAcceptParsedBranch(parsedChild, await parseResult.ConfigureAwait(false));
-
         private async ValueTask<bool> TryBranchPairAwaitedAsync(ValueTask<bool> firstBranchMatched, ReadOnlyMemory<char> decodedSegment)
         {
             if (await firstBranchMatched.ConfigureAwait(false))
@@ -102,6 +106,14 @@ namespace NanoRoute.Internals
                 return true;
 
             return await TryParsedBranchAsync(decodedSegment, branchIndex + 1).ConfigureAwait(false);
+        }
+
+        private async ValueTask<bool> TryAcceptParsedBranchAwaitedAsync(KeyValuePair<ParameterParser, RouteNode> parsedChild, ValueTask<ValueParseResult> parseResult)
+        {
+            if (!TryAcceptParsedBranch(parsedChild, await parseResult.ConfigureAwait(false)))
+                return false;
+
+            return await TrySingleBranchesAsync();
         }
         #endregion
 
@@ -158,9 +170,16 @@ namespace NanoRoute.Internals
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private MatchPhase GetPhaseForCurrentNode() => _node.HandlerRegistrations.Count is 0
-            ? MatchPhase.Branch
-            : MatchPhase.EmitHandlers;
+        private MatchPhase GetPhaseForCurrentNode()
+        {
+            if (_node.SingleBranch is not null)
+                return MatchPhase.SingleBranch;
+
+            if (_node.HandlerRegistrations.Count > 0)
+                return MatchPhase.EmitHandlers;
+
+            return MatchPhase.Branch;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ValueTask<bool> TryBranchAsync(BranchKind branchKind, ReadOnlyMemory<char> decodedSegment) => branchKind switch
@@ -170,34 +189,43 @@ namespace NanoRoute.Internals
             _ => throw new ArgumentOutOfRangeException(nameof(branchKind))
         };
 
-        private ValueTask<bool> TrySingleBranch(ReadOnlyMemory<char> decodedSegment)
+        private static readonly ValueTask<bool>
+            s_true = new(true),
+            s_false = new(false);
+
+        internal ValueTask<bool> TrySingleBranchesAsync()
         {
-            switch (_node.SingleBranch)
+            while (_segment.HasValue && _node.SingleBranch is not null)
             {
-                case KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch:
-                    if (ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, decodedSegment))
-                    {
+                ReadOnlyMemory<char> decodedSegment = GetSegmentForMatching();
+
+                switch (_node.SingleBranch)
+                {
+                    case KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch:
+                        if (!ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, decodedSegment))
+                            return s_false;
+
                         AdvanceToNextSegment(literalBranch.Value);
-                        return new ValueTask<bool>(true);
-                    }
+                        break;
 
-                    return new ValueTask<bool>(false);
+                    case KeyValuePair<ParameterParser, RouteNode> parsedBranch:
+                        ValueTask<ValueParseResult> parseResult = ParseSegment(decodedSegment, parsedBranch.Key);
 
-                case KeyValuePair<ParameterParser, RouteNode> parsedBranch:
-                    ValueTask<ValueParseResult> parseResult = ParseSegment(decodedSegment, parsedBranch.Key);
+                        if (!parseResult.IsCompletedSuccessfully)
+                            return TryAcceptParsedBranchAwaitedAsync(parsedBranch, parseResult);
 
-                    if (!parseResult.IsCompletedSuccessfully)
-                        return TryAcceptParsedBranchAwaitedAsync(parsedBranch, parseResult);
+                        if (!TryAcceptParsedBranch(parsedBranch, parseResult.Result))
+                            return s_false;
 
-                    return new ValueTask<bool>
-                    (
-                        TryAcceptParsedBranch(parsedBranch, parseResult.Result)
-                    );
+                        break;
 
-                default:
-                    Debug.Fail("Single branch not set");
-                    return new ValueTask<bool>(false);
+                    default:
+                        Debug.Fail($"Unknown single branch type: {_node.SingleBranch.GetType().Name}");
+                        return s_false;
+                }    
             }
+
+            return s_true;
         }
 
         private ValueTask<bool> TryBranchPairAsync()
@@ -206,21 +234,17 @@ namespace NanoRoute.Internals
             // without paying this cost and they can catch invalid escape errors, too.
             ReadOnlyMemory<char> decodedSegment = GetSegmentForMatching();
 
-            if (_node.SingleBranch is not null)
-                return TrySingleBranch(decodedSegment);
-
             ValueTask<bool> firstBranchMatched = TryBranchAsync(_branchOrder.First, decodedSegment);
 
             if (!firstBranchMatched.IsCompletedSuccessfully)
                 return TryBranchPairAwaitedAsync(firstBranchMatched, decodedSegment);
 
             if (firstBranchMatched.Result)
-                return new ValueTask<bool>(true);
+                return s_true;
 
             return TryBranchAsync(_branchOrder.Second, decodedSegment);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryLiteralBranch(ReadOnlyMemory<char> decodedSegment)
         {
             if (!_node.LiteralChildren.TryGetValue(decodedSegment, out RouteNode branchNode))
@@ -254,13 +278,12 @@ namespace NanoRoute.Internals
                     return TryParsedBranchAwaitedAsync(parsedChild, parseResult, decodedSegment, i);
 
                 if (TryAcceptParsedBranch(parsedChild, parseResult.Result))
-                    return new ValueTask<bool>(true);
+                    return s_true;
             }
 
-            return new ValueTask<bool>(false);
+            return s_false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryAcceptParsedBranch(KeyValuePair<ParameterParser, RouteNode> parsedChild, ValueParseResult parseResult)
         {
             if (!parseResult.Success)
@@ -284,14 +307,14 @@ namespace NanoRoute.Internals
                 '/'
             );
             _branchOrder = BranchOrder.From(matchingPrecedence);
-            _node = node;
+            _root = _node = node;
 
             Cancellation = cancellation;
             Parameters = parameters;
             Services = services;
             Verb = verb;
 
-            AdvanceToNextSegment(node);
+            AdvanceToNextSegment(_root);
             _phase = GetPhaseForCurrentNode();
         }
 
@@ -320,6 +343,13 @@ namespace NanoRoute.Internals
             return default;
         }
 
+        public void Reset()
+        {
+            _segment.Reset();
+            AdvanceToNextSegment(_root);
+            _phase = GetPhaseForCurrentNode();
+        }
+
         public ValueTask<bool> MoveNextAsync()
         {
             while (!Completed)
@@ -333,6 +363,20 @@ namespace NanoRoute.Internals
                         // No handler terminated the pipeline, go to the branch matching phase.
                         _phase = MatchPhase.Branch;
                         goto case MatchPhase.Branch;
+
+                    case MatchPhase.SingleBranch:
+                        if (!_segment.HasValue)
+                        {
+                            _phase = MatchPhase.Done;
+                            break;
+                        }
+
+                        ValueTask<bool> singleBranchMatched = TrySingleBranchesAsync();
+                        if (!singleBranchMatched.IsCompletedSuccessfully)
+                            return MoveNextAwaitedAsync(singleBranchMatched);
+
+                        _phase = singleBranchMatched.Result ? GetPhaseForCurrentNode() : MatchPhase.Done;
+                        break;
 
                     case MatchPhase.Branch:
                         if (!_segment.HasValue)
@@ -350,11 +394,11 @@ namespace NanoRoute.Internals
 
                     default:
                         Debug.Fail($"Unknown phase: {_phase}");
-                        return new ValueTask<bool>(false);
+                        return s_false;
                 }
             }
 
-            return new ValueTask<bool>(false);
+            return s_false;
         }
     }
 }
