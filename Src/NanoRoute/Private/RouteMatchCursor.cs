@@ -69,10 +69,7 @@ namespace NanoRoute.Internals
 
         // Keep DelimitedSegment instead of Uri.Segments: UrlSegmentBenchmarks shows it avoids eager segment
         // array/string allocation and preserves this cursor's lazy traversal model.
-        //
-        // DelimitedSegment is mutable, so keep this field non-readonly to let MoveNext() update the cursor
-        // itself instead of a defensive copy.
-        private DelimitedSegment _segment;
+        private readonly DelimitedSegment _segment;
 
         private MatchPhase _phase;
 
@@ -88,7 +85,13 @@ namespace NanoRoute.Internals
         // Keep MoveNextAsync() state-machine-free while branch matching completes synchronously
         private async ValueTask<bool> MoveNextAwaitedAsync(ValueTask<bool> branchMatched)
         {
-            _phase = await branchMatched.ConfigureAwait(false) ? GetPhaseForCurrentNode() : MatchPhase.Done;
+            if (!await branchMatched.ConfigureAwait(false))
+            {
+                _phase = MatchPhase.Done;
+                return false;
+            }
+
+            _phase = GetPhaseForCurrentNode();
             return await MoveNextAsync().ConfigureAwait(false);
         }
 
@@ -345,6 +348,8 @@ namespace NanoRoute.Internals
 
         public void Reset()
         {
+            _nextDecodedSegment = 0;
+
             _segment.Reset();
             AdvanceToNextSegment(_root);
             _phase = GetPhaseForCurrentNode();
@@ -354,48 +359,42 @@ namespace NanoRoute.Internals
         {
             while (!Completed)
             {
-                switch (_phase)
+                if (_phase is MatchPhase.EmitHandlers)
                 {
-                    case MatchPhase.EmitHandlers:
-                        if (TryEmitHandler())
-                            return new ValueTask<bool>(true);
+                    if (TryEmitHandler())
+                        return s_true;
 
-                        // No handler terminated the pipeline, go to the branch matching phase.
-                        _phase = MatchPhase.Branch;
-                        goto case MatchPhase.Branch;
-
-                    case MatchPhase.SingleBranch:
-                        if (!_segment.HasValue)
-                        {
-                            _phase = MatchPhase.Done;
-                            break;
-                        }
-
-                        ValueTask<bool> singleBranchMatched = TrySingleBranchesAsync();
-                        if (!singleBranchMatched.IsCompletedSuccessfully)
-                            return MoveNextAwaitedAsync(singleBranchMatched);
-
-                        _phase = singleBranchMatched.Result ? GetPhaseForCurrentNode() : MatchPhase.Done;
-                        break;
-
-                    case MatchPhase.Branch:
-                        if (!_segment.HasValue)
-                        {
-                            _phase = MatchPhase.Done;
-                            break;
-                        }
-
-                        ValueTask<bool> branchMatched = TryBranchPairAsync();
-                        if (!branchMatched.IsCompletedSuccessfully)
-                            return MoveNextAwaitedAsync(branchMatched);
-
-                        _phase = branchMatched.Result ? GetPhaseForCurrentNode() : MatchPhase.Done;
-                        break;
-
-                    default:
-                        Debug.Fail($"Unknown phase: {_phase}");
-                        return s_false;
+                    // No handler terminated the pipeline, go to the branch matching phase.
+                    _phase = MatchPhase.Branch;
                 }
+
+                if (_phase is MatchPhase.SingleBranch or MatchPhase.Branch)
+                {
+                    if (!_segment.HasValue)
+                    {
+                        _phase = MatchPhase.Done;
+                        return s_false;
+                    }
+
+                    ValueTask<bool> branchMatched = _phase is MatchPhase.SingleBranch
+                        ? TrySingleBranchesAsync()
+                        : TryBranchPairAsync();
+
+                    if (!branchMatched.IsCompletedSuccessfully)
+                        return MoveNextAwaitedAsync(branchMatched);
+
+                    if (!branchMatched.Result)
+                    {
+                        _phase = MatchPhase.Done;
+                        return s_false;
+                    }
+
+                    _phase = GetPhaseForCurrentNode();
+                    continue;
+                }
+
+                Debug.Fail($"Unknown phase: {_phase}");
+                break;
             }
 
             return s_false;
