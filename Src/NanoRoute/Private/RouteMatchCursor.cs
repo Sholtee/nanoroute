@@ -185,7 +185,7 @@ namespace NanoRoute.Internals
                             return s_false;
 
                         AdvanceToNextSegment(literalBranch.Value);
-                        break;
+                        continue;
 
                     case KeyValuePair<ParameterParser, RouteNode> parsedBranch:
                         ValueTask<ValueParseResult> parseResult = ParseSegment(segment, parsedBranch.Key);
@@ -196,7 +196,7 @@ namespace NanoRoute.Internals
                         if (!TryAcceptParsedBranch(parsedBranch, parseResult.Result))
                             return s_false;
         
-                        break;
+                        continue;
 
                     default:
                         Debug.Fail($"Unknown single branch type: {branch.GetType().Name}");
