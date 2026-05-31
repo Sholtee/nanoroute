@@ -56,6 +56,14 @@ The performance script builds `Tests/NanoRoute.Perf/NanoRoute.Perf.csproj` in Re
 
 For performance-sensitive code changes, add or update focused benchmarks and run `Scripts/Run-PerfTests.ps1` with the narrowest useful filter. Report the filter used, the benchmark summary location, and the important timing/allocation results.
 
+## Serena Process Cleanup
+
+When Serena MCP tools are invoked during a session, record the process ID of any `serena.exe` launcher started for the session when practical.
+
+Before finishing the session, after no further Serena tool calls are needed, terminate and verify the termination of Serena process trees started for the session. Include the associated `serena.exe` launcher and its Python descendants.
+
+Do not terminate unrelated Python processes. When Serena ownership needs confirmation, inspect the process ID, command line, executable path, parent process ID, and start time. Leave pre-existing or ambiguous Serena process trees running and ask the developer before terminating them.
+
 ## Definition of Done
 
 Before considering a change complete, verify the items that apply:
