@@ -64,6 +64,16 @@ Before finishing the session, after no further Serena tool calls are needed, ter
 
 Do not terminate unrelated Python processes. When Serena ownership needs confirmation, inspect the process ID, command line, executable path, parent process ID, and start time. Leave pre-existing or ambiguous Serena process trees running and ask the developer before terminating them.
 
+## .NET Process Cleanup
+
+When starting build, test, or performance commands, record the process IDs of the `dotnet` processes started for the session when practical.
+
+Apply an explicit timeout of 90 seconds (`90000` milliseconds) to build phases. This timeout does not apply to test fixture execution or BenchmarkDotNet benchmark execution after the build completes.
+
+Allow the normal build-server shutdown performed by the repository scripts to complete first. If a build phase reaches its timeout, or if session-owned `dotnet` processes remain stuck after the command finishes, terminate and verify the termination of their process trees.
+
+Do not terminate unrelated `dotnet` processes. When ownership needs confirmation, inspect the process ID, command line, executable path, parent process ID, and start time. Leave pre-existing or ambiguous process trees running and ask the developer before terminating them.
+
 ## Definition of Done
 
 Before considering a change complete, verify the items that apply:
