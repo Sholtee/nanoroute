@@ -43,6 +43,7 @@ namespace NanoRoute.Perf
         [Benchmark]
         [Arguments(BranchLookup.SingleBranch)]
         [Arguments(BranchLookup.LiteralChildren)]
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Dispose() on DelimitedSegment does nothing")]
         public object MatchLiteralSegmentsAndWalkGraph(BranchLookup branchLookupKind)
         {
             RouteNode node = _root;
@@ -63,6 +64,7 @@ namespace NanoRoute.Perf
         [Benchmark]
         [Arguments(BranchLookup.SingleBranch)]
         [Arguments(BranchLookup.LiteralChildren)]
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Dispose() on DelimitedSegment does nothing")]
         public object SearchPercentThenMatchLiteralSegmentsAndWalkGraph(BranchLookup branchLookupKind)
         {
             RouteNode node = _root;
@@ -84,7 +86,7 @@ namespace NanoRoute.Perf
         }
 
         [Benchmark(OperationsPerInvoke = 1000)]
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "The request URI doesn't contain percent encoded segments so the DisposeAsync() method would do nothing")]
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "DisposeAsync() on RouteMatchCursor does nothing when there was not % encoded segment")]
         public void WalkGraphUsingRouteMatchCursor()
         {
             RouteMatchCursor cursor = new(_root, HttpVerb.Get, s_requestUri, null!, null!, MatchingPrecedence.LiteralFirst, default);
