@@ -66,13 +66,30 @@ Do not terminate unrelated Python processes. When Serena ownership needs confirm
 
 ## .NET Process Cleanup
 
-When starting build, test, or performance commands, record the process IDs of the `dotnet` processes started for the session when practical.
+Before running any build, test, or performance workflow, capture the existing `dotnet` process list with process ID, parent process ID, command line, executable path, and start time.
 
-Apply an explicit timeout of 90 seconds (`90000` milliseconds) to build phases. This timeout does not apply to test fixture execution or BenchmarkDotNet benchmark execution after the build completes.
+Never rely solely on a long timeout applied to an entire test or performance script. Enforce separate watchdog timeouts for setup and build-related commands.
 
-Allow the normal build-server shutdown performed by the repository scripts to complete first. If a build phase reaches its timeout, or if session-owned `dotnet` processes remain stuck after the command finishes, terminate and verify the termination of their process trees.
+Treat all of the following as build-related phases with a hard timeout of 90 seconds (`90000` milliseconds) each:
 
-Do not terminate unrelated `dotnet` processes. When ownership needs confirmation, inspect the process ID, command line, executable path, parent process ID, and start time. Leave pre-existing or ambiguous process trees running and ask the developer before terminating them.
+- `dotnet tool restore`
+- `dotnet build-server shutdown`
+- `dotnet build`
+- Restore or build work started indirectly by `dotnet test`
+- Restore or build work started indirectly by repository scripts
+
+If a repository script does not expose these phases separately or enforce its own watchdogs, do not run it as one opaque long-running command. Run equivalent phases separately, or add watchdog handling to the script before continuing.
+
+The 90-second timeout does not apply after test fixture execution or BenchmarkDotNet benchmark execution has clearly started. Those phases may use a longer task-appropriate timeout.
+
+When any watched phase reaches its timeout:
+
+1. Inspect the process tree.
+2. Terminate only session-owned processes, including descendants.
+3. Verify that they terminated.
+4. Report the timed-out command and terminated process IDs before retrying or stopping.
+
+Do not terminate unrelated or ambiguous `dotnet` processes. Ask the developer before terminating a process when ownership cannot be established.
 
 ## Definition of Done
 
