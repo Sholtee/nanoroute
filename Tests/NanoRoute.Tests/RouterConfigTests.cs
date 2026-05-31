@@ -22,16 +22,5 @@ namespace NanoRoute.Tests
 
             Assert.That(ex.ParamName, Is.EqualTo("value"));
         }
-
-        [Test]
-        public void Ctor_ShouldRejectNegativeParametersCapacity()
-        {
-            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>
-            (
-                () => new RouterConfig { ParametersCapacity = -1 }
-            )!;
-
-            Assert.That(ex.ParamName, Is.EqualTo("value"));
-        }
     }
 }

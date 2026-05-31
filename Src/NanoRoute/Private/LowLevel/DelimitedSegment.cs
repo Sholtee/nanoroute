@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace NanoRoute.Internals
 {
-    internal struct DelimitedSegment(ReadOnlyMemory<char> original, char separator): IEnumerator<ReadOnlyMemory<char>>
+    internal struct DelimitedSegment(ReadOnlyMemory<char> original, char separator) : IEnumerator<ReadOnlyMemory<char>>
     {
         private const int DONE = -1;
 
@@ -56,7 +56,7 @@ namespace NanoRoute.Internals
             Current = default;
         }
 
-        public void Dispose() {}
+        public void Dispose() { }
 
         public ReadOnlyMemory<char> Current { get; private set; }
 
@@ -68,6 +68,6 @@ namespace NanoRoute.Internals
 
         public char Separator { get; } = separator;
 
-        public readonly bool HasValue => Current.Length > 0;  
+        public readonly bool HasValue => Current.Length > 0;
     }
 }

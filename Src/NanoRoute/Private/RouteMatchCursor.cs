@@ -20,13 +20,13 @@ namespace NanoRoute.Internals
     internal sealed class RouteMatchCursor : IAsyncEnumerator<HandlerRegistration>
     {
         #region Private
-        private enum BranchKind: byte
+        private enum BranchKind : byte
         {
             Literal,
             Parsed
         }
 
-        private enum MatchPhase: byte
+        private enum MatchPhase : byte
         {
             /// <summary>
             /// Emit all handlers that belong to the current node before descending into child nodes.
@@ -129,7 +129,7 @@ namespace NanoRoute.Internals
             _node = nextNode;
             _handlerIndex = 0;
             _handlers = null;
-            
+
             RemainingPath = _segment.Remaining;
 
             _segment.MoveNext();
@@ -174,7 +174,9 @@ namespace NanoRoute.Internals
             _handlerIndex = 0;
             _handlers = null;
 
-            for (DelimitedSegment iterator = _segment; iterator.HasValue && _node.SingleBranch is { } branch; iterator.MoveNext())
+            DelimitedSegment iterator = _segment;
+
+            for (; iterator.HasValue && _node.SingleBranch is { } branch; iterator.MoveNext())
             {
                 ReadOnlyMemory<char> segment = DecodeIfNeeded(iterator.Current);
 
@@ -191,7 +193,10 @@ namespace NanoRoute.Internals
                         ValueTask<ValueParseResult> parseResultTask = ParseSegment(segment, parsedBranch.Key);
 
                         if (!parseResultTask.IsCompletedSuccessfully)
+                        {
+                            _segment = iterator;
                             return TryAcceptParsedBranchAwaitedAsync(parsedBranch, parseResultTask);
+                        }
 
                         if (!TryParsedBranch(parsedBranch, parseResultTask.Result))
                             return s_false;
@@ -203,10 +208,11 @@ namespace NanoRoute.Internals
                         Debug.Fail($"Unknown single branch type: {branch.GetType().Name}");
                         return s_false;
                 }
-                
+
                 RemainingPath = iterator.Remaining;
             }
 
+            _segment = iterator;
             return s_true;
         }
 

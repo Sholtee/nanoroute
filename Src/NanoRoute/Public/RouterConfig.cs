@@ -45,8 +45,7 @@ namespace NanoRoute
     /// <code>
     /// builder.ConfigureRouting(config =&gt; config with
     /// {
-    ///     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst,
-    ///     ParametersCapacity = 8
+    ///     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
     /// });
     /// </code>
     /// </example>
@@ -69,30 +68,6 @@ namespace NanoRoute
                 if (!Enum.IsDefined(typeof(MatchingPrecedence), value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
-                field = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the initial capacity of the request parameter dictionary.
-        /// </summary>
-        /// <remarks>
-        /// Increase this value when typical requests add many route, query, or handler-shared values to
-        /// <see cref="RequestContext.Parameters"/> and you want to reduce dictionary resizing.
-        /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is negative.</exception>
-        /// <example>
-        /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with { ParametersCapacity = 16 });
-        /// </code>
-        /// </example>
-        public int ParametersCapacity
-        {
-            get;
-            init
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));
                 field = value;
             }
         }

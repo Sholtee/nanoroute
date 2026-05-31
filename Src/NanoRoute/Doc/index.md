@@ -145,8 +145,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .ConfigureRouting(config => config with
     {
-        MatchingPrecedence = MatchingPrecedence.ParameterizedFirst,
-        ParametersCapacity = 8
+        MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
     })
     .AddDefaultValueParsers()
     .AddEndpoint("GET", "/items/{slug:str}/", endpoint => endpoint
@@ -159,8 +158,6 @@ HttpListenerRouter router = HttpListenerRouter
 ```
 
 Created routers are immutable snapshots: later route or configuration changes on the builder do not affect routers that have already been created.
-
-`ParametersCapacity` sets the initial capacity of the per-request `RequestContext.Parameters` dictionary. Raise it when most requests collect several route parameters, query bindings, or middleware-added values and you want to avoid resizing.
 
 ## Module Configuration
 

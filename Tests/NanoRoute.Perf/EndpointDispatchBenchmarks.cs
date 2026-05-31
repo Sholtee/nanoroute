@@ -13,7 +13,7 @@ using BenchmarkDotNet.Attributes;
 namespace NanoRoute.Perf
 {
     [MemoryDiagnoser]
-    public partial class EndpointDispatchBenchmarks: RoutingBenchmarkScenarios
+    public partial class EndpointDispatchBenchmarks : RoutingBenchmarkScenarios
     {
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "BenchmarkDotNet requires EndpointDispatcherFactories to be public")]
         public interface IEndpointDispatcher : IDisposable

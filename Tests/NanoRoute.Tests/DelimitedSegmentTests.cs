@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using NUnit.Framework;
@@ -31,7 +32,7 @@ namespace NanoRoute.Tests
         [TestCase("//a//b//")]
         public void Enumerate_ShouldReturnTheSplitSegments(string s)
         {
-            DelimitedSegment segment = new(s.AsMemory(), '/');
+            using DelimitedSegment segment = new(s.AsMemory(), '/');
 
             Assert.That(ReadSegments(segment), Is.EquivalentTo(s.Split(['/'], StringSplitOptions.RemoveEmptyEntries)));
         }
@@ -41,7 +42,7 @@ namespace NanoRoute.Tests
         [TestCase("a=b=c", '=', new[] { "a", "b", "c" })]
         public void Enumerate_ShouldRespectCustomSeparator(string input, char separator, string[] expected)
         {
-            DelimitedSegment segment = new(input.AsMemory(), separator);
+            using DelimitedSegment segment = new(input.AsMemory(), separator);
 
             Assert.That(ReadSegments(segment), Is.EquivalentTo(expected));
         }
@@ -49,7 +50,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Remaining_ShouldReturnUnenumeratedTailWithSeparator()
         {
-            DelimitedSegment segment = new("/api/health/status".AsMemory(), '/');
+            using DelimitedSegment segment = new("/api/health/status".AsMemory(), '/');
 
             Assert.That(segment.Remaining.ToString(), Is.EqualTo("/api/health/status"));
 
@@ -72,7 +73,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Remaining_ShouldRespectCustomSeparator()
         {
-            DelimitedSegment segment = new("a&b&c".AsMemory(), '&');
+            using DelimitedSegment segment = new("a&b&c".AsMemory(), '&');
 
             Assert.That(segment.Remaining.ToString(), Is.EqualTo("a&b&c"));
 
@@ -87,6 +88,22 @@ namespace NanoRoute.Tests
             Assert.That(segment.MoveNext(), Is.True);
             Assert.That(segment.Current.ToString(), Is.EqualTo("c"));
             Assert.That(segment.Remaining.ToString(), Is.Empty);
+        }
+
+        [Test]
+        public void Reset_ShouldAllowRestartingEnumeration()
+        {
+            using DelimitedSegment segment = new("a&b&c".AsMemory(), '&');
+
+            IEnumerator enumerator = segment;
+
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current?.ToString(), Is.EqualTo("a"));
+
+            enumerator.Reset();
+
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current?.ToString(), Is.EqualTo("a"));
         }
     }
 }

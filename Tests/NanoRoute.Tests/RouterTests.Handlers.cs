@@ -193,29 +193,5 @@ namespace NanoRoute.Tests
             Assert.That(await router.Handle(_request, mockServices.Object), Is.EqualTo(s_response));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
-#if !NETFRAMEWORK
-        [Test]
-        public async Task Handle_ShouldRespectConfiguredParametersCapacity()
-        {
-            const int parametersCapacity = 32;
-
-            int capturedCapacity = 0;
-
-            TestRouter router = _routerBuilder
-                .AddDefaultValueParsers()
-                .ConfigureRouting(config => config with { ParametersCapacity = parametersCapacity })
-                .AddHandler("GET", "/users/{user_id:int}/items/{item_id:int}/", async (context, _) =>
-                {
-                    capturedCapacity = context.Parameters.EnsureCapacity(0);
-                    return s_response;
-                })
-                .CreateRouter();
-
-            _request.RequestUri = new Uri("https://www.exmaple.com/users/1986/items/42");
-
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
-            Assert.That(capturedCapacity, Is.GreaterThanOrEqualTo(parametersCapacity));
-        }
-#endif
     }
 }

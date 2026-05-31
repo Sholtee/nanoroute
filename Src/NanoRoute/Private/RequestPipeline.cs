@@ -21,7 +21,7 @@ namespace NanoRoute.Internals
             if (!HttpVerb.TryParseFast(request.Method.Method, out HttpVerb verb))
                 throw new ArgumentException
                 (
-                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(request)
+                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(verb)
                 );
 
             RouteMatchCursor cursor = new
