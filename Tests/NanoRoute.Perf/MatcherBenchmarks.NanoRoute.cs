@@ -36,13 +36,10 @@ namespace NanoRoute.Perf
 
                 public async ValueTask Match()
                 {
-                    RouteMatchCursor cursor = new(_root, HttpVerb.Get, _requestUri, s_services, _parameters, MatchingPrecedence.LiteralFirst, CancellationToken.None);
+                    using RouteMatchCursor cursor = new(_root, HttpVerb.Get, _requestUri, s_services, _parameters, MatchingPrecedence.LiteralFirst, CancellationToken.None);
 
-                    await using (cursor.ConfigureAwait(false))
-                    {
-                        if (!await cursor.MoveNextAsync().ConfigureAwait(false))
-                            throw new InvalidOperationException($"Failed to match '{_requestUri}'.");
-                    }
+                    if (!await cursor.MoveNextAsync().ConfigureAwait(false))
+                        throw new InvalidOperationException($"Failed to match '{_requestUri}'.");
                 }
 
                 public void Dispose() { }

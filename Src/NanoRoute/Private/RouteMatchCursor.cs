@@ -17,7 +17,7 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class RouteMatchCursor : IAsyncEnumerator<HandlerRegistration>
+    internal sealed class RouteMatchCursor : IDisposable
     {
         #region Private
         private enum BranchKind : byte
@@ -148,7 +148,7 @@ namespace NanoRoute.Internals
                 if (_segment.HasValue && !candidate.IsPrefix)
                     continue;
 
-                Current = candidate;
+                HandlerRegistration = candidate;
                 return true;
             }
 
@@ -175,8 +175,9 @@ namespace NanoRoute.Internals
             _handlers = null;
 
             DelimitedSegment iterator = _segment;
+            RouteNode node = _node;
 
-            for (; iterator.HasValue && _node.SingleBranch is { } branch; iterator.MoveNext())
+            for (; iterator.HasValue && node.SingleBranch is { } branch; iterator.MoveNext())
             {
                 ReadOnlyMemory<char> segment = DecodeIfNeeded(iterator.Current);
 
@@ -186,7 +187,7 @@ namespace NanoRoute.Internals
                         if (!ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, segment))
                             return s_false;
 
-                        _node = literalBranch.Value;
+                        node = literalBranch.Value;
                         break;
 
                     case KeyValuePair<ParameterParser, RouteNode> parsedBranch:
@@ -201,7 +202,7 @@ namespace NanoRoute.Internals
                         if (!TryParsedBranch(parsedBranch, parseResultTask.Result))
                             return s_false;
 
-                        _node = parsedBranch.Value;
+                        node = parsedBranch.Value;
                         break;
 
                     default:
@@ -213,6 +214,8 @@ namespace NanoRoute.Internals
             }
 
             _segment = iterator;
+            _node = node;
+
             return s_true;
         }
 
@@ -316,7 +319,7 @@ namespace NanoRoute.Internals
             _phase = GetPhaseForCurrentNode();
         }
 
-        public HandlerRegistration Current { get; private set; } = null!;
+        public HandlerRegistration HandlerRegistration { get; private set; } = null!;
 
         public ReadOnlyMemory<char> RemainingPath { get; private set; }
 
@@ -330,19 +333,18 @@ namespace NanoRoute.Internals
 
         public bool Completed => _phase is MatchPhase.Done;
 
-        public ValueTask DisposeAsync()
+        public void Dispose()
         {
             if (_decodedSegmentBuffer is not null)
             {
                 s_arrayPool.Return(_decodedSegmentBuffer, clearArray: false);
                 _decodedSegmentBuffer = null;
             }
-
-            return default;
         }
 
         public void Reset()
         {
+            HandlerRegistration = null!;
             _nextDecodedSegment = 0;
 
             _segment.Reset();

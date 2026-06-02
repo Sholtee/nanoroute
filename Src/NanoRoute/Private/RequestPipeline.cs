@@ -19,12 +19,12 @@ namespace NanoRoute.Internals
         public async Task<HttpResponseMessage> RunAsync(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation)
         {
             if (!HttpVerb.TryParseFast(request.Method.Method, out HttpVerb verb))
-                throw new ArgumentException
+                throw new InvalidOperationException
                 (
-                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method), nameof(verb)
+                    string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method)
                 );
 
-            RouteMatchCursor cursor = new
+            using RouteMatchCursor cursor = new
             (
                 root,
                 verb,
@@ -35,8 +35,7 @@ namespace NanoRoute.Internals
                 cancellation
             );
 
-            await using (cursor.ConfigureAwait(false))
-                return await CallNextHandler().ConfigureAwait(false);
+            return await CallNextHandler().ConfigureAwait(false);
 
             async Task<HttpResponseMessage> CallNextHandler()
             {
@@ -55,7 +54,7 @@ namespace NanoRoute.Internals
                 {
                     RequestUri = request.RequestUri.OriginalString,
                     Verb = request.Method.Method,
-                    cursor.Current.Pattern,
+                    cursor.HandlerRegistration.Pattern,
                     ParameterCount = cursor.Parameters.Count
                 }, request, cursor);
 
@@ -69,7 +68,7 @@ namespace NanoRoute.Internals
                 };
 
                 return await cursor
-                    .Current
+                    .HandlerRegistration
                     .Handler(requestContext, CallNextHandler)
                     .ConfigureAwait(false);
             }
