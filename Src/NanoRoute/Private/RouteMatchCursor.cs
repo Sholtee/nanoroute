@@ -113,7 +113,7 @@ namespace NanoRoute.Internals
             if (segment.Span.IndexOf('%') < 0)
                 return segment;
 
-            char[] decodedSegmentBuffer = _decodedSegmentBuffer ??= s_arrayPool.Rent(_segment.Original.Length);
+            char[] decodedSegmentBuffer = _decodedSegmentBuffer ??= s_arrayPool.Rent(_segment.Remaining.Length);
 
             if (!UrlUtils.TryDecodeUrl(segment.Span, decodedSegmentBuffer.AsSpan(_nextDecodedSegment), UrlDecodeMode.Path, out int charsWritten))
                 HttpRequestException.Throw(HttpStatusCode.BadRequest, Resources.ERR_BAD_REQUEST, Resources.ERR_DECODING_FAILED);
@@ -129,8 +129,6 @@ namespace NanoRoute.Internals
             _node = nextNode;
             _handlerIndex = 0;
             _handlers = null;
-
-            RemainingPath = _segment.Remaining;
 
             _segment.MoveNext();
         }
@@ -174,32 +172,32 @@ namespace NanoRoute.Internals
             _handlerIndex = 0;
             _handlers = null;
 
-            DelimitedSegment iterator = _segment;
+            DelimitedSegment segment = _segment;
             RouteNode node = _node;
 
-            for (; iterator.HasValue && node.SingleBranch is { } branch; iterator.MoveNext())
+            for (; segment.HasValue && node.SingleBranch is { } branch; segment.MoveNext())
             {
-                ReadOnlyMemory<char> segment = DecodeIfNeeded(iterator.Current);
+                ReadOnlyMemory<char> segmentChars = DecodeIfNeeded(segment.Current);
 
                 switch (branch)
                 {
                     case KeyValuePair<ReadOnlyMemory<char>, RouteNode> literalBranch:
-                        if (!ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, segment))
+                        if (!ReadOnlyMemoryCharComparer.Instance.Equals(literalBranch.Key, segmentChars))
                             return s_false;
 
                         node = literalBranch.Value;
                         break;
 
                     case KeyValuePair<ParameterParser, RouteNode> parsedBranch:
-                        ValueTask<ValueParseResult> parseResultTask = ParseSegment(segment, parsedBranch.Key);
+                        ValueTask<ValueParseResult> parseResultTask = ParseSegment(segmentChars, parsedBranch.Key);
 
                         if (!parseResultTask.IsCompletedSuccessfully)
                         {
-                            _segment = iterator;
+                            _segment = segment;
                             return TryAcceptParsedBranchAwaitedAsync(parsedBranch, parseResultTask);
                         }
 
-                        if (!TryParsedBranch(parsedBranch, parseResultTask.Result))
+                        if (!TryParsedBranch(parsedBranch.Key.Definition, parseResultTask.Result))
                             return s_false;
 
                         node = parsedBranch.Value;
@@ -209,11 +207,9 @@ namespace NanoRoute.Internals
                         Debug.Fail($"Unknown single branch type: {branch.GetType().Name}");
                         return s_false;
                 }
-
-                RemainingPath = iterator.Remaining;
             }
 
-            _segment = iterator;
+            _segment = segment;
             _node = node;
 
             return s_true;
@@ -268,12 +264,12 @@ namespace NanoRoute.Internals
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryParsedBranch(KeyValuePair<ParameterParser, RouteNode> parsedBranch, ValueParseResult parseResult)
+        private bool TryParsedBranch(ParameterDefinition parameter, ValueParseResult parseResult)
         {
             if (!parseResult.Success)
                 return false;
 
-            if (parsedBranch.Key.Definition.ParameterName is { Length: > 0 } parameterName)
+            if (parameter.ParameterName is { Length: > 0 } parameterName)
                 // This will overwrite any existing parameter on the given key
                 Parameters[parameterName] = parseResult.Parsed;
 
@@ -291,7 +287,7 @@ namespace NanoRoute.Internals
 
         private bool TryParsedBranchThenAdvance(KeyValuePair<ParameterParser, RouteNode> parsedBranch, ValueParseResult parseResult)
         {
-            if (!TryParsedBranch(parsedBranch, parseResult))
+            if (!TryParsedBranch(parsedBranch.Key.Definition, parseResult))
                 return false;
 
             AdvanceToNextSegment(parsedBranch.Value);
@@ -321,7 +317,7 @@ namespace NanoRoute.Internals
 
         public HandlerRegistration HandlerRegistration { get; private set; } = null!;
 
-        public ReadOnlyMemory<char> RemainingPath { get; private set; }
+        public ReadOnlyMemory<char> RemainingPath => _segment.Remaining;
 
         public CancellationToken Cancellation { get; }
 

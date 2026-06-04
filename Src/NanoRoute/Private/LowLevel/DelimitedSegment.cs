@@ -56,13 +56,26 @@ namespace NanoRoute.Internals
             Current = default;
         }
 
-        public void Dispose() { }
+        public readonly void Dispose() { }
 
         public ReadOnlyMemory<char> Current { get; private set; }
 
         readonly object IEnumerator.Current => Current;
 
-        public readonly ReadOnlyMemory<char> Remaining => _next > DONE ? Original.Slice(Math.Max(0, _next - 1)) : default;
+        public readonly ReadOnlyMemory<char> Remaining
+        {
+            get
+            {
+                if (!HasValue)
+                    return _next > DONE ? Original.Slice(Math.Max(0, _next - 1)) : default;
+
+                int segmentStart = _next is DONE
+                    ? Original.Length - Current.Length
+                    : _next - Current.Length - 1;
+
+                return Original.Slice(Math.Max(0, segmentStart - 1));
+            }
+        }
 
         public ReadOnlyMemory<char> Original { get; } = original;
 
