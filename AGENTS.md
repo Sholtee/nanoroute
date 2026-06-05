@@ -22,6 +22,8 @@ If a broad search becomes necessary, scope it explicitly with exclusions based o
 
 When Serena MCP tools are available, use Serena at the start of any session that may require code navigation, code understanding, or code edits. Activate the repository root as the Serena project and read Serena's initial instructions before inspecting source symbols.
 
+When Serena is installed and available, keep using it whenever it makes sense during code-related work, including follow-up investigations, bug diagnosis, symbol inspection, reference lookup, and focused symbol edits. Do not fall back to shell file reads for source-code understanding merely out of habit when Serena can answer the question cleanly.
+
 Prefer Serena's symbol overview, symbol lookup, and reference-finding tools for targeted code exploration. Use them together with the `README.md` directory map so discovery stays focused on the source, test, or helper paths relevant to the task.
 
 Serena is not required for simple documentation-only edits, direct command-output requests, or tasks that are clearly confined to non-code files. If Serena is unavailable during a code-related task, continue with the approved environment-specific alternatives and mention that fallback.
