@@ -101,9 +101,8 @@ namespace NanoRoute.Tests
             _request.Method = new HttpMethod("BREW");
             _request.RequestUri = new Uri("https://www.exmaple.com/");
 
-            ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
-            Assert.That(ex.ParamName, Is.EqualTo("verb"));
-            Assert.That(ex.Message, Does.Contain(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "BREW")));
+            InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "BREW")));
         }
     }
 }

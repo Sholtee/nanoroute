@@ -436,7 +436,7 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Copy_ShouldRestartMatchingAfterDecoding()
+        public async Task Reset_ShouldRestartMatchingAfterDecoding()
         {
             HandlerRegistration handler = new(s_handler, "/files/a%20b/");
 
@@ -451,20 +451,18 @@ namespace NanoRoute.Tests
 
             using RouteMatchCursor cursor = CreateCursor(root, "/files/a%20b");
 
-            RouteMatchCursor copy = cursor;
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed, Is.True);
 
-            Assert.That(await copy.MoveNextAsync(), Is.True);
-            Assert.That(copy.HandlerRegistration, Is.EqualTo(handler));
-            Assert.That(await copy.MoveNextAsync(), Is.False);
-            Assert.That(copy.Completed, Is.True);
+            cursor.Reset();
 
-            copy = cursor;
-
-            Assert.That(copy.Completed, Is.False);
-            Assert.That(await copy.MoveNextAsync(), Is.True);
-            Assert.That(copy.HandlerRegistration, Is.EqualTo(handler));
-            Assert.That(await copy.MoveNextAsync(), Is.False);
-            Assert.That(copy.Completed, Is.True);
+            Assert.That(cursor.Completed, Is.False);
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed, Is.True);
         }
 
         [Test]
