@@ -74,13 +74,13 @@ namespace NanoRoute
                                 string.Format(Resources.Culture, Resources.ERR_NO_SUCH_PARSER, parameterDefinition.ValueParser.Name)
                             );
 
-                        KeyValuePair<ParameterParser, RouteNode> parsedChild = target
-                            .ParsedChildren
+                        KeyValuePair<ParameterParser, RouteNode> parsedBranch = target
+                            .ParsedBranches
                             .SingleOrDefault(c => c.Key.Definition.ValueParser.Equals(parameterDefinition.ValueParser));
 
-                        if (parsedChild.Equals(default(KeyValuePair<ParameterParser, RouteNode>)))
+                        if (parsedBranch.Equals(default(KeyValuePair<ParameterParser, RouteNode>)))
                         {
-                            parsedChild = new KeyValuePair<ParameterParser, RouteNode>
+                            parsedBranch = new KeyValuePair<ParameterParser, RouteNode>
                             (
                                 new ParameterParser
                                 (
@@ -91,19 +91,19 @@ namespace NanoRoute
                                 new RouteNode()
                             );
 
-                            target.ParsedChildren.Add(parsedChild);
+                            target.ParsedBranches.Add(parsedBranch);
                         }
-                        else if (!StringComparer.OrdinalIgnoreCase.Equals(parsedChild.Key.Definition.ParameterName, parameterDefinition.ParameterName))
+                        else if (!StringComparer.OrdinalIgnoreCase.Equals(parsedBranch.Key.Definition.ParameterName, parameterDefinition.ParameterName))
                             throw new InvalidOperationException(Resources.ERR_PARAMETER_OVERRIDE);
 
-                        target = parsedChild.Value;
+                        target = parsedBranch.Value;
                         break;
 
                     case ReadOnlyMemory<char> literalSegmentDefinition:
-                        if (!target.LiteralChildren.TryGetValue(literalSegmentDefinition, out RouteNode exactChild))
+                        if (!target.LiteralBranches.TryGetValue(literalSegmentDefinition, out RouteNode exactChild))
                         {
                             exactChild = new RouteNode();
-                            target.LiteralChildren.Add(literalSegmentDefinition, exactChild);
+                            target.LiteralBranches.Add(literalSegmentDefinition, exactChild);
                         }
 
                         target = exactChild;
@@ -146,8 +146,8 @@ namespace NanoRoute
         /// <summary>
         /// Creates an immutable snapshot of the current route tree.
         /// </summary>
-        /// <returns>A copy of the configured root node.</returns>
-        internal RouteNode CreateSnapshot() => _root.Copy(freeze: true);
+        /// <returns>A frozen snapshot of the configured root node.</returns>
+        internal RouteNode CreateSnapshot() => _root.Freeze();
         #endregion
 
         /// <summary>
@@ -348,11 +348,11 @@ namespace NanoRoute
                         foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
                             patterns.Add($"[{handlerRegistrations.Key}] {handlerRegistration.Pattern}");
 
-                    foreach (RouteNode childNode in node.LiteralChildren.Values)
-                        Walk(childNode, patterns);
+                    foreach (RouteNode literalBranch in node.LiteralBranches.Values)
+                        Walk(literalBranch, patterns);
 
-                    foreach (KeyValuePair<ParameterParser, RouteNode> childNode in node.ParsedChildren)
-                        Walk(childNode.Value, patterns);
+                    foreach (KeyValuePair<ParameterParser, RouteNode> parsedBranch in node.ParsedBranches)
+                        Walk(parsedBranch.Value, patterns);
                 }
             }
         }

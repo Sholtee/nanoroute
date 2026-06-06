@@ -21,7 +21,7 @@ namespace NanoRoute.Perf
         public enum BranchLookup
         {
             SingleBranch,
-            LiteralChildren
+            LiteralBranches
         }
 
         private const string LiteralRoutePattern = "/api/v1/users/42/orders/7/items/3/details/";
@@ -42,7 +42,7 @@ namespace NanoRoute.Perf
 
         [Benchmark]
         [Arguments(BranchLookup.SingleBranch)]
-        [Arguments(BranchLookup.LiteralChildren)]
+        [Arguments(BranchLookup.LiteralBranches)]
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Dispose() on DelimitedSegment does nothing")]
         public object MatchLiteralSegmentsAndWalkGraph(BranchLookup branchLookupKind)
         {
@@ -63,7 +63,7 @@ namespace NanoRoute.Perf
 
         [Benchmark]
         [Arguments(BranchLookup.SingleBranch)]
-        [Arguments(BranchLookup.LiteralChildren)]
+        [Arguments(BranchLookup.LiteralBranches)]
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Dispose() on DelimitedSegment does nothing")]
         public object SearchPercentThenMatchLiteralSegmentsAndWalkGraph(BranchLookup branchLookupKind)
         {
@@ -119,8 +119,8 @@ namespace NanoRoute.Perf
                     nextNode = null!;
                     return false;
 
-                case BranchLookup.LiteralChildren:
-                    if (node.LiteralChildren.TryGetValue(segment, out RouteNode? literalChild))
+                case BranchLookup.LiteralBranches:
+                    if (node.LiteralBranches.TryGetValue(segment, out RouteNode? literalChild))
                     {
                         nextNode = literalChild!;
                         return true;

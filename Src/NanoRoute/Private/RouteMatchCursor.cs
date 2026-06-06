@@ -251,11 +251,11 @@ namespace NanoRoute.Internals
 
         private ValueTask<bool> TryParsedBranchAsync(ReadOnlyMemory<char> decodedSegment, int startIndex)
         {
-            IList<KeyValuePair<ParameterParser, RouteNode>> parsedChildren = _node.ParsedChildren;
+            IList<KeyValuePair<ParameterParser, RouteNode>> parsedBranches = _node.ParsedBranches;
 
-            for (int i = startIndex; i < parsedChildren.Count; i++)
+            for (int i = startIndex; i < parsedBranches.Count; i++)
             {
-                KeyValuePair<ParameterParser, RouteNode> parsedBranch = parsedChildren[i];
+                KeyValuePair<ParameterParser, RouteNode> parsedBranch = parsedBranches[i];
 
                 ValueTask<ValueParseResult> parseResult = ParseSegment(decodedSegment, parsedBranch.Key);
 
@@ -284,7 +284,7 @@ namespace NanoRoute.Internals
 
         private bool TryLiteralBranchThenAdvance(ReadOnlyMemory<char> decodedSegment)
         {
-            if (!_node.LiteralChildren.TryGetValue(decodedSegment, out RouteNode literalBranch))
+            if (!_node.LiteralBranches.TryGetValue(decodedSegment, out RouteNode literalBranch))
                 return false;
 
             AdvanceToNextSegment(literalBranch);
