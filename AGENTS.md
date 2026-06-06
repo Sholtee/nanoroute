@@ -36,19 +36,11 @@ After acceptance, create the issue with `Scripts/New-GitHubIssue.ps1`, passing t
 
 Before running any build, test, or performance workflow, capture the existing `dotnet` process list with process ID, parent process ID, command line, executable path, and start time.
 
-Do not rely solely on one long timeout around an entire test or performance script. Enforce separate 90-second (`90000` millisecond) watchdog timeouts for build-related phases:
+When running repository PowerShell scripts for build, test, or performance workflows, launch the script in a separate process. Record the script process ID and any related child `dotnet` process IDs you can identify.
 
-- `dotnet tool restore`
-- `dotnet build-server shutdown`
-- `dotnet build`
-- Restore or build work started indirectly by `dotnet test`
-- Restore or build work started indirectly by repository scripts
+Watch the process output. If the console output is not updated for 90 seconds (`90000` milliseconds), treat the script as frozen.
 
-If a repository script does not expose those phases separately or enforce its own watchdogs, do not run it as one opaque long-running command. Run equivalent phases separately, or add watchdog handling to the script before continuing.
-
-The 90-second timeout does not apply after test fixture execution or BenchmarkDotNet benchmark execution has clearly started; those phases may use a longer task-appropriate timeout.
-
-When a watched phase times out, inspect the process tree, terminate only session-owned processes and descendants, verify termination, and report the timed-out command plus terminated process IDs before retrying or stopping. Ask before terminating any unrelated or ambiguous `dotnet` process.
+When a watched script appears frozen, inspect the process tree, terminate only the session-owned script process and descendants, verify termination, and report the command plus terminated process IDs before retrying or stopping. Ask before terminating any unrelated or ambiguous `dotnet` process.
 
 ## Performance Testing Workflow
 
