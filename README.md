@@ -41,7 +41,7 @@ From there, add `AddDefaultValueParsers()` for route parameters, `WithQueryBindi
 nanoroute/
 |-- .github/
 |   |-- workflows/                      GitHub Actions workflows
-|-- Scripts/                            Build, packaging, docs, and local helper scripts
+|-- Scripts/                            Build, packaging, docs, benchmark chart, and local helper scripts
 |-- Src/                                Main source code
 |   |-- Directory.Build.props           Shared source project settings
 |   |-- Directory.Build.targets         Shared source project targets
