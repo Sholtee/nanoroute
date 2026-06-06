@@ -133,17 +133,21 @@ namespace NanoRoute.Internals
             _segment.MoveNext();
         }
 
-        private bool TryEmitHandler()
+        internal bool TryEmitHandler()
         {
             // Retrieve the handler list on the first iteration
             if (_handlers is null && !_node.HandlerRegistrations.TryGetValue(Verb, out _handlers))
                 return false;
 
-            while (_handlerIndex < _handlers.Count)
-            {
-                HandlerRegistration candidate = _handlers[_handlerIndex++];
+            // PERF: do not remove these local variables
+            IList<HandlerRegistration> handlers = _handlers;
+            bool segmentHasValue = _segment.HasValue;
 
-                if (_segment.HasValue && !candidate.IsPrefix)
+            while (_handlerIndex < handlers.Count)
+            {
+                HandlerRegistration candidate = handlers[_handlerIndex++];
+
+                if (segmentHasValue && !candidate.IsPrefix)
                     continue;
 
                 HandlerRegistration = candidate;
@@ -172,6 +176,7 @@ namespace NanoRoute.Internals
             _handlerIndex = 0;
             _handlers = null;
 
+            // PERF: do not remove these local variables
             DelimitedSegment segment = _segment;
             RouteNode node = _node;
 
@@ -232,7 +237,6 @@ namespace NanoRoute.Internals
             return TryBranchAsync(_branchOrder.Second, segment);
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ValueTask<ValueParseResult> ParseSegment(ReadOnlyMemory<char> decodedSegment, ParameterParser parser) => parser.Parse
         (
@@ -247,9 +251,11 @@ namespace NanoRoute.Internals
 
         private ValueTask<bool> TryParsedBranchAsync(ReadOnlyMemory<char> decodedSegment, int startIndex)
         {
-            for (int i = startIndex; i < _node.ParsedChildren.Count; i++)
+            IList<KeyValuePair<ParameterParser, RouteNode>> parsedChildren = _node.ParsedChildren;
+
+            for (int i = startIndex; i < parsedChildren.Count; i++)
             {
-                KeyValuePair<ParameterParser, RouteNode> parsedBranch = _node.ParsedChildren[i];
+                KeyValuePair<ParameterParser, RouteNode> parsedBranch = parsedChildren[i];
 
                 ValueTask<ValueParseResult> parseResult = ParseSegment(decodedSegment, parsedBranch.Key);
 
