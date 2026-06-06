@@ -93,6 +93,10 @@ nanoroute/
 |-- README.md                           Project README
 ```
 
+## Route matching performance
+
+![RouteMatchingPerformance](https://github.com/Sholtee/nanoroute/blob/gh-pages/Benchmarks/NanoRoute.Perf.MatcherBenchmarks-barplot.png)
+
 ## Target Frameworks
 
 - Core library: `netstandard2.0` and `netstandard2.1`
