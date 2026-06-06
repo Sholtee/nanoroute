@@ -8,13 +8,13 @@ AMD EPYC 7763 2.44GHz, 1 CPU, 4 logical and 2 physical cores
 
 
 ```
-| Method | ScenarioKind   | RouteMatcherFactory    | Mean     | Error   | StdDev  | Gen0   | Allocated |
-|------- |--------------- |----------------------- |---------:|--------:|--------:|-------:|----------:|
-| **Match**  | **SingleLiteral**  | **ASP.NET Core Matcher**   | **115.9 ns** | **0.13 ns** | **0.12 ns** |      **-** |         **-** |
-| **Match**  | **SingleLiteral**  | **NanoRoute Match Cursor** | **120.8 ns** | **0.71 ns** | **0.63 ns** | **0.0300** |     **504 B** |
-| **Match**  | **SingleParsed**   | **ASP.NET Core Matcher**   | **172.2 ns** | **0.24 ns** | **0.23 ns** | **0.0067** |     **112 B** |
-| **Match**  | **SingleParsed**   | **NanoRoute Match Cursor** | **133.3 ns** | **0.57 ns** | **0.53 ns** | **0.0315** |     **528 B** |
-| **Match**  | **ComplexLiteral** | **ASP.NET Core Matcher**   | **217.5 ns** | **0.20 ns** | **0.17 ns** |      **-** |         **-** |
-| **Match**  | **ComplexLiteral** | **NanoRoute Match Cursor** | **336.4 ns** | **0.58 ns** | **0.55 ns** | **0.0300** |     **504 B** |
-| **Match**  | **ComplexParsed**  | **ASP.NET Core Matcher**   | **359.3 ns** | **0.64 ns** | **0.59 ns** | **0.0114** |     **192 B** |
-| **Match**  | **ComplexParsed**  | **NanoRoute Match Cursor** | **422.3 ns** | **0.96 ns** | **0.81 ns** | **0.0343** |     **576 B** |
+| Method | ScenarioKind   | RouteMatcherFactory    | Mean      | Error    | StdDev   | Gen0   | Allocated |
+|------- |--------------- |----------------------- |----------:|---------:|---------:|-------:|----------:|
+| **Match**  | **SingleLiteral**  | **ASP.NET Core Matcher**   | **112.78 ns** | **0.144 ns** | **0.120 ns** |      **-** |         **-** |
+| **Match**  | **SingleLiteral**  | **NanoRoute Match Cursor** |  **84.48 ns** | **1.505 ns** | **1.408 ns** | **0.0081** |     **136 B** |
+| **Match**  | **SingleParsed**   | **ASP.NET Core Matcher**   | **175.10 ns** | **0.774 ns** | **0.686 ns** | **0.0067** |     **112 B** |
+| **Match**  | **SingleParsed**   | **NanoRoute Match Cursor** |  **99.07 ns** | **1.252 ns** | **1.171 ns** | **0.0095** |     **160 B** |
+| **Match**  | **ComplexLiteral** | **ASP.NET Core Matcher**   | **220.08 ns** | **0.262 ns** | **0.232 ns** |      **-** |         **-** |
+| **Match**  | **ComplexLiteral** | **NanoRoute Match Cursor** | **247.48 ns** | **1.213 ns** | **1.135 ns** | **0.0081** |     **136 B** |
+| **Match**  | **ComplexParsed**  | **ASP.NET Core Matcher**   | **345.37 ns** | **2.003 ns** | **1.874 ns** | **0.0114** |     **192 B** |
+| **Match**  | **ComplexParsed**  | **NanoRoute Match Cursor** | **325.39 ns** | **1.366 ns** | **1.278 ns** | **0.0124** |     **208 B** |
