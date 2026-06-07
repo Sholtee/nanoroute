@@ -224,17 +224,13 @@ namespace NanoRoute
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, verb), nameof(verb)
                 );
 
-            RouteNode target = GetOrCreateNode(pattern);
-
-            if (!target.HandlerRegistrations.TryGetValue(v, out IList<HandlerRegistration> handlerRegistrations))
-            {
-                handlerRegistrations = [];
-                target.HandlerRegistrations.Add(v, handlerRegistrations);
-            }
-
-            handlerRegistrations.Add
+            GetOrCreateNode(pattern).Handlers.Add
             (
-                new HandlerRegistration(handler, JoinPattern(BasePattern, pattern))
+                new KeyValuePair<HttpVerb, HandlerRegistration>
+                (
+                    v,
+                    new HandlerRegistration(handler, JoinPattern(BasePattern, pattern))
+                )
             );
 
             return this;
@@ -344,9 +340,8 @@ namespace NanoRoute
 
                 static void Walk(RouteNode node, HashSet<string> patterns)
                 {
-                    foreach (KeyValuePair<HttpVerb, IList<HandlerRegistration>> handlerRegistrations in node.HandlerRegistrations)
-                        foreach (HandlerRegistration handlerRegistration in handlerRegistrations.Value)
-                            patterns.Add($"[{handlerRegistrations.Key}] {handlerRegistration.Pattern}");
+                    foreach (KeyValuePair<HttpVerb, HandlerRegistration> handlerEntry in node.Handlers)
+                        patterns.Add($"[{handlerEntry.Key}] {handlerEntry.Value.Pattern}");
 
                     foreach (RouteNode literalBranch in node.LiteralBranches.Values)
                         Walk(literalBranch, patterns);

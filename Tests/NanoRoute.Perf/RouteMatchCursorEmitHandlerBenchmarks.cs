@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -26,16 +27,21 @@ namespace NanoRoute.Perf
         [GlobalSetup]
         public void Setup()
         {
-            HandlerRegistration[] handlers = new HandlerRegistration[HandlerCount];
-            for (int i = 0; i < handlers.Length; i++)
-                handlers[i] = new HandlerRegistration(static (_, _) => Task.FromResult(new HttpResponseMessage()), "/");
-
             RouteNode root = new();
-            root.HandlerRegistrations[HttpVerb.Get] = handlers;
+
+            for (int i = 0; i < HandlerCount; i++)
+                root.Handlers.Add
+                (
+                    new KeyValuePair<HttpVerb, HandlerRegistration>
+                    (
+                        HttpVerb.Get,
+                        new HandlerRegistration(static (_, _) => Task.FromResult(new HttpResponseMessage()), "/")
+                    )
+                );
 
             _cursor = new RouteMatchCursor
             (
-                root,
+                root.Freeze(),
                 HttpVerb.Get,
                 new Uri("https://localhost:1986/", UriKind.Absolute),
                 null!,

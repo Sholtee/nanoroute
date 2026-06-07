@@ -72,8 +72,6 @@ namespace NanoRoute.Internals
 
         private MatchPhase _phase;
 
-        private IList<HandlerRegistration>? _handlers;
-
         private int
             _handlerIndex,
             _nextDecodedSegment;
@@ -128,26 +126,22 @@ namespace NanoRoute.Internals
         {
             _node = nextNode;
             _handlerIndex = 0;
-            _handlers = null;
 
             _segment.MoveNext();
         }
 
         internal bool TryEmitHandler()
         {
-            // Retrieve the handler list on the first iteration
-            if (_handlers is null && !_node.HandlerRegistrations.TryGetValue(Verb, out _handlers))
-                return false;
-
-            // PERF: do not remove these local variables
-            IList<HandlerRegistration> handlers = _handlers;
-            bool segmentHasValue = _segment.HasValue;
-
-            while (_handlerIndex < handlers.Count)
+            while (_handlerIndex < _node.Handlers.Count)
             {
-                HandlerRegistration candidate = handlers[_handlerIndex++];
+                KeyValuePair<HttpVerb, HandlerRegistration> handler = _node.Handlers[_handlerIndex++];
 
-                if (segmentHasValue && !candidate.IsPrefix)
+                if (handler.Key != Verb)
+                    continue;
+
+                HandlerRegistration candidate = handler.Value;
+
+                if (_segment.HasValue && !candidate.IsPrefix)
                     continue;
 
                 HandlerRegistration = candidate;
@@ -158,7 +152,7 @@ namespace NanoRoute.Internals
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private MatchPhase GetPhaseForCurrentNode() => _node.HandlerRegistrations.Count > 0
+        private MatchPhase GetPhaseForCurrentNode() => _node.Handlers.Count > 0
             ? MatchPhase.EmitHandlers
             : MatchPhase.Branch;
 
@@ -174,7 +168,6 @@ namespace NanoRoute.Internals
         {
             // clean up recent state
             _handlerIndex = 0;
-            _handlers = null;
 
             // PERF: do not remove these local variables
             DelimitedSegment segment = _segment;

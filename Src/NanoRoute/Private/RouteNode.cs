@@ -12,14 +12,14 @@ using System.Linq;
 namespace NanoRoute.Internals
 {
     /// <summary>
-    /// Represents a node in the per-verb route tree.
+    /// Represents a node in the route tree.
     /// </summary>
     internal sealed class RouteNode
     {
         /// <summary>
-        /// Gets the handlers registered for the current route node.
+        /// Gets the verb-tagged handlers registered for the current route node.
         /// </summary>
-        public IDictionary<HttpVerb, IList<HandlerRegistration>> HandlerRegistrations { get; }
+        public IList<KeyValuePair<HttpVerb, HandlerRegistration>> Handlers { get; }
 
         /// <summary>
         /// Gets literal branches keyed by case-insensitive segment value.
@@ -43,7 +43,7 @@ namespace NanoRoute.Internals
 
         public RouteNode()
         {
-            HandlerRegistrations = new Dictionary<HttpVerb, IList<HandlerRegistration>>();
+            Handlers = new List<KeyValuePair<HttpVerb, HandlerRegistration>>();
             LiteralBranches = new Dictionary<ReadOnlyMemory<char>, RouteNode>(ReadOnlyMemoryCharComparer.Instance);
             ParsedBranches = new List<KeyValuePair<ParameterParser, RouteNode>>();
         }
@@ -57,22 +57,21 @@ namespace NanoRoute.Internals
                 ReadOnlyMemoryCharComparer.Instance
             );
 
-            ParsedBranches = src.ParsedBranches
+            ParsedBranches = src
+                .ParsedBranches
                 .Select
                 (
-                    static kvp => new KeyValuePair<ParameterParser, RouteNode>(kvp.Key, kvp.Value.Freeze())
+                    static kvp => new KeyValuePair<ParameterParser, RouteNode>
+                    (
+                        kvp.Key,
+                        kvp.Value.Freeze()
+                    )
                 )
                 .ToImmutableArray();
 
-            HandlerRegistrations = src
-                .HandlerRegistrations
-                .ToFrozenDictionary
-                (
-                    static kvp => kvp.Key,
-                    static kvp => (IList<HandlerRegistration>) kvp.Value.ToImmutableArray()
-                );
+            Handlers = src.Handlers.ToImmutableArray();
 
-            if (HandlerRegistrations.Count is 0)
+            if (Handlers.Count is 0)
                 SingleBranch = (LiteralBranches.Count, ParsedBranches.Count) switch
                 {
                     (1, 0) => LiteralBranches.Single(),

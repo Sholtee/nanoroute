@@ -40,6 +40,9 @@ namespace NanoRoute.Tests
             node
         );
 
+        private static void AddHandler(RouteNode node, HttpVerb verb, HandlerRegistration handler) =>
+            node.Handlers.Add(new KeyValuePair<HttpVerb, HandlerRegistration>(verb, handler));
+
         [Test]
         public void Freeze_ShouldCloneTheWholeTree()
         {
@@ -49,14 +52,14 @@ namespace NanoRoute.Tests
                 parsedHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
 
             RouteNode root = new();
-            root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(rootHandler, "/")];
+            AddHandler(root, HttpVerb.Get, new HandlerRegistration(rootHandler, "/"));
 
             RouteNode literalBranch = new();
-            literalBranch.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(literalHandler, "/users/")];
+            AddHandler(literalBranch, HttpVerb.Post, new HandlerRegistration(literalHandler, "/users/"));
             root.LiteralBranches.Add("users".AsMemory(), literalBranch);
 
             RouteNode parsedBranch = new();
-            parsedBranch.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(parsedHandler, "/{id:str}/")];
+            AddHandler(parsedBranch, HttpVerb.Get, new HandlerRegistration(parsedHandler, "/{id:str}/"));
             root.ParsedBranches.Add(ParsedBranch("{id:str}", parsedBranch));
 
             RouteNode snapshot = root.Freeze();
@@ -66,17 +69,15 @@ namespace NanoRoute.Tests
                 Assert.That(snapshot, Is.Not.SameAs(root));
                 Assert.That(snapshot.Frozen, Is.True);
 
-                Assert.That(snapshot.HandlerRegistrations, Is.Not.SameAs(root.HandlerRegistrations));
-                Assert.That(snapshot.HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
-                Assert.That(snapshot.HandlerRegistrations[HttpVerb.Get], Is.Not.SameAs(root.HandlerRegistrations[HttpVerb.Get]));
-                Assert.That(snapshot.HandlerRegistrations[HttpVerb.Get], Is.EquivalentTo(root.HandlerRegistrations[HttpVerb.Get]));
-                Assert.That(snapshot.HandlerRegistrations[HttpVerb.Get], Is.InstanceOf<ImmutableArray<HandlerRegistration>>());
+                Assert.That(snapshot.Handlers, Is.Not.SameAs(root.Handlers));
+                Assert.That(snapshot.Handlers, Is.InstanceOf<ImmutableArray<KeyValuePair<HttpVerb, HandlerRegistration>>>());
+                Assert.That(snapshot.Handlers, Is.EqualTo(root.Handlers));
 
                 Assert.That(snapshot.LiteralBranches, Is.Not.SameAs(root.LiteralBranches));
                 Assert.That(snapshot.LiteralBranches, Is.InstanceOf<FrozenDictionary<ReadOnlyMemory<char>, RouteNode>>());
                 Assert.That(snapshot.LiteralBranches["users".AsMemory()], Is.Not.SameAs(literalBranch));
                 Assert.That(snapshot.LiteralBranches["users".AsMemory()].Frozen, Is.True);
-                Assert.That(snapshot.LiteralBranches["users".AsMemory()].HandlerRegistrations[HttpVerb.Post], Is.EquivalentTo(literalBranch.HandlerRegistrations[HttpVerb.Post]));
+                Assert.That(snapshot.LiteralBranches["users".AsMemory()].Handlers, Is.EqualTo(literalBranch.Handlers));
 
                 Assert.That(snapshot.ParsedBranches, Is.Not.SameAs(root.ParsedBranches));
                 Assert.That(snapshot.ParsedBranches, Is.InstanceOf<ImmutableArray<KeyValuePair<ParameterParser, RouteNode>>>());
@@ -84,7 +85,7 @@ namespace NanoRoute.Tests
                 Assert.That(snapshot.ParsedBranches[0].Key, Is.EqualTo(root.ParsedBranches[0].Key));
                 Assert.That(snapshot.ParsedBranches[0].Value, Is.Not.SameAs(parsedBranch));
                 Assert.That(snapshot.ParsedBranches[0].Value.Frozen, Is.True);
-                Assert.That(snapshot.ParsedBranches[0].Value.HandlerRegistrations[HttpVerb.Get], Is.EquivalentTo(parsedBranch.HandlerRegistrations[HttpVerb.Get]));
+                Assert.That(snapshot.ParsedBranches[0].Value.Handlers, Is.EqualTo(parsedBranch.Handlers));
             });
         }
 
@@ -94,26 +95,26 @@ namespace NanoRoute.Tests
             RouteNode root = new();
 
             RequestHandlerDelegate handler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
-            root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(handler, "/")];
+            AddHandler(root, HttpVerb.Get, new HandlerRegistration(handler, "/"));
 
             RouteNode literalBranch = new();
-            literalBranch.HandlerRegistrations[HttpVerb.Post] = [new HandlerRegistration(handler, "/users/")];
+            AddHandler(literalBranch, HttpVerb.Post, new HandlerRegistration(handler, "/users/"));
             root.LiteralBranches.Add("users".AsMemory(), literalBranch);
 
             RouteNode parsedBranch = new();
-            parsedBranch.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(handler, "/{id:str}/")];
+            AddHandler(parsedBranch, HttpVerb.Get, new HandlerRegistration(handler, "/{id:str}/"));
             root.ParsedBranches.Add(ParsedBranch("{id:str}", parsedBranch));
 
             RouteNode snapshot = root.Freeze();
 
             Assert.Multiple(() =>
             {
-                Assert.That(snapshot.HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
+                Assert.That(snapshot.Handlers, Is.InstanceOf<ImmutableArray<KeyValuePair<HttpVerb, HandlerRegistration>>>());
                 Assert.That(snapshot.LiteralBranches, Is.InstanceOf<FrozenDictionary<ReadOnlyMemory<char>, RouteNode>>());
                 Assert.That(snapshot.ParsedBranches, Is.InstanceOf<ImmutableArray<KeyValuePair<ParameterParser, RouteNode>>>());
 
-                Assert.That(snapshot.LiteralBranches["users".AsMemory()].HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
-                Assert.That(snapshot.ParsedBranches[0].Value.HandlerRegistrations, Is.InstanceOf<FrozenDictionary<HttpVerb, IList<HandlerRegistration>>>());
+                Assert.That(snapshot.LiteralBranches["users".AsMemory()].Handlers, Is.InstanceOf<ImmutableArray<KeyValuePair<HttpVerb, HandlerRegistration>>>());
+                Assert.That(snapshot.ParsedBranches[0].Value.Handlers, Is.InstanceOf<ImmutableArray<KeyValuePair<HttpVerb, HandlerRegistration>>>());
             });
         }
 
@@ -125,21 +126,22 @@ namespace NanoRoute.Tests
                 addedLaterHandler = new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object;
 
             RouteNode root = new();
-            root.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(initialHandler, "/")];
+            AddHandler(root, HttpVerb.Get, new HandlerRegistration(initialHandler, "/"));
 
             RouteNode literalBranch = new();
             root.LiteralBranches.Add("users".AsMemory(), literalBranch);
 
             RouteNode snapshot = root.Freeze();
 
-            root.HandlerRegistrations[HttpVerb.Get].Add(new HandlerRegistration(addedLaterHandler, "/after/"));
+            AddHandler(root, HttpVerb.Get, new HandlerRegistration(addedLaterHandler, "/after/"));
             root.LiteralBranches.Add("admins".AsMemory(), new RouteNode());
             root.ParsedBranches.Add(ParsedBranch("{id:str}", new RouteNode()));
 
             Assert.Multiple(() =>
             {
-                Assert.That(snapshot.HandlerRegistrations[HttpVerb.Get], Has.Count.EqualTo(1));
-                Assert.That(snapshot.HandlerRegistrations[HttpVerb.Get][0].Pattern, Is.EqualTo("/"));
+                Assert.That(snapshot.Handlers, Has.Count.EqualTo(1));
+                Assert.That(snapshot.Handlers[0].Key, Is.EqualTo(HttpVerb.Get));
+                Assert.That(snapshot.Handlers[0].Value.Pattern, Is.EqualTo("/"));
                 Assert.That(snapshot.LiteralBranches.ContainsKey("admins".AsMemory()), Is.False);
                 Assert.That(snapshot.ParsedBranches, Is.Empty);
             });
@@ -177,7 +179,7 @@ namespace NanoRoute.Tests
         public void Freeze_ShouldNotSetSingleBranch_WhenSnapshotHasHandlers()
         {
             RouteNode withHandler = new();
-            withHandler.HandlerRegistrations[HttpVerb.Get] = [new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/")];
+            AddHandler(withHandler, HttpVerb.Get, new HandlerRegistration(new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object, "/"));
             withHandler.LiteralBranches.Add("users".AsMemory(), new RouteNode());
 
             Assert.That(withHandler.Freeze().SingleBranch is null, Is.True);

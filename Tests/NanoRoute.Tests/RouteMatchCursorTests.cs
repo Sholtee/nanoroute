@@ -38,6 +38,9 @@ namespace NanoRoute.Tests
             node
         );
 
+        private static void AddHandler(RouteNode node, HttpVerb verb, HandlerRegistration handler) =>
+            node.Handlers.Add(new KeyValuePair<HttpVerb, HandlerRegistration>(verb, handler));
+
         private static RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingPrecedence matchingPrecedence = MatchingPrecedence.LiteralFirst) => new
         (
             root.Freeze(),
@@ -59,7 +62,7 @@ namespace NanoRoute.Tests
                 api = new(),
                 users = new();
 
-            users.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(users, HttpVerb.Get, handler);
             api.LiteralBranches.Add("users".AsMemory(), users);
             root.LiteralBranches.Add("api".AsMemory(), api);
 
@@ -84,7 +87,7 @@ namespace NanoRoute.Tests
                 root = new(),
                 api = new();
 
-            api.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(api, HttpVerb.Get, handler);
             root.LiteralBranches.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/health");
@@ -105,7 +108,7 @@ namespace NanoRoute.Tests
             HandlerRegistration handler = new(s_handler, "/*");
 
             RouteNode root = new();
-            root.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(root, HttpVerb.Get, handler);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/health");
             Assert.That(cursor.Completed, Is.False);
@@ -133,8 +136,8 @@ namespace NanoRoute.Tests
                 literal = new(),
                 parsed = new();
 
-            literal.HandlerRegistrations[HttpVerb.Get] = [literalHandler];
-            parsed.HandlerRegistrations[HttpVerb.Get] = [parsedHandler];
+            AddHandler(literal, HttpVerb.Get, literalHandler);
+            AddHandler(parsed, HttpVerb.Get, parsedHandler);
             items.LiteralBranches.Add("value".AsMemory(), literal);
             items.ParsedBranches.Add(ParsedBranch("{id:str}", static async context => new ValueParseResult(true, context.Segment.ToString()), parsed));
             root.LiteralBranches.Add("items".AsMemory(), items);
@@ -186,7 +189,7 @@ namespace NanoRoute.Tests
                 stringNode = new(),
                 details = new();
 
-            details.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(details, HttpVerb.Get, handler);
             stringNode.LiteralBranches.Add("details".AsMemory(), details);
             api.ParsedBranches.Add(ParsedBranch("{id:int}", mockIntParser.Object, intNode));
             api.ParsedBranches.Add(ParsedBranch("{slug:str}", mockStringParser.Object, stringNode));
@@ -214,7 +217,7 @@ namespace NanoRoute.Tests
                 parsed = new(),
                 details = new();
 
-            details.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(details, HttpVerb.Get, handler);
             parsed.LiteralBranches.Add("details".AsMemory(), details);
             api.ParsedBranches.Add(ParsedBranch("{str}", static async context => new ValueParseResult(true, context.Segment.ToString()), parsed));
             root.LiteralBranches.Add("api".AsMemory(), api);
@@ -246,7 +249,7 @@ namespace NanoRoute.Tests
                 stringNode = new(),
                 details = new();
 
-            details.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(details, HttpVerb.Get, handler);
             intNode.LiteralBranches.Add("details".AsMemory(), details);
             stringNode.LiteralBranches.Add("details".AsMemory(), new RouteNode());
             api.ParsedBranches.Add(ParsedBranch("{id:int}", mockIntParser.Object, intNode));
@@ -283,7 +286,7 @@ namespace NanoRoute.Tests
                 literal = new(),
                 parsed = new();
 
-            literal.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(literal, HttpVerb.Get, handler);
             items.LiteralBranches.Add("literal".AsMemory(), literal);
             items.ParsedBranches.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
             root.LiteralBranches.Add("items".AsMemory(), items);
@@ -322,8 +325,8 @@ namespace NanoRoute.Tests
                 literal = new(),
                 parsed = new();
 
-            literal.HandlerRegistrations[HttpVerb.Get] = [literalHandler];
-            parsed.HandlerRegistrations[HttpVerb.Get] = [parsedHandler];
+            AddHandler(literal, HttpVerb.Get, literalHandler);
+            AddHandler(parsed, HttpVerb.Get, parsedHandler);
             items.LiteralBranches.Add("literal".AsMemory(), literal);
             items.ParsedBranches.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
             root.LiteralBranches.Add("items".AsMemory(), items);
@@ -391,7 +394,7 @@ namespace NanoRoute.Tests
                 parsed = new(),
                 details = new();
 
-            details.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(details, HttpVerb.Get, handler);
             parsed.LiteralBranches.Add("details".AsMemory(), details);
             root.ParsedBranches.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
 
@@ -444,7 +447,7 @@ namespace NanoRoute.Tests
                 files = new(),
                 name = new();
 
-            name.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(name, HttpVerb.Get, handler);
             files.LiteralBranches.Add("a b".AsMemory(), name);
             root.LiteralBranches.Add("files".AsMemory(), files);
 
