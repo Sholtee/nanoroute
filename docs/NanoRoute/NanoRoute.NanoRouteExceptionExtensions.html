@@ -759,7 +759,7 @@ by <code class="paramref">configure</code> is <a href="https://learn.microsoft.c
   </table>
   <a id="NanoRoute_NanoRouteExceptionExtensions_For_" data-uid="NanoRoute.NanoRouteExceptionExtensions.For*"></a>
   <h4 id="NanoRoute_NanoRouteExceptionExtensions_For__1_NanoRoute_TypedExceptionNormalizer___0__" data-uid="NanoRoute.NanoRouteExceptionExtensions.For``1(NanoRoute.TypedExceptionNormalizer{``0})">For&lt;TException&gt;(TypedExceptionNormalizer&lt;TException&gt;)</h4>
-  <div class="markdown level1 summary"><p>Creates an exception-normalizer registration for a concrete exception type.</p>
+  <div class="markdown level1 summary"><p>Creates an exception-normalizer registration for an exception type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -812,14 +812,14 @@ by <code class="paramref">configure</code> is <a href="https://learn.microsoft.c
     <tbody>
       <tr>
         <td><span class="parametername">TException</span></td>
-        <td><p>The concrete exception type handled by <code class="paramref">normalizer</code>.</p>
+        <td><p>The exception type handled by <code class="paramref">normalizer</code>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 id="NanoRoute_NanoRouteExceptionExtensions_For__1_NanoRoute_TypedExceptionNormalizer___0___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The returned entry is keyed by <code>typeof(TException)</code>. Exception handlers perform exact runtime
-type lookup, so derived exception types need their own registrations.</p>
+  <div class="markdown level1 remarks"><p>The returned entry is keyed by <code>typeof(TException)</code>. Exception handlers check the exact runtime
+type first, then walk base exception types, so the most specific registered normalizer wins.</p>
 </div>
   <h5 id="NanoRoute_NanoRouteExceptionExtensions_For__1_NanoRoute_TypedExceptionNormalizer___0___examples">Examples</h5>
   <pre><code class="lang-csharp">builder.ConfigureExceptionHandling(config =&gt; config with

@@ -141,7 +141,7 @@ exceptions. Other unexpected exceptions are handled by the fallback internal-ser
 
   <a id="NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers_" data-uid="NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers*"></a>
   <h4 id="NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers" data-uid="NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers">ExceptionNormalizers</h4>
-  <div class="markdown level1 summary"><p>Gets the exception normalizers keyed by concrete exception type.</p>
+  <div class="markdown level1 summary"><p>Gets the exception normalizers keyed by exception type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -165,7 +165,8 @@ exceptions. Other unexpected exceptions are handled by the fallback internal-ser
   </table>
   <h5 id="NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>When a handler throws a non-HTTP, non-cancellation exception, <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a>
-looks up the exception's exact runtime type in this dictionary. If no normalizer is registered, the
+looks up the exception's exact runtime type in this dictionary, then walks base exception types until
+a normalizer is found. If no normalizer is registered for the exception type or its base types, the
 exception is converted to a generic internal-server-error <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>.</p>
 </div>
   <h5 id="NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers_examples">Examples</h5>

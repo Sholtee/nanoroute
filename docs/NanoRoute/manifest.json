@@ -434,7 +434,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.TypedExceptionNormalizer<TException>",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.TypedExceptionNormalizer-1.yml\" sourcestartlinenumber=\"1\">Converts an unexpected exception of a specific type into an enriched <xref href=\"System.Net.Http.HttpRequestException\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.TypedExceptionNormalizer-1.yml\" sourcestartlinenumber=\"1\">Converts an unexpected exception of a registered type into an enriched <xref href=\"System.Net.Http.HttpRequestException\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
     },
     {
       "type": "ManagedReference",

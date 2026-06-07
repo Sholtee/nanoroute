@@ -442,7 +442,7 @@ HttpListenerRouter router = HttpListenerRouter
 </code></pre>
 <h2 id="exception-handling">Exception Handling</h2>
 <p><code>AddExceptionHandler()</code> adds middleware that converts unexpected exceptions into enriched <code>HttpRequestException</code> values. Existing <code>HttpRequestException</code> values are passed through unchanged, and <code>OperationCanceledException</code> still propagates to the caller.</p>
-<p>Use <code>ConfigureExceptionHandling()</code> before registering exception-handling middleware when you want to customize how specific exception types are normalized:</p>
+<p>Use <code>ConfigureExceptionHandling()</code> before registering exception-handling middleware when you want to customize how specific exception types are normalized. Normalizers are matched against the thrown exception's runtime type first, then against its base exception types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered:</p>
 <pre><code class="lang-csharp">HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .ConfigureExceptionHandling(config =&gt; config with

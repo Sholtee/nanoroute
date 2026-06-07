@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width">
       <meta name="title" content="Delegate TypedExceptionNormalizer&lt;TException&gt; | NanoRoute ">
     
-    <meta name="description" content="Converts an unexpected exception of a specific type into an enriched .">
+    <meta name="description" content="Converts an unexpected exception of a registered type into an enriched .">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -40,7 +40,7 @@
 
 
   <h1 id="NanoRoute_TypedExceptionNormalizer_1" data-uid="NanoRoute.TypedExceptionNormalizer`1" class="text-break">Delegate TypedExceptionNormalizer&lt;TException&gt;</h1>
-  <div class="markdown level0 summary"><p>Converts an unexpected exception of a specific type into an enriched <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>.</p>
+  <div class="markdown level0 summary"><p>Converts an unexpected exception of a registered type into an enriched <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
@@ -94,7 +94,7 @@
     <tbody>
       <tr>
         <td><span class="parametername">TException</span></td>
-        <td><p>The concrete exception type handled by the normalizer.</p>
+        <td><p>The exception type handled by the normalizer.</p>
 </td>
       </tr>
     </tbody>
@@ -102,7 +102,8 @@
   <h5 id="NanoRoute_TypedExceptionNormalizer_1_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Use this delegate with <code>ExceptionNormalizer.For&lt;TException&gt;(...)</code> to register typed
 normalizers in <a class="xref" href="NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers">ExceptionNormalizers</a> without manually casting from
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>. Normalizers are matched by exact runtime exception type.</p>
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>. Exception handlers check the exact runtime type first, then walk base exception
+types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered.</p>
 </div>
   <h5 id="NanoRoute_TypedExceptionNormalizer_1_examples"><strong>Examples</strong></h5>
   <pre><code class="lang-csharp">ExceptionNormalizer.For&lt;InvalidOperationException&gt;
