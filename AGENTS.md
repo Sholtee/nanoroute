@@ -4,11 +4,11 @@
 
 Tool availability, shell choice, and preferred search commands are environment-specific. Follow any global, parent, or session instructions for local tool availability.
 
-Do not begin by recursively scanning the whole workspace. Use the root `README.md` "Directory Structure" section and a root directory listing as the repository map, then inspect only the paths relevant to the task.
+Do not begin by recursively scanning the whole workspace. Use the root `README.md` "Directory Structure" section and a root directory listing as the repository map, then inspect only paths relevant to the task.
 
-Use `.gitignore` as the baseline for generated and local environment paths to avoid. If a broad search is necessary, scope it explicitly and exclude generated/local folders.
+Use `.gitignore` as the baseline for generated and local environment paths to avoid. If a broad search is necessary, scope it explicitly and exclude generated, build, coverage, benchmark-output, IDE, and local environment paths unless directly relevant.
 
-For code and tests, prefer targeted discovery under the documented source, test, and helper paths.
+For code and tests, prefer targeted discovery under the documented source, test, and helper paths. Prefer concise command output: use narrow paths, exact patterns, and output limits instead of dumping full files or full recursive search results.
 
 ## Serena Workflow
 
@@ -17,6 +17,33 @@ When Serena MCP tools are available for a code-related task, activate the reposi
 Use Serena for focused code navigation, symbol overviews, symbol reads, reference lookup, bug diagnosis, and symbol edits when it can answer cleanly. Use shell reads such as `Get-Content` only for narrow patch context, exact diffs, non-code files, or command-oriented verification.
 
 Serena is not required for simple documentation-only edits, direct command-output requests, or tasks clearly confined to non-code files. If Serena is unavailable during a code-related task, continue with the approved environment-specific alternatives and mention the fallback.
+
+## Token and Context Discipline
+
+Keep repository context small and task-focused.
+
+Before inspecting files for a code-related task, state the smallest useful discovery plan: the symbols, files, or directories expected to matter, and the cheapest way to inspect them. Prefer Serena symbol overview, symbol lookup, and reference lookup before opening source files directly.
+
+Do not re-read files that have already been summarized unless the previous summary is insufficient for the next edit or verification step. Maintain a brief working context when useful:
+
+- Relevant files and symbols
+- Decisions already made
+- Commands already run and important results
+- Remaining unknowns
+
+Default inspection budget for a single task:
+
+- Up to 5 source files
+- Up to 3 test files
+- Up to 2 project/configuration/documentation files
+
+If more context appears necessary, pause and explain why before expanding the search, unless the developer explicitly asked for broad investigation.
+
+Avoid large command outputs. Use focused commands, filters, and output limits. Prefer targeted tests over full test suites until the change is ready for final verification. When command output is long, keep only the relevant error, failure, summary, or final 100-150 lines.
+
+Do not inspect generated, build, coverage, benchmark-output, IDE, or local environment files unless they are directly relevant to the task. Avoid paths such as `bin/`, `obj/`, `TestResults/`, `BenchmarkDotNet.Artifacts/`, `.vs/`, `.idea/`, `.vscode/`, and generated coverage reports. Use `.gitignore` and the repository README directory structure as the first guide for paths to avoid.
+
+When preparing a handoff, context compaction preview, or summary, keep it compact and operational: current goal, changed/inspected files, decisions, commands/results, blockers, and next steps.
 
 ## Serena Process Cleanup
 
@@ -74,6 +101,6 @@ Before considering a change complete, verify the items that apply:
   - `Src/NanoRoute*/HISTORY.md`
   - `Src/NanoRoute*/README.md`
 - After code modifications are otherwise complete, run `dotnet format`.
-- Code changes have relevant tests run, and coverage is not decreased. Use `Scripts/Run-Tests.ps1` for the normal test and coverage measurement flow.
+- Code changes have relevant tests run. Use the narrowest useful test command during development. Before final completion, use `Scripts/Run-Tests.ps1` for the normal test and coverage measurement flow when the change is broad enough to affect package behavior, public API behavior, routing behavior, Native AOT behavior, or coverage expectations.
 - Native AOT smoke coverage in `Tests/NanoRoute.NativeAot` is updated when behavior changes should be covered there.
 - When a change may affect Native AOT compatibility, publish and run the Native AOT smoke project as the PR workflow does. This includes changes involving reflection, JSON serialization, generated metadata, trimming-sensitive code, or public APIs that should remain usable from Native AOT applications.
