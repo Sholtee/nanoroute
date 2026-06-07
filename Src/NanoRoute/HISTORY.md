@@ -6,6 +6,10 @@
 
 - Added `ValueParseResult.False` as a reusable non-match result for asynchronous value parsers.
 
+### Changed
+
+- Exception normalizers registered for a base exception type now apply to derived exceptions when no more specific normalizer is registered.
+
 ## 1.0.0-preview3
 
 ### Breaking Changes
