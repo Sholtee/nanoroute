@@ -108,6 +108,88 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public void AddExceptionHandler_ShouldUseBaseExceptionNormalizerForDerivedExceptions()
+        {
+            TestRouter router = _routerBuilder
+                .ConfigureExceptionHandling(config => config with
+                {
+                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(SystemException), NormalizeConflict)
+                })
+                .AddExceptionHandler()
+                .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
+                .CreateRouter();
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                s_services
+            ))!;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ex.Message, Is.EqualTo("conflict"));
+                Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
+                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
+            });
+        }
+
+        [Test]
+        public void AddExceptionHandler_ShouldPreferExactExceptionNormalizerOverBaseNormalizer()
+        {
+            TestRouter router = _routerBuilder
+                .ConfigureExceptionHandling(config => config with
+                {
+                    ExceptionNormalizers = config.ExceptionNormalizers.SetItems
+                    ([
+                        new KeyValuePair<Type, ExceptionNormalizer>(typeof(SystemException), NormalizeConflict),
+                        new KeyValuePair<Type, ExceptionNormalizer>(typeof(InvalidOperationException), NormalizeTeapot)
+                    ])
+                })
+                .AddExceptionHandler()
+                .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
+                .CreateRouter();
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                s_services
+            ))!;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ex.Message, Is.EqualTo("teapot"));
+                Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
+                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo((HttpStatusCode) 418));
+            });
+        }
+
+        [Test]
+        public void AddExceptionHandler_ShouldIgnoreNonExceptionBaseNormalizers()
+        {
+            TestRouter router = _routerBuilder
+                .ConfigureExceptionHandling(config => config with
+                {
+                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(object), NormalizeTeapot)
+                })
+                .AddExceptionHandler()
+                .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
+                .CreateRouter();
+
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            (
+                new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
+                s_services
+            ))!;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ex.Message, Is.EqualTo(Properties.Resources.ERR_INTERNAL_ERROR));
+                Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
+                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
+            });
+        }
+
+        [Test]
         public void AddExceptionHandler_ShouldSnapshotExceptionHandlingConfiguration()
         {
             TestRouter router = _routerBuilder

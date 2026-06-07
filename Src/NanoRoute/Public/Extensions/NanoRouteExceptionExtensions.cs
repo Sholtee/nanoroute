@@ -26,7 +26,8 @@ namespace NanoRoute
     /// </returns>
     /// <remarks>
     /// Normalizers are configured with <see cref="NanoRouteExceptionExtensions.ConfigureExceptionHandling{TBuilder}(TBuilder, ConfigureBuilderDelegate{ExceptionHandlingConfig})"/>.
-    /// They run only for exception types registered in <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/>.
+    /// They run for exceptions whose runtime type or nearest registered base type appears in
+    /// <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/>.
     /// Existing <see cref="HttpRequestException"/> and <see cref="OperationCanceledException"/> values are not
     /// normalized by <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/>.
     /// Exceptions thrown by a normalizer propagate from the exception-handling middleware.
@@ -48,9 +49,9 @@ namespace NanoRoute
     public delegate HttpRequestException ExceptionNormalizer(Exception exception);
 
     /// <summary>
-    /// Converts an unexpected exception of a specific type into an enriched <see cref="HttpRequestException"/>.
+    /// Converts an unexpected exception of a registered type into an enriched <see cref="HttpRequestException"/>.
     /// </summary>
-    /// <typeparam name="TException">The concrete exception type handled by the normalizer.</typeparam>
+    /// <typeparam name="TException">The exception type handled by the normalizer.</typeparam>
     /// <param name="exception">The exception thrown by a later handler in the routing pipeline.</param>
     /// <returns>
     /// The <see cref="HttpRequestException"/> that should be thrown by the exception-handling middleware.
@@ -58,7 +59,8 @@ namespace NanoRoute
     /// <remarks>
     /// Use this delegate with <c>ExceptionNormalizer.For&lt;TException&gt;(...)</c> to register typed
     /// normalizers in <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/> without manually casting from
-    /// <see cref="Exception"/>. Normalizers are matched by exact runtime exception type.
+    /// <see cref="Exception"/>. Exception handlers check the exact runtime type first, then walk base exception
+    /// types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered.
     /// </remarks>
     /// <example>
     /// <code>
@@ -94,11 +96,12 @@ namespace NanoRoute
     public sealed record ExceptionHandlingConfig
     {
         /// <summary>
-        /// Gets the exception normalizers keyed by concrete exception type.
+        /// Gets the exception normalizers keyed by exception type.
         /// </summary>
         /// <remarks>
         /// When a handler throws a non-HTTP, non-cancellation exception, <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/>
-        /// looks up the exception's exact runtime type in this dictionary. If no normalizer is registered, the
+        /// looks up the exception's exact runtime type in this dictionary, then walks base exception types until
+        /// a normalizer is found. If no normalizer is registered for the exception type or its base types, the
         /// exception is converted to a generic internal-server-error <see cref="HttpRequestException"/>.
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when the assigned value is <see langword="null"/>.</exception>
@@ -339,8 +342,9 @@ namespace NanoRoute
                     }
                     catch (Exception ex) when (ex is not (HttpRequestException or OperationCanceledException /*needs to be handled from user code*/))
                     {
-                        if (exceptionNormalizers.TryGetValue(ex.GetType(), out ExceptionNormalizer? exceptionNormalizer))
-                            throw exceptionNormalizer(ex);
+                        for (Type exceptionType = ex.GetType(); exceptionType != typeof(object); exceptionType = exceptionType.BaseType)
+                            if (exceptionNormalizers.TryGetValue(exceptionType, out ExceptionNormalizer? exceptionNormalizer))
+                                throw exceptionNormalizer(ex);
 
                         HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessages: [ex.ToString()]);
                         return null!;
@@ -491,9 +495,9 @@ namespace NanoRoute
         extension(ExceptionNormalizer)
         {
             /// <summary>
-            /// Creates an exception-normalizer registration for a concrete exception type.
+            /// Creates an exception-normalizer registration for an exception type.
             /// </summary>
-            /// <typeparam name="TException">The concrete exception type handled by <paramref name="normalizer"/>.</typeparam>
+            /// <typeparam name="TException">The exception type handled by <paramref name="normalizer"/>.</typeparam>
             /// <param name="normalizer">
             /// The typed normalizer that converts <typeparamref name="TException"/> into an enriched
             /// <see cref="HttpRequestException"/>.
@@ -502,8 +506,8 @@ namespace NanoRoute
             /// A key/value pair suitable for adding to <see cref="ExceptionHandlingConfig.ExceptionNormalizers"/>.
             /// </returns>
             /// <remarks>
-            /// The returned entry is keyed by <c>typeof(TException)</c>. Exception handlers perform exact runtime
-            /// type lookup, so derived exception types need their own registrations.
+            /// The returned entry is keyed by <c>typeof(TException)</c>. Exception handlers check the exact runtime
+            /// type first, then walk base exception types, so the most specific registered normalizer wins.
             /// </remarks>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="normalizer"/> is <see langword="null"/>.</exception>
             /// <example>

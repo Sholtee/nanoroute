@@ -459,7 +459,7 @@ They also have middleware-style overloads that receive `CallNextHandlerDelegate`
 
 `AddExceptionHandler()` adds middleware that converts unexpected exceptions into enriched `HttpRequestException` values. Existing `HttpRequestException` values are passed through unchanged, and `OperationCanceledException` still propagates to the caller.
 
-Use `ConfigureExceptionHandling()` before registering exception-handling middleware when you want to customize how specific exception types are normalized:
+Use `ConfigureExceptionHandling()` before registering exception-handling middleware when you want to customize how specific exception types are normalized. Normalizers are matched against the thrown exception's runtime type first, then against its base exception types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
