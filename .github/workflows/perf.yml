@@ -44,6 +44,38 @@ jobs:
         shell: pwsh
         run: ./Scripts/Run-PerfTests.ps1 "${{ inputs.filter }}"
 
+      - name: Locate BuildPlots.R
+        id: find-r
+        shell: pwsh
+        if: ${{ inputs.publish-artifacts }}
+        run: |
+          $file = Get-ChildItem `
+            -Path ([System.IO.Path]::Combine((Get-Location).Path, "Artifacts", "BenchmarkDotNet", "results")) `
+            -Filter "BuildPlots.R" `
+            -File `
+            -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $file) {
+            Write-Warning "BuildPlots.R not found"
+            return
+          }
+
+          $path = $file.FullName
+          Write-Host "Found: $path"
+
+          "buildplots-path=$path" >> $env:GITHUB_OUTPUT
+
+      # R is required for the chart generation
+      - uses: r-lib/actions/setup-r@v2
+        if: ${{ inputs.publish-artifacts && steps.find-r.outputs.buildplots-path != '' }}
+        with:
+          r-version: '4.4.x'
+
+      - name: Regenerate R plot
+        shell: pwsh
+        if: ${{ inputs.publish-artifacts && steps.find-r.outputs.buildplots-path != '' }}
+        run: |
+          Rscript ./Scripts/Run-BuildPlots.R '${{ steps.find-r.outputs.buildplots-path }}'
+
       - name: Upload artifacts to gh-pages
         shell: pwsh
         if: ${{ inputs.publish-artifacts }}
@@ -51,7 +83,11 @@ jobs:
           ./Scripts/Update-GitHubPages.ps1 {
             param($ROOT, $GH_PAGES)
 
-            Remove-Item -Path (Join-Path $GH_PAGES "Benchmarks") -Recurse -Force -ErrorAction SilentlyContinue
-            New-Item -Path (Join-Path $GH_PAGES "Benchmarks") -ItemType Directory -Force
-            Copy-Item (Join-Path $ROOT "Artifacts/BenchmarkDotNet/results/*.md") (Join-Path $GH_PAGES "Benchmarks") -Force
+            $benchmarks = Join-Path $GH_PAGES "Benchmarks"
+
+            Remove-Item -Path $benchmarks -Recurse -Force -ErrorAction SilentlyContinue
+            New-Item -Path $benchmarks -ItemType Directory -Force
+            
+            Copy-Item -Path ([System.IO.Path]::Combine($ROOT, "Artifacts", "BenchmarkDotNet", "results", "*.md")) -Destination $benchmarks -Force
+            Copy-Item -Path ([System.IO.Path]::Combine($ROOT, "Artifacts", "BenchmarkDotNet", "results", "*-barplot.png")) -Destination $benchmarks -Force
           } "${{ secrets.GITHUB_TOKEN }}"

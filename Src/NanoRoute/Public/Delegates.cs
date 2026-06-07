@@ -45,7 +45,7 @@ namespace NanoRoute
     /// </remarks>
     /// <example>
     /// <code>
-    /// builder.ConfigureRouting(config =&gt; config with { ParametersCapacity = 16 });
+    /// builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.ParameterizedFirst });
     /// </code>
     /// </example>
     public delegate TConfig ConfigureBuilderDelegate<TConfig>(TConfig config);

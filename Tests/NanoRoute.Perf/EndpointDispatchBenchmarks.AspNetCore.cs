@@ -38,17 +38,11 @@ namespace NanoRoute.Perf
                         new RequestDelegateFactoryOptions
                         {
                             DisableInferBodyFromParameters = true,
-                            RouteParameterNames = routePatternDefinition.Parameters.Select(static parameter => parameter.Name).ToArray(),
+                            RouteParameterNames = routePatternDefinition.Parameters.Select(static parameter => parameter.Name),
                             ServiceProvider = services,
                             ThrowOnBadRequest = true
                         }
                     );
-
-                    object[] metadata = new object[requestDelegateResult.EndpointMetadata.Count + 1];
-                    metadata[0] = new HttpMethodMetadata([HttpMethods.Get]);
-
-                    for (int i = 0; i < requestDelegateResult.EndpointMetadata.Count; i++)
-                        metadata[i + 1] = requestDelegateResult.EndpointMetadata[i];
 
                     _invoker = new AspNetCoreRouteEndpointInvoker
                     (
@@ -57,7 +51,7 @@ namespace NanoRoute.Perf
                             requestDelegate: requestDelegateResult.RequestDelegate,
                             routePattern: routePatternDefinition,
                             order: 0,
-                            metadata: new EndpointMetadataCollection(metadata),
+                            metadata: new EndpointMetadataCollection(requestDelegateResult.EndpointMetadata),
                             displayName: scenario.Pattern
                         ),
                         scenario.RequestUri,

@@ -17,9 +17,8 @@ namespace NanoRoute.Tests
 {
     using Internals;
 
-    [TestFixture(true)]
-    [TestFixture(false)]
-    internal sealed class RouteMatchCursorTests(bool freezeRoot)
+    [TestFixture]
+    internal sealed class RouteMatchCursorTests
     {
         private static readonly RequestHandlerDelegate s_handler = static (_, _) => Task.FromResult(new HttpResponseMessage());
 
@@ -39,13 +38,17 @@ namespace NanoRoute.Tests
             node
         );
 
-        private RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingPrecedence matchingPrecedence = MatchingPrecedence.LiteralFirst) => new
+        private static void AddHandler(RouteNode node, HttpVerb verb, HandlerRegistration handler) =>
+            node.Handlers.Add(new KeyValuePair<HttpVerb, HandlerRegistration>(verb, handler));
+
+        private static RouteMatchCursor CreateCursor(RouteNode root, string path, MatchingPrecedence matchingPrecedence = MatchingPrecedence.LiteralFirst) => new
         (
-            root.Copy(freezeRoot),
+            root.Freeze(),
             HttpVerb.Get,
             new Uri($"https://www.example.com{path}", UriKind.Absolute),
             new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-            new RouterConfig { MatchingPrecedence = matchingPrecedence },
+            new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
+            matchingPrecedence,
             CancellationToken.None
         );
 
@@ -59,17 +62,17 @@ namespace NanoRoute.Tests
                 api = new(),
                 users = new();
 
-            users.HandlerRegistrations[HttpVerb.Get] = [handler];
-            api.LiteralChildren.Add("users".AsMemory(), users);
-            root.LiteralChildren.Add("api".AsMemory(), api);
+            AddHandler(users, HttpVerb.Get, handler);
+            api.LiteralBranches.Add("users".AsMemory(), users);
+            root.LiteralBranches.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/users");
             Assert.That(cursor.Completed, Is.False);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
-            Assert.That(cursor.Current.RemainingPath.ToString(), Is.Empty);
-            Assert.That(cursor.Current.AttachedParameters, Is.Empty);
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.RemainingPath.ToString(), Is.Empty);
+            Assert.That(cursor.Parameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
             Assert.That(cursor.Completed);
@@ -84,16 +87,16 @@ namespace NanoRoute.Tests
                 root = new(),
                 api = new();
 
-            api.HandlerRegistrations[HttpVerb.Get] = [handler];
-            root.LiteralChildren.Add("api".AsMemory(), api);
+            AddHandler(api, HttpVerb.Get, handler);
+            root.LiteralBranches.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/health");
             Assert.That(cursor.Completed, Is.False);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
-            Assert.That(cursor.Current.RemainingPath.ToString(), Is.EqualTo("/health"));
-            Assert.That(cursor.Current.AttachedParameters, Is.Empty);
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.RemainingPath.ToString(), Is.EqualTo("/health"));
+            Assert.That(cursor.Parameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
             Assert.That(cursor.Completed);
@@ -105,15 +108,15 @@ namespace NanoRoute.Tests
             HandlerRegistration handler = new(s_handler, "/*");
 
             RouteNode root = new();
-            root.HandlerRegistrations[HttpVerb.Get] = [handler];
+            AddHandler(root, HttpVerb.Get, handler);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/health");
             Assert.That(cursor.Completed, Is.False);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
-            Assert.That(cursor.Current.RemainingPath.ToString(), Is.EqualTo("/api/health"));
-            Assert.That(cursor.Current.AttachedParameters, Is.Empty);
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.RemainingPath.ToString(), Is.EqualTo("/api/health"));
+            Assert.That(cursor.Parameters, Is.Empty);
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
             Assert.That(cursor.Completed);
@@ -133,19 +136,19 @@ namespace NanoRoute.Tests
                 literal = new(),
                 parsed = new();
 
-            literal.HandlerRegistrations[HttpVerb.Get] = [literalHandler];
-            parsed.HandlerRegistrations[HttpVerb.Get] = [parsedHandler];
-            items.LiteralChildren.Add("value".AsMemory(), literal);
-            items.ParsedChildren.Add(ParsedBranch("{id:str}", static async context => new ValueParseResult(true, context.Segment.ToString()), parsed));
-            root.LiteralChildren.Add("items".AsMemory(), items);
+            AddHandler(literal, HttpVerb.Get, literalHandler);
+            AddHandler(parsed, HttpVerb.Get, parsedHandler);
+            items.LiteralBranches.Add("value".AsMemory(), literal);
+            items.ParsedBranches.Add(ParsedBranch("{id:str}", static async context => new ValueParseResult(true, context.Segment.ToString()), parsed));
+            root.LiteralBranches.Add("items".AsMemory(), items);
 
             RouteMatchCursor cursor = CreateCursor(root, "/items/value", matchingPrecedence);
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.HandlerRegistration.Pattern, Is.EqualTo(expectedPattern));
+            Assert.That(cursor.HandlerRegistration.Pattern, Is.EqualTo(expectedPattern));
 
             if (matchingPrecedence is MatchingPrecedence.ParameterizedFirst)
-                Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue("value"));
+                Assert.That(cursor.Parameters, Does.ContainKey("id").WithValue("value"));
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
         }
@@ -186,18 +189,18 @@ namespace NanoRoute.Tests
                 stringNode = new(),
                 details = new();
 
-            details.HandlerRegistrations[HttpVerb.Get] = [handler];
-            stringNode.LiteralChildren.Add("details".AsMemory(), details);
-            api.ParsedChildren.Add(ParsedBranch("{id:int}", mockIntParser.Object, intNode));
-            api.ParsedChildren.Add(ParsedBranch("{slug:str}", mockStringParser.Object, stringNode));
-            root.LiteralChildren.Add("api".AsMemory(), api);
+            AddHandler(details, HttpVerb.Get, handler);
+            stringNode.LiteralBranches.Add("details".AsMemory(), details);
+            api.ParsedBranches.Add(ParsedBranch("{id:int}", mockIntParser.Object, intNode));
+            api.ParsedBranches.Add(ParsedBranch("{slug:str}", mockStringParser.Object, stringNode));
+            root.LiteralBranches.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/abc/details");
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
-            Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("slug").WithValue("abc"));
-            Assert.That(cursor.Current.AttachedParameters, Does.Not.ContainKey("id"));
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.Parameters, Does.ContainKey("slug").WithValue("abc"));
+            Assert.That(cursor.Parameters, Does.Not.ContainKey("id"));
 
             mockIntParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")), Times.Once);
             mockStringParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "abc")), Times.Once);
@@ -214,16 +217,16 @@ namespace NanoRoute.Tests
                 parsed = new(),
                 details = new();
 
-            details.HandlerRegistrations[HttpVerb.Get] = [handler];
-            parsed.LiteralChildren.Add("details".AsMemory(), details);
-            api.ParsedChildren.Add(ParsedBranch("{str}", static async context => new ValueParseResult(true, context.Segment.ToString()), parsed));
-            root.LiteralChildren.Add("api".AsMemory(), api);
+            AddHandler(details, HttpVerb.Get, handler);
+            parsed.LiteralBranches.Add("details".AsMemory(), details);
+            api.ParsedBranches.Add(ParsedBranch("{str}", static async context => new ValueParseResult(true, context.Segment.ToString()), parsed));
+            root.LiteralBranches.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/value/details");
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.HandlerRegistration.Pattern, Is.EqualTo(handler.Pattern));
-            Assert.That(cursor.Current.AttachedParameters, Is.Empty);
+            Assert.That(cursor.HandlerRegistration.Pattern, Is.EqualTo(handler.Pattern));
+            Assert.That(cursor.Parameters, Is.Empty);
         }
 
         [Test]
@@ -246,18 +249,18 @@ namespace NanoRoute.Tests
                 stringNode = new(),
                 details = new();
 
-            details.HandlerRegistrations[HttpVerb.Get] = [handler];
-            intNode.LiteralChildren.Add("details".AsMemory(), details);
-            stringNode.LiteralChildren.Add("details".AsMemory(), new RouteNode());
-            api.ParsedChildren.Add(ParsedBranch("{id:int}", mockIntParser.Object, intNode));
-            api.ParsedChildren.Add(ParsedBranch("{slug:str}", mockStringParser.Object, stringNode));
-            root.LiteralChildren.Add("api".AsMemory(), api);
+            AddHandler(details, HttpVerb.Get, handler);
+            intNode.LiteralBranches.Add("details".AsMemory(), details);
+            stringNode.LiteralBranches.Add("details".AsMemory(), new RouteNode());
+            api.ParsedBranches.Add(ParsedBranch("{id:int}", mockIntParser.Object, intNode));
+            api.ParsedBranches.Add(ParsedBranch("{slug:str}", mockStringParser.Object, stringNode));
+            root.LiteralBranches.Add("api".AsMemory(), api);
 
             RouteMatchCursor cursor = CreateCursor(root, "/api/1986/details");
 
             Assert.That(await cursor.MoveNextAsync(), Is.True);
-            Assert.That(cursor.Current.HandlerRegistration.Pattern, Is.EqualTo(handler.Pattern));
-            Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue(1986));
+            Assert.That(cursor.HandlerRegistration.Pattern, Is.EqualTo(handler.Pattern));
+            Assert.That(cursor.Parameters, Does.ContainKey("id").WithValue(1986));
 
             Assert.That(await cursor.MoveNextAsync(), Is.False);
 
@@ -283,10 +286,10 @@ namespace NanoRoute.Tests
                 literal = new(),
                 parsed = new();
 
-            literal.HandlerRegistrations[HttpVerb.Get] = [handler];
-            items.LiteralChildren.Add("literal".AsMemory(), literal);
-            items.ParsedChildren.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
-            root.LiteralChildren.Add("items".AsMemory(), items);
+            AddHandler(literal, HttpVerb.Get, handler);
+            items.LiteralBranches.Add("literal".AsMemory(), literal);
+            items.ParsedBranches.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
+            root.LiteralBranches.Add("items".AsMemory(), items);
 
             RouteMatchCursor cursor = CreateCursor(root, "/items/literal", MatchingPrecedence.ParameterizedFirst);
 
@@ -296,7 +299,7 @@ namespace NanoRoute.Tests
             parserResult.SetResult(ValueParseResult.False);
 
             Assert.That(await pendingMove, Is.True);
-            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
             Assert.That(await cursor.MoveNextAsync(), Is.False);
 
             mockParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "literal")), Times.Once);
@@ -322,11 +325,11 @@ namespace NanoRoute.Tests
                 literal = new(),
                 parsed = new();
 
-            literal.HandlerRegistrations[HttpVerb.Get] = [literalHandler];
-            parsed.HandlerRegistrations[HttpVerb.Get] = [parsedHandler];
-            items.LiteralChildren.Add("literal".AsMemory(), literal);
-            items.ParsedChildren.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
-            root.LiteralChildren.Add("items".AsMemory(), items);
+            AddHandler(literal, HttpVerb.Get, literalHandler);
+            AddHandler(parsed, HttpVerb.Get, parsedHandler);
+            items.LiteralBranches.Add("literal".AsMemory(), literal);
+            items.ParsedBranches.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
+            root.LiteralBranches.Add("items".AsMemory(), items);
 
             RouteMatchCursor cursor = CreateCursor(root, "/items/literal", MatchingPrecedence.ParameterizedFirst);
 
@@ -336,8 +339,8 @@ namespace NanoRoute.Tests
             parserResult.SetResult(new ValueParseResult(true, "literal"));
 
             Assert.That(await pendingMove, Is.True);
-            Assert.That(cursor.Current.HandlerRegistration, Is.EqualTo(parsedHandler));
-            Assert.That(cursor.Current.AttachedParameters, Does.ContainKey("id").WithValue("literal"));
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(parsedHandler));
+            Assert.That(cursor.Parameters, Does.ContainKey("id").WithValue("literal"));
             Assert.That(await cursor.MoveNextAsync(), Is.False);
 
             mockParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "literal")), Times.Once);
@@ -358,8 +361,8 @@ namespace NanoRoute.Tests
                 items = new(),
                 parsed = new();
 
-            items.ParsedChildren.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
-            root.LiteralChildren.Add("items".AsMemory(), items);
+            items.ParsedBranches.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
+            root.LiteralBranches.Add("items".AsMemory(), items);
 
             RouteMatchCursor cursor = CreateCursor(root, "/items/missing", MatchingPrecedence.ParameterizedFirst);
 
@@ -375,6 +378,96 @@ namespace NanoRoute.Tests
         }
 
         [Test]
+        public async Task MoveNextAsync_ShouldAwaitSingleParameterizedBranchAndContinueWithNextSingleBranch()
+        {
+            TaskCompletionSource<ValueParseResult> parserResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            Mock<ValueParserDelegate> mockParser = new(MockBehavior.Strict);
+            mockParser
+                .Setup(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "value")))
+                .Returns((ValueParserContext _) => new ValueTask<ValueParseResult>(parserResult.Task));
+
+            HandlerRegistration handler = new(s_handler, "/{id:str}/details/");
+
+            RouteNode
+                root = new(),
+                parsed = new(),
+                details = new();
+
+            AddHandler(details, HttpVerb.Get, handler);
+            parsed.LiteralBranches.Add("details".AsMemory(), details);
+            root.ParsedBranches.Add(ParsedBranch("{id:str}", mockParser.Object, parsed));
+
+            RouteMatchCursor cursor = CreateCursor(root, "/value/details");
+
+            ValueTask<bool> pendingMove = cursor.MoveNextAsync();
+            Assert.That(pendingMove.IsCompleted, Is.False);
+
+            parserResult.SetResult(new ValueParseResult(true, "value"));
+
+            Assert.That(await pendingMove, Is.True);
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(cursor.Parameters, Does.ContainKey("id").WithValue("value"));
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+
+            mockParser.Verify(parser => parser.Invoke(It.Is<ValueParserContext>(context => context.Segment.ToString() == "value")), Times.Once);
+        }
+
+        [Test]
+        public async Task MoveNextAsync_ShouldCompleteWhenSingleParameterizedBranchDoesNotMatch()
+        {
+            RouteNode root = new();
+            root.ParsedBranches.Add(ParsedBranch("{id:str}", static _ => new ValueTask<ValueParseResult>(ValueParseResult.False), new RouteNode()));
+
+            RouteMatchCursor cursor = CreateCursor(root, "/value");
+
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed, Is.True);
+        }
+
+        [Test]
+        public async Task MoveNextAsync_ShouldCompleteWhenSingleLiteralBranchDoesNotMatch()
+        {
+            RouteNode root = new();
+            root.LiteralBranches.Add("cica".AsMemory(), new RouteNode());
+
+            RouteMatchCursor cursor = CreateCursor(root, "/value");
+
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed, Is.True);
+        }
+
+        [Test]
+        public async Task Reset_ShouldRestartMatchingAfterDecoding()
+        {
+            HandlerRegistration handler = new(s_handler, "/files/a%20b/");
+
+            RouteNode
+                root = new(),
+                files = new(),
+                name = new();
+
+            AddHandler(name, HttpVerb.Get, handler);
+            files.LiteralBranches.Add("a b".AsMemory(), name);
+            root.LiteralBranches.Add("files".AsMemory(), files);
+
+            using RouteMatchCursor cursor = CreateCursor(root, "/files/a%20b");
+
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed, Is.True);
+
+            cursor.Reset();
+
+            Assert.That(cursor.Completed, Is.False);
+            Assert.That(await cursor.MoveNextAsync(), Is.True);
+            Assert.That(cursor.HandlerRegistration, Is.EqualTo(handler));
+            Assert.That(await cursor.MoveNextAsync(), Is.False);
+            Assert.That(cursor.Completed, Is.True);
+        }
+
+        [Test]
         public async Task MoveNextAsync_ShouldRejectInvalidPathEscapes()
         {
             RouteNode
@@ -382,10 +475,10 @@ namespace NanoRoute.Tests
                 files = new(),
                 parsed = new();
 
-            files.ParsedChildren.Add(ParsedBranch("{name:str}", static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())), parsed));
-            root.LiteralChildren.Add("files".AsMemory(), files);
+            files.ParsedBranches.Add(ParsedBranch("{name:str}", static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, context.Segment.ToString())), parsed));
+            root.LiteralBranches.Add("files".AsMemory(), files);
 
-            await using RouteMatchCursor cursor = CreateCursor(root, "/files/%C0%AF");
+            using RouteMatchCursor cursor = CreateCursor(root, "/files/%C0%AF");
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(async () => await cursor.MoveNextAsync())!;
             Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));

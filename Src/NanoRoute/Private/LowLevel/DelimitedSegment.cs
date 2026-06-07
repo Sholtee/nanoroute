@@ -4,10 +4,12 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace NanoRoute.Internals
 {
-    internal struct DelimitedSegment(ReadOnlyMemory<char> original, char separator)
+    internal struct DelimitedSegment(ReadOnlyMemory<char> original, char separator) : IEnumerator<ReadOnlyMemory<char>>
     {
         private const int DONE = -1;
 
@@ -23,7 +25,7 @@ namespace NanoRoute.Internals
 
             ReadOnlySpan<char> span = Original.Span;
 
-            while (_next < span.Length && span[_next] == separator)
+            while (_next < span.Length && span[_next] == Separator)
                 _next++;
 
             if (_next >= span.Length)
@@ -33,7 +35,7 @@ namespace NanoRoute.Internals
                 return false;
             }
 
-            int i = span.Slice(_next).IndexOf(separator);
+            int i = span.Slice(_next).IndexOf(Separator);
             if (i < 0)
             {
                 Current = Original.Slice(_next);
@@ -48,11 +50,36 @@ namespace NanoRoute.Internals
             return true;
         }
 
+        public void Reset()
+        {
+            _next = 0;
+            Current = default;
+        }
+
+        public readonly void Dispose() { }
+
         public ReadOnlyMemory<char> Current { get; private set; }
 
-        public readonly ReadOnlyMemory<char> Remaining => _next > DONE ? Original.Slice(Math.Max(0, _next - 1)) : default;
+        readonly object IEnumerator.Current => Current;
+
+        public readonly ReadOnlyMemory<char> Remaining
+        {
+            get
+            {
+                if (!HasValue)
+                    return _next > DONE ? Original.Slice(Math.Max(0, _next - 1)) : default;
+
+                int segmentStart = _next is DONE
+                    ? Original.Length - Current.Length
+                    : _next - Current.Length - 1;
+
+                return Original.Slice(Math.Max(0, segmentStart - 1));
+            }
+        }
 
         public ReadOnlyMemory<char> Original { get; } = original;
+
+        public char Separator { get; } = separator;
 
         public readonly bool HasValue => Current.Length > 0;
     }

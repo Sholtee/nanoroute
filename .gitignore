@@ -2,6 +2,7 @@
 *.user
 .dotnet
 .nuget
+.serena
 .vs
 [Aa]rtifacts/
 [Bb]in/

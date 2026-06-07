@@ -39,7 +39,7 @@ namespace NanoRoute
         /// object? id = requestContext.Parameters["id"];
         /// </code>
         /// </example>
-        public required Dictionary<string, object?> Parameters { get; init; }
+        public required IDictionary<string, object?> Parameters { get; init; }
 
         /// <summary>
         /// Gets the service provider available to handlers and parsers.

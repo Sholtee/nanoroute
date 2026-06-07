@@ -9,12 +9,24 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
+using BenchmarkDotNet.Exporters;
 
 namespace NanoRoute.Perf
 {
-    [MemoryDiagnoser]
-    public partial class MatcherBenchmarks: RoutingBenchmarkScenarios
+    [Config(typeof(MatcherBenchmarksConfig))]
+    public partial class MatcherBenchmarks : RoutingBenchmarkScenarios
     {
+        private sealed class MatcherBenchmarksConfig : ManualConfig
+        {
+            public MatcherBenchmarksConfig()
+            {
+                AddDiagnoser(MemoryDiagnoser.Default);
+                AddExporter(RPlotExporter.Default);
+            }
+        }
+
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "BenchmarkDotNet requires RouteMatcherFactories to be public")]
         public interface IRouteMatcher : IDisposable
         {

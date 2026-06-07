@@ -242,7 +242,7 @@ namespace NanoRoute.Tests
                 mockIntParser = new(MockBehavior.Strict),
                 mockStringParser = new(MockBehavior.Strict);
 
-            Dictionary<string, object?>
+            IDictionary<string, object?>
                 params_1 = null!,
                 params_2 = null!;
 

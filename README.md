@@ -41,7 +41,7 @@ From there, add `AddDefaultValueParsers()` for route parameters, `WithQueryBindi
 nanoroute/
 |-- .github/
 |   |-- workflows/                      GitHub Actions workflows
-|-- Scripts/                            Build, packaging, docs, and local helper scripts
+|-- Scripts/                            Build, packaging, docs, benchmark chart, and local helper scripts
 |-- Src/                                Main source code
 |   |-- Directory.Build.props           Shared source project settings
 |   |-- Directory.Build.targets         Shared source project targets
@@ -93,8 +93,12 @@ nanoroute/
 |-- README.md                           Project README
 ```
 
+## Route matching performance
+
+![RouteMatchingPerformance](https://github.com/Sholtee/nanoroute/blob/gh-pages/Benchmarks/NanoRoute.Perf.MatcherBenchmarks-barplot.png)
+
 ## Target Frameworks
 
 - Core library: `netstandard2.0` and `netstandard2.1`
-- AWS Lambda adapter: `netstandard2.1`
+- AWS Lambda adapter: `net8.0`
 - Native AOT validation: `Tests/NanoRoute.NativeAot`

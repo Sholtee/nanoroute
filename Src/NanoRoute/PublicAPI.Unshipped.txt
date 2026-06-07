@@ -131,7 +131,7 @@ NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior.init -> void
 NanoRoute.RequestContext
 NanoRoute.RequestContext.Cancellation.get -> System.Threading.CancellationToken
 NanoRoute.RequestContext.Cancellation.init -> void
-NanoRoute.RequestContext.Parameters.get -> System.Collections.Generic.Dictionary<string!, object?>!
+NanoRoute.RequestContext.Parameters.get -> System.Collections.Generic.IDictionary<string!, object?>!
 NanoRoute.RequestContext.Parameters.init -> void
 NanoRoute.RequestContext.RemainingPath.get -> System.ReadOnlyMemory<char>
 NanoRoute.RequestContext.RemainingPath.init -> void
@@ -158,8 +158,6 @@ NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig.get -> TConfig!
 NanoRoute.RouterConfig
 NanoRoute.RouterConfig.MatchingPrecedence.get -> NanoRoute.MatchingPrecedence
 NanoRoute.RouterConfig.MatchingPrecedence.init -> void
-NanoRoute.RouterConfig.ParametersCapacity.get -> int
-NanoRoute.RouterConfig.ParametersCapacity.init -> void
 NanoRoute.RouterFactoryDelegate<TRouter, TConfig>
 NanoRoute.RouteScopeBuilder
 NanoRoute.RouteScopeBuilder.AddHandler(string! verb, string! pattern, NanoRoute.RequestHandlerDelegate! handler) -> NanoRoute.RouteScopeBuilder!

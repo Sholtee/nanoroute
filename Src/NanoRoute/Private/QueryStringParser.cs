@@ -66,7 +66,7 @@ namespace NanoRoute.Internals
             if (source.Span.IndexOfAny('%', '+') < 0)
                 return source;
 
-            char[] decodedBuffer = _decodedBuffer ??= s_arrayPool.Rent(_parameter.Original.Length);
+            char[] decodedBuffer = _decodedBuffer ??= s_arrayPool.Rent(_parameter.Remaining.Length);
 
             if (!UrlUtils.TryDecodeUrl(source.Span, decodedBuffer.AsSpan(_nextDecoded), UrlDecodeMode.Form, out int charsWritten))
                 ThrowBadRequest(Resources.ERR_DECODING_FAILED);

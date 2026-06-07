@@ -20,7 +20,7 @@ namespace NanoRoute.Tests
         public async Task Handle_ShouldSupportParsedSegmentsWithoutBindingTheirValueToParameters()
         {
             Mock<SyncValueParserDelegate> mockParser = new(MockBehavior.Strict);
-            Dictionary<string, object?> paramz = null!;
+            IDictionary<string, object?> paramz = null!;
             object? parsed = "any_string";
 
             mockParser

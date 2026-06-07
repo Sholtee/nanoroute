@@ -135,7 +135,7 @@ namespace NanoRoute
                 if (!JSON_MEDIA_TYPE.Equals(content.Headers.ContentType?.MediaType, StringComparison.OrdinalIgnoreCase))
                     BadRequest(Resources.ERR_BAD_CONTENT_TYPE);
 
-                Stream contentStream = await content.ReadAsStreamAsync().ConfigureAwait(false);
+                using Stream contentStream = await content.ReadAsStreamAsync().ConfigureAwait(false);
 
                 object? body = null;
 

@@ -17,7 +17,7 @@ namespace NanoRoute.Perf
         {
             private sealed class AspNetCoreRouteMatcher(RoutingBenchmarkScenario scenario) : IRouteMatcher
             {
-                private readonly AspNetCoreRouteEndpointInvoker _invoker = new AspNetCoreRouteEndpointInvoker
+                private readonly AspNetCoreRouteEndpointInvoker _invoker = new
                 (
                     new RouteEndpoint
                     (
