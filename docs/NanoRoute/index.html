@@ -171,8 +171,7 @@ public interface IUserRepository
     .CreateBuilder()
     .ConfigureRouting(config =&gt; config with
     {
-        MatchingPrecedence = MatchingPrecedence.ParameterizedFirst,
-        ParametersCapacity = 8
+        MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
     })
     .AddDefaultValueParsers()
     .AddEndpoint(&quot;GET&quot;, &quot;/items/{slug:str}/&quot;, endpoint =&gt; endpoint
@@ -184,7 +183,6 @@ public interface IUserRepository
     .CreateRouter();
 </code></pre>
 <p>Created routers are immutable snapshots: later route or configuration changes on the builder do not affect routers that have already been created.</p>
-<p><code>ParametersCapacity</code> sets the initial capacity of the per-request <code>RequestContext.Parameters</code> dictionary. Raise it when most requests collect several route parameters, query bindings, or middleware-added values and you want to avoid resizing.</p>
 <h2 id="module-configuration">Module Configuration</h2>
 <p>Some builder modules expose <code>ConfigureXxx()</code> methods for settings that are shared by later registrations in the same route scope. This supports a &quot;configure once, use anywhere&quot; style when several route registrations should use the same module behavior.</p>
 <p>The same pattern also gives composite helpers a clean configuration path. A helper can register lower-level middleware internally while still honoring the configuration that was already stored in the builder scope. This keeps configuration close to the module it affects instead of adding pass-through callback overloads to every higher-level helper that happens to use that module.</p>

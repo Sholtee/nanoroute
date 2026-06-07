@@ -107,7 +107,7 @@ A module registration should capture the configuration visible when it is regist
 Exceptions thrown by the delegate propagate from the configuration method that invoked it.</p>
 </div>
   <h5 id="NanoRoute_ConfigureBuilderDelegate_1_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with { ParametersCapacity = 16 });</code></pre>
+  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.ParameterizedFirst });</code></pre>
 
 
 </article>

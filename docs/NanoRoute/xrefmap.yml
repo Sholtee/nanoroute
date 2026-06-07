@@ -1674,18 +1674,6 @@ references:
   commentId: Overload:NanoRoute.RouterConfig.MatchingPrecedence
   fullName: NanoRoute.RouterConfig.MatchingPrecedence
   nameWithType: RouterConfig.MatchingPrecedence
-- uid: NanoRoute.RouterConfig.ParametersCapacity
-  name: ParametersCapacity
-  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_ParametersCapacity
-  commentId: P:NanoRoute.RouterConfig.ParametersCapacity
-  fullName: NanoRoute.RouterConfig.ParametersCapacity
-  nameWithType: RouterConfig.ParametersCapacity
-- uid: NanoRoute.RouterConfig.ParametersCapacity*
-  name: ParametersCapacity
-  href: NanoRoute.RouterConfig.html#NanoRoute_RouterConfig_ParametersCapacity_
-  commentId: Overload:NanoRoute.RouterConfig.ParametersCapacity
-  fullName: NanoRoute.RouterConfig.ParametersCapacity
-  nameWithType: RouterConfig.ParametersCapacity
 - uid: NanoRoute.RouterFactoryDelegate`2
   name: RouterFactoryDelegate<TRouter, TConfig>
   href: NanoRoute.RouterFactoryDelegate-2.html
