@@ -22,7 +22,7 @@ Serena is not required for simple documentation-only edits, direct command-outpu
 
 When Serena MCP tools are invoked, record the `serena.exe` launcher process ID for the session when practical.
 
-Before finishing, after no further Serena tool calls are needed, terminate and verify only Serena process trees started for the session, including the associated `serena.exe` launcher and Python descendants. Do not terminate unrelated or ambiguous Python processes; inspect process ID, command line, executable path, parent process ID, and start time when ownership needs confirmation. Leave pre-existing or ambiguous Serena process trees running and ask before terminating them.
+Before finishing, after no further Serena tool calls are needed, terminate and verify only Serena process trees started for the session, including the associated `serena.exe` launcher and Python descendants. A model turn ending is not enough evidence that the Codex conversation/session is concluded; keep the active Serena MCP transport running across turns by default. Terminate it only when the developer explicitly asks to end the conversation, asks for Serena cleanup, or confirms that no more code-related work will continue in the current thread. Do not terminate unrelated or ambiguous Python processes; inspect process ID, command line, executable path, parent process ID, and start time when ownership needs confirmation. Leave pre-existing or ambiguous Serena process trees running and ask before terminating them.
 
 ## GitHub Issue Workflow
 
