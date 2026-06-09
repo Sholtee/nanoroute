@@ -104,6 +104,7 @@ public interface IUserRepository
 - [RouteScopeBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteScopeBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
 - [ExceptionHandlingOptions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingOptions.html)
+- [JsonErrorDetailsOptions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.JsonErrorDetailsOptions.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
@@ -450,39 +451,43 @@ The options callback configures only the exception-handling middleware being reg
 
 ## JSON Error Details
 
-`AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses. Pass options directly when the error payload should include developer diagnostics or custom `ErrorDetails` serialization metadata:
+`AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses. Pass an options callback when the error payload should include developer diagnostics, custom `ErrorDetails` serialization metadata, or custom exception normalization:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .AddJsonErrorDetails(populateErrorInfo: true)
-    .AddEndpoint("GET", "/items/", endpoint => endpoint
-        .WithHandler((_, _) => throw new InvalidOperationException("Boom")))
-    .CreateRouter();
-```
-
-`PopulateErrorInfo` can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details.
-
-`AddJsonErrorDetails()` also registers default exception handling internally so unexpected exceptions are normalized before they are rendered as JSON. If you want custom exception normalization for the same route scope, register a custom `AddExceptionHandler()` after `AddJsonErrorDetails()` so it runs closer to later endpoint handlers:
-
-```csharp
-HttpListenerRouter router = HttpListenerRouter
-    .CreateBuilder()
-    .AddJsonErrorDetails()
-    .AddExceptionHandler(options => options.Map<NotSupportedException>
-    (
-        static ex =>
-        {
-            HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
-            return null!;
-        }
-    ))
+    .AddJsonErrorDetails(options =>
+    {
+        options.PopulateErrorInfo = true;
+        options.ErrorDetailsTypeInfo = MyJsonContext.Default.ErrorDetails;
+        options.Map<NotSupportedException>
+        (
+            static ex =>
+            {
+                HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+                return null!;
+            }
+        );
+    })
     .AddEndpoint("GET", "/items/", endpoint => endpoint
         .WithHandler((_, _) => throw new NotSupportedException()))
     .CreateRouter();
 ```
 
-Use the overload with `errorDetailsTypeInfo` when Native AOT or custom serialization settings require source-generated `ErrorDetails` metadata.
+`PopulateErrorInfo` can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details. Set `ErrorDetailsTypeInfo` when Native AOT or custom serialization settings require source-generated `ErrorDetails` metadata.
+
+`AddJsonErrorDetails()` also registers exception handling internally so unexpected exceptions are normalized before they are rendered as JSON. The same `JsonErrorDetailsOptions` callback configures that internally registered exception handler because it derives from `ExceptionHandlingOptions`:
+
+```csharp
+builder.AddJsonErrorDetails(options => options.Map<NotSupportedException>
+(
+    static ex =>
+    {
+        HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+        return null!;
+    }
+));
+```
 
 ## Custom Routers
 
@@ -536,5 +541,5 @@ This keeps the transport-specific concerns in your own router type while still r
 - `AddHandler<TRequestContext>()` and `EndpointBuilder.WithHandler<TRequestContext>()` project `RequestContext` into a typed request object before invoking the handler.
 - `AddExceptionHandler(options => ...)` customizes exception normalization for that middleware registration.
 - `AddJsonBody()` and `EndpointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
-- `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses, with overloads for diagnostics and serialization metadata.
+- `AddJsonErrorDetails(options => ...)` turns routing exceptions into JSON `ErrorDetails` responses and configures diagnostics, serialization metadata, and exception normalization for that middleware registration.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
