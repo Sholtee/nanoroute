@@ -1,5 +1,11 @@
 # History
 
+## 1.0.0-preview3
+
+### Changed
+
+- Changed `ApiGatewayV2Router` to compose the core `RequestPipeline` and expose its own explicit `CreateBuilder()` factory.
+
 ## 1.0.0-preview2
 
 ### Breaking Changes

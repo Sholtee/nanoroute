@@ -105,9 +105,9 @@ public interface IUserRepository
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
 - [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
-- [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
+- [RequestPipeline](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestPipeline.html)
 - [EndpointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
@@ -534,7 +534,7 @@ HttpListenerRouter router = HttpListenerRouter
 
 ## Custom Routers
 
-If `HttpListenerRouter` is not the transport you want, derive from `Router<TDescendant, TConfig>` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
+If `HttpListenerRouter` is not the transport you want, compose a `RequestPipeline` into your own router type and expose an entry point that prepares an `HttpRequestMessage`, invokes `ExecuteAsync()`, and deals with the returned `HttpResponseMessage`.
 
 ```csharp
 using System;
@@ -544,14 +544,23 @@ using System.Threading.Tasks;
 
 using NanoRoute;
 
-public sealed class InMemoryRouter : Router<InMemoryRouter, RouterConfig>
+public sealed class InMemoryRouter
 {
-    private InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder) : base(builder)
+    private readonly RequestPipeline _pipeline;
+
+    private InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder)
     {
+        Config = builder.RouterConfig;
+        _pipeline = new RequestPipeline(builder, Config.MatchingPrecedence);
     }
 
+    public RouterConfig Config { get; }
+
+    public static RouterBuilder<InMemoryRouter, RouterConfig> CreateBuilder() =>
+        new(static builder => new InMemoryRouter(builder));
+
     public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
-        Handle(request, services, cancellation);
+        _pipeline.ExecuteAsync(request, services, cancellation);
 }
 
 InMemoryRouter router = InMemoryRouter
@@ -561,7 +570,7 @@ InMemoryRouter router = InMemoryRouter
     .CreateRouter();
 ```
 
-This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline.
+This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline. The builder remains strongly typed, but the router itself can be any class; no inheritance convention or hidden constructor lookup is required.
 
 ## Cancellation
 
@@ -572,6 +581,7 @@ This keeps the transport-specific concerns in your own router type while still r
 ## Common Building Blocks
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
+- `RequestPipeline` runs a configured route snapshot for custom transports.
 - `ConfigureRouting()` customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.

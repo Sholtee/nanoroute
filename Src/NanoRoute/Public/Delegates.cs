@@ -28,7 +28,7 @@ namespace NanoRoute
     /// var builder = new RouterBuilder&lt;MyRouter, RouterConfig&gt;(static b =&gt; new MyRouter(b));
     /// </code>
     /// </example>
-    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : Router where TConfig : RouterConfig, new();
+    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TConfig : RouterConfig, new();
 
     /// <summary>
     /// Updates a typed builder configuration object.

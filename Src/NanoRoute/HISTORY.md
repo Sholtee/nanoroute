@@ -4,10 +4,13 @@
 
 ### Added
 
+- Added public `RequestPipeline` for custom routers that want to reuse the core `HttpRequestMessage` routing pipeline without inheriting from a NanoRoute base type.
 - Added `ValueParseResult.False` as a reusable non-match result for asynchronous value parsers.
 
 ### Changed
 
+- Changed built-in routers to compose `RequestPipeline` and expose explicit `CreateBuilder()` factories instead of using the self-typed `Router<TDescendant, TConfig>` base.
+- Changed router request metadata from `Router` constants to `HttpRequestMessage` extension properties.
 - Exception normalizers registered for a base exception type now apply to derived exceptions when no more specific normalizer is registered.
 
 ## 1.0.0-preview3

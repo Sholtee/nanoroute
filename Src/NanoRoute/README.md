@@ -2,7 +2,7 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
-The core library is centered around `RouteScopeBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+The core library is centered around `RouteScopeBuilder`, `RequestPipeline`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios. For JSON body and response handling in Native AOT apps, prefer overloads that accept `JsonTypeInfo` from a source-generated `JsonSerializerContext`.
 

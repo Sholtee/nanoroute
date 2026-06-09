@@ -89,8 +89,8 @@ namespace NanoRoute.AwsLambda
                 headers.TryAddWithoutValidation(header.Key, header.Value);
             }
 
-            requestMessage.Options.Set(new HttpRequestOptionsKey<APIGatewayHttpApiV2ProxyRequest>(Router.OriginalRequestName), request);
-            requestMessage.Options.Set(new HttpRequestOptionsKey<string>(Router.TraceIdName), request.RequestContext.RequestId);
+            requestMessage.OriginalRequest = request;
+            requestMessage.TraceId = request.RequestContext.RequestId;
 
             return requestMessage;
         }

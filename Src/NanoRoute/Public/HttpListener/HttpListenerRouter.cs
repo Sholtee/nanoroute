@@ -33,7 +33,7 @@ namespace NanoRoute
     ///     .CreateRouter();
     /// </code>
     /// </example>
-    public sealed class HttpListenerRouter : Router<HttpListenerRouter, HttpListenerRouterConfig>
+    public sealed class HttpListenerRouter
     {
         #region Private
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
@@ -45,7 +45,13 @@ namespace NanoRoute
             "Server"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder) { }
+        private readonly RequestPipeline _pipeline;
+
+        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder)
+        {
+            Config = builder.RouterConfig;
+            _pipeline = new RequestPipeline(builder, Config.MatchingPrecedence);
+        }
 
         private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
@@ -95,12 +101,28 @@ namespace NanoRoute
                 headers.TryAddWithoutValidation(headerName, request.Headers.GetValues(headerName));
             }
 
-            requestMessage.Properties[OriginalRequestName] = request;
-            requestMessage.Properties[TraceIdName] = request.RequestTraceIdentifier.ToString("N");
+            requestMessage.OriginalRequest = request;
+            requestMessage.TraceId = request.RequestTraceIdentifier.ToString("N");
 
             return requestMessage;
         }
         #endregion
+
+        /// <summary>
+        /// Creates a strongly typed builder for <see cref="HttpListenerRouter"/>.
+        /// </summary>
+        /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
+        /// <example>
+        /// <code>
+        /// RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = HttpListenerRouter.CreateBuilder();
+        /// </code>
+        /// </example>
+        public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static builder => new HttpListenerRouter(builder));
+
+        /// <summary>
+        /// Configuration assigned to this instance.
+        /// </summary>
+        public HttpListenerRouterConfig Config { get; }
 
         /// <summary>
         /// Routes a single <see cref="HttpListener"/> request and writes the produced response.
@@ -123,8 +145,8 @@ namespace NanoRoute
         /// </exception>
         /// <remarks>
         /// Request and content headers are copied into the intermediate <see cref="HttpRequestMessage"/>.
-        /// The original <see cref="HttpListenerRequest"/> is stored in
-        /// <see cref="Router.OriginalRequestName"/> on the generated request message.
+        /// The original <see cref="HttpListenerRequest"/> is available through the generated request message's
+        /// <c>OriginalRequest</c> extension property.
         /// Response headers are copied back except for reserved <see cref="HttpListenerResponse"/> headers that
         /// must be managed by <see cref="HttpListener"/> itself. Cancellation is not translated into an HTTP error
         /// response by this adapter.
@@ -154,7 +176,7 @@ namespace NanoRoute
 
             try
             {
-                using HttpResponseMessage response = await Handle(request, services, cancellation).ConfigureAwait(false);
+                using HttpResponseMessage response = await _pipeline.ExecuteAsync(request, services, cancellation).ConfigureAwait(false);
 
                 await HandleResponse(response, context.Response, cancellation).ConfigureAwait(false);
             }

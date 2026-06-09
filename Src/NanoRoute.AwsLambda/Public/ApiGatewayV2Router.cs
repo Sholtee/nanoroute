@@ -28,9 +28,31 @@ namespace NanoRoute.AwsLambda
     ///     .CreateRouter();
     /// </code>
     /// </example>
-    public sealed class ApiGatewayV2Router : Router<ApiGatewayV2Router, ApiGatewayV2RouterConfig>
+    public sealed class ApiGatewayV2Router
     {
-        private ApiGatewayV2Router(RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> builder) : base(builder) { }
+        private readonly RequestPipeline _pipeline;
+
+        private ApiGatewayV2Router(RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> builder)
+        {
+            Config = builder.RouterConfig;
+            _pipeline = new RequestPipeline(builder, Config.MatchingPrecedence);
+        }
+
+        /// <summary>
+        /// Creates a strongly typed builder for <see cref="ApiGatewayV2Router"/>.
+        /// </summary>
+        /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
+        /// <example>
+        /// <code>
+        /// RouterBuilder&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt; builder = ApiGatewayV2Router.CreateBuilder();
+        /// </code>
+        /// </example>
+        public static RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> CreateBuilder() => new(static builder => new ApiGatewayV2Router(builder));
+
+        /// <summary>
+        /// Configuration assigned to this instance.
+        /// </summary>
+        public ApiGatewayV2RouterConfig Config { get; }
 
         /// <summary>
         /// Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.
@@ -69,7 +91,7 @@ namespace NanoRoute.AwsLambda
 
             try
             {
-                using HttpResponseMessage responseMessage = await Handle(requestMessage, services, cts.Token).ConfigureAwait(false);
+                using HttpResponseMessage responseMessage = await _pipeline.ExecuteAsync(requestMessage, services, cts.Token).ConfigureAwait(false);
 
                 return await responseMessage.CreateResponse().ConfigureAwait(false);
             }
