@@ -102,7 +102,6 @@ public interface IUserRepository
 ## Core Types
 
 - [RouteScopeBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteScopeBuilder.html)
-- [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
 - [ExceptionHandlingOptions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingOptions.html)
 - [JsonErrorDetailsOptions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.JsonErrorDetailsOptions.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
@@ -535,7 +534,6 @@ This keeps the transport-specific concerns in your own router type while still r
 - `CreatePrefix("/prefix/*")` creates a scoped child builder for a route subtree.
 - `AddEndpoint()` and `CreateEndpoint()` capture an endpoint's verbs and route pattern once.
 - `EndpointBuilder.WithHandler()`, `EndpointBuilder.WithJsonBody()`, and `EndpointBuilder.WithQueryBindings()` register endpoint-local handlers, JSON body middleware, and query bindings.
-- `RouteScopeBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
 - `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
 - Query-binding overloads that take `UnexpectedParameterBehavior` can reject undeclared query-string keys per registration.
 - `AddHandler<TRequestContext>()` and `EndpointBuilder.WithHandler<TRequestContext>()` project `RequestContext` into a typed request object before invoking the handler.

@@ -134,12 +134,14 @@ public interface IUserRepository
 
 - Exact route patterns start and end with `/`, for example `/items/`.
 - Prefix route patterns start with `/` and end with `/*`, for example `/items/*`.
+- `UseMatchingPrecedence()` controls whether literal or parameterized route segments win at the same path depth.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` parsers.
 - `AddPrefix()` and `CreatePrefix()` define scoped route subtrees.
-- `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`.
+- `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`, with per-registration handling for undeclared query keys.
 - `AddJsonBody()` and `WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - Typed handlers can bind route values, query values, JSON bodies, services, `RequestContext`, and `CancellationToken` into request objects.
-- `AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses.
+- `AddExceptionHandler(options => ...)` maps exception types for one exception-handling middleware registration.
+- `AddJsonErrorDetails(options => ...)` turns routing and normalized exception failures into JSON `ErrorDetails` responses and configures diagnostics, `ErrorDetails` metadata, and exception normalization for that middleware registration.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 - Native AOT JSON apps should pass source-generated `JsonTypeInfo` values to `WithJsonBody(...)` and `HttpResponseMessage.Json(...)`.
 

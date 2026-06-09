@@ -131,7 +131,6 @@ namespace NanoRoute
             _valueParsers = new Dictionary<string, ValueParserRegistration>(parent._valueParsers, StringComparer.OrdinalIgnoreCase);
 
             BasePattern = JoinPattern(parent.BasePattern, pattern);
-            Metadata = parent.Metadata.CreateScope();
         }
 
         internal RouteScopeBuilder()
@@ -140,7 +139,6 @@ namespace NanoRoute
             _valueParsers = new Dictionary<string, ValueParserRegistration>(StringComparer.OrdinalIgnoreCase);
 
             BasePattern = CurrentPrefix;
-            Metadata = new BuilderMetadata();
         }
 
         /// <summary>
@@ -294,26 +292,6 @@ namespace NanoRoute
         /// <see cref="CreatePrefix(string)"/> expose the accumulated prefix inherited from their parent scopes.
         /// </remarks>
         public string BasePattern { get; }
-
-        /// <summary>
-        /// Gets extension-defined builder metadata visible from this route scope.
-        /// </summary>
-        /// <remarks>
-        /// Metadata is public for extension authors who need scoped build-time settings behind module-specific
-        /// configuration methods. Application code usually should prefer those module APIs instead of reading or
-        /// writing metadata directly.
-        /// <para>
-        /// Child scopes created with <see cref="CreatePrefix(string)"/> inherit a scoped copy of their parent's
-        /// metadata. Metadata updates made after the child scope is created stay local to the scope where they
-        /// are made.
-        /// </para>
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// builder.Metadata.Set(new MyFeatureOptions { Enabled = true });
-        /// </code>
-        /// </example>
-        public BuilderMetadata Metadata { get; }
 
         /// <summary>
         /// Gets the distinct route patterns currently visible from this route scope.

@@ -522,7 +522,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureJsonErrorDetails(_ => null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("config"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => new JsonErrorDetailsConfig { ErrorDetailsTypeInfo = null! })!;
+            ex = Assert.Throws<ArgumentNullException>(() => new JsonErrorDetailsOptions { ErrorDetailsTypeInfo = null! })!;
             Assert.That(ex.ParamName, Is.EqualTo("value"));
 
             EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
