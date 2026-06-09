@@ -214,6 +214,15 @@ namespace NanoRoute.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter name is required..
+        /// </summary>
+        internal static string ERR_PARAMETER_NAME_REQUIRED {
+            get {
+                return ResourceManager.GetString("ERR_PARAMETER_NAME_REQUIRED", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Conflicting parameter names are not allowed for the same route segment..
         /// </summary>
         internal static string ERR_PARAMETER_OVERRIDE {

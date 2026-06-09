@@ -186,4 +186,7 @@
   <data name="ERR_LIST_PARSERS_NOT_SUPPORTED" xml:space="preserve">
     <value>List parsers are not supported.</value>
   </data>
+  <data name="ERR_PARAMETER_NAME_REQUIRED" xml:space="preserve">
+    <value>Parameter name is required.</value>
+  </data>
 </root>

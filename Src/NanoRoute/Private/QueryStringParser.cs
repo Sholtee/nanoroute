@@ -17,7 +17,7 @@ namespace NanoRoute.Internals
 {
     using Properties;
 
-    internal sealed class QueryStringParser(RequestContext context, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters, QueryParsingConfig config) : IDisposable
+    internal sealed class QueryStringParser(RequestContext context, FrozenDictionary<ReadOnlyMemory<char>, ParameterParser> expectedParameters, UnexpectedParameterBehavior unexpected) : IDisposable
     {
         #region Private
         // Extend only lists created by this parser; replace anything supplied by earlier middleware.
@@ -118,7 +118,7 @@ namespace NanoRoute.Internals
 
                 if (!expectedParameters.TryGetValue(parameterName, out ParameterParser? expectedParameter))
                 {
-                    switch (config.UnexpectedParameterBehavior)
+                    switch (unexpected)
                     {
                         case UnexpectedParameterBehavior.Ignore:
                             continue;
@@ -128,7 +128,7 @@ namespace NanoRoute.Internals
                             break;
 
                         default:
-                            Debug.Fail($"Unknown {nameof(UnexpectedParameterBehavior)} value: {config.UnexpectedParameterBehavior}");
+                            Debug.Fail($"Unknown {nameof(UnexpectedParameterBehavior)} value: {unexpected}");
                             break;
                     }
                 }

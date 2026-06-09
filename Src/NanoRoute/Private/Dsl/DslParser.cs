@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace NanoRoute.Internals
 {
-    using Properties;
+    using static Properties.Resources;
 
     internal static class DslParser
     {
@@ -31,10 +31,10 @@ namespace NanoRoute.Internals
                         ParameterDefinition parameterDefinition = ParameterDefinition.Parse(pattern, ref offset);
 
                         if (parameterDefinition.IsOptional)
-                            throw new InvalidOperationException(Resources.ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED);
+                            throw new InvalidOperationException(ERR_OPTIONAL_PARAMETERS_NOT_SUPPORTED);
 
                         if (parameterDefinition.ValueParser.IsList)
-                            throw new InvalidOperationException(Resources.ERR_LIST_PARSERS_NOT_SUPPORTED);
+                            throw new InvalidOperationException(ERR_LIST_PARSERS_NOT_SUPPORTED);
 
                         yield return parameterDefinition with { Index = parameterIndex++ };
                         break;
@@ -48,7 +48,7 @@ namespace NanoRoute.Internals
                 }
             }
 
-            throw new ArgumentException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset), nameof(pattern));
+            throw new ArgumentException(string.Format(Culture, ERR_INVALID_PATTERN, offset), nameof(pattern));
         }
 
         public static IEnumerable<ParameterDefinition> ParseQueryPattern(string pattern)
@@ -57,7 +57,12 @@ namespace NanoRoute.Internals
 
             for (int parameterIndex = 0; offset < pattern.Length; offset++)
             {
-                yield return ParameterDefinition.Parse(pattern, ref offset) with { Index = parameterIndex++ };
+                ParameterDefinition parameterDefinition = ParameterDefinition.Parse(pattern, ref offset) with { Index = parameterIndex++ };
+
+                if (parameterDefinition.ParameterName is null)
+                    throw new InvalidOperationException(ERR_PARAMETER_NAME_REQUIRED);
+
+                yield return parameterDefinition;
 
                 if (++offset == pattern.Length)
                     yield break;
@@ -66,7 +71,7 @@ namespace NanoRoute.Internals
                     break;
             }
 
-            throw new ArgumentException(string.Format(Resources.Culture, Resources.ERR_INVALID_PATTERN, offset), nameof(pattern));
+            throw new ArgumentException(string.Format(Culture, ERR_INVALID_PATTERN, offset), nameof(pattern));
         }
     }
 }

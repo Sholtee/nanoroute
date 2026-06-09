@@ -103,15 +103,13 @@ public interface IUserRepository
 
 - [RouteScopeBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouteScopeBuilder.html)
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
-- [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
-- [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
+- [ExceptionHandlingOptions](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingOptions.html)
 - [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [EndpointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
-- [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
 - [UnexpectedParameterBehavior](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.UnexpectedParameterBehavior.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
 - [ValueParserDelegate](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html)
@@ -138,15 +136,12 @@ public interface IUserRepository
 
 ## Router Configuration
 
-`RouterConfig` controls runtime behavior that applies to a created router snapshot. Configuration records are immutable, so use `ConfigureRouting()` with a `with` expression when you want to replace one or more settings before calling `CreateRouter()`. The callback uses the same `ConfigureBuilderDelegate<TConfig>` shape as module-specific configuration methods.
+`RouterConfig` controls runtime behavior that applies to a created router snapshot. Use `UseMatchingPrecedence()` when you want routers created by the builder to prefer parameterized route segments over literal segments at the same path depth.
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .ConfigureRouting(config => config with
-    {
-        MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
-    })
+    .UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst)
     .AddDefaultValueParsers()
     .AddEndpoint("GET", "/items/{slug:str}/", endpoint => endpoint
         .WithHandler(static async (context, _) =>
@@ -158,28 +153,6 @@ HttpListenerRouter router = HttpListenerRouter
 ```
 
 Created routers are immutable snapshots: later route or configuration changes on the builder do not affect routers that have already been created.
-
-## Module Configuration
-
-Some builder modules expose `ConfigureXxx()` methods for settings that are shared by later registrations in the same route scope. This supports a "configure once, use anywhere" style when several route registrations should use the same module behavior.
-
-The same pattern also gives composite helpers a clean configuration path. A helper can register lower-level middleware internally while still honoring the configuration that was already stored in the builder scope. This keeps configuration close to the module it affects instead of adding pass-through callback overloads to every higher-level helper that happens to use that module.
-
-```csharp
-HttpListenerRouter router = HttpListenerRouter
-    .CreateBuilder()
-    .ConfigureJsonErrorDetails(config => config with
-    {
-        PopulateErrorInfo = true
-    })
-    .AddJsonErrorDetails("/api/*")
-    .AddJsonErrorDetails("/admin/*")
-    .CreateRouter();
-```
-
-`ConfigureXxx()` methods update the configuration visible from the current route scope. They affect module registrations made after the configuration call. Registrations that have already been added keep the configuration they captured when they were registered.
-
-Prefix scopes follow the same rule as value parsers and metadata: a child scope receives a scoped copy when it is created. Configuration changes made later on the parent do not rewrite existing child scopes, and child changes stay local to that child scope.
 
 ## Prefix Scopes
 
@@ -358,21 +331,17 @@ HttpListenerRouter router = HttpListenerRouter
 - List query bindings store a `List<object?>` containing each parsed value in request order.
 - Query keys are matched case-insensitively using the normalized key exposed by `Uri.Query`.
 - Repeated declared scalar query parameters are rejected with `400 Bad Request`.
-- Undeclared query parameters are ignored by default. Use `ConfigureQueryParsing()` to reject them instead.
+- Undeclared query parameters are ignored by default. Pass `unexpected: UnexpectedParameterBehavior.Reject` to reject them for a specific binding.
 - List value parsers are supported only for query bindings, not route path parameters.
 - As with JSON binding and prefix handlers, later middleware can overwrite earlier values in `RequestContext.Parameters`.
 
-Use `ConfigureQueryParsing()` before `AddQueryBindings()` when you want later query-binding registrations in the same route scope to reject query keys that were not declared in their binding descriptor:
+Pass `unexpected: UnexpectedParameterBehavior.Reject` when a query-binding registration should reject query keys that were not declared in its binding descriptor:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
-    .ConfigureQueryParsing(config => config with
-    {
-        UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
-    })
-    .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}")
+    .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}", unexpected: UnexpectedParameterBehavior.Reject)
     .AddEndpoint("GET", "/items/", endpoint => endpoint
         .WithHandler(static async (context, _) =>
         {
@@ -382,7 +351,7 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 ```
 
-`AddQueryBindings()` and `WithQueryBindings()` snapshot the current `QueryParsingConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override query parsing before registering its own scoped query-binding middleware. Endpoint builders use the same scoped configuration through `EndpointBuilder.Prefix`.
+`AddQueryBindings()` and `WithQueryBindings()` capture their `unexpected` behavior at registration time. Use the overload on each binding that needs non-default behavior; other query bindings continue to ignore undeclared query parameters.
 
 ## Typed Handlers
 
@@ -459,45 +428,34 @@ They also have middleware-style overloads that receive `CallNextHandlerDelegate`
 
 `AddExceptionHandler()` adds middleware that converts unexpected exceptions into enriched `HttpRequestException` values. Existing `HttpRequestException` values are passed through unchanged, and `OperationCanceledException` still propagates to the caller.
 
-Use `ConfigureExceptionHandling()` before registering exception-handling middleware when you want to customize how specific exception types are normalized. Normalizers are matched against the thrown exception's runtime type first, then against its base exception types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered:
+Pass an options callback to `AddExceptionHandler()` when one exception-handling middleware should customize how specific exception types are normalized. Normalizers are matched against the thrown exception's runtime type first, then against its base exception types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .ConfigureExceptionHandling(config => config with
-    {
-        ExceptionNormalizers = config.ExceptionNormalizers.SetItems
-        ([
-            ExceptionNormalizer.For<NotSupportedException>
-            (
-                static ex =>
-                {
-                    HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
-                    return null!;
-                }
-            )
-        ])
-    })
-    .AddExceptionHandler()
+    .AddExceptionHandler(options => options.Map<NotSupportedException>
+    (
+        static ex =>
+        {
+            HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+            return null!;
+        }
+    ))
     .AddEndpoint("GET", "/items/", endpoint => endpoint
         .WithHandler((_, _) => throw new NotSupportedException()))
     .CreateRouter();
 ```
 
-`AddExceptionHandler()` snapshots the current `ExceptionHandlingConfig` at registration time. Higher-level helpers that register exception handling internally follow the same rule, so the exception-handling configuration can be customized even when you do not call `AddExceptionHandler()` directly. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override exception normalization before registering its own scoped exception middleware.
+The options callback configures only the exception-handling middleware being registered. Other `AddExceptionHandler()` calls keep the default normalizers unless they receive their own options callback.
 
 ## JSON Error Details
 
-`AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses. Configure the error payload before adding the middleware when you want to include developer diagnostics or customize `ErrorDetails` serialization:
+`AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses. Pass options directly when the error payload should include developer diagnostics or custom `ErrorDetails` serialization metadata:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .ConfigureJsonErrorDetails(config => config with
-    {
-        PopulateErrorInfo = true
-    })
-    .AddJsonErrorDetails()
+    .AddJsonErrorDetails(populateErrorInfo: true)
     .AddEndpoint("GET", "/items/", endpoint => endpoint
         .WithHandler((_, _) => throw new InvalidOperationException("Boom")))
     .CreateRouter();
@@ -505,32 +463,26 @@ HttpListenerRouter router = HttpListenerRouter
 
 `PopulateErrorInfo` can expose exception messages or stack traces, so keep it disabled for production responses unless the caller is trusted to see those details.
 
-`AddJsonErrorDetails()` also registers exception handling internally so unexpected exceptions are normalized before they are rendered as JSON. If you want to customize that normalization, call `ConfigureExceptionHandling()` before `AddJsonErrorDetails()`; the internally registered exception handler snapshots the current `ExceptionHandlingConfig` just like a direct `AddExceptionHandler()` call would.
+`AddJsonErrorDetails()` also registers default exception handling internally so unexpected exceptions are normalized before they are rendered as JSON. If you want custom exception normalization for the same route scope, register a custom `AddExceptionHandler()` after `AddJsonErrorDetails()` so it runs closer to later endpoint handlers:
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .ConfigureExceptionHandling(config => config with
-    {
-        ExceptionNormalizers = config.ExceptionNormalizers.SetItems
-        ([
-            ExceptionNormalizer.For<NotSupportedException>
-            (
-                static ex =>
-                {
-                    HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
-                    return null!;
-                }
-            )
-        ])
-    })
     .AddJsonErrorDetails()
+    .AddExceptionHandler(options => options.Map<NotSupportedException>
+    (
+        static ex =>
+        {
+            HttpRequestException.Throw(HttpStatusCode.BadRequest, "Not supported", ex);
+            return null!;
+        }
+    ))
     .AddEndpoint("GET", "/items/", endpoint => endpoint
         .WithHandler((_, _) => throw new NotSupportedException()))
     .CreateRouter();
 ```
 
-`AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
+Use the overload with `errorDetailsTypeInfo` when Native AOT or custom serialization settings require source-generated `ErrorDetails` metadata.
 
 ## Custom Routers
 
@@ -572,7 +524,7 @@ This keeps the transport-specific concerns in your own router type while still r
 ## Common Building Blocks
 
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
-- `ConfigureRouting()` customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.
+- `UseMatchingPrecedence()` customizes matching precedence before creating a router snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.
 - `CreatePrefix("/prefix/*")` creates a scoped child builder for a route subtree.
@@ -580,10 +532,9 @@ This keeps the transport-specific concerns in your own router type while still r
 - `EndpointBuilder.WithHandler()`, `EndpointBuilder.WithJsonBody()`, and `EndpointBuilder.WithQueryBindings()` register endpoint-local handlers, JSON body middleware, and query bindings.
 - `RouteScopeBuilder.Metadata` stores extension-defined build-time settings with prefix-local scoping; it is mainly for extension authors.
 - `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
-- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` middleware.
+- Query-binding overloads that take `UnexpectedParameterBehavior` can reject undeclared query-string keys per registration.
 - `AddHandler<TRequestContext>()` and `EndpointBuilder.WithHandler<TRequestContext>()` project `RequestContext` into a typed request object before invoking the handler.
-- `ConfigureExceptionHandling()` customizes exception normalization used by subsequently registered `AddExceptionHandler()` middleware.
+- `AddExceptionHandler(options => ...)` customizes exception normalization for that middleware registration.
 - `AddJsonBody()` and `EndpointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
-- `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses.
-- `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.
+- `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses, with overloads for diagnostics and serialization metadata.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
