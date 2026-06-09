@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.Frozen;
 using System.Collections.Generic;
@@ -80,11 +81,9 @@ namespace NanoRoute
     /// </example>
     public sealed class ExceptionHandlingOptions
     {
-        #region Private
         private ImmutableDictionary<Type, ExceptionNormalizer> _exceptionNormalizers = ImmutableDictionary<Type, ExceptionNormalizer>.Empty;
 
         internal FrozenDictionary<Type, ExceptionNormalizer> CreateSnapshot() => _exceptionNormalizers.ToFrozenDictionary();
-        #endregion
 
         /// <summary>
         /// Initializes an exception-handling options instance with the built-in normalizers.
@@ -148,38 +147,8 @@ namespace NanoRoute
     /// </example>
     public static class NanoRouteExceptionExtensions
     {
-        #region Private
-        private static TBuilder AddExceptionHandlerCore<TBuilder>(TBuilder routeScopeBuilder, IEnumerable<string> verbs, string pattern, Action<ExceptionHandlingOptions>? configure) where TBuilder : RouteScopeBuilder
-        {
-            Ensure.NotNull(routeScopeBuilder);
-            Ensure.NotNull(verbs);
-            Ensure.NotNull(pattern);
-
-            ExceptionHandlingOptions options = new();
-            configure?.Invoke(options);
-
-            FrozenDictionary<Type, ExceptionNormalizer> exceptionNormalizers = options.CreateSnapshot();
-
-            routeScopeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
-            {
-                try
-                {
-                    return await next().ConfigureAwait(false);
-                }
-                catch (Exception ex) when (ex is not (HttpRequestException or OperationCanceledException /*needs to be handled from user code*/))
-                {
-                    for (Type exceptionType = ex.GetType(); exceptionType != typeof(object); exceptionType = exceptionType.BaseType)
-                        if (exceptionNormalizers.TryGetValue(exceptionType, out ExceptionNormalizer? exceptionNormalizer))
-                            throw exceptionNormalizer(ex);
-
-                    HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessages: [ex.ToString()]);
-                    return null!;
-                }
-            });
-
-            return routeScopeBuilder;
-        }
-        #endregion
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private static readonly Action<ExceptionHandlingOptions> s_noopConfigure = static _ => { };
 
         extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
@@ -202,7 +171,8 @@ namespace NanoRoute
             /// builder.AddExceptionHandler();
             /// </code>
             /// </example>
-            public TBuilder AddExceptionHandler() => AddExceptionHandlerCore(routeScopeBuilder, HttpVerb.Names, RouteScopeBuilder.CurrentPrefix, configure: null);
+            public TBuilder AddExceptionHandler() =>
+                routeScopeBuilder.AddExceptionHandler(HttpVerb.Names, RouteScopeBuilder.CurrentPrefix, s_noopConfigure);
 
             /// <summary>
             /// Adds an exception-handling middleware for all supported HTTP methods.
@@ -218,12 +188,8 @@ namespace NanoRoute
             /// ));
             /// </code>
             /// </example>
-            public TBuilder AddExceptionHandler(Action<ExceptionHandlingOptions> configure)
-            {
-                Ensure.NotNull(configure);
-
-                return AddExceptionHandlerCore(routeScopeBuilder, HttpVerb.Names, RouteScopeBuilder.CurrentPrefix, configure);
-            }
+            public TBuilder AddExceptionHandler(Action<ExceptionHandlingOptions> configure) =>
+                routeScopeBuilder.AddExceptionHandler(HttpVerb.Names, RouteScopeBuilder.CurrentPrefix, configure);
 
             /// <summary>
             /// Adds an exception-handling middleware for all supported HTTP methods.
@@ -247,7 +213,8 @@ namespace NanoRoute
             /// builder.AddExceptionHandler("/api/*");
             /// </code>
             /// </example>
-            public TBuilder AddExceptionHandler(string pattern) => AddExceptionHandlerCore(routeScopeBuilder, HttpVerb.Names, pattern, configure: null);
+            public TBuilder AddExceptionHandler(string pattern) =>
+                routeScopeBuilder.AddExceptionHandler(HttpVerb.Names, pattern, s_noopConfigure);
 
             /// <summary>
             /// Adds an exception-handling middleware for all supported HTTP methods.
@@ -269,12 +236,8 @@ namespace NanoRoute
             /// ));
             /// </code>
             /// </example>
-            public TBuilder AddExceptionHandler(string pattern, Action<ExceptionHandlingOptions> configure)
-            {
-                Ensure.NotNull(configure);
-
-                return AddExceptionHandlerCore(routeScopeBuilder, HttpVerb.Names, pattern, configure);
-            }
+            public TBuilder AddExceptionHandler(string pattern, Action<ExceptionHandlingOptions> configure) =>
+                routeScopeBuilder.AddExceptionHandler(HttpVerb.Names, pattern, configure);
 
             /// <summary>
             /// Adds an exception-handling middleware for a single HTTP method.
@@ -299,7 +262,8 @@ namespace NanoRoute
             /// builder.AddExceptionHandler("GET", "/api/*");
             /// </code>
             /// </example>
-            public TBuilder AddExceptionHandler(string verb, string pattern) => AddExceptionHandlerCore(routeScopeBuilder, [verb /*will be null checked*/], pattern, configure: null);
+            public TBuilder AddExceptionHandler(string verb, string pattern) =>
+                routeScopeBuilder.AddExceptionHandler([verb], pattern, s_noopConfigure);
 
             /// <summary>
             /// Adds an exception-handling middleware for a single HTTP method.
@@ -322,12 +286,8 @@ namespace NanoRoute
             /// ));
             /// </code>
             /// </example>
-            public TBuilder AddExceptionHandler(string verb, string pattern, Action<ExceptionHandlingOptions> configure)
-            {
-                Ensure.NotNull(configure);
-
-                return AddExceptionHandlerCore(routeScopeBuilder, [verb /*will be null checked*/], pattern, configure);
-            }
+            public TBuilder AddExceptionHandler(string verb, string pattern, Action<ExceptionHandlingOptions> configure) =>
+                routeScopeBuilder.AddExceptionHandler([verb /*will be null checked*/], pattern, configure);
 
             /// <summary>
             /// Adds an exception-handling middleware for the selected HTTP methods.
@@ -349,7 +309,8 @@ namespace NanoRoute
             /// builder.AddExceptionHandler(["GET", "POST"]);
             /// </code>
             /// </example>
-            public TBuilder AddExceptionHandler(IEnumerable<string> verbs) => AddExceptionHandlerCore(routeScopeBuilder, verbs, RouteScopeBuilder.CurrentPrefix, configure: null);
+            public TBuilder AddExceptionHandler(IEnumerable<string> verbs) =>
+                routeScopeBuilder.AddExceptionHandler(verbs, RouteScopeBuilder.CurrentPrefix, s_noopConfigure);
 
             /// <summary>
             /// Adds an exception-handling middleware for the selected HTTP methods.
@@ -367,12 +328,8 @@ namespace NanoRoute
             /// ));
             /// </code>
             /// </example>
-            public TBuilder AddExceptionHandler(IEnumerable<string> verbs, Action<ExceptionHandlingOptions> configure)
-            {
-                Ensure.NotNull(configure);
-
-                return AddExceptionHandlerCore(routeScopeBuilder, verbs, RouteScopeBuilder.CurrentPrefix, configure);
-            }
+            public TBuilder AddExceptionHandler(IEnumerable<string> verbs, Action<ExceptionHandlingOptions> configure) =>
+                routeScopeBuilder.AddExceptionHandler(verbs, RouteScopeBuilder.CurrentPrefix, configure);
 
             /// <summary>
             /// Adds an exception-handling middleware for the selected HTTP methods.
@@ -398,7 +355,7 @@ namespace NanoRoute
             /// </code>
             /// </example>
             public TBuilder AddExceptionHandler(IEnumerable<string> verbs, string pattern) =>
-                AddExceptionHandlerCore(routeScopeBuilder, verbs, pattern, configure: null);
+                routeScopeBuilder.AddExceptionHandler(verbs, pattern, s_noopConfigure);
 
             /// <summary>
             /// Adds an exception-handling middleware for the selected HTTP methods.
@@ -429,9 +386,34 @@ namespace NanoRoute
             /// </example>
             public TBuilder AddExceptionHandler(IEnumerable<string> verbs, string pattern, Action<ExceptionHandlingOptions> configure)
             {
+                Ensure.NotNull(routeScopeBuilder);
+                Ensure.NotNull(verbs);
+                Ensure.NotNull(pattern);
                 Ensure.NotNull(configure);
 
-                return AddExceptionHandlerCore(routeScopeBuilder, verbs, pattern, configure);
+                ExceptionHandlingOptions options = new();
+                configure.Invoke(options);
+
+                FrozenDictionary<Type, ExceptionNormalizer> exceptionNormalizers = options.CreateSnapshot();
+
+                routeScopeBuilder.AddHandler(verbs, pattern, async (RequestContext context, CallNextHandlerDelegate next) =>
+                {
+                    try
+                    {
+                        return await next().ConfigureAwait(false);
+                    }
+                    catch (Exception ex) when (ex is not (HttpRequestException or OperationCanceledException /*needs to be handled from user code*/))
+                    {
+                        for (Type exceptionType = ex.GetType(); exceptionType != typeof(object); exceptionType = exceptionType.BaseType)
+                            if (exceptionNormalizers.TryGetValue(exceptionType, out ExceptionNormalizer? exceptionNormalizer))
+                                throw exceptionNormalizer(ex);
+
+                        HttpRequestException.Throw(HttpStatusCode.InternalServerError, Resources.ERR_INTERNAL_ERROR, ex, developerMessages: [ex.ToString()]);
+                        return null!;
+                    }
+                });
+
+                return routeScopeBuilder;
             }
         }
 
