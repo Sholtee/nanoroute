@@ -36,7 +36,8 @@ namespace NanoRoute.Perf
         [GlobalSetup]
         public void Setup()
         {
-            RouterBuilder<object, RouterConfig> builder = new RouterBuilder<object, RouterConfig>(static _ => new object())
+            RouterBuilder<InMemoryRouter, RouterConfig> builder = InMemoryRouter
+                .CreateBuilder()
                 .AddDefaultValueParsers();
 
             for (int i = 0; i < RouteCount; i++)

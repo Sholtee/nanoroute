@@ -7,7 +7,6 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
@@ -22,28 +21,10 @@ namespace NanoRoute.Tests
 
         private static readonly IServiceProvider s_services = new Mock<IServiceProvider>(MockBehavior.Strict).Object;
 
-        internal sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> routerBuilder)
-        {
-            private readonly RequestPipeline _pipeline = new(routerBuilder, routerBuilder.RouterConfig.MatchingPrecedence);
-
-            public Task<HttpResponseMessage> Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
-                _pipeline.ExecuteAsync(request, services, cancellation);
-        }
-
-        private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
-
-        private Mock<RouterFactoryDelegate<TestRouter, RouterConfig>> _mockRouterFactory = null!;
+        private RouterBuilder<InMemoryRouter, RouterConfig> _routerBuilder = null!;
 
         [SetUp]
-        public void Setup()
-        {
-            _mockRouterFactory = new Mock<RouterFactoryDelegate<TestRouter, RouterConfig>>(MockBehavior.Strict);
-            _routerBuilder = new RouterBuilder<TestRouter, RouterConfig>(_mockRouterFactory.Object);
-
-            _mockRouterFactory
-                .Setup(c => c.Invoke(_routerBuilder))
-                .Returns<RouterBuilder<TestRouter, RouterConfig>>(bldr => new TestRouter(bldr));
-        }
+        public void Setup() => _routerBuilder = InMemoryRouter.CreateBuilder();
 
         [Test]
         public void CurrentRoutePatternConstants_ShouldExposeExistingRouteSemantics()
@@ -55,22 +36,30 @@ namespace NanoRoute.Tests
         [Test]
         public void CreateRouter_ShouldPassTheBuilderIntoTheRouterFactory()
         {
-            TestRouter router = _routerBuilder.CreateRouter();
+            Mock<RouterFactoryDelegate<object, RouterConfig>> mockRouterFactory = new(MockBehavior.Strict);
+            RouterBuilder<object, RouterConfig> routerBuilder = new(mockRouterFactory.Object);
+            object expectedRouter = new();
 
-            Assert.That(router, Is.Not.Null);
-            _mockRouterFactory.Verify(c => c.Invoke(_routerBuilder), Times.Once);
+            mockRouterFactory
+                .Setup(c => c.Invoke(routerBuilder))
+                .Returns(expectedRouter);
+
+            object router = routerBuilder.CreateRouter();
+
+            Assert.That(router, Is.SameAs(expectedRouter));
+            mockRouterFactory.Verify(c => c.Invoke(routerBuilder), Times.Once);
         }
 
         [Test]
-        public async Task CreateRouter_ShouldCreateAnImmutableSnapshot()
+        public void CreateRouter_ShouldCreateAnImmutableSnapshot()
         {
-            TestRouter router = _routerBuilder
+            InMemoryRouter router = _routerBuilder
                 .AddHandler("GET", "/before/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
             _routerBuilder.AddHandler("GET", "/after/", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/after") }, s_services))!;
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/after") }, s_services))!;
             Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));
         }
 

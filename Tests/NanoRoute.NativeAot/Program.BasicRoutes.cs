@@ -31,6 +31,24 @@ namespace NanoRoute.NativeAot
             await AssertPlainTextResponse(router, HttpMethod.Get, "items/42", HttpStatusCode.OK, "item:42").ConfigureAwait(false);
         }
 
+        private static async Task AssertInMemoryRoutes()
+        {
+            InMemoryRouter router = InMemoryRouter
+                .CreateBuilder()
+                .AddEndpoint("GET", "/in-memory/", endpoint => endpoint
+                    .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("in-memory", Encoding.UTF8, "text/plain")
+                    })))
+                .CreateRouter();
+
+            using HttpRequestMessage request = new(HttpMethod.Get, "https://example.test/in-memory");
+            using HttpResponseMessage response = await router.Route(request, NullServiceProvider.Instance).ConfigureAwait(false);
+
+            AssertEqual(HttpStatusCode.OK, response.StatusCode, "Unexpected status for in-memory route");
+            AssertEqual("in-memory", await response.Content.ReadAsStringAsync().ConfigureAwait(false), "Unexpected body for in-memory route");
+        }
+
         private static async Task AssertPlainTextResponse(HttpListenerRouter router, HttpMethod method, string relativeUri, HttpStatusCode expectedStatus, string expectedBody)
         {
             ResponseSnapshot response = await SendAsync(router, method, relativeUri).ConfigureAwait(false);

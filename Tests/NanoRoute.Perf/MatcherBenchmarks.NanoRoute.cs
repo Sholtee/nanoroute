@@ -24,7 +24,7 @@ namespace NanoRoute.Perf
 
                 private static readonly Task<HttpResponseMessage> s_responseTask = Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 
-                private readonly RouteNode _root = TestRouter
+                private readonly RouteNode _root = InMemoryRouter
                     .CreateBuilder()
                     .AddDefaultValueParsers()
                     .AddHandler("GET", scenario.Pattern, static (_, _) => s_responseTask)
@@ -43,11 +43,6 @@ namespace NanoRoute.Perf
                 }
 
                 public void Dispose() { }
-
-                private sealed class TestRouter
-                {
-                    public static RouterBuilder<TestRouter, RouterConfig> CreateBuilder() => new(static _ => new TestRouter());
-                }
 
                 private sealed class NoopServiceProvider : IServiceProvider
                 {

@@ -20,7 +20,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddEndpoint_WithExactPattern_ShouldMatchOnlyExactPath()
         {
-            TestRouter router = _routerBuilder
+            InMemoryRouter router = _routerBuilder
                 .AddEndpoint("GET", "/items/", Endpoint => Endpoint
                     .WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -28,13 +28,13 @@ namespace NanoRoute.Tests
                     }))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 s_services
             );
 
-            HttpRequestException wrongPath = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException wrongPath = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services
@@ -48,7 +48,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddEndpoint_WithPrefixPattern_ShouldMatchNestedPaths()
         {
-            TestRouter router = _routerBuilder
+            InMemoryRouter router = _routerBuilder
                 .AddEndpoint("GET", "/files/*", Endpoint => Endpoint
                     .WithHandler(async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -56,13 +56,13 @@ namespace NanoRoute.Tests
                     }))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/files/path/to/file"),
                 s_services
             );
 
-            HttpRequestException wrongPath = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException wrongPath = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/other/path/to/file"),
                 s_services
@@ -76,7 +76,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddEndpoint_WithMultipleVerbs_ShouldApplyEndpointHandlersToEachVerb()
         {
-            TestRouter router = _routerBuilder
+            InMemoryRouter router = _routerBuilder
                 .AddEndpoint(["GET", "POST"], "/items/", Endpoint => Endpoint
                     .WithHandler(async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -84,19 +84,19 @@ namespace NanoRoute.Tests
                     }))
                 .CreateRouter();
 
-            HttpResponseMessage getResponse = await router.Handle
+            HttpResponseMessage getResponse = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 s_services
             );
 
-            HttpResponseMessage postResponse = await router.Handle
+            HttpResponseMessage postResponse = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
                 s_services
             );
 
-            HttpRequestException deleteResponse = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException deleteResponse = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Delete, "https://test.test/items"),
                 s_services
@@ -112,7 +112,7 @@ namespace NanoRoute.Tests
         {
             List<string> calls = [];
 
-            TestRouter router = _routerBuilder
+            InMemoryRouter router = _routerBuilder
                 .AddEndpoint("GET", "/items/", Endpoint => Endpoint
                     .WithHandler(async (_, next) =>
                     {
@@ -131,7 +131,7 @@ namespace NanoRoute.Tests
                     }))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 s_services
@@ -150,9 +150,9 @@ namespace NanoRoute.Tests
 
             endpoint.WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
 
-            TestRouter router = _routerBuilder.CreateRouter();
+            InMemoryRouter router = _routerBuilder.CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/deferred"),
                 s_services
@@ -190,7 +190,7 @@ namespace NanoRoute.Tests
             RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
             EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
 
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).CreateEndpoint("GET", "/items/"))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).CreateEndpoint("GET", "/items/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndpoint((IEnumerable<string>) null!, "/items/"))!;
@@ -202,7 +202,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndpoint((string) null!, "/items/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddEndpoint(["GET"], "/items/", _ => { }))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).AddEndpoint(["GET"], "/items/", _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndpoint((IEnumerable<string>) null!, "/items/", _ => { }))!;
@@ -238,7 +238,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddEndpoint_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.AddEndpoint("GET", "/items/", _ => { });
+            RouterBuilder<InMemoryRouter, RouterConfig> result = _routerBuilder.AddEndpoint("GET", "/items/", _ => { });
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }

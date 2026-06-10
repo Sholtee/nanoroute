@@ -2,7 +2,7 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
-The core library is centered around `RouteScopeBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+The core library includes `InMemoryRouter` for already materialized `HttpRequestMessage` requests and `HttpListenerRouter` for listener-hosted requests. `RouteScopeBuilder`, `RequestPipeline`, and `RequestContext` remain available when you want to plug the routing pipeline into your own transport or hosting model.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios.
 
@@ -109,6 +109,7 @@ public interface IUserRepository
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [RequestPipeline](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestPipeline.html)
 - [EndpointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html)
+- [InMemoryRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.InMemoryRouter.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
@@ -532,54 +533,48 @@ HttpListenerRouter router = HttpListenerRouter
 
 `AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
 
-## Custom Routers
+## In-Memory Routing
 
-If `HttpListenerRouter` is not the transport you want, compose a `RequestPipeline` into your own router type and expose an entry point that prepares an `HttpRequestMessage`, invokes `ExecuteAsync()`, and deals with the returned `HttpResponseMessage`.
+Use `InMemoryRouter` when your application or test already has an `HttpRequestMessage` and wants the matching, value parsing, middleware, and handler pipeline without binding to a network listener.
 
 ```csharp
-using System;
+using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 using NanoRoute;
 
-public sealed class InMemoryRouter
-{
-    private readonly RequestPipeline _pipeline;
-
-    private InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder)
-    {
-        Config = builder.RouterConfig;
-        _pipeline = new RequestPipeline(builder, Config.MatchingPrecedence);
-    }
-
-    public RouterConfig Config { get; }
-
-    public static RouterBuilder<InMemoryRouter, RouterConfig> CreateBuilder() =>
-        new(static builder => new InMemoryRouter(builder));
-
-    public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
-        _pipeline.ExecuteAsync(request, services, cancellation);
-}
-
 InMemoryRouter router = InMemoryRouter
     .CreateBuilder()
     .AddEndpoint("GET", "/health/", endpoint => endpoint
-        .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage())))
+        .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("ok")
+        })))
     .CreateRouter();
+
+using HttpRequestMessage request = new(HttpMethod.Get, "https://example.test/health");
+using HttpResponseMessage response = await router.Route(request, services);
 ```
 
-This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline. The builder remains strongly typed, but the router itself can be any class; no inheritance convention or hidden constructor lookup is required.
+The returned `HttpResponseMessage` is owned by the caller. Dispose it after reading the response body.
+
+## Custom Routers
+
+If neither `InMemoryRouter` nor `HttpListenerRouter` fits the transport you want, compose a `RequestPipeline` into your own router type and expose an entry point that prepares an `HttpRequestMessage`, invokes `ExecuteAsync()`, and deals with the returned `HttpResponseMessage`.
+
+This keeps transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline. The builder remains strongly typed, but the router itself can be any class; no inheritance convention or hidden constructor lookup is required.
 
 ## Cancellation
 
 - NanoRoute exposes the caller-provided cancellation token to async value parsers and handlers through `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
 - `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
+- `InMemoryRouter.Route()` rethrows the cancellation exception and leaves response ownership with the caller.
 - `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
 
 ## Common Building Blocks
 
+- `InMemoryRouter.CreateBuilder()` starts a strongly typed builder for in-memory `HttpRequestMessage` scenarios.
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
 - `RequestPipeline` runs a configured route snapshot for custom transports.
 - `ConfigureRouting()` customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.
