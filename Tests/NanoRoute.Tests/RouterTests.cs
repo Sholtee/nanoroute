@@ -3,8 +3,11 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
+using System;
 using System.Diagnostics.Tracing;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 using NUnit.Framework;
 
@@ -21,8 +24,14 @@ namespace NanoRoute.Tests
 
         private HttpRequestMessage _request = null!;
 
-        private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router<TestRouter, RouterConfig>(builder)
+        private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> routerBuilder)
         {
+            private readonly RequestPipeline _pipeline = new(routerBuilder, routerBuilder.RouterConfig.MatchingPrecedence);
+
+            public Task<HttpResponseMessage> Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
+                _pipeline.ExecuteAsync(request, services, cancellation);
+
+            public static RouterBuilder<TestRouter, RouterConfig> CreateBuilder() => new(static builder => new TestRouter(builder));
         }
 
         [SetUp]

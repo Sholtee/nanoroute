@@ -273,8 +273,7 @@ namespace NanoRoute.Tests
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (context, _) =>
                 {
-                    Assert.That(context.Request.TryGetProperty(Router.OriginalRequestName, out object? originalRequest), Is.True);
-                    Assert.That(originalRequest, Is.InstanceOf<HttpListenerRequest>());
+                    Assert.That(context.Request.OriginalRequest, Is.InstanceOf<HttpListenerRequest>());
 
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }));

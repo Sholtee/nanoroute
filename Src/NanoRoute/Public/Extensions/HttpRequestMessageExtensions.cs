@@ -23,8 +23,9 @@ namespace NanoRoute
     /// </example>
     public static class HttpRequestMessageExtensions
     {
-        private const string OriginalRequestPropertyKey = "OriginalRequest";
-        private const string TraceIdPropertyKey = "TraceId";
+        private const string
+            OriginalRequestPropertyKey = "OriginalRequest",
+            TraceIdPropertyKey = "TraceId";
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly FrozenSet<string> s_contentHeaders = new List<string>
@@ -103,7 +104,7 @@ namespace NanoRoute
                 {
                     Ensure.NotNull(request);
                     return request.Properties.TryGetValue(TraceIdPropertyKey, out object? traceId)
-                        ? traceId as string
+                        ? traceId.ToString()
                         : null;
                 }
                 set

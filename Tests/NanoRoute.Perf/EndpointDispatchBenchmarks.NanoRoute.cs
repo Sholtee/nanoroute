@@ -33,9 +33,14 @@ namespace NanoRoute.Perf
 
                 public Task Dispatch() => _router.Route(_request, s_services);
 
-                private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router<TestRouter, RouterConfig>(builder)
+                private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder)
                 {
-                    public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) => Handle(request, services, cancellation);
+                    private readonly RequestPipeline _pipeline = new(builder, builder.RouterConfig.MatchingPrecedence);
+
+                    public static RouterBuilder<TestRouter, RouterConfig> CreateBuilder() => new(static builder => new TestRouter(builder));
+
+                    public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
+                        _pipeline.ExecuteAsync(request, services, cancellation);
                 }
 
                 private sealed class NoopServiceProvider : IServiceProvider

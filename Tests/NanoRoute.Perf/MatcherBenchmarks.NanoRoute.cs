@@ -44,7 +44,10 @@ namespace NanoRoute.Perf
 
                 public void Dispose() { }
 
-                private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router<TestRouter, RouterConfig>(builder);
+                private sealed class TestRouter
+                {
+                    public static RouterBuilder<TestRouter, RouterConfig> CreateBuilder() => new(static _ => new TestRouter());
+                }
 
                 private sealed class NoopServiceProvider : IServiceProvider
                 {

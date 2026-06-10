@@ -7,6 +7,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
@@ -21,7 +22,13 @@ namespace NanoRoute.Tests
 
         private static readonly IServiceProvider s_services = new Mock<IServiceProvider>(MockBehavior.Strict).Object;
 
-        internal sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> routerBuilder) : Router(routerBuilder, routerBuilder.RouterConfig) { }
+        internal sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> routerBuilder)
+        {
+            private readonly RequestPipeline _pipeline = new(routerBuilder, routerBuilder.RouterConfig.MatchingPrecedence);
+
+            public Task<HttpResponseMessage> Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
+                _pipeline.ExecuteAsync(request, services, cancellation);
+        }
 
         private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
 

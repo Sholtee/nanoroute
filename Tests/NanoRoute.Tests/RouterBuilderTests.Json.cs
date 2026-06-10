@@ -98,7 +98,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
-            request.SetProperty(Router.TraceIdName, "trace-1");
+            request.TraceId = "trace-1";
 
             HttpResponseMessage response = await router.Handle(request, s_services);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -130,7 +130,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TraceIdName, "trace-2");
+            request.TraceId = "trace-2";
 
             HttpResponseMessage response = await router.Handle(request, s_services);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
@@ -159,7 +159,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TraceIdName, "trace-cancel");
+            request.TraceId = "trace-cancel";
 
             using CancellationTokenSource cancellation = new();
             cancellation.Cancel();
@@ -206,7 +206,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test/somewhere") };
-            request.SetProperty(Router.TraceIdName, "trace-aggregate");
+            request.TraceId = "trace-aggregate";
 
             HttpResponseMessage response = await router.Handle(request, s_services);
             string resp = await response.Content.ReadAsStringAsync();
@@ -253,7 +253,7 @@ namespace NanoRoute.Tests
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
-            request.SetProperty(Router.TraceIdName, "trace-snake");
+            request.TraceId = "trace-snake";
 
             HttpResponseMessage response = await router.Handle(request, s_services);
 
