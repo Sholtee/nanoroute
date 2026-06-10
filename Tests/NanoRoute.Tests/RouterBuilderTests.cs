@@ -21,10 +21,10 @@ namespace NanoRoute.Tests
 
         private static readonly IServiceProvider s_services = new Mock<IServiceProvider>(MockBehavior.Strict).Object;
 
-        private RouterBuilder<InMemoryRouter, RouterConfig> _routerBuilder = null!;
+        private RouterBuilder<HttpMessageRouter, RouterConfig> _routerBuilder = null!;
 
         [SetUp]
-        public void Setup() => _routerBuilder = InMemoryRouter.CreateBuilder();
+        public void Setup() => _routerBuilder = HttpMessageRouter.CreateBuilder();
 
         [Test]
         public void CurrentRoutePatternConstants_ShouldExposeExistingRouteSemantics()
@@ -53,7 +53,7 @@ namespace NanoRoute.Tests
         [Test]
         public void CreateRouter_ShouldCreateAnImmutableSnapshot()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/before/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 

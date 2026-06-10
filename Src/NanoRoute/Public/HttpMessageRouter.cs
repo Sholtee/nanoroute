@@ -1,5 +1,5 @@
 /********************************************************************************
-* InMemoryRouter.cs                                                             *
+* HttpMessageRouter.cs                                                          *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -17,12 +17,12 @@ namespace NanoRoute
     /// </summary>
     /// <remarks>
     /// Use this router when the request is already represented as an <see cref="HttpRequestMessage"/>, such as
-    /// in unit tests, in-memory integrations, or custom hosting code. The caller owns disposal of the request and
+    /// in unit tests, HTTP-message based integrations, or custom hosting code. The caller owns disposal of the request and
     /// the returned response.
     /// </remarks>
     /// <example>
     /// <code>
-    /// InMemoryRouter router = InMemoryRouter
+    /// HttpMessageRouter router = HttpMessageRouter
     ///     .CreateBuilder()
     ///     .AddDefaultValueParsers()
     ///     .AddHandler("GET", "/hello/{name:str}/", static (context, _) =&gt;
@@ -35,26 +35,26 @@ namespace NanoRoute
     /// using HttpResponseMessage response = await router.Route(request, services, cancellationToken);
     /// </code>
     /// </example>
-    public sealed class InMemoryRouter
+    public sealed class HttpMessageRouter
     {
         private readonly RequestPipeline _pipeline;
 
-        private InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder)
+        private HttpMessageRouter(RouterBuilder<HttpMessageRouter, RouterConfig> builder)
         {
             Config = builder.RouterConfig;
             _pipeline = new RequestPipeline(builder, Config.MatchingPrecedence);
         }
 
         /// <summary>
-        /// Creates a strongly typed builder for <see cref="InMemoryRouter"/>.
+        /// Creates a strongly typed builder for <see cref="HttpMessageRouter"/>.
         /// </summary>
         /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
         /// <example>
         /// <code>
-        /// RouterBuilder&lt;InMemoryRouter, RouterConfig&gt; builder = InMemoryRouter.CreateBuilder();
+        /// RouterBuilder&lt;HttpMessageRouter, RouterConfig&gt; builder = HttpMessageRouter.CreateBuilder();
         /// </code>
         /// </example>
-        public static RouterBuilder<InMemoryRouter, RouterConfig> CreateBuilder() => new(static builder => new InMemoryRouter(builder));
+        public static RouterBuilder<HttpMessageRouter, RouterConfig> CreateBuilder() => new(static builder => new HttpMessageRouter(builder));
 
         /// <summary>
         /// Configuration assigned to this instance.
@@ -62,7 +62,7 @@ namespace NanoRoute
         public RouterConfig Config { get; }
 
         /// <summary>
-        /// Routes a single in-memory request and returns the produced response.
+        /// Routes a single HTTP request message and returns the produced response.
         /// </summary>
         /// <param name="request">The request to process.</param>
         /// <param name="services">The service provider exposed to handlers through <see cref="RequestContext.Services"/>.</param>

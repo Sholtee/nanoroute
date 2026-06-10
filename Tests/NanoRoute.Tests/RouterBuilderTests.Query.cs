@@ -20,7 +20,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldParseConfiguredParametersIntoTheRequestContext()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddPrefix("/items/*", items => items
                     .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}")
@@ -47,7 +47,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task WithQueryBindings_ShouldParseConfiguredParametersBeforeEndpointHandler()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddEndpoint("GET", "/items/", endpoint => endpoint
                     .WithQueryBindings("{filter:str(min=3)}&{page?:int(min=1)}")
@@ -70,7 +70,7 @@ namespace NanoRoute.Tests
         [Test]
         public void WithQueryBindings_ShouldUseEndpointConfiguration()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .ConfigureQueryParsing(config => config with
                 {
@@ -93,7 +93,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldSkipMissingOptionalParameters()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("{filter?:str(min=3)}")
                 .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
@@ -119,7 +119,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddQueryBindings_ShouldRejectMissingRequiredParameters()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddPrefix("/items/*", items => items
                     .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}")
@@ -163,7 +163,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldMatchDecodedQueryParameterNames()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("{query_filter:str(min=3)}")
                 .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
@@ -188,7 +188,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldHonorConfiguredVerbs()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}")
                 .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
@@ -223,7 +223,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldSupportVerbCollectionOverload()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings(new[] { "GET" }, "{filter:str(min=3)}")
                 .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
@@ -244,7 +244,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldSupportPatternOverload()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("/items/", "{filter:str(min=3)}")
                 .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
@@ -265,7 +265,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddQueryBindings_ShouldRejectUnexpectedParametersWhenConfigured()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .ConfigureQueryParsing(config => config with
                 {
@@ -289,7 +289,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task ConfigureQueryParsing_ShouldUseScopedBuilderMetadata()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .ConfigureQueryParsing(config => config with
                 {
@@ -327,7 +327,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ConfigureQueryParsing_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<InMemoryRouter, RouterConfig> result = _routerBuilder.ConfigureQueryParsing(static config => config);
+            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.ConfigureQueryParsing(static config => config);
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }
@@ -337,7 +337,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddDefaultValueParsers();
 
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).AddQueryBindings(""))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddQueryBindings(""))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!))!;
@@ -364,7 +364,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", "/", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).ConfigureQueryParsing(static config => config))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).ConfigureQueryParsing(static config => config))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureQueryParsing(null!))!;

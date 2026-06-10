@@ -34,7 +34,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddExceptionHandler_ShouldHonorConfiguredPattern()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddExceptionHandler("/items/")
                 .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("boom"))
                 .AddHandler("GET", "/other/", (_, _) => throw new InvalidOperationException("boom"))
@@ -58,7 +58,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddExceptionHandler_ShouldHonorConfiguredVerbAndPattern()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddExceptionHandler("GET", "/items/")
                 .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("boom"))
                 .AddHandler("POST", "/items/", (_, _) => throw new InvalidOperationException("boom"))
@@ -82,7 +82,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddExceptionHandler_ShouldUseConfiguredExceptionNormalizers()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureExceptionHandling(config => config with
                 {
                     ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeConflict)
@@ -110,7 +110,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddExceptionHandler_ShouldUseBaseExceptionNormalizerForDerivedExceptions()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureExceptionHandling(config => config with
                 {
                     ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(SystemException), NormalizeConflict)
@@ -136,7 +136,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddExceptionHandler_ShouldPreferExactExceptionNormalizerOverBaseNormalizer()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureExceptionHandling(config => config with
                 {
                     ExceptionNormalizers = config.ExceptionNormalizers.SetItems
@@ -166,7 +166,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddExceptionHandler_ShouldIgnoreNonExceptionBaseNormalizers()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureExceptionHandling(config => config with
                 {
                     ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(object), NormalizeTeapot)
@@ -192,7 +192,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddExceptionHandler_ShouldSnapshotExceptionHandlingConfiguration()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureExceptionHandling(config => config with
                 {
                     ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeConflict)
@@ -232,7 +232,7 @@ namespace NanoRoute.Tests
                 .AddExceptionHandler("/parent/")
                 .AddHandler("GET", "/parent/", (_, _) => throw new NotSupportedException("parent"));
 
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             HttpRequestException
                 parentEx = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
@@ -262,7 +262,7 @@ namespace NanoRoute.Tests
                 new ArgumentException("second problem")
             );
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw aggregate)
                 .CreateRouter();
@@ -289,7 +289,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ConfigureExceptionHandling_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<InMemoryRouter, RouterConfig> result = _routerBuilder.ConfigureExceptionHandling(static config => config);
+            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.ConfigureExceptionHandling(static config => config);
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }
@@ -297,7 +297,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ExceptionHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).AddExceptionHandler())!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddExceptionHandler())!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((string) null!))!;
@@ -318,7 +318,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler("GET", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).ConfigureExceptionHandling(static config => config))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).ConfigureExceptionHandling(static config => config))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureExceptionHandling(null!))!;

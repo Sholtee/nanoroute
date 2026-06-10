@@ -38,7 +38,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("any", new Mock<SyncValueParserDelegate>(MockBehavior.Strict).Object)
                 .AddHandler("GET", "/path/to/{some_str:any}/something/*", mockHandler_3.Object) // should not match after the literal branch was selected
                 .AddHandler("GET", "/path/to/explicit/something/*", mockHandler_2.Object)  // should match 2nd
@@ -72,7 +72,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/*", mockHandler_1.Object)  // should match 1st
                 .AddHandler("GET", "/path/should/not/match/*", new Mock<RequestHandlerDelegate>(MockBehavior.Strict).Object)
                 .AddPrefix("/path/to/*", routerBuilder => routerBuilder
@@ -97,7 +97,7 @@ namespace NanoRoute.Tests
 
             _routerBuilder.AddHandler("GET", "/path/to/explicit/something/", mockHandler.Object);
 
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
@@ -120,7 +120,7 @@ namespace NanoRoute.Tests
 
             _routerBuilder.AddHandler("GET", "/path/to/explicit/something/*", mockHandler.Object);
 
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/explicit/something/cica");
             Assert.That(await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
@@ -136,7 +136,7 @@ namespace NanoRoute.Tests
         {
             List<string> remainingPaths = [];
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler("GET", "/*", async (context, next) =>
                 {
@@ -181,7 +181,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("any", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("GET", pattern, mockHandler_1.Object)
                 .AddHandler("GET", pattern, mockHandler_2.Object)
@@ -213,7 +213,7 @@ namespace NanoRoute.Tests
                 ))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
                     parsed = segment.ToString();
@@ -270,7 +270,7 @@ namespace NanoRoute.Tests
                     return await next();
                 });
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("int", mockIntParser.Object)
                 .AddValueParser("str", mockStringParser.Object)
                 .AddPrefix("/api/users/*", bldr => bldr
@@ -319,7 +319,7 @@ namespace NanoRoute.Tests
                 ))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("int", mockIntParser.Object)
                 .AddValueParser("str", mockStringParser.Object)
                 .AddPrefix("/api/*", bldr => bldr

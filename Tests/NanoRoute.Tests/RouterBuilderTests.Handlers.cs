@@ -1,5 +1,5 @@
 /********************************************************************************
-* RouterBuilderTests.Routers.cs                                                *
+* RouterBuilderTests.Handlers.cs                                                *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -21,7 +21,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithSingleVerbAndPattern_ShouldBindHandlerToMatchingRouteAndVerb()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent("items")
@@ -55,7 +55,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithRouteParameters_ShouldPopulateTheRequestContext()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler("GET", "/items/{id:int}/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -76,7 +76,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithMultipleVerbsAndPattern_ShouldRegisterTheHandlerForEachVerb()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler(["GET", "POST"], "/items/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(context.Request.Method.Method)
@@ -109,7 +109,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithPatternOnlyOverload_ShouldRegisterTheHandlerForAllVerbs()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("/items/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(context.Request.Method.Method)
@@ -137,7 +137,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (_, next) => await next());
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler(["GET"], mockHandler.Object)
                 .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted))
@@ -200,7 +200,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task WithHandler_ShouldBindRouteValues()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddEndpoint("GET", "/items/{id:int}/", endpoint => endpoint
                     .WithHandler((TypedRouteRequest request) => Task.FromResult
@@ -225,7 +225,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task WithHandler_ShouldBindRouteValuesBeforeCallingNext()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddEndpoint("GET", "/items/{id:int}/", endpoint => endpoint
                     .WithHandler(async (TypedRouteRequest request, CallNextHandlerDelegate next) =>

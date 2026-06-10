@@ -22,7 +22,7 @@ namespace NanoRoute.Tests
 
     internal sealed partial class RouterBuilderTests
     {
-        internal delegate RouterBuilder<InMemoryRouter, RouterConfig> ConfigureJsonBodyDelegate(RouterBuilder<InMemoryRouter, RouterConfig> builder);
+        internal delegate RouterBuilder<HttpMessageRouter, RouterConfig> ConfigureJsonBodyDelegate(RouterBuilder<HttpMessageRouter, RouterConfig> builder);
 
         private sealed class TestJsonPayload
         {
@@ -89,7 +89,7 @@ namespace NanoRoute.Tests
         [TestCase(true)]
         public async Task AddJsonErrorDetails_ShouldHandleNotFoundEvents(bool populateErrorInfo)
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureJsonErrorDetails(config => config with
                 {
                     PopulateErrorInfo = populateErrorInfo
@@ -120,7 +120,7 @@ namespace NanoRoute.Tests
         {
             const string ERROR_MSG = "Oooops";
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureJsonErrorDetails(config => config with
                 {
                     PopulateErrorInfo = populateErrorInfo
@@ -149,7 +149,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddJsonErrorDetails_ShouldPropagateCancellationErrors()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere/", (context, _) =>
                 {
@@ -172,7 +172,7 @@ namespace NanoRoute.Tests
         {
             using CancellationTokenSource cancellation = new(TimeSpan.FromMilliseconds(50));
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere/", async (context, _) =>
                 {
@@ -196,7 +196,7 @@ namespace NanoRoute.Tests
                 new ArgumentException("second problem")
             );
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureJsonErrorDetails(config => config with
                 {
                     PopulateErrorInfo = populateErrorInfo
@@ -230,7 +230,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddJsonErrorDetails_ShouldLetNormalWorkflowGo()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere/", async (_, _) => new HttpResponseMessage { Content = new StringContent("Hello") })
                 .CreateRouter();
@@ -244,7 +244,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task ConfigureJsonErrorDetails_ShouldConfigureErrorDetailsSerialization()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .ConfigureJsonErrorDetails(config => config with
                 {
                     ErrorDetailsTypeInfo = SnakeCaseErrorDetailsJsonContext.Default.ErrorDetails
@@ -264,7 +264,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddJsonErrorDetails_ShouldHonorConfiguredVerbsAndPattern()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonErrorDetails("GET", "/api/*")
                 .AddHandler("GET", "/api/fail/", (_, _) => throw new InvalidOperationException("handled"))
                 .AddHandler("POST", "/api/fail/", (_, _) => throw new InvalidOperationException("unhandled verb"))
@@ -281,7 +281,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddJsonErrorDetails_ShouldHonorConfiguredVerbs()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonErrorDetails(new[] { "POST" })
                 .AddHandler("POST", "/fail/", (_, _) => throw new InvalidOperationException("handled"))
                 .AddHandler("GET", "/fail/", (_, _) => throw new InvalidOperationException("unhandled verb"))
@@ -298,7 +298,7 @@ namespace NanoRoute.Tests
         {
             TestJsonPayload? body = null;
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonBody("POST", RouteScopeBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items/", async (context, _) =>
                 {
@@ -324,7 +324,7 @@ namespace NanoRoute.Tests
         {
             TestJsonPayload? body = null;
 
-            InMemoryRouter router = configureJsonBody(_routerBuilder)
+            HttpMessageRouter router = configureJsonBody(_routerBuilder)
                 .AddHandler("POST", "/items/", async (context, _) =>
                 {
                     body = (TestJsonPayload) context.Parameters["payload"]!;
@@ -351,7 +351,7 @@ namespace NanoRoute.Tests
         {
             TestJsonPayload? body = null;
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonBody(typeof(TestJsonPayload), "payload")
                 .AddHandler(verb, "/items/", async (context, _) =>
                 {
@@ -375,7 +375,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddJsonBody_ShouldRejectRequestsWithoutContent()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonBody("POST", RouteScopeBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
@@ -391,7 +391,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddJsonBody_ShouldRejectNonJsonContentTypes()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonBody("POST", RouteScopeBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
@@ -410,7 +410,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddJsonBody_ShouldRejectInvalidJsonPayloads()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddJsonBody("POST", RouteScopeBuilder.CurrentPrefix, typeof(TestJsonPayload), "payload")
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
@@ -431,7 +431,7 @@ namespace NanoRoute.Tests
         {
             TestJsonPayload? payload = null;
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddEndpoint("POST", "/items/", endpoint => endpoint
                     .WithJsonBody<TestJsonPayload>("payload")
                     .WithHandler(async (context, _) =>
@@ -492,7 +492,7 @@ namespace NanoRoute.Tests
         [Test]
         public void JsonHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload"))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddJsonBody("POST", "/", typeof(TestJsonPayload), "payload"))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonBody("POST", "/", typeInfo: null!, "payload"))!;
@@ -513,7 +513,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => HttpResponseMessage.Json(HttpStatusCode.OK, new TestJsonPayload { Name = "Spikey" }, (JsonSerializerOptions) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("options"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).ConfigureJsonErrorDetails(config => config))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).ConfigureJsonErrorDetails(config => config))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureJsonErrorDetails(null!))!;

@@ -49,7 +49,7 @@ namespace NanoRoute.Tests
                     return s_response;
                 });
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
                     if (int.TryParse(segment.ToString(), out int userId))
@@ -103,7 +103,7 @@ namespace NanoRoute.Tests
                     return s_response;
                 });
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("int", (ReadOnlyMemory<char> segment, object? _, out object? parsed) =>
                 {
                     if (int.TryParse(segment.ToString(), out int userId))
@@ -134,7 +134,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder.AddHandler("POST", "/path/to/somewhere/", mockHandler.Object).CreateRouter();
+            HttpMessageRouter router = _routerBuilder.AddHandler("POST", "/path/to/somewhere/", mockHandler.Object).CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
             _request.Method = HttpMethod.Get;
@@ -158,7 +158,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler(["GET", "POST"], "/path/to/somewhere/", mockHandler.Object)
                 .CreateRouter();
 
@@ -200,7 +200,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/path/to/somewhere/", mockFirstHandler.Object)
                 .AddHandler("GET", "/path/to/somewhere/", mockSecondHandler.Object)
                 .CreateRouter();
@@ -226,7 +226,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/path/to/somewhere/", mockFirstHandler.Object)
                 .AddHandler("GET", "/path/to/somewhere/", mockSecondHandler.Object)
                 .CreateRouter();
@@ -248,7 +248,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && c.Services == mockServices.Object), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 

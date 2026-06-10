@@ -20,7 +20,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddEndpoint_WithExactPattern_ShouldMatchOnlyExactPath()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddEndpoint("GET", "/items/", Endpoint => Endpoint
                     .WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -48,7 +48,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddEndpoint_WithPrefixPattern_ShouldMatchNestedPaths()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddEndpoint("GET", "/files/*", Endpoint => Endpoint
                     .WithHandler(async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -76,7 +76,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddEndpoint_WithMultipleVerbs_ShouldApplyEndpointHandlersToEachVerb()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddEndpoint(["GET", "POST"], "/items/", Endpoint => Endpoint
                     .WithHandler(async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -112,7 +112,7 @@ namespace NanoRoute.Tests
         {
             List<string> calls = [];
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddEndpoint("GET", "/items/", Endpoint => Endpoint
                     .WithHandler(async (_, next) =>
                     {
@@ -150,7 +150,7 @@ namespace NanoRoute.Tests
 
             endpoint.WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted));
 
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             HttpResponseMessage response = await router.Route
             (
@@ -190,7 +190,7 @@ namespace NanoRoute.Tests
             RequestHandlerDelegate handler = async (_, _) => new HttpResponseMessage(HttpStatusCode.OK);
             EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
 
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).CreateEndpoint("GET", "/items/"))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).CreateEndpoint("GET", "/items/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndpoint((IEnumerable<string>) null!, "/items/"))!;
@@ -202,7 +202,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateEndpoint((string) null!, "/items/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<InMemoryRouter, RouterConfig>) null!).AddEndpoint(["GET"], "/items/", _ => { }))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddEndpoint(["GET"], "/items/", _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddEndpoint((IEnumerable<string>) null!, "/items/", _ => { }))!;
@@ -238,7 +238,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddEndpoint_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<InMemoryRouter, RouterConfig> result = _routerBuilder.AddEndpoint("GET", "/items/", _ => { });
+            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.AddEndpoint("GET", "/items/", _ => { });
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }

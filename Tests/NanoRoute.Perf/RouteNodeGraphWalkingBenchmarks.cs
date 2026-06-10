@@ -35,7 +35,7 @@ namespace NanoRoute.Perf
         private RouteNode _root = null!;
 
         [GlobalSetup]
-        public void Setup() => _root = InMemoryRouter
+        public void Setup() => _root = HttpMessageRouter
             .CreateBuilder()
             .AddHandler("GET", LiteralRoutePattern, s_handler)
             .CreateSnapshot();

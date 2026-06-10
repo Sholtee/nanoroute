@@ -27,7 +27,7 @@ namespace NanoRoute.Tests
                 .Setup(p => p.Invoke(It.Is<ReadOnlyMemory<char>>(segment => segment.ToString() == "any_string"), It.IsAny<object?>(), out parsed))
                 .Returns(true);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddValueParser("slug", mockParser.Object)
                 .AddHandler("GET", "/users/{user_id:int}/{slug}/cica/", async (context, next) =>
@@ -65,7 +65,7 @@ namespace NanoRoute.Tests
                 ))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("str", mockParser.Object)
                 .AddHandler("GET", "/files/{name:str}/", mockHandler.Object)
                 .CreateRouter();
@@ -99,7 +99,7 @@ namespace NanoRoute.Tests
                 ))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("str", mockParser.Object)
                 .AddHandler("GET", "/files/{name:str}/", mockHandler.Object)
                 .CreateRouter();
@@ -124,7 +124,7 @@ namespace NanoRoute.Tests
                 return new ValueParseResult(true, context.Segment.ToString());
             }
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("str", forceStateMachine ? ParserWithStateMachine : ParserWithoutStateMachine)
                 .AddHandler("GET", "/files/{name:str}/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -161,7 +161,7 @@ namespace NanoRoute.Tests
                 ))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("str", mockParser.Object)
                 .AddHandler("GET", "/files/{name:str}/", mockHandler.Object)
                 .CreateRouter();
@@ -200,7 +200,7 @@ namespace NanoRoute.Tests
                 .Setup(p => p.Invoke(It.Is<ValueParserContext>(ctx => ctx.Segment.ToString() == "abcd" && Equals(ctx.Arguments, boundArguments))))
                 .Returns((ValueParserContext ctx) => new ValueTask<ValueParseResult>(new ValueParseResult(true, ctx.Segment.ToString())));
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser
                 (
                     "bounded",
@@ -247,7 +247,7 @@ namespace NanoRoute.Tests
                 ))
                 .Returns(true);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser
                 (
                     "bounded",
@@ -297,7 +297,7 @@ namespace NanoRoute.Tests
                 ))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddIntParser()
                 .AddHandler("GET", "/items/{value:int(min=10,max=20)}/", boundedHandler.Object)
                 .AddHandler("GET", "/items/{value:int}/", fallbackHandler.Object)
@@ -336,7 +336,7 @@ namespace NanoRoute.Tests
                 ))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddStringParser()
                 .AddHandler("GET", "/tags/{slug:str(min=3,max=3)}/", constrainedHandler.Object)
                 .AddHandler("GET", "/tags/{slug:str}/", fallbackHandler.Object)
@@ -384,7 +384,7 @@ namespace NanoRoute.Tests
                 ))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddRegexParser()
                 .AddStringParser()
                 .AddHandler("GET", "/tags/{slug:regex(pattern='^[a-z]+$',caseSensitive=true)}/", constrainedHandler.Object)
@@ -442,7 +442,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["value"], 12)), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddIntParser()
                 .AddHandler("GET", pattern, handler.Object)
                 .CreateRouter();
@@ -464,7 +464,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["value"], id)), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddGuidParser()
                 .AddHandler("GET", pattern, handler.Object)
                 .CreateRouter();
@@ -484,7 +484,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["value"], true)), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddBoolParser()
                 .AddHandler("GET", pattern, handler.Object)
                 .CreateRouter();
@@ -504,7 +504,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && Equals(c.Parameters["value"], "tag")), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddStringParser()
                 .AddHandler("GET", pattern, handler.Object)
                 .CreateRouter();

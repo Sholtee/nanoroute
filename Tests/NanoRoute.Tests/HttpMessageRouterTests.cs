@@ -1,5 +1,5 @@
 /********************************************************************************
-* InMemoryRouterTests.cs                                                        *
+* HttpMessageRouterTests.cs                                                     *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace NanoRoute.Tests
 {
     [TestFixture]
-    internal sealed class InMemoryRouterTests
+    internal sealed class HttpMessageRouterTests
     {
         private static readonly IServiceProvider s_services = new ServiceProvider();
 
@@ -25,14 +25,14 @@ namespace NanoRoute.Tests
         [Test]
         public void CreateBuilder_ShouldCreateRouterWithConfigSnapshot()
         {
-            RouterBuilder<InMemoryRouter, RouterConfig> builder = InMemoryRouter
+            RouterBuilder<HttpMessageRouter, RouterConfig> builder = HttpMessageRouter
                 .CreateBuilder()
                 .ConfigureRouting(static config => config with
                 {
                     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
                 });
 
-            InMemoryRouter router = builder.CreateRouter();
+            HttpMessageRouter router = builder.CreateRouter();
 
             builder.ConfigureRouting(static config => config with
             {
@@ -45,7 +45,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Route_ShouldProcessHttpRequestMessage()
         {
-            InMemoryRouter router = InMemoryRouter
+            HttpMessageRouter router = HttpMessageRouter
                 .CreateBuilder()
                 .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -63,7 +63,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Route_ShouldBeNullChecked()
         {
-            InMemoryRouter router = InMemoryRouter.CreateBuilder().CreateRouter();
+            HttpMessageRouter router = HttpMessageRouter.CreateBuilder().CreateRouter();
             HttpRequestMessage request = new(HttpMethod.Get, "https://example.test/health");
 
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => router.Route(null!, s_services))!;

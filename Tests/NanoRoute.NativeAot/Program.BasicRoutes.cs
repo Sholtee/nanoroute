@@ -33,7 +33,7 @@ namespace NanoRoute.NativeAot
 
         private static async Task AssertInMemoryRoutes()
         {
-            InMemoryRouter router = InMemoryRouter
+            HttpMessageRouter router = HttpMessageRouter
                 .CreateBuilder()
                 .AddEndpoint("GET", "/in-memory/", endpoint => endpoint
                     .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)

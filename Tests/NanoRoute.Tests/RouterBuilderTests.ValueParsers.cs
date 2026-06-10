@@ -47,7 +47,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddValueParser_ShouldReplaceExistingParserRegistrations()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("value", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = $"first:{segment}"; return true; })
                 .AddValueParser("value", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = $"second:{segment}"; return true; })
                 .AddHandler("GET", "/items/{id:value}/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(context.Parameters["id"]!.ToString()!) })
@@ -62,7 +62,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddValueParser_ShouldSupportAsyncParserWithoutArguments()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("value", static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, $"async:{context.Segment}")))
                 .AddHandler("GET", "/items/{id:value}/", async (context, _) => new HttpResponseMessage
                 {
@@ -78,7 +78,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddValueParser_ShouldSupportAsyncParserWithBoundArguments()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddValueParser("value", static args => args["prefix"], static context => new ValueTask<ValueParseResult>(new ValueParseResult(true, $"{context.Arguments}:{context.Segment}")))
                 .AddHandler("GET", "/items/{id:value(prefix='bound')}/", async (context, _) => new HttpResponseMessage
                 {
@@ -94,7 +94,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddValueParser_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<InMemoryRouter, RouterConfig> result = NanoRouteValueParserExtensions.AddValueParser
+            RouterBuilder<HttpMessageRouter, RouterConfig> result = NanoRouteValueParserExtensions.AddValueParser
             (
                 _routerBuilder,
                 "value",
@@ -121,7 +121,7 @@ namespace NanoRoute.Tests
             _routerBuilder
                 .AddHandler("GET", "/{id:value}/", handler);
 
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             HttpResponseMessage
                 parentResponse = await router.Route(new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://test.test/42") }, s_services),
@@ -233,7 +233,7 @@ namespace NanoRoute.Tests
         [TestCaseSource(nameof(AddDefaultValueParsers_ShouldRegisterTheBuiltInParsers_Cases))]
         public async Task AddDefaultValueParsers_ShouldRegisterTheBuiltInParsers(string parserName, object expectedValue)
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler("GET", $"/items/{{value:{parserName}}}/", async (context, _) => new HttpResponseMessage { Content = new StringContent(context.Parameters["value"]!.ToString()!) })
                 .CreateRouter();
@@ -247,7 +247,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddDefaultValueParsers_ShouldRegisterTheRegexParser()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler("GET", "/items/{value:regex(pattern='^[a-z]+$')}/", async (context, _) => new HttpResponseMessage { Content = new StringContent((string) context.Parameters["value"]!) })
                 .CreateRouter();
@@ -380,13 +380,13 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddValueParser("any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, (ValueParserDelegate) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("tryParseDelegate"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<InMemoryRouter, RouterConfig>) null!, "any", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<HttpMessageRouter, RouterConfig>) null!, "any", new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<InMemoryRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddValueParser((RouterBuilder<HttpMessageRouter, RouterConfig>) null!, "any", new Mock<BindArgumentsDelegate>(MockBehavior.Strict).Object, new Mock<ValueParserDelegate>(MockBehavior.Strict).Object))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddRegexParser((RouterBuilder<InMemoryRouter, RouterConfig>) null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => NanoRouteValueParserExtensions.AddRegexParser((RouterBuilder<HttpMessageRouter, RouterConfig>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
         });
     }

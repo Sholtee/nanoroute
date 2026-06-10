@@ -29,7 +29,7 @@ namespace NanoRoute.Tests
                     Content = new StringContent("prefixed")
                 });
 
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             HttpResponseMessage prefixedResponse = await router.Route
             (
@@ -75,7 +75,7 @@ namespace NanoRoute.Tests
                         Content = new StringContent("ready")
                     }));
 
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             HttpResponseMessage response = await router.Route
             (
@@ -107,7 +107,7 @@ namespace NanoRoute.Tests
                     })
                     .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)));
 
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             HttpResponseMessage response = await router.Route
             (
@@ -149,7 +149,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddPrefix_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<InMemoryRouter, RouterConfig> result = _routerBuilder.AddPrefix("/base/*", _ => { });
+            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.AddPrefix("/base/*", _ => { });
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }

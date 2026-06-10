@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added `InMemoryRouter` for routing already materialized `HttpRequestMessage` instances without writing a custom router wrapper.
+- Added `HttpMessageRouter` for routing already materialized `HttpRequestMessage` instances without writing a custom router wrapper.
 - Added public `RequestPipeline` for custom routers that want to reuse the core `HttpRequestMessage` routing pipeline without inheriting from a NanoRoute base type.
 - Added `ValueParseResult.False` as a reusable non-match result for asynchronous value parsers.
 

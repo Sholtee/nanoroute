@@ -23,7 +23,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task Route_ShouldLogTheRequestLifecycle()
         {
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/path/to/somewhere/", async (_, _) => s_response)
                 .CreateRouter();
 
@@ -53,7 +53,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Route_ShouldLogWhenNoHandlerMatches()
         {
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/nowhere");
 

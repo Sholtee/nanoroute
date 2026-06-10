@@ -20,7 +20,7 @@ namespace NanoRoute.Perf
 
                 private static readonly Task<HttpResponseMessage> s_responseTask = Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 
-                private readonly InMemoryRouter _router = InMemoryRouter
+                private readonly HttpMessageRouter _router = HttpMessageRouter
                     .CreateBuilder()
                     .AddDefaultValueParsers()
                     .AddHandler("GET", scenario.Pattern, static (_, _) => s_responseTask)

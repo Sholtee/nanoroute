@@ -36,7 +36,7 @@ namespace NanoRoute.Tests
                     return Task.FromResult(s_response);
                 });
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 
@@ -63,7 +63,7 @@ namespace NanoRoute.Tests
                     return s_response;
                 });
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 
@@ -83,7 +83,7 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && c.Cancellation.Equals(cts.Token)), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            InMemoryRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 
@@ -96,7 +96,7 @@ namespace NanoRoute.Tests
         [Test]
         public void Route_ShouldRejectUnsupportedVerbs()
         {
-            InMemoryRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             _request.Method = new HttpMethod("BREW");
             _request.RequestUri = new Uri("https://www.exmaple.com/");

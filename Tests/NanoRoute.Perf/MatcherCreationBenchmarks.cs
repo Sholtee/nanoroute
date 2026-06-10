@@ -36,7 +36,7 @@ namespace NanoRoute.Perf
         [GlobalSetup]
         public void Setup()
         {
-            RouterBuilder<InMemoryRouter, RouterConfig> builder = InMemoryRouter
+            RouterBuilder<HttpMessageRouter, RouterConfig> builder = HttpMessageRouter
                 .CreateBuilder()
                 .AddDefaultValueParsers();
 

@@ -18,7 +18,7 @@ namespace NanoRoute.Tests
 
         private DebugEventListener _debugEventListener = null!;
 
-        private RouterBuilder<InMemoryRouter, RouterConfig> _routerBuilder = null!;
+        private RouterBuilder<HttpMessageRouter, RouterConfig> _routerBuilder = null!;
 
         private HttpRequestMessage _request = null!;
 
@@ -27,7 +27,7 @@ namespace NanoRoute.Tests
         {
             _request = new HttpRequestMessage() { Method = HttpMethod.Get };
             _debugEventListener = new DebugEventListener(EventLevel.LogAlways);
-            _routerBuilder = InMemoryRouter.CreateBuilder();
+            _routerBuilder = HttpMessageRouter.CreateBuilder();
         }
 
         [TearDown]
