@@ -33,7 +33,7 @@ namespace NanoRoute
     ///     .CreateRouter();
     /// </code>
     /// </example>
-    public sealed class HttpListenerRouter
+    public sealed class HttpListenerRouter : RouterBase<HttpListenerRouterConfig>
     {
         #region Private
         // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
@@ -45,12 +45,8 @@ namespace NanoRoute
             "Server"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-        private readonly RequestPipeline _pipeline;
-
-        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder)
+        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig)
         {
-            Config = builder.RouterConfig;
-            _pipeline = new RequestPipeline(builder, Config.MatchingPrecedence);
         }
 
         private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
@@ -120,11 +116,6 @@ namespace NanoRoute
         public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static builder => new HttpListenerRouter(builder));
 
         /// <summary>
-        /// Configuration assigned to this instance.
-        /// </summary>
-        public HttpListenerRouterConfig Config { get; }
-
-        /// <summary>
         /// Routes a single <see cref="HttpListener"/> request and writes the produced response.
         /// </summary>
         /// <param name="context">The listener context that supplies the request and receives the response.</param>
@@ -134,7 +125,7 @@ namespace NanoRoute
         /// <exception cref="ArgumentNullException">
         /// Thrown when <paramref name="context"/> or <paramref name="services"/> is <see langword="null"/>.
         /// </exception>
-        /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the request uses an unsupported HTTP method.</exception>
         /// <exception cref="HttpRequestException">
         /// Thrown when no handler matches the request path or a matched handler signals an HTTP failure that is not
         /// translated by middleware.
@@ -176,7 +167,7 @@ namespace NanoRoute
 
             try
             {
-                using HttpResponseMessage response = await _pipeline.ExecuteAsync(request, services, cancellation).ConfigureAwait(false);
+                using HttpResponseMessage response = await Route(request, services, cancellation).ConfigureAwait(false);
 
                 await HandleResponse(response, context.Response, cancellation).ConfigureAwait(false);
             }

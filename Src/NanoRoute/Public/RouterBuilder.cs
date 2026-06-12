@@ -23,7 +23,7 @@ namespace NanoRoute
     ///     .CreateRouter();
     /// </code>
     /// </example>
-    public sealed class RouterBuilder<TRouter, TConfig> : RouteScopeBuilder where TConfig : RouterConfig, new()
+    public sealed class RouterBuilder<TRouter, TConfig> : RouteScopeBuilder where TRouter : RouterBase<TConfig> where TConfig : RouterConfig, new()
     {
         private readonly RouterFactoryDelegate<TRouter, TConfig> _routerFactory;
 
@@ -151,4 +151,3 @@ namespace NanoRoute
         public TRouter CreateRouter() => _routerFactory(this);
     }
 }
-

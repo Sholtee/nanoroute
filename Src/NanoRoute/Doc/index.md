@@ -2,7 +2,7 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
-The core library includes `HttpMessageRouter` for already materialized `HttpRequestMessage` requests and `HttpListenerRouter` for listener-hosted requests. `RouteScopeBuilder`, `RequestPipeline`, and `RequestContext` remain available when you want to plug the routing pipeline into your own transport or hosting model.
+The core library includes `HttpMessageRouter` for already materialized `HttpRequestMessage` requests and `HttpListenerRouter` for listener-hosted requests. `RouterBase<TConfig>`, `RouteScopeBuilder`, and `RequestContext` remain available when you want to plug the routing pipeline into your own transport or hosting model.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios.
 
@@ -106,8 +106,8 @@ public interface IUserRepository
 - [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
 - [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
+- [RouterBase`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBase-1.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
-- [RequestPipeline](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestPipeline.html)
 - [EndpointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html)
 - [HttpMessageRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpMessageRouter.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
@@ -561,9 +561,9 @@ The returned `HttpResponseMessage` is owned by the caller. Dispose it after read
 
 ## Custom Routers
 
-If neither `HttpMessageRouter` nor `HttpListenerRouter` fits the transport you want, compose a `RequestPipeline` into your own router type and expose an entry point that prepares an `HttpRequestMessage`, invokes `ExecuteAsync()`, and deals with the returned `HttpResponseMessage`.
+If neither `HttpMessageRouter` nor `HttpListenerRouter` fits the transport you want, derive from `RouterBase<TConfig>`. Your router entry point prepares an `HttpRequestMessage`, calls the protected `Route()` method, and deals with the returned `HttpResponseMessage`.
 
-This keeps transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline. The builder remains strongly typed, but the router itself can be any class; no inheritance convention or hidden constructor lookup is required.
+`RouterBase<TConfig>` stores the immutable router configuration and snapshots the supplied route scope into a reusable pipeline.
 
 ## Cancellation
 
@@ -576,7 +576,7 @@ This keeps transport-specific concerns in your own router type while still reusi
 
 - `HttpMessageRouter.CreateBuilder()` starts a strongly typed builder for already materialized `HttpRequestMessage` scenarios.
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
-- `RequestPipeline` runs a configured route snapshot for custom transports.
+- `RouterBase<TConfig>` stores router configuration and runs a captured request pipeline for custom transports.
 - `ConfigureRouting()` customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.

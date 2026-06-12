@@ -35,14 +35,10 @@ namespace NanoRoute
     /// using HttpResponseMessage response = await router.Route(request, services, cancellationToken);
     /// </code>
     /// </example>
-    public sealed class HttpMessageRouter
+    public sealed class HttpMessageRouter : RouterBase<RouterConfig>
     {
-        private readonly RequestPipeline _pipeline;
-
-        private HttpMessageRouter(RouterBuilder<HttpMessageRouter, RouterConfig> builder)
+        private HttpMessageRouter(RouterBuilder<HttpMessageRouter, RouterConfig> builder) : base(builder, builder.RouterConfig)
         {
-            Config = builder.RouterConfig;
-            _pipeline = new RequestPipeline(builder, Config.MatchingPrecedence);
         }
 
         /// <summary>
@@ -55,11 +51,6 @@ namespace NanoRoute
         /// </code>
         /// </example>
         public static RouterBuilder<HttpMessageRouter, RouterConfig> CreateBuilder() => new(static builder => new HttpMessageRouter(builder));
-
-        /// <summary>
-        /// Configuration assigned to this instance.
-        /// </summary>
-        public RouterConfig Config { get; }
 
         /// <summary>
         /// Routes a single HTTP request message and returns the produced response.
@@ -89,12 +80,6 @@ namespace NanoRoute
         /// using HttpResponseMessage response = await router.Route(request, services, cancellationToken);
         /// </code>
         /// </example>
-        public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)
-        {
-            Ensure.NotNull(request);
-            Ensure.NotNull(services);
-
-            return _pipeline.ExecuteAsync(request, services, cancellation);
-        }
+        public new Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) => base.Route(request, services, cancellation);
     }
 }

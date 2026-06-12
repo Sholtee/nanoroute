@@ -5,7 +5,6 @@
 ********************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
@@ -20,9 +19,12 @@ namespace NanoRoute.AwsLambda
     /// <summary>
     /// https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
     /// </summary>
-    internal static class DtoMappingExtensions
+    internal static partial class DtoMappingExtensions
     {
-        private static readonly Regex s_protoMatcher = new(@"(?:^|;\s*)proto=(?:""(?<proto>[^""]+)""|(?<proto>[^;]+))");
+        private static readonly Regex s_protoMatcher = CreateProtoMatcherRegex();
+
+        [GeneratedRegex(@"(?:^|;\s*)proto=(?:""(?<proto>[^""]+)""|(?<proto>[^;]+))")]
+        private static partial Regex CreateProtoMatcherRegex();
 
         public static Uri CreateUri(this APIGatewayHttpApiV2ProxyRequest request)
         {

@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
 
 using Moq;
 using NUnit.Framework;
@@ -47,7 +48,7 @@ namespace NanoRoute.AwsLambda.Tests
                     ["accept"] = "text/plain"
                 }),
                 new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                TimeSpan.FromSeconds(10)
+                CreateContext(TimeSpan.FromSeconds(10))
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(200));
@@ -67,7 +68,7 @@ namespace NanoRoute.AwsLambda.Tests
             (
                 CreateRequest("GET", "/health", requestId: "trace-id"),
                 new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                TimeSpan.FromSeconds(1)
+                CreateContext(TimeSpan.FromSeconds(1))
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(504));
@@ -93,7 +94,7 @@ namespace NanoRoute.AwsLambda.Tests
             (
                 CreateRequest("GET", "/health"),
                 new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                TimeSpan.FromSeconds(5)
+                CreateContext(TimeSpan.FromSeconds(5))
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(504));
@@ -112,7 +113,7 @@ namespace NanoRoute.AwsLambda.Tests
             (
                 CreateRequest("GET", "/health"),
                 new Mock<IServiceProvider>(MockBehavior.Strict).Object,
-                TimeSpan.FromSeconds(1)
+                CreateContext(TimeSpan.FromSeconds(1))
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(200));
@@ -136,7 +137,7 @@ namespace NanoRoute.AwsLambda.Tests
 
             ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>
             (
-                () => router.Route(null!, new Mock<IServiceProvider>(MockBehavior.Strict).Object, TimeSpan.FromSeconds(10))
+                () => router.Route(null!, new Mock<IServiceProvider>(MockBehavior.Strict).Object, CreateContext(TimeSpan.FromSeconds(10)))
             )!;
 
             Assert.That(ex.ParamName, Is.EqualTo("request"));
@@ -149,10 +150,30 @@ namespace NanoRoute.AwsLambda.Tests
 
             ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>
             (
-                () => router.Route(CreateRequest("GET", "/health"), null!, TimeSpan.FromSeconds(10))
+                () => router.Route(CreateRequest("GET", "/health"), null!, CreateContext(TimeSpan.FromSeconds(10)))
             )!;
 
             Assert.That(ex.ParamName, Is.EqualTo("services"));
+        }
+
+        [Test]
+        public void Route_ShouldBeNullCheckedForContext()
+        {
+            ApiGatewayV2Router router = ApiGatewayV2Router.CreateBuilder().CreateRouter();
+
+            ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>
+            (
+                () => router.Route(CreateRequest("GET", "/health"), new Mock<IServiceProvider>(MockBehavior.Strict).Object, null!)
+            )!;
+
+            Assert.That(ex.ParamName, Is.EqualTo("context"));
+        }
+
+        private static ILambdaContext CreateContext(TimeSpan remainingTime)
+        {
+            Mock<ILambdaContext> context = new(MockBehavior.Strict);
+            context.SetupGet(static c => c.RemainingTime).Returns(remainingTime);
+            return context.Object;
         }
 
         private static APIGatewayHttpApiV2ProxyRequest CreateRequest

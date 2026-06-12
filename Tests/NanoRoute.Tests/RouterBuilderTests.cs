@@ -23,6 +23,8 @@ namespace NanoRoute.Tests
 
         private RouterBuilder<HttpMessageRouter, RouterConfig> _routerBuilder = null!;
 
+        private sealed class TestRouter(RouteScopeBuilder routes, RouterConfig config) : RouterBase<RouterConfig>(routes, config);
+
         [SetUp]
         public void Setup() => _routerBuilder = HttpMessageRouter.CreateBuilder();
 
@@ -36,18 +38,18 @@ namespace NanoRoute.Tests
         [Test]
         public void CreateRouter_ShouldPassTheBuilderIntoTheRouterFactory()
         {
-            Mock<RouterFactoryDelegate<object, RouterConfig>> mockRouterFactory = new(MockBehavior.Strict);
-            RouterBuilder<object, RouterConfig> routerBuilder = new(mockRouterFactory.Object);
-            object expectedRouter = new();
+            TestRouter expectedRouter = new(new RouteScopeBuilder(), new RouterConfig());
+            RouterBuilder<TestRouter, RouterConfig>? factoryArgument = null;
+            RouterBuilder<TestRouter, RouterConfig> routerBuilder = new(builder =>
+            {
+                factoryArgument = builder;
+                return expectedRouter;
+            });
 
-            mockRouterFactory
-                .Setup(c => c.Invoke(routerBuilder))
-                .Returns(expectedRouter);
-
-            object router = routerBuilder.CreateRouter();
+            TestRouter router = routerBuilder.CreateRouter();
 
             Assert.That(router, Is.SameAs(expectedRouter));
-            mockRouterFactory.Verify(c => c.Invoke(routerBuilder), Times.Once);
+            Assert.That(factoryArgument, Is.SameAs(routerBuilder));
         }
 
         [Test]

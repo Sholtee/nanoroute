@@ -10,74 +10,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NanoRoute
+namespace NanoRoute.Internals
 {
-    using Internals;
     using Properties;
 
-    /// <summary>
-    /// Executes the route matching pipeline built by <see cref="RouteScopeBuilder"/>.
-    /// </summary>
-    /// <remarks>
-    /// A request pipeline is created from a builder snapshot. Matching walks the configured route tree, attaches bound
-    /// parameters, and invokes compatible handlers in order until one returns a response without delegating further.
-    /// Use this type when implementing custom transport routers over the core
-    /// <see cref="HttpRequestMessage"/>/<see cref="HttpResponseMessage"/> pipeline.
-    /// </remarks>
-    /// <example>
-    /// <code>
-    /// public sealed class MyRouter
-    /// {
-    ///     private readonly RequestPipeline _pipeline;
-    ///
-    ///     private MyRouter(RouterBuilder&lt;MyRouter, RouterConfig&gt; builder)
-    ///     {
-    ///         Config = builder.RouterConfig;
-    ///         _pipeline = new RequestPipeline(builder, Config.MatchingPrecedence);
-    ///     }
-    ///
-    ///     public RouterConfig Config { get; }
-    ///
-    ///     public static RouterBuilder&lt;MyRouter, RouterConfig&gt; CreateBuilder() =&gt;
-    ///         new(static builder =&gt; new MyRouter(builder));
-    /// }
-    /// </code>
-    /// </example>
-    public sealed class RequestPipeline
+    internal sealed class RequestPipeline(RouteNode root, MatchingPrecedence matchingPrecedence)
     {
-        private readonly RouteNode _root;
-
-        /// <summary>
-        /// Creates a new <see cref="RequestPipeline"/> instance.
-        /// </summary>
-        /// <param name="routeScopeBuilder">The builder scope whose registered routes are captured by the pipeline.</param>
-        /// <param name="matchingPrecedence">How the pipeline prioritizes literal and parameterized child segments during matching.</param>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown when <paramref name="routeScopeBuilder"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when <paramref name="matchingPrecedence"/> is not a defined <see cref="MatchingPrecedence"/> value.
-        /// </exception>
-        public RequestPipeline(RouteScopeBuilder routeScopeBuilder, MatchingPrecedence matchingPrecedence)
-        {
-            Ensure.NotNull(routeScopeBuilder);
-            if (!Enum.IsDefined(typeof(MatchingPrecedence), matchingPrecedence))
-                throw new ArgumentOutOfRangeException(nameof(matchingPrecedence));
-
-            _root = routeScopeBuilder.CreateSnapshot();
-            MatchingPrecedence = matchingPrecedence;
-        }
-
-        internal RequestPipeline(RouteNode root, MatchingPrecedence matchingPrecedence)
-        {
-            Ensure.NotNull(root);
-            if (!Enum.IsDefined(typeof(MatchingPrecedence), matchingPrecedence))
-                throw new ArgumentOutOfRangeException(nameof(matchingPrecedence));
-
-            _root = root;
-            MatchingPrecedence = matchingPrecedence;
-        }
-
         /// <summary>
         /// Executes an <see cref="HttpRequestMessage"/> through the configured route handler pipeline.
         /// </summary>
@@ -124,12 +62,12 @@ namespace NanoRoute
 
             using RouteMatchCursor cursor = new
             (
-                _root,
+                root,
                 verb,
                 request.RequestUri,
                 services,
                 new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase),
-                MatchingPrecedence,
+                matchingPrecedence,
                 cancellation
             );
 
@@ -171,10 +109,5 @@ namespace NanoRoute
                     .ConfigureAwait(false);
             }
         }
-
-        /// <summary>
-        /// Gets how the pipeline prioritizes literal and parameterized child segments during matching.
-        /// </summary>
-        public MatchingPrecedence MatchingPrecedence { get; }
     }
 }
