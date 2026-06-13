@@ -4,6 +4,7 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -22,6 +23,18 @@ namespace NanoRoute.AwsLambda
     internal static partial class DtoMappingExtensions
     {
         private static readonly Regex s_protoMatcher = CreateProtoMatcherRegex();
+
+        private static readonly FrozenDictionary<string, HttpMethod> s_httpMethods = new Dictionary<string, HttpMethod>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["DELETE"] = HttpMethod.Delete,
+            ["GET"] = HttpMethod.Get,
+            ["HEAD"] = HttpMethod.Head,
+            ["OPTIONS"] = HttpMethod.Options,
+            ["PATCH"] = HttpMethod.Patch,
+            ["POST"] = HttpMethod.Post,
+            ["PUT"] = HttpMethod.Put,
+            ["TRACE"] = HttpMethod.Trace
+        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
         [GeneratedRegex(@"(?:^|;\s*)proto=(?:""(?<proto>[^""]+)""|(?<proto>[^;]+))")]
         private static partial Regex CreateProtoMatcherRegex();
@@ -67,7 +80,12 @@ namespace NanoRoute.AwsLambda
 
         public static HttpRequestMessage CreateRequestMessage(this APIGatewayHttpApiV2ProxyRequest request)
         {
-            HttpRequestMessage requestMessage = new(new HttpMethod(request.RequestContext.Http.Method), request.CreateUri().AbsoluteUri)
+            string method = request.RequestContext.Http.Method;
+            HttpRequestMessage requestMessage = new
+            (
+                s_httpMethods.TryGetValue(method, out HttpMethod? httpMethod) ? httpMethod : new HttpMethod(method),
+                request.CreateUri().AbsoluteUri
+            )
             {
                 Content = request switch
                 {
@@ -80,14 +98,17 @@ namespace NanoRoute.AwsLambda
                 }
             };
 
+            requestMessage.Content?.Headers.Clear();
+
+            HttpHeaders requestHeaders = requestMessage.Headers;
+            HttpHeaders? contentHeaders = requestMessage.Content?.Headers;
+
             foreach (KeyValuePair<string, string> header in request.Headers)
             {
-                HttpHeaders headers = requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(header.Key)
-                    ? requestMessage.Content.Headers
-                    : requestMessage.Headers;
+                HttpHeaders headers = contentHeaders is not null && HttpRequestMessage.ContentHeaders.Contains(header.Key)
+                    ? contentHeaders
+                    : requestHeaders;
 
-                // Some header (like Content-Type) has its default value. Without this line we'd just append the value list
-                headers.Remove(header.Key);
                 headers.TryAddWithoutValidation(header.Key, header.Value);
             }
 
@@ -143,7 +164,7 @@ namespace NanoRoute.AwsLambda
 
             return response;
 
-            static void CopyHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> source, Dictionary<string, string> headers, List<string> cookies)
+            static void CopyHeaders(HttpHeaders source, Dictionary<string, string> headers, List<string> cookies)
             {
                 foreach (KeyValuePair<string, IEnumerable<string>> header in source)
                 {
@@ -153,11 +174,10 @@ namespace NanoRoute.AwsLambda
                         continue;
                     }
 
-                    string value = string.Join(",", header.Value);
-
-                    headers[header.Key] = headers.TryGetValue(header.Key, out string? existing)
-                        ? $"{existing},{value}"
-                        : value;
+                    foreach (string value in header.Value)
+                        headers[header.Key] = headers.TryGetValue(header.Key, out string? existing)
+                            ? $"{existing},{value}"
+                            : value;
                 }
             }
         }
