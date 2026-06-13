@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 
 namespace NanoRoute
 {
-    using Internals;
-
     /// <summary>
     /// Routes <see cref="HttpRequestMessage"/> instances through a NanoRoute pipeline without a transport adapter.
     /// </summary>

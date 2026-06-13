@@ -36,14 +36,31 @@ namespace NanoRoute
     public sealed class HttpListenerRouter : RouterBase<HttpListenerRouterConfig>
     {
         #region Private
-        // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
-        private static readonly FrozenSet<string> s_reservedHeaders = new List<string>
+        private static readonly FrozenSet<string> s_managedResponseHeaders = new List<string>
         {
             "Content-Length",
+            "Content-Type",
             "Transfer-Encoding",
             "Keep-Alive",
-            "Server"
+            "Server",
+            "WWW-Authenticate"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
+        private static readonly FrozenDictionary<string, HttpMethod> s_httpMethods = new Dictionary<string, HttpMethod>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["DELETE"] = HttpMethod.Delete,
+            ["GET"] = HttpMethod.Get,
+            ["HEAD"] = HttpMethod.Head,
+            ["OPTIONS"] = HttpMethod.Options,
+#if NETSTANDARD2_0
+            ["PATCH"] = new HttpMethod("PATCH"),
+#else
+            ["PATCH"] = HttpMethod.Patch,
+#endif
+            ["POST"] = HttpMethod.Post,
+            ["PUT"] = HttpMethod.Put,
+            ["TRACE"] = HttpMethod.Trace
+        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
         private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig)
         {
@@ -53,25 +70,36 @@ namespace NanoRoute
         {
             response.StatusCode = (int) responseMessage.StatusCode;
 
-            CopyResponseHeaders(responseMessage.Headers);
+            CopyResponseHeaders(responseMessage.Headers, response.Headers);
 
             if (responseMessage.Content is not null)
             {
-                CopyResponseHeaders(responseMessage.Content.Headers);
+                if (responseMessage.Content.Headers.ContentType is { } contentType)
+                    response.ContentType = contentType.ToString();
 
-                using Stream buffer = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                CopyResponseHeaders(responseMessage.Content.Headers, response.Headers);
+
+                using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+
+                if (contentStream.CanSeek)
+                {
+                    long contentLength = contentStream.Length - contentStream.Position;
+                    if (contentLength >= 0)
+                        response.ContentLength64 = contentLength;
+                }
 
                 // https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/IO/Stream.cs#L126
-                await buffer.CopyToAsync(response.OutputStream, 81920, cancellation).ConfigureAwait(false);
+                await contentStream.CopyToAsync(response.OutputStream, 81920, cancellation).ConfigureAwait(false);
             }
 
             response.Close();
 
-            void CopyResponseHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
+            static void CopyResponseHeaders(HttpHeaders headers, WebHeaderCollection target)
             {
                 foreach (KeyValuePair<string, IEnumerable<string>> header in headers)
-                    if (!s_reservedHeaders.Contains(header.Key))
-                        response.Headers.Add(header.Key, string.Join(",", header.Value));
+                    if (!s_managedResponseHeaders.Contains(header.Key))
+                        foreach (string value in header.Value)
+                            target.Add(header.Key, value);
             }
         }
 
@@ -79,22 +107,30 @@ namespace NanoRoute
         {
             HttpRequestMessage requestMessage = new
             (
-                new HttpMethod(request.HttpMethod),
+                s_httpMethods.TryGetValue(request.HttpMethod, out HttpMethod? httpMethod) ? httpMethod : new HttpMethod(request.HttpMethod),
                 request.Url
             );
 
             if (request.HasEntityBody)
-                requestMessage.Content = new StreamContent(request.InputStream);
-
-            foreach (string headerName in request.Headers.AllKeys)
             {
-                HttpHeaders headers = requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(headerName)
-                    ? requestMessage.Content.Headers
-                    : requestMessage.Headers;
+                requestMessage.Content = new StreamContent(request.InputStream);
+                requestMessage.Content.Headers.Clear();
+            }
 
-                // Some header (like Content-Type) has its default value. Without this line we'd just append the value list
-                headers.Remove(headerName);
-                headers.TryAddWithoutValidation(headerName, request.Headers.GetValues(headerName));
+            HttpHeaders requestHeaders = requestMessage.Headers;
+            HttpHeaders? contentHeaders = requestMessage.Content?.Headers;
+
+            for (int i = 0; i < request.Headers.Count; i++)
+            {
+                string? headerName = request.Headers.GetKey(i);
+                if (headerName is null)
+                    continue;
+
+                HttpHeaders headers = contentHeaders is not null && HttpRequestMessage.ContentHeaders.Contains(headerName)
+                    ? contentHeaders
+                    : requestHeaders;
+
+                headers.TryAddWithoutValidation(headerName, request.Headers.GetValues(i));
             }
 
             requestMessage.OriginalRequest = request;
