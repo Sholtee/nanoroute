@@ -43,7 +43,7 @@ namespace NanoRoute.Internals
         /// using HttpResponseMessage response = await pipeline.ExecuteAsync(request, services, cancellation);
         /// </code>
         /// </example>
-        public async Task<HttpResponseMessage> ExecuteAsync(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)
+        public async Task<HttpResponseMessage> ExecuteAsync(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation)
         {
             Ensure.NotNull(request);
             Ensure.NotNull(services);

@@ -101,7 +101,7 @@ public interface IUserRepository
 
 Prefer endpoint builders such as `AddEndpoint()` for application routes. Typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
 
-The router entry point accepts the API Gateway request, a service provider, and the Lambda context. Pass `ILambdaContext` so the adapter can read `RemainingTime` and cancel work shortly before the Lambda runtime terminates the invocation.
+The router entry point accepts the API Gateway request, a service provider, and the Lambda context.
 
 For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/master/Tests/NanoRoute.TestLambda). It wires `ApiGatewayV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
 
