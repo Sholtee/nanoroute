@@ -18,9 +18,9 @@ namespace NanoRoute.Tests
     internal sealed partial class RouterTests
     {
         [Test]
-        public void Handle_ShouldBeNullChecked()
+        public void Route_ShouldBeNullChecked()
         {
-            ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>(() => _routerBuilder.CreateRouter().Handle(_request, null!))!;
+            ArgumentNullException ex = Assert.ThrowsAsync<ArgumentNullException>(() => _routerBuilder.CreateRouter().Route(_request, null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("services"));
         }
 
@@ -36,7 +36,7 @@ namespace NanoRoute.Tests
                     return Task.FromResult(s_response);
                 });
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 
@@ -45,12 +45,12 @@ namespace NanoRoute.Tests
             using CancellationTokenSource cts = new();
             cts.Cancel();
 
-            Assert.That(async () => await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cts.Token), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cts.Token), Throws.InstanceOf<OperationCanceledException>());
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Never);
         }
 
         [Test]
-        public void Handle_ShouldPropagateCancellationDuringHandlerExecution()
+        public void Route_ShouldPropagateCancellationDuringHandlerExecution()
         {
             using CancellationTokenSource cancellation = new(TimeSpan.FromMilliseconds(50));
 
@@ -63,18 +63,18 @@ namespace NanoRoute.Tests
                     return s_response;
                 });
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/");
 
-            Assert.That(async () => await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(async () => await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cancellation.Token), Throws.InstanceOf<OperationCanceledException>());
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
         [Test]
-        public async Task Handle_ShouldExposeTheCallerCancellationToken()
+        public async Task Route_ShouldExposeTheCallerCancellationToken()
         {
             using CancellationTokenSource cts = new();
 
@@ -83,25 +83,25 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request && c.Cancellation.Equals(cts.Token)), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/");
 
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cts.Token), Is.EqualTo(s_response));
+            Assert.That(await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object, cts.Token), Is.EqualTo(s_response));
             mockHandler.Verify(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
         [Test]
-        public void Handle_ShouldRejectUnsupportedVerbs()
+        public void Route_ShouldRejectUnsupportedVerbs()
         {
-            TestRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             _request.Method = new HttpMethod("BREW");
             _request.RequestUri = new Uri("https://www.exmaple.com/");
 
-            InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(() => router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
             Assert.That(ex.Message, Is.EqualTo(string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, "BREW")));
         }
     }

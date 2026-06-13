@@ -1,5 +1,5 @@
 /********************************************************************************
-* RouterCreationBenchmarks.cs                                                   *
+* MatcherCreationBenchmarks.cs                                                  *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -9,8 +9,10 @@ using BenchmarkDotNet.Attributes;
 
 namespace NanoRoute.Perf
 {
+    using Internals;
+
     [MemoryDiagnoser]
-    public class RouterCreationBenchmarks
+    public class MatcherCreationBenchmarks
     {
         public enum RouteShape
         {
@@ -21,7 +23,9 @@ namespace NanoRoute.Perf
         private static readonly RequestHandlerDelegate s_handler =
             static (_, _) => throw new InvalidOperationException("The router creation benchmark should not execute handlers.");
 
-        private RouterBuilder<TestRouter, RouterConfig> _builder = null!;
+        private static readonly Uri s_uri = new("https://google.co.hu", UriKind.Absolute);
+
+        private RouteNode? _root;
 
         [Params(10, 100, 1000)]
         public int RouteCount { get; set; }
@@ -32,15 +36,18 @@ namespace NanoRoute.Perf
         [GlobalSetup]
         public void Setup()
         {
-            _builder = new RouterBuilder<TestRouter, RouterConfig>(static builder => new TestRouter(builder))
+            RouterBuilder<HttpMessageRouter, RouterConfig> builder = HttpMessageRouter
+                .CreateBuilder()
                 .AddDefaultValueParsers();
 
             for (int i = 0; i < RouteCount; i++)
-                _builder.AddHandler("GET", CreateRoutePattern(i), s_handler);
+                builder.AddHandler("GET", CreateRoutePattern(i), s_handler);
+
+            _root = builder.CreateSnapshot();
         }
 
         [Benchmark]
-        public Router CreateRouter() => _builder.CreateRouter();
+        public object CreateRouter() => new RouteMatchCursor(_root!, HttpVerb.Get, s_uri, null!, null!, MatchingPrecedence.LiteralFirst, default);
 
         private string CreateRoutePattern(int index) => Shape switch
         {
@@ -49,9 +56,5 @@ namespace NanoRoute.Perf
             RouteShape.Mixed => $"/api/v1/tenants/{index}/users/{index}/orders/{{orderId:int}}/details/",
             _ => throw new InvalidOperationException($"Unknown route shape: {Shape}.")
         };
-
-        private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router(builder, builder.RouterConfig)
-        {
-        }
     }
 }

@@ -273,8 +273,7 @@ namespace NanoRoute.Tests
                 .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
                 .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (context, _) =>
                 {
-                    Assert.That(context.Request.TryGetProperty(Router.OriginalRequestName, out object? originalRequest), Is.True);
-                    Assert.That(originalRequest, Is.InstanceOf<HttpListenerRequest>());
+                    Assert.That(context.Request.OriginalRequest, Is.InstanceOf<HttpListenerRequest>());
 
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }));
@@ -299,6 +298,7 @@ namespace NanoRoute.Tests
                     resp.Headers.Add("X-Custom-Response-Header", "kutya");
                     resp.Headers.Add("Server", "CustomServer");
                     resp.Headers.Add("Keep-Alive", "timeout=5");
+                    resp.Headers.WwwAuthenticate.Add(new AuthenticationHeaderValue("Basic", "realm=\"test\""));
                     resp.Content.Headers.Add("Content-Length", "999");
 
                     return resp;
@@ -315,7 +315,40 @@ namespace NanoRoute.Tests
             Assert.That(values, Is.EquivalentTo(new string[] { "kutya" }));
             Assert.That(!msg.Headers.TryGetValues("Server", out IEnumerable<string>? serverValues) || !serverValues.Contains("CustomServer"));
             Assert.That(!msg.Headers.TryGetValues("Keep-Alive", out IEnumerable<string>? keepAliveValues) || !keepAliveValues.Contains("timeout=5"));
+            Assert.That(msg.Headers.WwwAuthenticate, Is.Empty);
             Assert.That(msg.Content.Headers.ContentLength, Is.Not.EqualTo(999));
+        }
+
+        [Test]
+        public async Task Route_ShouldPreserveMultiValueResponseHeaders()
+        {
+            CreateRouter(bldr => bldr
+                .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) =>
+                {
+                    HttpResponseMessage resp = new(HttpStatusCode.OK);
+
+                    resp.Headers.TryAddWithoutValidation("Set-Cookie", new string[]
+                    {
+                        "first=1; Path=/",
+                        "second=2; Path=/"
+                    });
+
+                    return resp;
+                }));
+
+            Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
+
+            await HandleRequest();
+
+            HttpResponseMessage msg = await resp;
+
+            Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(msg.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? values), Is.True);
+            Assert.That(values, Is.EquivalentTo(new string[]
+            {
+                "first=1; Path=/",
+                "second=2; Path=/"
+            }));
         }
 
         [Test]

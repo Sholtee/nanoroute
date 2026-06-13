@@ -19,6 +19,7 @@ namespace NanoRoute.NativeAot
                 HttpListenerRouter router = CreateRouter();
 
                 await AssertBasicRoutes(router).ConfigureAwait(false);
+                await AssertInMemoryRoutes().ConfigureAwait(false);
                 await AssertTypedHandlerRoutes(router).ConfigureAwait(false);
                 await AssertJsonRoutes(router).ConfigureAwait(false);
                 await AssertNotFoundResponse(router).ConfigureAwait(false);

@@ -1,5 +1,6 @@
 NanoRoute.AwsLambda.ApiGatewayV2Router
-NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest! request, System.IServiceProvider! services, System.TimeSpan remainingTime) -> System.Threading.Tasks.Task<Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyResponse!>!
+NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest! request, System.IServiceProvider! services, Amazon.Lambda.Core.ILambdaContext! context) -> System.Threading.Tasks.Task<Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyResponse!>!
 NanoRoute.AwsLambda.ApiGatewayV2RouterConfig
 NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer.get -> System.TimeSpan
 NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer.init -> void
+static NanoRoute.AwsLambda.ApiGatewayV2Router.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.AwsLambda.ApiGatewayV2Router!, NanoRoute.AwsLambda.ApiGatewayV2RouterConfig!>!

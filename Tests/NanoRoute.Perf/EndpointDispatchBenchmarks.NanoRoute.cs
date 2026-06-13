@@ -6,7 +6,6 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace NanoRoute.Perf
@@ -21,7 +20,7 @@ namespace NanoRoute.Perf
 
                 private static readonly Task<HttpResponseMessage> s_responseTask = Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
 
-                private readonly TestRouter _router = TestRouter
+                private readonly HttpMessageRouter _router = HttpMessageRouter
                     .CreateBuilder()
                     .AddDefaultValueParsers()
                     .AddHandler("GET", scenario.Pattern, static (_, _) => s_responseTask)
@@ -32,11 +31,6 @@ namespace NanoRoute.Perf
                 public void Dispose() => _request.Dispose();
 
                 public Task Dispatch() => _router.Route(_request, s_services);
-
-                private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router<TestRouter, RouterConfig>(builder)
-                {
-                    public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) => Handle(request, services, cancellation);
-                }
 
                 private sealed class NoopServiceProvider : IServiceProvider
                 {

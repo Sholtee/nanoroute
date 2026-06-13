@@ -177,8 +177,8 @@ namespace NanoRoute.AwsLambda.Tests
 
             Assert.That(requestMessage.Method, Is.EqualTo(HttpMethod.Post));
             Assert.That(requestMessage.RequestUri, Is.EqualTo(new Uri("https://example.com/items/42?filter=active")));
-            Assert.That(GetProperty(requestMessage, Router.OriginalRequestName), Is.SameAs(request));
-            Assert.That(GetProperty(requestMessage, Router.TraceIdName), Is.EqualTo("request-id"));
+            Assert.That(requestMessage.OriginalRequest, Is.SameAs(request));
+            Assert.That(requestMessage.TraceId, Is.EqualTo("request-id"));
         }
 
         [Test]
@@ -408,15 +408,6 @@ namespace NanoRoute.AwsLambda.Tests
             Assert.That(response.IsBase64Encoded, Is.False);
             Assert.That(response.Headers, Is.Empty);
             Assert.That(response.Cookies, Is.Empty);
-        }
-
-        private static object? GetProperty(HttpRequestMessage request, string key)
-        {
-#if NET5_0_OR_GREATER
-            return request.Options.TryGetValue(new HttpRequestOptionsKey<object?>(key), out object? value) ? value : null;
-#else
-            return request.Properties.TryGetValue(key, out object? value) ? value : null;
-#endif
         }
     }
 }

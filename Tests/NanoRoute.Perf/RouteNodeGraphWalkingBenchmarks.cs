@@ -35,7 +35,7 @@ namespace NanoRoute.Perf
         private RouteNode _root = null!;
 
         [GlobalSetup]
-        public void Setup() => _root = TestRouter
+        public void Setup() => _root = HttpMessageRouter
             .CreateBuilder()
             .AddHandler("GET", LiteralRoutePattern, s_handler)
             .CreateSnapshot();
@@ -133,7 +133,5 @@ namespace NanoRoute.Perf
                     throw new InvalidOperationException($"Unknown branch lookup kind: {branchLookupKind}.");
             }
         }
-
-        private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router<TestRouter, RouterConfig>(builder);
     }
 }

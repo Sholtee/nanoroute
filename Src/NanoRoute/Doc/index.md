@@ -2,7 +2,7 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
-The core library is centered around `RouteScopeBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+The core library includes `HttpMessageRouter` for already materialized `HttpRequestMessage` requests and `HttpListenerRouter` for listener-hosted requests. `RouterBase<TConfig>`, `RouteScopeBuilder`, and `RequestContext` remain available when you want to plug the routing pipeline into your own transport or hosting model.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios.
 
@@ -105,10 +105,11 @@ public interface IUserRepository
 - [BuilderMetadata](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html)
 - [ConfigureBuilderDelegate`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html)
 - [ExceptionHandlingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html)
-- [Router](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html)
 - [RouterConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html)
+- [RouterBase`1](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBase-1.html)
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [EndpointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html)
+- [HttpMessageRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpMessageRouter.html)
 - [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [QueryParsingConfig](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html)
@@ -532,46 +533,50 @@ HttpListenerRouter router = HttpListenerRouter
 
 `AddJsonErrorDetails()` snapshots the current `JsonErrorDetailsConfig` at registration time. Prefix scopes follow the normal `RouteScopeBuilder.Metadata` scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.
 
-## Custom Routers
+## HTTP Message Routing
 
-If `HttpListenerRouter` is not the transport you want, derive from `Router<TDescendant, TConfig>` and expose your own entry point that prepares an `HttpRequestMessage`, invokes `Handle()`, and deals with the returned `HttpResponseMessage`.
+Use `HttpMessageRouter` when your application or test already has an `HttpRequestMessage` and wants the matching, value parsing, middleware, and handler pipeline without binding to a network listener.
 
 ```csharp
-using System;
+using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 using NanoRoute;
 
-public sealed class InMemoryRouter : Router<InMemoryRouter, RouterConfig>
-{
-    private InMemoryRouter(RouterBuilder<InMemoryRouter, RouterConfig> builder) : base(builder)
-    {
-    }
-
-    public Task<HttpResponseMessage> Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =>
-        Handle(request, services, cancellation);
-}
-
-InMemoryRouter router = InMemoryRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddEndpoint("GET", "/health/", endpoint => endpoint
-        .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage())))
+        .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("ok")
+        })))
     .CreateRouter();
+
+using HttpRequestMessage request = new(HttpMethod.Get, "https://example.test/health");
+using HttpResponseMessage response = await router.Route(request, services);
 ```
 
-This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline.
+The returned `HttpResponseMessage` is owned by the caller. Dispose it after reading the response body.
+
+## Custom Routers
+
+If neither `HttpMessageRouter` nor `HttpListenerRouter` fits the transport you want, derive from `RouterBase<TConfig>`. Your router entry point prepares an `HttpRequestMessage`, calls the protected `Route()` method, and deals with the returned `HttpResponseMessage`.
+
+`RouterBase<TConfig>` stores the immutable router configuration and snapshots the supplied route scope into a reusable pipeline.
 
 ## Cancellation
 
 - NanoRoute exposes the caller-provided cancellation token to async value parsers and handlers through `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
 - `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
+- `HttpMessageRouter.Route()` rethrows the cancellation exception and leaves response ownership with the caller.
 - `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
 
 ## Common Building Blocks
 
+- `HttpMessageRouter.CreateBuilder()` starts a strongly typed builder for already materialized `HttpRequestMessage` scenarios.
 - `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
+- `RouterBase<TConfig>` stores router configuration and runs a captured request pipeline for custom transports.
 - `ConfigureRouting()` customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.

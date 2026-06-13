@@ -3,6 +3,7 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
+using System;
 using System.Diagnostics.Tracing;
 using System.Net.Http;
 
@@ -17,20 +18,16 @@ namespace NanoRoute.Tests
 
         private DebugEventListener _debugEventListener = null!;
 
-        private RouterBuilder<TestRouter, RouterConfig> _routerBuilder = null!;
+        private RouterBuilder<HttpMessageRouter, RouterConfig> _routerBuilder = null!;
 
         private HttpRequestMessage _request = null!;
-
-        private sealed class TestRouter(RouterBuilder<TestRouter, RouterConfig> builder) : Router<TestRouter, RouterConfig>(builder)
-        {
-        }
 
         [SetUp]
         public void Setup()
         {
             _request = new HttpRequestMessage() { Method = HttpMethod.Get };
             _debugEventListener = new DebugEventListener(EventLevel.LogAlways);
-            _routerBuilder = TestRouter.CreateBuilder();
+            _routerBuilder = HttpMessageRouter.CreateBuilder();
         }
 
         [TearDown]

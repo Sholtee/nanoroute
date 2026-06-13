@@ -14,91 +14,91 @@ namespace NanoRoute.Tests
     internal sealed partial class RouterTests
     {
         [Test]
-        public async Task Handle_ShouldBeCaseInsensitive()
+        public async Task Route_ShouldBeCaseInsensitive()
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/path/to/SOMEWHERE/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/PATH/to/somewhere");
 
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            Assert.That(await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
         }
 
         [Test]
-        public async Task Handle_ShouldNormalizeEscapedPaths()
+        public async Task Route_ShouldNormalizeEscapedPaths()
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/users/~denes/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/users/%7Edenes");
 
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            Assert.That(await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
         [Test]
-        public async Task Handle_ShouldMatchPercentEncodedLiteralSegments()
+        public async Task Route_ShouldMatchPercentEncodedLiteralSegments()
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/files/a%20b/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a%20b");
 
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            Assert.That(await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
         [Test]
-        public async Task Handle_ShouldPreservePlusInPathSegments()
+        public async Task Route_ShouldPreservePlusInPathSegments()
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/files/a+b/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/files/a+b");
 
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            Assert.That(await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
 
         [Test]
-        public async Task Handle_ShouldNormalizeDotSegmentsInUriPaths()
+        public async Task Route_ShouldNormalizeDotSegmentsInUriPaths()
         {
             Mock<RequestHandlerDelegate> mockHandler = new(MockBehavior.Strict);
             mockHandler
                 .Setup(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()))
                 .ReturnsAsync(s_response);
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/users/denes/", mockHandler.Object)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/users/../users/denes");
 
-            Assert.That(await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
+            Assert.That(await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object), Is.EqualTo(s_response));
             mockHandler.Verify(h => h.Invoke(It.Is<RequestContext>(c => c.Request == _request), It.IsAny<CallNextHandlerDelegate>()), Times.Once);
         }
     }

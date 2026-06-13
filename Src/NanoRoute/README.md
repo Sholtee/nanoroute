@@ -2,7 +2,7 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
-The core library is centered around `RouteScopeBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+The core library includes `HttpMessageRouter` for already materialized `HttpRequestMessage` requests and `HttpListenerRouter` for listener-hosted requests. `RouterBase<TConfig>`, `RouteScopeBuilder`, and `RequestContext` remain available when you want to plug the routing pipeline into your own transport or hosting model.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios. For JSON body and response handling in Native AOT apps, prefer overloads that accept `JsonTypeInfo` from a source-generated `JsonSerializerContext`.
 
@@ -134,6 +134,8 @@ public interface IUserRepository
 
 - Exact route patterns start and end with `/`, for example `/items/`.
 - Prefix route patterns start with `/` and end with `/*`, for example `/items/*`.
+- `HttpMessageRouter.CreateBuilder()` creates a router for already materialized `HttpRequestMessage` requests.
+- `RouterBase<TConfig>` helps custom transport adapters expose configuration and capture a route snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` parsers.
 - `AddPrefix()` and `CreatePrefix()` define scoped route subtrees.
 - `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`.

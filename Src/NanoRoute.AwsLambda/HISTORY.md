@@ -1,5 +1,11 @@
 # History
 
+## 1.0.0-preview3
+
+### Changed
+
+- Changed `ApiGatewayV2Router` to derive from the core `RouterBase<ApiGatewayV2RouterConfig>` helper and expose its own explicit `CreateBuilder()` factory.
+
 ## 1.0.0-preview2
 
 ### Breaking Changes

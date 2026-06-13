@@ -21,15 +21,15 @@ namespace NanoRoute.Tests
     internal sealed partial class RouterTests
     {
         [Test]
-        public async Task Handle_ShouldLogTheRequestLifecycle()
+        public async Task Route_ShouldLogTheRequestLifecycle()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/path/to/somewhere/", async (_, _) => s_response)
                 .CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/somewhere");
 
-            HttpResponseMessage response = await router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
+            HttpResponseMessage response = await router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object);
 
             Assert.That(response, Is.EqualTo(s_response));
             Assert.That(SpinWait.SpinUntil(() => _debugEventListener.Events.Count >= 2, 1000), Is.True);
@@ -51,13 +51,13 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void Handle_ShouldLogWhenNoHandlerMatches()
+        public void Route_ShouldLogWhenNoHandlerMatches()
         {
-            TestRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             _request.RequestUri = new Uri("https://www.exmaple.com/path/to/nowhere");
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route(_request, new Mock<IServiceProvider>(MockBehavior.Loose).Object))!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_NOT_FOUND));
             Assert.That(ex.Data["StatusCode"], Is.EqualTo(HttpStatusCode.NotFound));

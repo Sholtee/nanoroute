@@ -29,15 +29,15 @@ namespace NanoRoute.Tests
                     Content = new StringContent("prefixed")
                 });
 
-            TestRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
-            HttpResponseMessage prefixedResponse = await router.Handle
+            HttpResponseMessage prefixedResponse = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/users"),
                 s_services
             );
 
-            HttpResponseMessage rootResponse = await router.Handle
+            HttpResponseMessage rootResponse = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/users"),
                 s_services
@@ -75,15 +75,15 @@ namespace NanoRoute.Tests
                         Content = new StringContent("ready")
                     }));
 
-            TestRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/status"),
                 s_services
             );
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/status"),
                 s_services
@@ -107,9 +107,9 @@ namespace NanoRoute.Tests
                     })
                     .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)));
 
-            TestRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/api/items"),
                 s_services
@@ -149,7 +149,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddPrefix_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.AddPrefix("/base/*", _ => { });
+            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.AddPrefix("/base/*", _ => { });
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }
