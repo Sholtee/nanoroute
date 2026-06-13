@@ -144,6 +144,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.HttpMessageRouter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "NanoRoute.HttpMessageRouter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "NanoRoute.HttpMessageRouter",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HttpMessageRouter.yml\" sourcestartlinenumber=\"1\">Routes <xref href=\"System.Net.Http.HttpRequestMessage\" data-throw-if-not-resolved=\"false\"></xref> instances through a NanoRoute pipeline without a transport adapter.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../../../BIN/DOC/NanoRoute.HttpRequestMessageExtensions.yml",
       "output": {
         ".html": {
@@ -154,7 +168,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.HttpRequestMessageExtensions",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HttpRequestMessageExtensions.yml\" sourcestartlinenumber=\"1\"><xref href=\"System.Net.Http.HttpResponseMessage\" data-throw-if-not-resolved=\"false\"></xref> extensions.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.HttpRequestMessageExtensions.yml\" sourcestartlinenumber=\"1\"><xref href=\"System.Net.Http.HttpRequestMessage\" data-throw-if-not-resolved=\"false\"></xref> extensions.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -340,31 +354,17 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.Router-2.yml",
+      "source_relative_path": "../../../BIN/DOC/NanoRoute.RouterBase-1.yml",
       "output": {
         ".html": {
-          "relative_path": "NanoRoute.Router-2.html"
+          "relative_path": "NanoRoute.RouterBase-1.html"
         }
       },
       "version": "",
       "Uid": null,
       "IsMRef": true,
-      "Title": "NanoRoute.Router<TDescendant, TConfig>",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Router-2.yml\" sourcestartlinenumber=\"1\">Provides the self-typed base for concrete router implementations with strongly typed configuration.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../../../BIN/DOC/NanoRoute.Router.yml",
-      "output": {
-        ".html": {
-          "relative_path": "NanoRoute.Router.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "NanoRoute.Router",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.Router.yml\" sourcestartlinenumber=\"1\">Executes the route matching pipeline built by <xref href=\"NanoRoute.RouteScopeBuilder\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+      "Title": "NanoRoute.RouterBase<TConfig>",
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBase-1.yml\" sourcestartlinenumber=\"1\">Provides shared configuration storage and request-pipeline execution for transport-specific router adapters.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -378,7 +378,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RouterBuilder<TRouter, TConfig>",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBuilder-2.yml\" sourcestartlinenumber=\"1\">Builds a concrete <xref href=\"NanoRoute.Router\" data-throw-if-not-resolved=\"false\"></xref> type together with its strongly typed configuration object.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterBuilder-2.yml\" sourcestartlinenumber=\"1\">Builds a concrete router type together with its strongly typed configuration object.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -392,7 +392,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "NanoRoute.RouterConfig",
-      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterConfig.yml\" sourcestartlinenumber=\"1\">Configures runtime behavior of <xref href=\"NanoRoute.Router\" data-throw-if-not-resolved=\"false\"></xref> instances.</p>\n"
+      "Summary": "<p sourcefile=\"../../../BIN/DOC/NanoRoute.RouterConfig.yml\" sourcestartlinenumber=\"1\">Configures runtime routing behavior for router instances.</p>\n"
     },
     {
       "type": "ManagedReference",

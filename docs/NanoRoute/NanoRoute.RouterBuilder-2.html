@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width">
       <meta name="title" content="Class RouterBuilder&lt;TRouter, TConfig&gt; | NanoRoute ">
     
-    <meta name="description" content="Builds a concrete  type together with its strongly typed configuration object.">
+    <meta name="description" content="Builds a concrete router type together with its strongly typed configuration object.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -40,7 +40,7 @@
 
 
   <h1 id="NanoRoute_RouterBuilder_2" data-uid="NanoRoute.RouterBuilder`2" class="text-break">Class RouterBuilder&lt;TRouter, TConfig&gt;</h1>
-  <div class="markdown level0 summary"><p>Builds a concrete <a class="xref" href="NanoRoute.Router.html">Router</a> type together with its strongly typed configuration object.</p>
+  <div class="markdown level0 summary"><p>Builds a concrete router type together with its strongly typed configuration object.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -95,7 +95,7 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_RouterBuilder_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class RouterBuilder&lt;TRouter, TConfig&gt; : RouteScopeBuilder where TRouter : Router where TConfig : RouterConfig, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class RouterBuilder&lt;TRouter, TConfig&gt; : RouteScopeBuilder where TRouter : RouterBase&lt;TConfig&gt; where TConfig : RouterConfig, new()</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">

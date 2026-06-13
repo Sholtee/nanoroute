@@ -280,6 +280,18 @@ references:
   commentId: T:NanoRoute.HttpListenerRouter
   fullName: NanoRoute.HttpListenerRouter
   nameWithType: HttpListenerRouter
+- uid: NanoRoute.HttpListenerRouter.CreateBuilder
+  name: CreateBuilder()
+  href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter_CreateBuilder
+  commentId: M:NanoRoute.HttpListenerRouter.CreateBuilder
+  fullName: NanoRoute.HttpListenerRouter.CreateBuilder()
+  nameWithType: HttpListenerRouter.CreateBuilder()
+- uid: NanoRoute.HttpListenerRouter.CreateBuilder*
+  name: CreateBuilder
+  href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter_CreateBuilder_
+  commentId: Overload:NanoRoute.HttpListenerRouter.CreateBuilder
+  fullName: NanoRoute.HttpListenerRouter.CreateBuilder
+  nameWithType: HttpListenerRouter.CreateBuilder
 - uid: NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext,System.IServiceProvider,System.Threading.CancellationToken)
   name: Route(HttpListenerContext, IServiceProvider, CancellationToken)
   href: NanoRoute.HttpListenerRouter.html#NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_System_Threading_CancellationToken_
@@ -316,6 +328,36 @@ references:
   fullName.vb: NanoRoute.HttpListenerRouterConfig.New
   nameWithType: HttpListenerRouterConfig.HttpListenerRouterConfig
   nameWithType.vb: HttpListenerRouterConfig.New
+- uid: NanoRoute.HttpMessageRouter
+  name: HttpMessageRouter
+  href: NanoRoute.HttpMessageRouter.html
+  commentId: T:NanoRoute.HttpMessageRouter
+  fullName: NanoRoute.HttpMessageRouter
+  nameWithType: HttpMessageRouter
+- uid: NanoRoute.HttpMessageRouter.CreateBuilder
+  name: CreateBuilder()
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_CreateBuilder
+  commentId: M:NanoRoute.HttpMessageRouter.CreateBuilder
+  fullName: NanoRoute.HttpMessageRouter.CreateBuilder()
+  nameWithType: HttpMessageRouter.CreateBuilder()
+- uid: NanoRoute.HttpMessageRouter.CreateBuilder*
+  name: CreateBuilder
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_CreateBuilder_
+  commentId: Overload:NanoRoute.HttpMessageRouter.CreateBuilder
+  fullName: NanoRoute.HttpMessageRouter.CreateBuilder
+  nameWithType: HttpMessageRouter.CreateBuilder
+- uid: NanoRoute.HttpMessageRouter.Route(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)
+  name: Route(HttpRequestMessage, IServiceProvider, CancellationToken)
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_Route_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_
+  commentId: M:NanoRoute.HttpMessageRouter.Route(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)
+  fullName: NanoRoute.HttpMessageRouter.Route(System.Net.Http.HttpRequestMessage, System.IServiceProvider, System.Threading.CancellationToken)
+  nameWithType: HttpMessageRouter.Route(HttpRequestMessage, IServiceProvider, CancellationToken)
+- uid: NanoRoute.HttpMessageRouter.Route*
+  name: Route
+  href: NanoRoute.HttpMessageRouter.html#NanoRoute_HttpMessageRouter_Route_
+  commentId: Overload:NanoRoute.HttpMessageRouter.Route
+  fullName: NanoRoute.HttpMessageRouter.Route
+  nameWithType: HttpMessageRouter.Route
 - uid: NanoRoute.HttpRequestMessageExtensions
   name: HttpRequestMessageExtensions
   href: NanoRoute.HttpRequestMessageExtensions.html
@@ -334,6 +376,60 @@ references:
   commentId: Overload:NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders
   fullName: NanoRoute.HttpRequestMessageExtensions.get_ContentHeaders
   nameWithType: HttpRequestMessageExtensions.get_ContentHeaders
+- uid: NanoRoute.HttpRequestMessageExtensions.get_OriginalRequest(System.Net.Http.HttpRequestMessage)
+  name: get_OriginalRequest(HttpRequestMessage)
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_get_OriginalRequest_System_Net_Http_HttpRequestMessage_
+  commentId: M:NanoRoute.HttpRequestMessageExtensions.get_OriginalRequest(System.Net.Http.HttpRequestMessage)
+  fullName: NanoRoute.HttpRequestMessageExtensions.get_OriginalRequest(System.Net.Http.HttpRequestMessage)
+  nameWithType: HttpRequestMessageExtensions.get_OriginalRequest(HttpRequestMessage)
+- uid: NanoRoute.HttpRequestMessageExtensions.get_OriginalRequest*
+  name: get_OriginalRequest
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_get_OriginalRequest_
+  commentId: Overload:NanoRoute.HttpRequestMessageExtensions.get_OriginalRequest
+  fullName: NanoRoute.HttpRequestMessageExtensions.get_OriginalRequest
+  nameWithType: HttpRequestMessageExtensions.get_OriginalRequest
+- uid: NanoRoute.HttpRequestMessageExtensions.get_TraceId(System.Net.Http.HttpRequestMessage)
+  name: get_TraceId(HttpRequestMessage)
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_get_TraceId_System_Net_Http_HttpRequestMessage_
+  commentId: M:NanoRoute.HttpRequestMessageExtensions.get_TraceId(System.Net.Http.HttpRequestMessage)
+  fullName: NanoRoute.HttpRequestMessageExtensions.get_TraceId(System.Net.Http.HttpRequestMessage)
+  nameWithType: HttpRequestMessageExtensions.get_TraceId(HttpRequestMessage)
+- uid: NanoRoute.HttpRequestMessageExtensions.get_TraceId*
+  name: get_TraceId
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_get_TraceId_
+  commentId: Overload:NanoRoute.HttpRequestMessageExtensions.get_TraceId
+  fullName: NanoRoute.HttpRequestMessageExtensions.get_TraceId
+  nameWithType: HttpRequestMessageExtensions.get_TraceId
+- uid: NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest(System.Net.Http.HttpRequestMessage,System.Object)
+  name: set_OriginalRequest(HttpRequestMessage, object?)
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_set_OriginalRequest_System_Net_Http_HttpRequestMessage_System_Object_
+  commentId: M:NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest(System.Net.Http.HttpRequestMessage,System.Object)
+  name.vb: set_OriginalRequest(HttpRequestMessage, Object)
+  fullName: NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest(System.Net.Http.HttpRequestMessage, object?)
+  fullName.vb: NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest(System.Net.Http.HttpRequestMessage, Object)
+  nameWithType: HttpRequestMessageExtensions.set_OriginalRequest(HttpRequestMessage, object?)
+  nameWithType.vb: HttpRequestMessageExtensions.set_OriginalRequest(HttpRequestMessage, Object)
+- uid: NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest*
+  name: set_OriginalRequest
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_set_OriginalRequest_
+  commentId: Overload:NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest
+  fullName: NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest
+  nameWithType: HttpRequestMessageExtensions.set_OriginalRequest
+- uid: NanoRoute.HttpRequestMessageExtensions.set_TraceId(System.Net.Http.HttpRequestMessage,System.String)
+  name: set_TraceId(HttpRequestMessage, string?)
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_set_TraceId_System_Net_Http_HttpRequestMessage_System_String_
+  commentId: M:NanoRoute.HttpRequestMessageExtensions.set_TraceId(System.Net.Http.HttpRequestMessage,System.String)
+  name.vb: set_TraceId(HttpRequestMessage, String)
+  fullName: NanoRoute.HttpRequestMessageExtensions.set_TraceId(System.Net.Http.HttpRequestMessage, string?)
+  fullName.vb: NanoRoute.HttpRequestMessageExtensions.set_TraceId(System.Net.Http.HttpRequestMessage, String)
+  nameWithType: HttpRequestMessageExtensions.set_TraceId(HttpRequestMessage, string?)
+  nameWithType.vb: HttpRequestMessageExtensions.set_TraceId(HttpRequestMessage, String)
+- uid: NanoRoute.HttpRequestMessageExtensions.set_TraceId*
+  name: set_TraceId
+  href: NanoRoute.HttpRequestMessageExtensions.html#NanoRoute_HttpRequestMessageExtensions_set_TraceId_
+  commentId: Overload:NanoRoute.HttpRequestMessageExtensions.set_TraceId
+  fullName: NanoRoute.HttpRequestMessageExtensions.set_TraceId
+  nameWithType: HttpRequestMessageExtensions.set_TraceId
 - uid: NanoRoute.JsonErrorDetailsConfig
   name: JsonErrorDetailsConfig
   href: NanoRoute.JsonErrorDetailsConfig.html
@@ -1468,66 +1564,65 @@ references:
   commentId: Overload:NanoRoute.RouteScopeBuilder.ValueParsers
   fullName: NanoRoute.RouteScopeBuilder.ValueParsers
   nameWithType: RouteScopeBuilder.ValueParsers
-- uid: NanoRoute.Router
-  name: Router
-  href: NanoRoute.Router.html
-  commentId: T:NanoRoute.Router
-  fullName: NanoRoute.Router
-  nameWithType: Router
-- uid: NanoRoute.Router.#ctor(NanoRoute.RouteScopeBuilder,NanoRoute.RouterConfig)
-  name: Router(RouteScopeBuilder, RouterConfig)
-  href: NanoRoute.Router.html#NanoRoute_Router__ctor_NanoRoute_RouteScopeBuilder_NanoRoute_RouterConfig_
-  commentId: M:NanoRoute.Router.#ctor(NanoRoute.RouteScopeBuilder,NanoRoute.RouterConfig)
-  name.vb: New(RouteScopeBuilder, RouterConfig)
-  fullName: NanoRoute.Router.Router(NanoRoute.RouteScopeBuilder, NanoRoute.RouterConfig)
-  fullName.vb: NanoRoute.Router.New(NanoRoute.RouteScopeBuilder, NanoRoute.RouterConfig)
-  nameWithType: Router.Router(RouteScopeBuilder, RouterConfig)
-  nameWithType.vb: Router.New(RouteScopeBuilder, RouterConfig)
-- uid: NanoRoute.Router.#ctor*
-  name: Router
-  href: NanoRoute.Router.html#NanoRoute_Router__ctor_
-  commentId: Overload:NanoRoute.Router.#ctor
+- uid: NanoRoute.RouterBase`1
+  name: RouterBase<TConfig>
+  href: NanoRoute.RouterBase-1.html
+  commentId: T:NanoRoute.RouterBase`1
+  name.vb: RouterBase(Of TConfig)
+  fullName: NanoRoute.RouterBase<TConfig>
+  fullName.vb: NanoRoute.RouterBase(Of TConfig)
+  nameWithType: RouterBase<TConfig>
+  nameWithType.vb: RouterBase(Of TConfig)
+- uid: NanoRoute.RouterBase`1.#ctor(NanoRoute.RouteScopeBuilder,`0)
+  name: RouterBase(RouteScopeBuilder, TConfig)
+  href: NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1__ctor_NanoRoute_RouteScopeBuilder__0_
+  commentId: M:NanoRoute.RouterBase`1.#ctor(NanoRoute.RouteScopeBuilder,`0)
+  name.vb: New(RouteScopeBuilder, TConfig)
+  fullName: NanoRoute.RouterBase<TConfig>.RouterBase(NanoRoute.RouteScopeBuilder, TConfig)
+  fullName.vb: NanoRoute.RouterBase(Of TConfig).New(NanoRoute.RouteScopeBuilder, TConfig)
+  nameWithType: RouterBase<TConfig>.RouterBase(RouteScopeBuilder, TConfig)
+  nameWithType.vb: RouterBase(Of TConfig).New(RouteScopeBuilder, TConfig)
+- uid: NanoRoute.RouterBase`1.#ctor*
+  name: RouterBase
+  href: NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1__ctor_
+  commentId: Overload:NanoRoute.RouterBase`1.#ctor
   name.vb: New
-  fullName: NanoRoute.Router.Router
-  fullName.vb: NanoRoute.Router.New
-  nameWithType: Router.Router
-  nameWithType.vb: Router.New
-- uid: NanoRoute.Router.Config
+  fullName: NanoRoute.RouterBase<TConfig>.RouterBase
+  fullName.vb: NanoRoute.RouterBase(Of TConfig).New
+  nameWithType: RouterBase<TConfig>.RouterBase
+  nameWithType.vb: RouterBase(Of TConfig).New
+- uid: NanoRoute.RouterBase`1.Config
   name: Config
-  href: NanoRoute.Router.html#NanoRoute_Router_Config
-  commentId: P:NanoRoute.Router.Config
-  fullName: NanoRoute.Router.Config
-  nameWithType: Router.Config
-- uid: NanoRoute.Router.Config*
+  href: NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1_Config
+  commentId: P:NanoRoute.RouterBase`1.Config
+  fullName: NanoRoute.RouterBase<TConfig>.Config
+  fullName.vb: NanoRoute.RouterBase(Of TConfig).Config
+  nameWithType: RouterBase<TConfig>.Config
+  nameWithType.vb: RouterBase(Of TConfig).Config
+- uid: NanoRoute.RouterBase`1.Config*
   name: Config
-  href: NanoRoute.Router.html#NanoRoute_Router_Config_
-  commentId: Overload:NanoRoute.Router.Config
-  fullName: NanoRoute.Router.Config
-  nameWithType: Router.Config
-- uid: NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)
-  name: Handle(HttpRequestMessage, IServiceProvider, CancellationToken)
-  href: NanoRoute.Router.html#NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_
-  commentId: M:NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)
-  fullName: NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage, System.IServiceProvider, System.Threading.CancellationToken)
-  nameWithType: Router.Handle(HttpRequestMessage, IServiceProvider, CancellationToken)
-- uid: NanoRoute.Router.Handle*
-  name: Handle
-  href: NanoRoute.Router.html#NanoRoute_Router_Handle_
-  commentId: Overload:NanoRoute.Router.Handle
-  fullName: NanoRoute.Router.Handle
-  nameWithType: Router.Handle
-- uid: NanoRoute.Router.OriginalRequestName
-  name: OriginalRequestName
-  href: NanoRoute.Router.html#NanoRoute_Router_OriginalRequestName
-  commentId: F:NanoRoute.Router.OriginalRequestName
-  fullName: NanoRoute.Router.OriginalRequestName
-  nameWithType: Router.OriginalRequestName
-- uid: NanoRoute.Router.TraceIdName
-  name: TraceIdName
-  href: NanoRoute.Router.html#NanoRoute_Router_TraceIdName
-  commentId: F:NanoRoute.Router.TraceIdName
-  fullName: NanoRoute.Router.TraceIdName
-  nameWithType: Router.TraceIdName
+  href: NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1_Config_
+  commentId: Overload:NanoRoute.RouterBase`1.Config
+  fullName: NanoRoute.RouterBase<TConfig>.Config
+  fullName.vb: NanoRoute.RouterBase(Of TConfig).Config
+  nameWithType: RouterBase<TConfig>.Config
+  nameWithType.vb: RouterBase(Of TConfig).Config
+- uid: NanoRoute.RouterBase`1.Route(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)
+  name: Route(HttpRequestMessage, IServiceProvider, CancellationToken)
+  href: NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1_Route_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_
+  commentId: M:NanoRoute.RouterBase`1.Route(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)
+  fullName: NanoRoute.RouterBase<TConfig>.Route(System.Net.Http.HttpRequestMessage, System.IServiceProvider, System.Threading.CancellationToken)
+  fullName.vb: NanoRoute.RouterBase(Of TConfig).Route(System.Net.Http.HttpRequestMessage, System.IServiceProvider, System.Threading.CancellationToken)
+  nameWithType: RouterBase<TConfig>.Route(HttpRequestMessage, IServiceProvider, CancellationToken)
+  nameWithType.vb: RouterBase(Of TConfig).Route(HttpRequestMessage, IServiceProvider, CancellationToken)
+- uid: NanoRoute.RouterBase`1.Route*
+  name: Route
+  href: NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1_Route_
+  commentId: Overload:NanoRoute.RouterBase`1.Route
+  fullName: NanoRoute.RouterBase<TConfig>.Route
+  fullName.vb: NanoRoute.RouterBase(Of TConfig).Route
+  nameWithType: RouterBase<TConfig>.Route
+  nameWithType.vb: RouterBase(Of TConfig).Route
 - uid: NanoRoute.RouterBuilder`2
   name: RouterBuilder<TRouter, TConfig>
   href: NanoRoute.RouterBuilder-2.html
@@ -1683,65 +1778,6 @@ references:
   fullName.vb: NanoRoute.RouterFactoryDelegate(Of TRouter, TConfig)
   nameWithType: RouterFactoryDelegate<TRouter, TConfig>
   nameWithType.vb: RouterFactoryDelegate(Of TRouter, TConfig)
-- uid: NanoRoute.Router`2
-  name: Router<TDescendant, TConfig>
-  href: NanoRoute.Router-2.html
-  commentId: T:NanoRoute.Router`2
-  name.vb: Router(Of TDescendant, TConfig)
-  fullName: NanoRoute.Router<TDescendant, TConfig>
-  fullName.vb: NanoRoute.Router(Of TDescendant, TConfig)
-  nameWithType: Router<TDescendant, TConfig>
-  nameWithType.vb: Router(Of TDescendant, TConfig)
-- uid: NanoRoute.Router`2.#ctor(NanoRoute.RouterBuilder{`0,`1})
-  name: Router(RouterBuilder<TDescendant, TConfig>)
-  href: NanoRoute.Router-2.html#NanoRoute_Router_2__ctor_NanoRoute_RouterBuilder__0__1__
-  commentId: M:NanoRoute.Router`2.#ctor(NanoRoute.RouterBuilder{`0,`1})
-  name.vb: New(RouterBuilder(Of TDescendant, TConfig))
-  fullName: NanoRoute.Router<TDescendant, TConfig>.Router(NanoRoute.RouterBuilder<TDescendant, TConfig>)
-  fullName.vb: NanoRoute.Router(Of TDescendant, TConfig).New(NanoRoute.RouterBuilder(Of TDescendant, TConfig))
-  nameWithType: Router<TDescendant, TConfig>.Router(RouterBuilder<TDescendant, TConfig>)
-  nameWithType.vb: Router(Of TDescendant, TConfig).New(RouterBuilder(Of TDescendant, TConfig))
-- uid: NanoRoute.Router`2.#ctor*
-  name: Router
-  href: NanoRoute.Router-2.html#NanoRoute_Router_2__ctor_
-  commentId: Overload:NanoRoute.Router`2.#ctor
-  name.vb: New
-  fullName: NanoRoute.Router<TDescendant, TConfig>.Router
-  fullName.vb: NanoRoute.Router(Of TDescendant, TConfig).New
-  nameWithType: Router<TDescendant, TConfig>.Router
-  nameWithType.vb: Router(Of TDescendant, TConfig).New
-- uid: NanoRoute.Router`2.Config
-  name: Config
-  href: NanoRoute.Router-2.html#NanoRoute_Router_2_Config
-  commentId: P:NanoRoute.Router`2.Config
-  fullName: NanoRoute.Router<TDescendant, TConfig>.Config
-  fullName.vb: NanoRoute.Router(Of TDescendant, TConfig).Config
-  nameWithType: Router<TDescendant, TConfig>.Config
-  nameWithType.vb: Router(Of TDescendant, TConfig).Config
-- uid: NanoRoute.Router`2.Config*
-  name: Config
-  href: NanoRoute.Router-2.html#NanoRoute_Router_2_Config_
-  commentId: Overload:NanoRoute.Router`2.Config
-  fullName: NanoRoute.Router<TDescendant, TConfig>.Config
-  fullName.vb: NanoRoute.Router(Of TDescendant, TConfig).Config
-  nameWithType: Router<TDescendant, TConfig>.Config
-  nameWithType.vb: Router(Of TDescendant, TConfig).Config
-- uid: NanoRoute.Router`2.CreateBuilder
-  name: CreateBuilder()
-  href: NanoRoute.Router-2.html#NanoRoute_Router_2_CreateBuilder
-  commentId: M:NanoRoute.Router`2.CreateBuilder
-  fullName: NanoRoute.Router<TDescendant, TConfig>.CreateBuilder()
-  fullName.vb: NanoRoute.Router(Of TDescendant, TConfig).CreateBuilder()
-  nameWithType: Router<TDescendant, TConfig>.CreateBuilder()
-  nameWithType.vb: Router(Of TDescendant, TConfig).CreateBuilder()
-- uid: NanoRoute.Router`2.CreateBuilder*
-  name: CreateBuilder
-  href: NanoRoute.Router-2.html#NanoRoute_Router_2_CreateBuilder_
-  commentId: Overload:NanoRoute.Router`2.CreateBuilder
-  fullName: NanoRoute.Router<TDescendant, TConfig>.CreateBuilder
-  fullName.vb: NanoRoute.Router(Of TDescendant, TConfig).CreateBuilder
-  nameWithType: Router<TDescendant, TConfig>.CreateBuilder
-  nameWithType.vb: Router(Of TDescendant, TConfig).CreateBuilder
 - uid: NanoRoute.SyncValueParserDelegate
   name: SyncValueParserDelegate
   href: NanoRoute.SyncValueParserDelegate.html

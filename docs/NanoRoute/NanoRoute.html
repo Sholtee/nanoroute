@@ -63,8 +63,11 @@ unexpected exceptions.</p>
       <h4><a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a></h4>
       <section><p>Configuration settings for <a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>.</p>
 </section>
+      <h4><a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a></h4>
+      <section><p>Routes <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> instances through a NanoRoute pipeline without a transport adapter.</p>
+</section>
       <h4><a class="xref" href="NanoRoute.HttpRequestMessageExtensions.html">HttpRequestMessageExtensions</a></h4>
-      <section><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> extensions.</p>
+      <section><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> extensions.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.JsonErrorDetailsConfig.html">JsonErrorDetailsConfig</a></h4>
       <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</a> creates JSON
@@ -97,17 +100,14 @@ unexpected exceptions.</p>
       <h4><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></h4>
       <section><p>Builder responsible for configuring a route scope and its child route tree.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.Router.html">Router</a></h4>
-      <section><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a>.</p>
+      <h4><a class="xref" href="NanoRoute.RouterBase-1.html">RouterBase&lt;TConfig&gt;</a></h4>
+      <section><p>Provides shared configuration storage and request-pipeline execution for transport-specific router adapters.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder&lt;TRouter, TConfig&gt;</a></h4>
-      <section><p>Builds a concrete <a class="xref" href="NanoRoute.Router.html">Router</a> type together with its strongly typed configuration object.</p>
+      <section><p>Builds a concrete router type together with its strongly typed configuration object.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a></h4>
-      <section><p>Configures runtime behavior of <a class="xref" href="NanoRoute.Router.html">Router</a> instances.</p>
-</section>
-      <h4><a class="xref" href="NanoRoute.Router-2.html">Router&lt;TDescendant, TConfig&gt;</a></h4>
-      <section><p>Provides the self-typed base for concrete router implementations with strongly typed configuration.</p>
+      <section><p>Configures runtime routing behavior for router instances.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.ValueParserRegistration.html">ValueParserRegistration</a></h4>
       <section><p>Stores a named value parser together with its argument binder.</p>

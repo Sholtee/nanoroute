@@ -40,7 +40,7 @@
 
 
   <h1 id="NanoRoute_HttpRequestMessageExtensions" data-uid="NanoRoute.HttpRequestMessageExtensions" class="text-break">Class HttpRequestMessageExtensions</h1>
-  <div class="markdown level0 summary"><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> extensions.</p>
+  <div class="markdown level0 summary"><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> extensions.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -111,6 +111,230 @@
   <pre><code class="lang-csharp">if (HttpRequestMessage.ContentHeaders.Contains(headerName))
     request.Content!.Headers.TryAddWithoutValidation(headerName, values);</code></pre>
 
+  <a id="NanoRoute_HttpRequestMessageExtensions_get_OriginalRequest_" data-uid="NanoRoute.HttpRequestMessageExtensions.get_OriginalRequest*"></a>
+  <h4 id="NanoRoute_HttpRequestMessageExtensions_get_OriginalRequest_System_Net_Http_HttpRequestMessage_" data-uid="NanoRoute.HttpRequestMessageExtensions.get_OriginalRequest(System.Net.Http.HttpRequestMessage)">get_OriginalRequest(HttpRequestMessage)</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the transport-specific request object that was converted into this <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static object? get_OriginalRequest(HttpRequestMessage request)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a></td>
+        <td><span class="parametername">request</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HttpRequestMessageExtensions_get_OriginalRequest_System_Net_Http_HttpRequestMessage__examples">Examples</h5>
+  <pre><code class="lang-csharp">request.OriginalRequest = listenerRequest;
+HttpListenerRequest? original = request.OriginalRequest as HttpListenerRequest;</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when the extended request is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_HttpRequestMessageExtensions_get_TraceId_" data-uid="NanoRoute.HttpRequestMessageExtensions.get_TraceId*"></a>
+  <h4 id="NanoRoute_HttpRequestMessageExtensions_get_TraceId_System_Net_Http_HttpRequestMessage_" data-uid="NanoRoute.HttpRequestMessageExtensions.get_TraceId(System.Net.Http.HttpRequestMessage)">get_TraceId(HttpRequestMessage)</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the trace identifier associated with this request.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static string? get_TraceId(HttpRequestMessage request)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a></td>
+        <td><span class="parametername">request</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HttpRequestMessageExtensions_get_TraceId_System_Net_Http_HttpRequestMessage__examples">Examples</h5>
+  <pre><code class="lang-csharp">request.TraceId = "trace-1";
+string? traceId = request.TraceId;</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when the extended request is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_HttpRequestMessageExtensions_set_OriginalRequest_" data-uid="NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest*"></a>
+  <h4 id="NanoRoute_HttpRequestMessageExtensions_set_OriginalRequest_System_Net_Http_HttpRequestMessage_System_Object_" data-uid="NanoRoute.HttpRequestMessageExtensions.set_OriginalRequest(System.Net.Http.HttpRequestMessage,System.Object)">set_OriginalRequest(HttpRequestMessage, object?)</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the transport-specific request object that was converted into this <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void set_OriginalRequest(HttpRequestMessage request, object? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a></td>
+        <td><span class="parametername">request</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HttpRequestMessageExtensions_set_OriginalRequest_System_Net_Http_HttpRequestMessage_System_Object__examples">Examples</h5>
+  <pre><code class="lang-csharp">request.OriginalRequest = listenerRequest;
+HttpListenerRequest? original = request.OriginalRequest as HttpListenerRequest;</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when the extended request is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_HttpRequestMessageExtensions_set_TraceId_" data-uid="NanoRoute.HttpRequestMessageExtensions.set_TraceId*"></a>
+  <h4 id="NanoRoute_HttpRequestMessageExtensions_set_TraceId_System_Net_Http_HttpRequestMessage_System_String_" data-uid="NanoRoute.HttpRequestMessageExtensions.set_TraceId(System.Net.Http.HttpRequestMessage,System.String)">set_TraceId(HttpRequestMessage, string?)</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the trace identifier associated with this request.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void set_TraceId(HttpRequestMessage request, string? value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a></td>
+        <td><span class="parametername">request</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HttpRequestMessageExtensions_set_TraceId_System_Net_Http_HttpRequestMessage_System_String__examples">Examples</h5>
+  <pre><code class="lang-csharp">request.TraceId = "trace-1";
+string? traceId = request.TraceId;</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when the extended request is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
 </article>
           </div>

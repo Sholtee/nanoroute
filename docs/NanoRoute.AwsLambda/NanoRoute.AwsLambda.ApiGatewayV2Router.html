@@ -46,26 +46,13 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router</a></div>
-    <div class="level2"><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router</a>&lt;<a class="xref" href="NanoRoute.AwsLambda.ApiGatewayV2Router.html">ApiGatewayV2Router</a>, <a class="xref" href="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html">ApiGatewayV2RouterConfig</a>&gt;</div>
-    <div class="level3"><span class="xref">ApiGatewayV2Router</span></div>
+    <div class="level1"><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterBase.cs">RouterBase</a>&lt;<a class="xref" href="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html">ApiGatewayV2RouterConfig</a>&gt;</div>
+    <div class="level2"><span class="xref">ApiGatewayV2Router</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt;.CreateBuilder()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt;.Config</a>
-    </div>
-    <div>
-      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router.TraceIdName</a>
-    </div>
-    <div>
-      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router.OriginalRequestName</a>
-    </div>
-    <div>
-      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/Router.cs">Router.Config</a>
+      <a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterBase.cs">RouterBase&lt;ApiGatewayV2RouterConfig&gt;.Config</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
@@ -90,7 +77,7 @@
   <h6><strong>Assembly</strong>: NanoRoute.AwsLambda.dll</h6>
   <h5 id="NanoRoute_AwsLambda_ApiGatewayV2Router_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class ApiGatewayV2Router : Router&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class ApiGatewayV2Router : RouterBase&lt;ApiGatewayV2RouterConfig&gt;</code></pre>
   </div>
   <h5 id="NanoRoute_AwsLambda_ApiGatewayV2Router_examples"><strong>Examples</strong></h5>
   <pre><code class="lang-csharp">ApiGatewayV2Router router = ApiGatewayV2Router
@@ -102,14 +89,42 @@
 
   <h3 id="methods">Methods
 </h3>
+  <a id="NanoRoute_AwsLambda_ApiGatewayV2Router_CreateBuilder_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router.CreateBuilder*"></a>
+  <h4 id="NanoRoute_AwsLambda_ApiGatewayV2Router_CreateBuilder" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router.CreateBuilder">CreateBuilder()</h4>
+  <div class="markdown level1 summary"><p>Creates a strongly typed builder for <a class="xref" href="NanoRoute.AwsLambda.ApiGatewayV2Router.html">ApiGatewayV2Router</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static RouterBuilder&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt; CreateBuilder()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://github.com/Sholtee/nanoroute/blob/master/Src/NanoRoute/Public/RouterBuilder.cs">RouterBuilder</a>&lt;<a class="xref" href="NanoRoute.AwsLambda.ApiGatewayV2Router.html">ApiGatewayV2Router</a>, <a class="xref" href="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html">ApiGatewayV2RouterConfig</a>&gt;</td>
+        <td><p>A builder that can register handlers, value parsers, and router configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2Router_CreateBuilder_examples">Examples</h5>
+  <pre><code class="lang-csharp">RouterBuilder&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt; builder = ApiGatewayV2Router.CreateBuilder();</code></pre>
+
   <a id="NanoRoute_AwsLambda_ApiGatewayV2Router_Route_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router.Route*"></a>
-  <h4 id="NanoRoute_AwsLambda_ApiGatewayV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,System.TimeSpan)">Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)</h4>
+  <h4 id="NanoRoute_AwsLambda_ApiGatewayV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_Amazon_Lambda_Core_ILambdaContext_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest,System.IServiceProvider,Amazon.Lambda.Core.ILambdaContext)">Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, ILambdaContext)</h4>
   <div class="markdown level1 summary"><p>Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;APIGatewayHttpApiV2ProxyResponse&gt; Route(APIGatewayHttpApiV2ProxyRequest request, IServiceProvider services, TimeSpan remainingTime)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;APIGatewayHttpApiV2ProxyResponse&gt; Route(APIGatewayHttpApiV2ProxyRequest request, IServiceProvider services, ILambdaContext context)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -134,9 +149,9 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">remainingTime</span></td>
-        <td><p>The time left before the Lambda invocation times out. Expired execution produces a response with <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httpstatuscode#system-net-httpstatuscode-gatewaytimeout">GatewayTimeout</a> status.</p>
+        <td><span class="xref">ILambdaContext</span></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The Lambda invocation context used to derive the cancellation deadline from <span class="xref">Amazon.Lambda.Core.ILambdaContext.RemainingTime</span>.</p>
 </td>
       </tr>
     </tbody>
@@ -157,8 +172,8 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_System_TimeSpan__examples">Examples</h5>
-  <pre><code class="lang-csharp">APIGatewayHttpApiV2ProxyResponse response = await router.Route(request, services, context.RemainingTime);</code></pre>
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2Router_Route_Amazon_Lambda_APIGatewayEvents_APIGatewayHttpApiV2ProxyRequest_System_IServiceProvider_Amazon_Lambda_Core_ILambdaContext__examples">Examples</h5>
+  <pre><code class="lang-csharp">APIGatewayHttpApiV2ProxyResponse response = await router.Route(request, services, context);</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -171,11 +186,12 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">request</code> or <code class="paramref">services</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">request</code>, <code class="paramref">services</code>, or <code class="paramref">context</code> is
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
         <td><p>Thrown when the request uses an unsupported HTTP method.</p>
 </td>
       </tr>

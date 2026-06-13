@@ -46,26 +46,13 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><a class="xref" href="NanoRoute.Router.html">Router</a></div>
-    <div class="level2"><a class="xref" href="NanoRoute.Router-2.html">Router</a>&lt;<a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>, <a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a>&gt;</div>
-    <div class="level3"><span class="xref">HttpListenerRouter</span></div>
+    <div class="level1"><a class="xref" href="NanoRoute.RouterBase-1.html">RouterBase</a>&lt;<a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a>&gt;</div>
+    <div class="level2"><span class="xref">HttpListenerRouter</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_CreateBuilder">Router&lt;HttpListenerRouter, HttpListenerRouterConfig&gt;.CreateBuilder()</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router-2.html#NanoRoute_Router_2_Config">Router&lt;HttpListenerRouter, HttpListenerRouterConfig&gt;.Config</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_TraceIdName">Router.TraceIdName</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_OriginalRequestName">Router.OriginalRequestName</a>
-    </div>
-    <div>
-      <a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_Config">Router.Config</a>
+      <a class="xref" href="NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1_Config">RouterBase&lt;HttpListenerRouterConfig&gt;.Config</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
@@ -90,7 +77,7 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_HttpListenerRouter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class HttpListenerRouter : Router&lt;HttpListenerRouter, HttpListenerRouterConfig&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class HttpListenerRouter : RouterBase&lt;HttpListenerRouterConfig&gt;</code></pre>
   </div>
   <h5 id="NanoRoute_HttpListenerRouter_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This adapter converts incoming <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> traffic into the core
@@ -105,6 +92,34 @@
 
   <h3 id="methods">Methods
 </h3>
+  <a id="NanoRoute_HttpListenerRouter_CreateBuilder_" data-uid="NanoRoute.HttpListenerRouter.CreateBuilder*"></a>
+  <h4 id="NanoRoute_HttpListenerRouter_CreateBuilder" data-uid="NanoRoute.HttpListenerRouter.CreateBuilder">CreateBuilder()</h4>
+  <div class="markdown level1 summary"><p>Creates a strongly typed builder for <a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; CreateBuilder()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;<a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a>, <a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a>&gt;</td>
+        <td><p>A builder that can register handlers, value parsers, and router configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HttpListenerRouter_CreateBuilder_examples">Examples</h5>
+  <pre><code class="lang-csharp">RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = HttpListenerRouter.CreateBuilder();</code></pre>
+
   <a id="NanoRoute_HttpListenerRouter_Route_" data-uid="NanoRoute.HttpListenerRouter.Route*"></a>
   <h4 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_System_Threading_CancellationToken_" data-uid="NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext,System.IServiceProvider,System.Threading.CancellationToken)">Route(HttpListenerContext, IServiceProvider, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Routes a single <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> request and writes the produced response.</p>
@@ -162,8 +177,8 @@
   </table>
   <h5 id="NanoRoute_HttpListenerRouter_Route_System_Net_HttpListenerContext_System_IServiceProvider_System_Threading_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Request and content headers are copied into the intermediate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>.
-The original <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerrequest">HttpListenerRequest</a> is stored in
-<a class="xref" href="NanoRoute.Router.html#NanoRoute_Router_OriginalRequestName">OriginalRequestName</a> on the generated request message.
+The original <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerrequest">HttpListenerRequest</a> is available through the generated request message's
+<code>OriginalRequest</code> extension property.
 Response headers are copied back except for reserved <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenerresponse">HttpListenerResponse</a> headers that
 must be managed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistener">HttpListener</a> itself. Cancellation is not translated into an HTTP error
 response by this adapter.</p>
@@ -197,7 +212,7 @@ await router.Route(listenerContext, services, cancellationToken);</code></pre>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
         <td><p>Thrown when the request uses an unsupported HTTP method.</p>
 </td>
       </tr>

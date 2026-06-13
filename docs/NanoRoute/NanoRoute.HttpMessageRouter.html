@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class HttpMessageRouter | NanoRoute </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class HttpMessageRouter | NanoRoute ">
+    
+    <meta name="description" content="Routes  instances through a NanoRoute pipeline without a transport adapter.">
+      <link rel="shortcut icon" href="Icon.png">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="toc.html">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.HttpMessageRouter">
+
+
+
+  <h1 id="NanoRoute_HttpMessageRouter" data-uid="NanoRoute.HttpMessageRouter" class="text-break">Class HttpMessageRouter</h1>
+  <div class="markdown level0 summary"><p>Routes <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> instances through a NanoRoute pipeline without a transport adapter.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="NanoRoute.RouterBase-1.html">RouterBase</a>&lt;<a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a>&gt;</div>
+    <div class="level2"><span class="xref">HttpMessageRouter</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1_Config">RouterBase&lt;RouterConfig&gt;.Config</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
+  <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
+  <h5 id="NanoRoute_HttpMessageRouter_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class HttpMessageRouter : RouterBase&lt;RouterConfig&gt;</code></pre>
+  </div>
+  <h5 id="NanoRoute_HttpMessageRouter_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Use this router when the request is already represented as an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a>, such as
+in unit tests, HTTP-message based integrations, or custom hosting code. The caller owns disposal of the request and
+the returned response.</p>
+</div>
+  <h5 id="NanoRoute_HttpMessageRouter_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">HttpMessageRouter router = HttpMessageRouter
+    .CreateBuilder()
+    .AddDefaultValueParsers()
+    .AddHandler("GET", "/hello/{name:str}/", static (context, _) =&gt;
+        Task.FromResult(HttpResponseMessage.Json(HttpStatusCode.OK, new
+        {
+            message = $"Hello {context.Parameters["name"]}"
+        })))
+    .CreateRouter();
+
+using HttpResponseMessage response = await router.Route(request, services, cancellationToken);</code></pre>
+
+  <h3 id="methods">Methods
+</h3>
+  <a id="NanoRoute_HttpMessageRouter_CreateBuilder_" data-uid="NanoRoute.HttpMessageRouter.CreateBuilder*"></a>
+  <h4 id="NanoRoute_HttpMessageRouter_CreateBuilder" data-uid="NanoRoute.HttpMessageRouter.CreateBuilder">CreateBuilder()</h4>
+  <div class="markdown level1 summary"><p>Creates a strongly typed builder for <a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static RouterBuilder&lt;HttpMessageRouter, RouterConfig&gt; CreateBuilder()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;<a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a>, <a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a>&gt;</td>
+        <td><p>A builder that can register handlers, value parsers, and router configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HttpMessageRouter_CreateBuilder_examples">Examples</h5>
+  <pre><code class="lang-csharp">RouterBuilder&lt;HttpMessageRouter, RouterConfig&gt; builder = HttpMessageRouter.CreateBuilder();</code></pre>
+
+  <a id="NanoRoute_HttpMessageRouter_Route_" data-uid="NanoRoute.HttpMessageRouter.Route*"></a>
+  <h4 id="NanoRoute_HttpMessageRouter_Route_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_" data-uid="NanoRoute.HttpMessageRouter.Route(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)">Route(HttpRequestMessage, IServiceProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Routes a single HTTP request message and returns the produced response.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;HttpResponseMessage&gt; Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a></td>
+        <td><span class="parametername">request</span></td>
+        <td><p>The request to process.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a></td>
+        <td><span class="parametername">services</span></td>
+        <td><p>The service provider exposed to handlers through <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Services">Services</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">cancellation</span></td>
+        <td><p>A token that can cancel request processing.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;</td>
+        <td><p>The response produced by the matching handlers.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_HttpMessageRouter_Route_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The returned <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> is not disposed by the router. Callers should dispose it
+after reading the response body.</p>
+</div>
+  <h5 id="NanoRoute_HttpMessageRouter_Route_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken__examples">Examples</h5>
+  <pre><code class="lang-csharp">using HttpRequestMessage request = new(HttpMethod.Get, "https://example.test/health");
+using HttpResponseMessage response = await router.Route(request, services, cancellationToken);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">request</code> or <code class="paramref">services</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when the request uses an unsupported HTTP method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown when no handler matches the request path or a matched handler signals an HTTP failure that is not
+translated by middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>Thrown when the caller cancels <code class="paramref">cancellation</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

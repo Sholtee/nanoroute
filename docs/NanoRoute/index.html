@@ -39,7 +39,7 @@
 <h1 id="nanoroute">NanoRoute</h1>
 
 <p>NanoRoute is a small, dependency-light router for <code>HttpRequestMessage</code> pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.</p>
-<p>The core library is centered around <code>RouteScopeBuilder</code>, <code>Router</code>, and <code>RequestContext</code>, so you can plug the routing pipeline into your own transport or hosting model as well.</p>
+<p>The core library includes <code>HttpMessageRouter</code> for already materialized <code>HttpRequestMessage</code> requests and <code>HttpListenerRouter</code> for listener-hosted requests. <code>RouterBase&lt;TConfig&gt;</code>, <code>RouteScopeBuilder</code>, and <code>RequestContext</code> remain available when you want to plug the routing pipeline into your own transport or hosting model.</p>
 <p>NanoRoute targets <code>netstandard2.0</code> and <code>netstandard2.1</code>, and is compatible with Native AOT scenarios.</p>
 <p>For AWS Lambda integrations, use the separate <code>NanoRoute.AwsLambda</code> package.</p>
 <h2 id="quick-start">Quick Start</h2>
@@ -134,10 +134,11 @@ public interface IUserRepository
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.BuilderMetadata.html">BuilderMetadata</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate`1</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ExceptionHandlingConfig.html">ExceptionHandlingConfig</a></li>
-<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.Router.html">Router</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterConfig.html">RouterConfig</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBase-1.html">RouterBase`1</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html">RouterBuilder`2</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html">EndpointBuilder</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html">RequestContext</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a></li>
@@ -502,41 +503,42 @@ HttpListenerRouter router = HttpListenerRouter
     .CreateRouter();
 </code></pre>
 <p><code>AddJsonErrorDetails()</code> snapshots the current <code>JsonErrorDetailsConfig</code> at registration time. Prefix scopes follow the normal <code>RouteScopeBuilder.Metadata</code> scoping rules, so a prefix can override JSON error-detail settings before registering its own scoped error middleware.</p>
-<h2 id="custom-routers">Custom Routers</h2>
-<p>If <code>HttpListenerRouter</code> is not the transport you want, derive from <code>Router&lt;TDescendant, TConfig&gt;</code> and expose your own entry point that prepares an <code>HttpRequestMessage</code>, invokes <code>Handle()</code>, and deals with the returned <code>HttpResponseMessage</code>.</p>
-<pre><code class="lang-csharp">using System;
+<h2 id="http-message-routing">HTTP Message Routing</h2>
+<p>Use <code>HttpMessageRouter</code> when your application or test already has an <code>HttpRequestMessage</code> and wants the matching, value parsing, middleware, and handler pipeline without binding to a network listener.</p>
+<pre><code class="lang-csharp">using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 using NanoRoute;
 
-public sealed class InMemoryRouter : Router&lt;InMemoryRouter, RouterConfig&gt;
-{
-    private InMemoryRouter(RouterBuilder&lt;InMemoryRouter, RouterConfig&gt; builder) : base(builder)
-    {
-    }
-
-    public Task&lt;HttpResponseMessage&gt; Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default) =&gt;
-        Handle(request, services, cancellation);
-}
-
-InMemoryRouter router = InMemoryRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddEndpoint(&quot;GET&quot;, &quot;/health/&quot;, endpoint =&gt; endpoint
-        .WithHandler(static (_, _) =&gt; Task.FromResult(new HttpResponseMessage())))
+        .WithHandler(static (_, _) =&gt; Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(&quot;ok&quot;)
+        })))
     .CreateRouter();
+
+using HttpRequestMessage request = new(HttpMethod.Get, &quot;https://example.test/health&quot;);
+using HttpResponseMessage response = await router.Route(request, services);
 </code></pre>
-<p>This keeps the transport-specific concerns in your own router type while still reusing NanoRoute's matching, value parsing, and handler pipeline.</p>
+<p>The returned <code>HttpResponseMessage</code> is owned by the caller. Dispose it after reading the response body.</p>
+<h2 id="custom-routers">Custom Routers</h2>
+<p>If neither <code>HttpMessageRouter</code> nor <code>HttpListenerRouter</code> fits the transport you want, derive from <code>RouterBase&lt;TConfig&gt;</code>. Your router entry point prepares an <code>HttpRequestMessage</code>, calls the protected <code>Route()</code> method, and deals with the returned <code>HttpResponseMessage</code>.</p>
+<p><code>RouterBase&lt;TConfig&gt;</code> stores the immutable router configuration and snapshots the supplied route scope into a reusable pipeline.</p>
 <h2 id="cancellation">Cancellation</h2>
 <ul>
 <li>NanoRoute exposes the caller-provided cancellation token to async value parsers and handlers through <code>ValueParserContext.Cancellation</code> and <code>RequestContext.Cancellation</code>.</li>
 <li><code>OperationCanceledException</code> is not converted into an HTTP error by <code>AddExceptionHandler()</code> or <code>AddJsonErrorDetails()</code>. It propagates to the caller or transport adapter unchanged.</li>
+<li><code>HttpMessageRouter.Route()</code> rethrows the cancellation exception and leaves response ownership with the caller.</li>
 <li><code>HttpListenerRouter.Route()</code> aborts the active <code>HttpListenerResponse</code> and then rethrows the cancellation exception.</li>
 </ul>
 <h2 id="common-building-blocks">Common Building Blocks</h2>
 <ul>
+<li><code>HttpMessageRouter.CreateBuilder()</code> starts a strongly typed builder for already materialized <code>HttpRequestMessage</code> scenarios.</li>
 <li><code>HttpListenerRouter.CreateBuilder()</code> starts a strongly typed builder for <code>HttpListener</code> scenarios.</li>
+<li><code>RouterBase&lt;TConfig&gt;</code> stores router configuration and runs a captured request pipeline for custom transports.</li>
 <li><code>ConfigureRouting()</code> customizes router-level behavior such as matching precedence and the initial request-parameter dictionary capacity before creating a router snapshot.</li>
 <li><code>AddDefaultValueParsers()</code> registers the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, <code>str</code>, and <code>regex</code> value parsers.</li>
 <li><code>AddPrefix(&quot;/prefix/*&quot;, ...)</code> configures a scoped route subtree and returns the current builder.</li>

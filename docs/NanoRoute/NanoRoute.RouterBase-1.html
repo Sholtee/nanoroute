@@ -5,11 +5,11 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Class Router | NanoRoute </title>
+      <title>Class RouterBase&lt;TConfig&gt; | NanoRoute </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Class Router | NanoRoute ">
+      <meta name="title" content="Class RouterBase&lt;TConfig&gt; | NanoRoute ">
     
-    <meta name="description" content="Executes the route matching pipeline built by .">
+    <meta name="description" content="Provides shared configuration storage and request-pipeline execution for transport-specific router adapters.">
       <link rel="shortcut icon" href="Icon.png">
       <link rel="stylesheet" href="styles/docfx.vendor.min.css">
       <link rel="stylesheet" href="styles/docfx.css">
@@ -35,19 +35,20 @@
       <div role="main" class="container body-content hide-when-search">
         <div class="article row grid">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="NanoRoute.Router">
+            <article class="content wrap" id="_content" data-uid="NanoRoute.RouterBase`1">
 
 
 
-  <h1 id="NanoRoute_Router" data-uid="NanoRoute.Router" class="text-break">Class Router</h1>
-  <div class="markdown level0 summary"><p>Executes the route matching pipeline built by <a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a>.</p>
+  <h1 id="NanoRoute_RouterBase_1" data-uid="NanoRoute.RouterBase`1" class="text-break">Class RouterBase&lt;TConfig&gt;</h1>
+  <div class="markdown level0 summary"><p>Provides shared configuration storage and request-pipeline execution for transport-specific router adapters.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">Router</span></div>
-      <div class="level2"><a class="xref" href="NanoRoute.Router-2.html">Router&lt;TDescendant, TConfig&gt;</a></div>
+    <div class="level1"><span class="xref">RouterBase&lt;TConfig&gt;</span></div>
+      <div class="level2"><a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></div>
+      <div class="level2"><a class="xref" href="NanoRoute.HttpMessageRouter.html">HttpMessageRouter</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -75,31 +76,57 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="NanoRoute.html">NanoRoute</a></h6>
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
-  <h5 id="NanoRoute_Router_syntax">Syntax</h5>
+  <h5 id="NanoRoute_RouterBase_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class Router</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class RouterBase&lt;TConfig&gt; where TConfig : RouterConfig</code></pre>
   </div>
-  <h5 id="NanoRoute_Router_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>A router is created from a builder snapshot. Matching walks the configured route tree, attaches bound parameters, and invokes compatible
-handlers in order until one returns a response without delegating further.</p>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TConfig</span></td>
+        <td><p>The immutable router configuration type used by the adapter.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouterBase_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Derive from this type when a custom transport needs to translate its native request model into an
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> while reusing NanoRoute's matching, value parsing, middleware, and handler
+pipeline. The constructor captures an immutable route snapshot, and derived adapters can call
+<a class="xref" href="NanoRoute.RouterBase-1.html#NanoRoute_RouterBase_1_Route_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_">Route(HttpRequestMessage, IServiceProvider, CancellationToken)</a> from their public entry point.</p>
 </div>
-  <h5 id="NanoRoute_Router_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">Router router = MyRouter
-    .CreateBuilder()
-    .AddDefaultValueParsers()
-    .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
-    .CreateRouter();</code></pre>
+  <h5 id="NanoRoute_RouterBase_1_examples"><strong>Examples</strong></h5>
+  <pre><code class="lang-csharp">public sealed class MyRouter : RouterBase&lt;RouterConfig&gt;
+{
+    private MyRouter(RouterBuilder&lt;MyRouter, RouterConfig&gt; builder)
+        : base(builder, builder.RouterConfig)
+    {
+    }
+
+    public async Task&lt;HttpResponseMessage&gt; Route(MyRequest request, IServiceProvider services, CancellationToken cancellation)
+    {
+        using HttpRequestMessage httpRequest = request.ToHttpRequestMessage();
+        return await Route(httpRequest, services, cancellation).ConfigureAwait(false);
+    }
+}</code></pre>
 
   <h3 id="constructors">Constructors
 </h3>
-  <a id="NanoRoute_Router__ctor_" data-uid="NanoRoute.Router.#ctor*"></a>
-  <h4 id="NanoRoute_Router__ctor_NanoRoute_RouteScopeBuilder_NanoRoute_RouterConfig_" data-uid="NanoRoute.Router.#ctor(NanoRoute.RouteScopeBuilder,NanoRoute.RouterConfig)">Router(RouteScopeBuilder, RouterConfig)</h4>
-  <div class="markdown level1 summary"><p>Creates a new <a class="xref" href="NanoRoute.Router.html">Router</a> instance.</p>
+  <a id="NanoRoute_RouterBase_1__ctor_" data-uid="NanoRoute.RouterBase`1.#ctor*"></a>
+  <h4 id="NanoRoute_RouterBase_1__ctor_NanoRoute_RouteScopeBuilder__0_" data-uid="NanoRoute.RouterBase`1.#ctor(NanoRoute.RouteScopeBuilder,`0)">RouterBase(RouteScopeBuilder, TConfig)</h4>
+  <div class="markdown level1 summary"><p>Initializes a router from the current route scope and configuration.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected Router(RouteScopeBuilder routeScopeBuilder, RouterConfig config)</code></pre>
+    <pre><code class="lang-csharp hljs">protected RouterBase(RouteScopeBuilder routes, TConfig config)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -113,14 +140,14 @@ handlers in order until one returns a response without delegating further.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></td>
-        <td><span class="parametername">routeScopeBuilder</span></td>
-        <td><p>The builder scope whose registered routes are captured by the router.</p>
+        <td><span class="parametername">routes</span></td>
+        <td><p>The route scope whose registered routes are captured by the router.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a></td>
+        <td><span class="xref">TConfig</span></td>
         <td><span class="parametername">config</span></td>
-        <td><p>The configuration assigned to the router instance.</p>
+        <td><p>The configuration assigned to the router.</p>
 </td>
       </tr>
     </tbody>
@@ -136,75 +163,21 @@ handlers in order until one returns a response without delegating further.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> or <code class="paramref">config</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">routes</code> or <code class="paramref">config</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h3 id="fields">Fields
-</h3>
-  <h4 id="NanoRoute_Router_OriginalRequestName" data-uid="NanoRoute.Router.OriginalRequestName">OriginalRequestName</h4>
-  <div class="markdown level1 summary"><p>The request property key that stores the original transport-specific request object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public const string OriginalRequestName = &quot;OriginalRequest&quot;</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="NanoRoute_Router_OriginalRequestName_examples">Examples</h5>
-  <pre><code class="lang-csharp">request.Properties[Router.OriginalRequestName] = listenerRequest;</code></pre>
-
-  <h4 id="NanoRoute_Router_TraceIdName" data-uid="NanoRoute.Router.TraceIdName">TraceIdName</h4>
-  <div class="markdown level1 summary"><p>The request property key that stores the trace identifier associated with the current request.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public const string TraceIdName = &quot;TraceId&quot;</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="NanoRoute_Router_TraceIdName_examples">Examples</h5>
-  <pre><code class="lang-csharp">request.Properties[Router.TraceIdName] = traceId;</code></pre>
-
   <h3 id="properties">Properties
 </h3>
-  <a id="NanoRoute_Router_Config_" data-uid="NanoRoute.Router.Config*"></a>
-  <h4 id="NanoRoute_Router_Config" data-uid="NanoRoute.Router.Config">Config</h4>
-  <div class="markdown level1 summary"><p>Configuration assigned to this instance.</p>
+  <a id="NanoRoute_RouterBase_1_Config_" data-uid="NanoRoute.RouterBase`1.Config*"></a>
+  <h4 id="NanoRoute_RouterBase_1_Config" data-uid="NanoRoute.RouterBase`1.Config">Config</h4>
+  <div class="markdown level1 summary"><p>Gets the configuration assigned to this router instance.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouterConfig Config { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TConfig Config { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -216,21 +189,21 @@ handlers in order until one returns a response without delegating further.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a></td>
+        <td><span class="xref">TConfig</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h3 id="methods">Methods
 </h3>
-  <a id="NanoRoute_Router_Handle_" data-uid="NanoRoute.Router.Handle*"></a>
-  <h4 id="NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_" data-uid="NanoRoute.Router.Handle(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)">Handle(HttpRequestMessage, IServiceProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Routes an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> through the configured handler pipeline.</p>
+  <a id="NanoRoute_RouterBase_1_Route_" data-uid="NanoRoute.RouterBase`1.Route*"></a>
+  <h4 id="NanoRoute_RouterBase_1_Route_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken_" data-uid="NanoRoute.RouterBase`1.Route(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.Threading.CancellationToken)">Route(HttpRequestMessage, IServiceProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Routes a single HTTP request message and returns the produced response.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected Task&lt;HttpResponseMessage&gt; Handle(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation = default)</code></pre>
+    <pre><code class="lang-csharp hljs">protected Task&lt;HttpResponseMessage&gt; Route(HttpRequestMessage request, IServiceProvider services, CancellationToken cancellation)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -251,7 +224,7 @@ handlers in order until one returns a response without delegating further.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a></td>
         <td><span class="parametername">services</span></td>
-        <td><p>The service provider exposed to value parsers and handlers.</p>
+        <td><p>The service provider exposed to handlers through <a class="xref" href="NanoRoute.RequestContext.html#NanoRoute_RequestContext_Services">Services</a>.</p>
 </td>
       </tr>
       <tr>
@@ -273,21 +246,15 @@ handlers in order until one returns a response without delegating further.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a>&gt;</td>
-        <td><p>The <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> produced by the matching handlers.</p>
+        <td><p>The response produced by the matching handlers.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Prefix routes can participate in the same pipeline as exact routes. Consecutive <code>/</code> separators in the
-request path are treated as a single separator during matching. When several handlers match, NanoRoute
-evaluates compatible matches from shorter prefixes toward more specific matches and honors
-<a class="xref" href="NanoRoute.MatchingPrecedence.html">MatchingPrecedence</a> when both literal and parameterized segments are available at the same depth.
-Once a branch is selected at a given depth, NanoRoute does not return to sibling branches later in the pipeline.</p>
+  <h5 id="NanoRoute_RouterBase_1_Route_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The returned <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage">HttpResponseMessage</a> is not disposed by the router. Callers should dispose it
+after reading the response body.</p>
 </div>
-  <h5 id="NanoRoute_Router_Handle_System_Net_Http_HttpRequestMessage_System_IServiceProvider_System_Threading_CancellationToken__examples">Examples</h5>
-  <pre><code class="lang-csharp">using HttpResponseMessage response = await Handle(request, services, cancellation);</code></pre>
-
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -298,23 +265,24 @@ Once a branch is selected at a given depth, NanoRoute does not return to sibling
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
-        <td><p>Thrown when no handler matches the request path.</p>
-</td>
-      </tr>
-      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
         <td><p>Thrown when <code class="paramref">request</code> or <code class="paramref">services</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
         <td><p>Thrown when the request uses an unsupported HTTP method.</p>
 </td>
       </tr>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a></td>
+        <td><p>Thrown when no handler matches the request path or a matched handler signals an HTTP failure that is not
+translated by middleware.</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>Thrown when the caller cancels the <code class="paramref">cancellation</code>.</p>
+        <td><p>Thrown when the caller cancels <code class="paramref">cancellation</code>.</p>
 </td>
       </tr>
     </tbody>
