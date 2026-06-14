@@ -481,7 +481,7 @@ namespace NanoRoute.Tests
             using RouteMatchCursor cursor = CreateCursor(root, "/files/%C0%AF");
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(async () => await cursor.MoveNextAsync())!;
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
         }
     }
 }

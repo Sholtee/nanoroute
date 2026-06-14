@@ -12,7 +12,7 @@ namespace NanoRoute
     /// <summary>
     /// Builds a concrete router type together with its strongly typed configuration object.
     /// </summary>
-    /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter"/>.</typeparam>
+    /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter(Action{TConfig})"/>.</typeparam>
     /// <typeparam name="TConfig">The configuration type exposed by <see cref="RouterConfig"/>.</typeparam>
     /// <example>
     /// <code>
@@ -105,49 +105,48 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Updates the router configuration object that will be used by future router instances.
-        /// </summary>
-        /// <param name="updateConfig">A callback that returns the updated <see cref="RouterConfig"/> instance.</param>
-        /// <returns>The current builder.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown when <paramref name="updateConfig"/> is <see langword="null"/> or returns <see langword="null"/>.
-        /// </exception>
-        /// <example>
-        /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with
-        /// {
-        ///     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
-        /// });
-        /// </code>
-        /// </example>
-        public RouterBuilder<TRouter, TConfig> ConfigureRouting(ConfigureBuilderDelegate<TConfig> updateConfig)
-        {
-            Ensure.NotNull(updateConfig);
-
-            RouterConfig = updateConfig(RouterConfig);
-            Ensure.NotNull(RouterConfig);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Gets the configuration object applied when <see cref="CreateRouter"/> is called.
-        /// </summary>
-        public TConfig RouterConfig { get; private set; } = new();
-
-        /// <summary>
-        /// Creates a router from the builder's current routes, parser registrations, and configuration.
+        /// Creates a router from the builder's current routes and parser registrations with default configuration.
         /// </summary>
         /// <returns>A new <typeparamref name="TRouter"/> instance.</returns>
         /// <remarks>
-        /// The created router is an immutable snapshot. Later changes to the builder or its configuration do not
-        /// affect routers that have already been created.
+        /// The created router is an immutable snapshot. Later changes to the builder do not affect routers that
+        /// have already been created.
         /// </remarks>
         /// <example>
         /// <code>
         /// MyRouter router = builder.CreateRouter();
         /// </code>
         /// </example>
-        public TRouter CreateRouter() => _routerFactory(this);
+        public TRouter CreateRouter() => CreateRouter(static _ => { });
+
+        /// <summary>
+        /// Creates a router from the builder's current routes and parser registrations with inline configuration.
+        /// </summary>
+        /// <param name="configureRouting">A callback that configures the new router instance before it is created.</param>
+        /// <returns>A new <typeparamref name="TRouter"/> instance.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="configureRouting"/> is <see langword="null"/>.
+        /// </exception>
+        /// <remarks>
+        /// The callback receives a fresh <typeparamref name="TConfig"/> instance for this router. Later calls to
+        /// <see cref="CreateRouter(Action{TConfig})"/> receive their own configuration instances.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// MyRouter router = builder.CreateRouter(config =&gt;
+        /// {
+        ///     config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+        /// });
+        /// </code>
+        /// </example>
+        public TRouter CreateRouter(Action<TConfig> configureRouting)
+        {
+            Ensure.NotNull(configureRouting);
+
+            TConfig config = new();
+            configureRouting(config);
+
+            return _routerFactory(this, config);
+        }
     }
 }

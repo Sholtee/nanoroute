@@ -35,7 +35,7 @@ namespace NanoRoute
     /// </example>
     public sealed class HttpMessageRouter : RouterBase<RouterConfig>
     {
-        private HttpMessageRouter(RouterBuilder<HttpMessageRouter, RouterConfig> builder) : base(builder, builder.RouterConfig)
+        private HttpMessageRouter(RouteScopeBuilder routes, RouterConfig config) : base(routes, config)
         {
         }
 
@@ -48,7 +48,7 @@ namespace NanoRoute
         /// RouterBuilder&lt;HttpMessageRouter, RouterConfig&gt; builder = HttpMessageRouter.CreateBuilder();
         /// </code>
         /// </example>
-        public static RouterBuilder<HttpMessageRouter, RouterConfig> CreateBuilder() => new(static builder => new HttpMessageRouter(builder));
+        public static RouterBuilder<HttpMessageRouter, RouterConfig> CreateBuilder() => new(static (routes, config) => new HttpMessageRouter(routes, config));
 
         /// <summary>
         /// Routes a single HTTP request message and returns the produced response.

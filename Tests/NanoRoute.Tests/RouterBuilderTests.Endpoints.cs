@@ -15,8 +15,6 @@ namespace NanoRoute.Tests
 {
     internal sealed partial class RouterBuilderTests
     {
-        private sealed record EndpointMetadata(string Value);
-
         [Test]
         public async Task AddEndpoint_WithExactPattern_ShouldMatchOnlyExactPath()
         {
@@ -42,7 +40,7 @@ namespace NanoRoute.Tests
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("exact"));
-            Assert.That(wrongPath.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(wrongPath.Status, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
         [Test]
@@ -70,7 +68,7 @@ namespace NanoRoute.Tests
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("/files/path/to/file"));
-            Assert.That(wrongPath.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(wrongPath.Status, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
         [Test]
@@ -104,7 +102,7 @@ namespace NanoRoute.Tests
 
             Assert.That(await getResponse.Content.ReadAsStringAsync(), Is.EqualTo("GET"));
             Assert.That(await postResponse.Content.ReadAsStringAsync(), Is.EqualTo("POST"));
-            Assert.That(deleteResponse.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(deleteResponse.Status, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
         [Test]
@@ -159,29 +157,6 @@ namespace NanoRoute.Tests
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Accepted));
-        }
-
-        [Test]
-        public void EndpointBuilder_Prefix_ShouldExposeEndpointScopedRouteScope()
-        {
-            EndpointMetadata
-                missing = new(nameof(missing)),
-                parent = new(nameof(parent)),
-                endpoint = new(nameof(endpoint));
-
-            _routerBuilder.Metadata.Set(parent);
-
-            EndpointBuilder endpointBuilder = _routerBuilder.CreateEndpoint("GET", "/items/");
-
-            Assert.That(endpointBuilder.Prefix.Metadata.GetOrDefault(missing), Is.EqualTo(parent));
-
-            endpointBuilder.Prefix.Metadata.Set(endpoint);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(endpointBuilder.Prefix.Metadata.GetOrDefault(missing), Is.EqualTo(endpoint));
-                Assert.That(_routerBuilder.Metadata.GetOrDefault(missing), Is.EqualTo(parent));
-            });
         }
 
         [Test]

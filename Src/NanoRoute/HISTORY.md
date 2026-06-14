@@ -2,6 +2,19 @@
 
 ## 1.0.0-preview4
 
+### Breaking Changes
+
+- Removed the broad `ConfigureRouting()`, `ConfigureQueryParsing()`, `ConfigureJsonErrorDetails()`, and `ConfigureExceptionHandling()` configuration methods.
+- Removed `ConfigureBuilderDelegate<TConfig>`.
+- Removed `BuilderMetadata` and `RouteScopeBuilder.Metadata`.
+- Removed `QueryParsingConfig`.
+- Removed `ExceptionHandlingConfig` and `ExceptionNormalizer.For<TException>()`.
+- Replaced router matching configuration with inline `CreateRouter(config => ...)` configuration.
+- Replaced query-binding configuration with `AddQueryBindings(..., unexpected: ...)` and `WithQueryBindings(..., unexpected: ...)` overloads.
+- Replaced JSON error-detail configuration with `AddJsonErrorDetails(options => ...)` overloads that configure JSON diagnostics, `ErrorDetails` metadata, and the internally registered exception handler.
+- Replaced exception-normalizer configuration with `AddExceptionHandler(options => options.Map<TException>(...))` overloads that configure the exception handler being registered.
+- Replaced public exception metadata key constants with `HttpRequestException` extension properties for status, client-facing errors, and developer-facing messages.
+
 ### Added
 
 - Added `HttpMessageRouter` for routing already materialized `HttpRequestMessage` instances without writing a custom router wrapper.

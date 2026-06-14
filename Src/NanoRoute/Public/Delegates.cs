@@ -14,41 +14,22 @@ namespace NanoRoute
     /// </summary>
     /// <typeparam name="TRouter">The concrete router type produced by the factory.</typeparam>
     /// <typeparam name="TConfig">The strongly typed router configuration used by the builder.</typeparam>
-    /// <param name="routerBuilder">
-    /// The builder that contains the current route registrations, parser registrations, metadata, and configuration.
+    /// <param name="scope">
+    /// The route scope that contains the current route and parser registrations.
     /// </param>
+    /// <param name="config">The configuration assigned to the router instance being created.</param>
     /// <returns>
     /// A <typeparamref name="TRouter"/> instance backed by the builder's current route snapshot.
     /// </returns>
     /// <remarks>
-    /// Exceptions thrown by the factory propagate to the caller of <see cref="RouterBuilder{TRouter, TConfig}.CreateRouter"/>.
+    /// Exceptions thrown by the factory propagate to the caller of <see cref="RouterBuilder{TRouter, TConfig}.CreateRouter(Action{TConfig})"/>.
     /// </remarks>
     /// <example>
     /// <code>
-    /// var builder = new RouterBuilder&lt;MyRouter, RouterConfig&gt;(static b =&gt; new MyRouter(b));
+    /// var builder = new RouterBuilder&lt;MyRouter, RouterConfig&gt;(static (scope, config) =&gt; new MyRouter(scope, config));
     /// </code>
     /// </example>
-    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : RouterBase<TConfig> where TConfig : RouterConfig, new();
-
-    /// <summary>
-    /// Updates a typed builder configuration object.
-    /// </summary>
-    /// <typeparam name="TConfig">The configuration object type.</typeparam>
-    /// <param name="config">The configuration currently visible from the builder scope.</param>
-    /// <returns>The replacement configuration.</returns>
-    /// <remarks>
-    /// Configuration delegates run during route registration, not during request processing. Extension methods that
-    /// use <see cref="RouteScopeBuilder.Metadata"/> can use this delegate shape for scoped builder settings.
-    /// A module registration should capture the configuration visible when it is registered; later
-    /// <c>ConfigureXxx()</c> calls affect later registrations, not registrations that already exist.
-    /// Exceptions thrown by the delegate propagate from the configuration method that invoked it.
-    /// </remarks>
-    /// <example>
-    /// <code>
-    /// builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.ParameterizedFirst });
-    /// </code>
-    /// </example>
-    public delegate TConfig ConfigureBuilderDelegate<TConfig>(TConfig config);
+    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouteScopeBuilder scope, TConfig config) where TRouter : RouterBase<TConfig> where TConfig : RouterConfig;
 
     /// <summary>
     /// Invokes the next compatible handler in the current routing pipeline.
@@ -84,9 +65,9 @@ namespace NanoRoute
     /// Handler may signal HTTP failures by calling <c>HttpRequestException.Throw(...)</c>. When
     /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder)"/>, or equivalent custom
     /// middleware is registered, those exceptions can be translated into structured error responses. Use
-    /// <see cref="NanoRouteJsonExtensions.ConfigureJsonErrorDetails{TBuilder}(TBuilder, ConfigureBuilderDelegate{JsonErrorDetailsConfig})"/>
-    /// before registering JSON error handling when you need to include developer diagnostics. Throwing other
-    /// exception types is also supported, but they are treated as unexpected failures:
+    /// <see cref="NanoRouteJsonExtensions.AddJsonErrorDetails{TBuilder}(TBuilder, Action{JsonErrorDetailsOptions})"/>
+    /// when you need to configure developer diagnostics or serialization metadata. Throwing other exception types is
+    /// also supported, but they are treated as unexpected failures:
     /// <see cref="NanoRouteExceptionExtensions.AddExceptionHandler{TBuilder}(TBuilder)"/> converts them into internal
     /// server error responses, while without such middleware they propagate to the caller unchanged.
     /// <see cref="OperationCanceledException"/> is left untouched so caller-driven cancellation can propagate to the

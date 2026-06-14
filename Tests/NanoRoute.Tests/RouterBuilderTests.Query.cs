@@ -72,12 +72,8 @@ namespace NanoRoute.Tests
         {
             HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .ConfigureQueryParsing(config => config with
-                {
-                    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
-                })
                 .AddEndpoint("GET", "/items/", endpoint => endpoint
-                    .WithQueryBindings("{filter:str(min=3)}")
+                    .WithQueryBindings("{filter:str(min=3)}", unexpected: UnexpectedParameterBehavior.Reject)
                     .WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
@@ -87,7 +83,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
         }
 
         [Test]
@@ -137,8 +133,8 @@ namespace NanoRoute.Tests
             ))!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_MISSING_PARAMETER, "filter") }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_MISSING_PARAMETER, "filter") }));
         }
 
         [Test]
@@ -267,11 +263,7 @@ namespace NanoRoute.Tests
         {
             HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .ConfigureQueryParsing(config => config with
-                {
-                    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
-                })
-                .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}")
+                .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}", unexpected: UnexpectedParameterBehavior.Reject)
                 .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
@@ -282,28 +274,20 @@ namespace NanoRoute.Tests
             ))!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
         }
 
         [Test]
-        public async Task ConfigureQueryParsing_ShouldUseScopedBuilderMetadata()
+        public async Task AddQueryBindings_ShouldUseRegistrationSpecificUnexpectedBehavior()
         {
             HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
-                .ConfigureQueryParsing(config => config with
-                {
-                    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
-                })
                 .AddPrefix("/strict/*", strict => strict
-                    .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}")
+                    .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}", unexpected: UnexpectedParameterBehavior.Reject)
                     .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .AddPrefix("/loose/*", loose => loose
-                    .ConfigureQueryParsing(config => config with
-                    {
-                        UnexpectedParameterBehavior = UnexpectedParameterBehavior.Ignore
-                    })
-                    .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}")
+                    .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}", unexpected: UnexpectedParameterBehavior.Ignore)
                     .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted)))
                 .CreateRouter();
 
@@ -313,7 +297,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
 
             HttpResponseMessage response = await router.Route
             (
@@ -322,14 +306,6 @@ namespace NanoRoute.Tests
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Accepted));
-        }
-
-        [Test]
-        public void ConfigureQueryParsing_ShouldReturnTheOriginalBuilder()
-        {
-            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.ConfigureQueryParsing(static config => config);
-
-            Assert.That(result, Is.SameAs(_routerBuilder));
         }
 
         [Test]
@@ -364,15 +340,6 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", "/", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).ConfigureQueryParsing(static config => config))!;
-            Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureQueryParsing(null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("configure"));
-
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureQueryParsing(_ => null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("config"));
-
             EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
 
             ex = Assert.Throws<ArgumentNullException>(() => ((EndpointBuilder) null!).WithQueryBindings(""))!;
@@ -380,6 +347,20 @@ namespace NanoRoute.Tests
 
             ex = Assert.Throws<ArgumentNullException>(() => endpoint.WithQueryBindings(null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
+        });
+
+        [Test]
+        public void QueryHelpers_ShouldRejectUnknownUnexpectedParameterBehavior() => Assert.Multiple(() =>
+        {
+            _routerBuilder.AddDefaultValueParsers();
+
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => _routerBuilder.AddQueryBindings("{filter:str}", (UnexpectedParameterBehavior) 42))!;
+            Assert.That(ex.ParamName, Is.EqualTo("unexpected"));
+
+            EndpointBuilder endpoint = _routerBuilder.CreateEndpoint("GET", "/items/");
+
+            ex = Assert.Throws<ArgumentOutOfRangeException>(() => endpoint.WithQueryBindings("{filter:str}", (UnexpectedParameterBehavior) 42))!;
+            Assert.That(ex.ParamName, Is.EqualTo("unexpected"));
         });
     }
 }

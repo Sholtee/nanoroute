@@ -148,7 +148,7 @@ namespace NanoRoute.AwsLambda
             }
         }
 
-        private ApiGatewayV2Router(RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> builder) : base(builder, builder.RouterConfig)
+        private ApiGatewayV2Router(RouteScopeBuilder routes, ApiGatewayV2RouterConfig config) : base(routes, config)
         {
         }
         #endregion
@@ -162,7 +162,7 @@ namespace NanoRoute.AwsLambda
         /// RouterBuilder&lt;ApiGatewayV2Router, ApiGatewayV2RouterConfig&gt; builder = ApiGatewayV2Router.CreateBuilder();
         /// </code>
         /// </example>
-        public static RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> CreateBuilder() => new(static builder => new ApiGatewayV2Router(builder));
+        public static RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> CreateBuilder() => new(static (routes, config) => new ApiGatewayV2Router(routes, config));
 
         /// <summary>
         /// Routes an API Gateway HTTP API or Lambda Function URL payload-format-2.0 request and returns the corresponding proxy response.

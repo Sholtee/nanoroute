@@ -156,6 +156,7 @@ Pass `ILambdaContext` to `Route()` so the adapter can read `RemainingTime` and c
 - Supported: Lambda proxy responses represented by `APIGatewayHttpApiV2ProxyResponse`.
 - Not currently supported: REST API payload format `1.0`, Application Load Balancer events, or custom event models.
 - Request URIs are built from `RawPath`, `RawQueryString`, `requestContext.domainName`, and router configuration.
+- `CreateRouter(config => ...)` customizes `ApiGatewayV2RouterConfig` for one router snapshot, including `LambdaTimeoutBuffer`, `RequestScheme`, and `RequestDomain`.
 - `RequestScheme` defaults to `https`; set `RequestDomain` when the Lambda should route against a canonical public host instead of the event domain.
 - Plain request bodies are exposed as `StringContent`; base64-encoded bodies are exposed as `StreamContent`.
 - `Set-Cookie` response values are returned through the API Gateway `Cookies` collection.

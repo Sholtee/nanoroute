@@ -18,16 +18,16 @@ namespace NanoRoute.Tests
         private static HttpRequestException NormalizeConflict(Exception ex)
         {
             HttpRequestException normalized = new("conflict", ex);
-            normalized.Data[NanoRouteExceptionExtensions.StatusName] = HttpStatusCode.Conflict;
-            normalized.Data[NanoRouteExceptionExtensions.ErrorsName] = new[] { "custom-error" };
-            normalized.Data[NanoRouteExceptionExtensions.DeveloperMessagesName] = new[] { "custom-developer-message" };
+            normalized.Status = HttpStatusCode.Conflict;
+            normalized.Errors = new[] { "custom-error" };
+            normalized.DeveloperMessages = new[] { "custom-developer-message" };
             return normalized;
         }
 
         private static HttpRequestException NormalizeTeapot(Exception ex)
         {
             HttpRequestException normalized = new("teapot", ex);
-            normalized.Data[NanoRouteExceptionExtensions.StatusName] = (HttpStatusCode) 418;
+            normalized.Status = (HttpStatusCode) 418;
             return normalized;
         }
 
@@ -46,7 +46,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(handled.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(handled.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
 
             Assert.That(async () => await router.Route
             (
@@ -70,7 +70,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(handled.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(handled.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
 
             Assert.That(async () => await router.Route
             (
@@ -83,11 +83,10 @@ namespace NanoRoute.Tests
         public void AddExceptionHandler_ShouldUseConfiguredExceptionNormalizers()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
+                .AddExceptionHandler(options =>
                 {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeConflict)
+                    options.Map<NotSupportedException>(NormalizeConflict);
                 })
-                .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw new NotSupportedException("nope"))
                 .CreateRouter();
 
@@ -101,9 +100,9 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo("conflict"));
                 Assert.That(ex.InnerException, Is.InstanceOf<NotSupportedException>());
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { "custom-error" }));
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.DeveloperMessagesName], Is.EquivalentTo(new[] { "custom-developer-message" }));
+                Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.Conflict));
+                Assert.That(ex.Errors, Is.EquivalentTo(new[] { "custom-error" }));
+                Assert.That(ex.DeveloperMessages, Is.EquivalentTo(new[] { "custom-developer-message" }));
             });
         }
 
@@ -111,11 +110,10 @@ namespace NanoRoute.Tests
         public void AddExceptionHandler_ShouldUseBaseExceptionNormalizerForDerivedExceptions()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
+                .AddExceptionHandler(options =>
                 {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(SystemException), NormalizeConflict)
+                    options.Map<SystemException>(NormalizeConflict);
                 })
-                .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
                 .CreateRouter();
 
@@ -129,7 +127,7 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo("conflict"));
                 Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
+                Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.Conflict));
             });
         }
 
@@ -137,15 +135,11 @@ namespace NanoRoute.Tests
         public void AddExceptionHandler_ShouldPreferExactExceptionNormalizerOverBaseNormalizer()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
+                .AddExceptionHandler(options =>
                 {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItems
-                    ([
-                        new KeyValuePair<Type, ExceptionNormalizer>(typeof(SystemException), NormalizeConflict),
-                        new KeyValuePair<Type, ExceptionNormalizer>(typeof(InvalidOperationException), NormalizeTeapot)
-                    ])
+                    options.Map<SystemException>(NormalizeConflict);
+                    options.Map<InvalidOperationException>(NormalizeTeapot);
                 })
-                .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
                 .CreateRouter();
 
@@ -159,7 +153,7 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo("teapot"));
                 Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo((HttpStatusCode) 418));
+                Assert.That(ex.Status, Is.EqualTo((HttpStatusCode) 418));
             });
         }
 
@@ -167,11 +161,10 @@ namespace NanoRoute.Tests
         public void AddExceptionHandler_ShouldIgnoreNonExceptionBaseNormalizers()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
+                .AddExceptionHandler(options =>
                 {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(object), NormalizeTeapot)
+                    options.ExceptionNormalizers[typeof(object)] = NormalizeTeapot;
                 })
-                .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
                 .CreateRouter();
 
@@ -185,25 +178,22 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo(Properties.Resources.ERR_INTERNAL_ERROR));
                 Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
+                Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
             });
         }
 
         [Test]
-        public void AddExceptionHandler_ShouldSnapshotExceptionHandlingConfiguration()
+        public void AddExceptionHandler_ShouldSnapshotExceptionHandlingOptions()
         {
+            ExceptionHandlingOptions options = new();
+            options.Map<NotSupportedException>(NormalizeConflict);
+
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
-                {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeConflict)
-                })
-                .AddExceptionHandler()
-                .ConfigureExceptionHandling(config => config with
-                {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeTeapot)
-                })
+                .AddExceptionHandler(["GET"], RouteScopeBuilder.CurrentPrefix, options)
                 .AddHandler("GET", "/items/", (_, _) => throw new NotSupportedException("nope"))
                 .CreateRouter();
+
+            options.ExceptionNormalizers[typeof(NotSupportedException)] = NormalizeTeapot;
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
@@ -211,25 +201,23 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.Conflict));
         }
 
         [Test]
-        public void ConfigureExceptionHandling_ShouldUseScopedBuilderMetadata()
+        public void AddExceptionHandler_ShouldUseRegistrationSpecificOptions()
         {
             _routerBuilder
-                .ConfigureExceptionHandling(config => config with
-                {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeConflict)
-                })
                 .AddPrefix("/child/*", child => child
-                    .ConfigureExceptionHandling(config => config with
+                    .AddExceptionHandler("/items/", options =>
                     {
-                        ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeTeapot)
+                        options.Map<NotSupportedException>(NormalizeTeapot);
                     })
-                    .AddExceptionHandler("/items/")
                     .AddHandler("GET", "/items/", (_, _) => throw new NotSupportedException("child")))
-                .AddExceptionHandler("/parent/")
+                .AddExceptionHandler("/parent/", options =>
+                {
+                    options.Map<NotSupportedException>(NormalizeConflict);
+                })
                 .AddHandler("GET", "/parent/", (_, _) => throw new NotSupportedException("parent"));
 
             HttpMessageRouter router = _routerBuilder.CreateRouter();
@@ -248,8 +236,8 @@ namespace NanoRoute.Tests
 
             Assert.Multiple(() =>
             {
-                Assert.That(parentEx.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
-                Assert.That(childEx.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo((HttpStatusCode) 418));
+                Assert.That(parentEx.Status, Is.EqualTo(HttpStatusCode.Conflict));
+                Assert.That(childEx.Status, Is.EqualTo((HttpStatusCode) 418));
             });
         }
 
@@ -277,21 +265,13 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo(Properties.Resources.ERR_INTERNAL_ERROR));
                 Assert.That(ex.InnerException, Is.SameAs(aggregate));
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.DeveloperMessagesName], Is.EquivalentTo(new[]
+                Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
+                Assert.That(ex.DeveloperMessages, Is.EquivalentTo(new[]
                 {
                     aggregate.InnerExceptions[0].ToString(),
                     aggregate.InnerExceptions[1].ToString()
                 }));
             });
-        }
-
-        [Test]
-        public void ConfigureExceptionHandling_ShouldReturnTheOriginalBuilder()
-        {
-            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.ConfigureExceptionHandling(static config => config);
-
-            Assert.That(result, Is.SameAs(_routerBuilder));
         }
 
         [Test]
@@ -309,40 +289,27 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((IReadOnlyCollection<string>) null!, "/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler(["GET"], null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler(["GET"], (string) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((string) null!, "/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler("GET", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler("GET", (string) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).ConfigureExceptionHandling(static config => config))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddExceptionHandler(static _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureExceptionHandling(null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((Action<ExceptionHandlingOptions>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("configure"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureExceptionHandling(_ => null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("config"));
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler(["GET"], "/", (ExceptionHandlingOptions) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("options"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => new ExceptionHandlingConfig { ExceptionNormalizers = null! })!;
+            ex = Assert.Throws<ArgumentNullException>(() => new ExceptionHandlingOptions { ExceptionNormalizers = null! })!;
             Assert.That(ex.ParamName, Is.EqualTo("value"));
         });
-
-        [Test]
-        public void GetErrorDetails_ShouldAcceptIntegerStatusCodes()
-        {
-            HttpRequestException ex = new("teapot");
-            ex.Data[NanoRouteExceptionExtensions.StatusName] = 404;
-
-            ErrorDetails details = ex.GetErrorDetails(traceId: "trace");
-
-            Assert.That(details.Status, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(details.Title, Is.EqualTo("teapot"));
-            Assert.That(details.TraceId, Is.EqualTo("trace"));
-        }
 
         [Test]
         public void GetErrorDetails_ShouldUseInternalServerErrorWhenStatusCodeIsMissing()
@@ -352,6 +319,33 @@ namespace NanoRoute.Tests
             Assert.That(details.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
             Assert.That(details.Title, Is.EqualTo("boom"));
             Assert.That(details.TraceId, Is.EqualTo("trace"));
+        }
+
+        [Test]
+        public void HttpRequestExceptionProperties_ShouldThrow_WhenExceptionIsNull()
+        {
+            HttpRequestException ex = null!;
+
+            Assert.Multiple(() =>
+            {
+                ArgumentNullException thrown = Assert.Throws<ArgumentNullException>(() => _ = ex.Status)!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => ex.Status = HttpStatusCode.BadRequest)!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => _ = ex.Errors)!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => ex.Errors = new[] { "custom-error" })!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => _ = ex.DeveloperMessages)!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => ex.DeveloperMessages = new[] { "custom-developer-message" })!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+            });
         }
     }
 }

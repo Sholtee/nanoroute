@@ -136,12 +136,15 @@ public interface IUserRepository
 - Prefix route patterns start with `/` and end with `/*`, for example `/items/*`.
 - `HttpMessageRouter.CreateBuilder()` creates a router for already materialized `HttpRequestMessage` requests.
 - `RouterBase<TConfig>` helps custom transport adapters expose configuration and capture a route snapshot.
+- `CreateRouter(config => ...)` customizes `RouterConfig` for one router snapshot, including `MatchingPrecedence`.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` parsers.
 - `AddPrefix()` and `CreatePrefix()` define scoped route subtrees.
-- `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`.
+- `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`, with per-registration handling for undeclared query keys.
 - `AddJsonBody()` and `WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - Typed handlers can bind route values, query values, JSON bodies, services, `RequestContext`, and `CancellationToken` into request objects.
-- `AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses.
+- `AddExceptionHandler(options => ...)` maps exception types for one exception-handling middleware registration.
+- `HttpRequestException` extension properties expose routing status, client-facing errors, and developer-facing messages.
+- `AddJsonErrorDetails(options => ...)` turns routing and normalized exception failures into JSON `ErrorDetails` responses and configures diagnostics, `ErrorDetails` metadata, and exception normalization for that middleware registration.
 - `HttpMethod.For(...)` returns shared known `HttpMethod` instances and supports custom method names.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 - Native AOT JSON apps should pass source-generated `JsonTypeInfo` values to `WithJsonBody(...)` and `HttpResponseMessage.Json(...)`.

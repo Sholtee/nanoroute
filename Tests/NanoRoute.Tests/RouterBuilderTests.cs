@@ -36,20 +36,33 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void CreateRouter_ShouldPassTheBuilderIntoTheRouterFactory()
+        public void CreateRouter_ShouldPassTheScopeAndConfigIntoTheRouterFactory()
         {
-            TestRouter expectedRouter = new(new RouteScopeBuilder(), new RouterConfig());
-            RouterBuilder<TestRouter, RouterConfig>? factoryArgument = null;
-            RouterBuilder<TestRouter, RouterConfig> routerBuilder = new(builder =>
+            RouteScopeBuilder? factoryScope = null;
+            RouterConfig? factoryConfig = null;
+            RouterBuilder<TestRouter, RouterConfig> routerBuilder = new((scope, config) =>
             {
-                factoryArgument = builder;
-                return expectedRouter;
+                factoryScope = scope;
+                factoryConfig = config;
+                return new TestRouter(scope, config);
             });
 
-            TestRouter router = routerBuilder.CreateRouter();
+            TestRouter router = routerBuilder.CreateRouter(config =>
+            {
+                config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+            });
 
-            Assert.That(router, Is.SameAs(expectedRouter));
-            Assert.That(factoryArgument, Is.SameAs(routerBuilder));
+            Assert.That(factoryScope, Is.SameAs(routerBuilder));
+            Assert.That(factoryConfig, Is.SameAs(router.Config));
+            Assert.That(router.Config.MatchingPrecedence, Is.EqualTo(MatchingPrecedence.ParameterizedFirst));
+        }
+
+        [Test]
+        public void CreateRouter_ShouldRejectNullConfigurationCallback()
+        {
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.CreateRouter(null!))!;
+
+            Assert.That(ex.ParamName, Is.EqualTo("configureRouting"));
         }
 
         [Test]

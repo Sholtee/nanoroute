@@ -86,9 +86,11 @@ namespace NanoRoute.AwsLambda.Tests
         {
             ApiGatewayV2Router router = ApiGatewayV2Router
                 .CreateBuilder()
-                .ConfigureRouting(static config => config with { LambdaTimeoutBuffer = TimeSpan.FromSeconds(5) })
                 .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
-                .CreateRouter();
+                .CreateRouter(static config =>
+                {
+                    config.LambdaTimeoutBuffer = TimeSpan.FromSeconds(5);
+                });
 
             APIGatewayHttpApiV2ProxyResponse response = await router.Route
             (
@@ -105,9 +107,11 @@ namespace NanoRoute.AwsLambda.Tests
         {
             ApiGatewayV2Router router = ApiGatewayV2Router
                 .CreateBuilder()
-                .ConfigureRouting(static config => config with { LambdaTimeoutBuffer = TimeSpan.Zero })
                 .AddHandler("GET", "/health/", static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
-                .CreateRouter();
+                .CreateRouter(static config =>
+                {
+                    config.LambdaTimeoutBuffer = TimeSpan.Zero;
+                });
 
             APIGatewayHttpApiV2ProxyResponse response = await router.Route
             (

@@ -9,6 +9,7 @@
 ### Changed
 
 - Changed `ApiGatewayV2Router` to derive from the core `RouterBase<ApiGatewayV2RouterConfig>` helper and expose its own explicit `CreateBuilder()` factory.
+- Changed `ApiGatewayV2RouterConfig` to use the core inline `CreateRouter(config => ...)` configuration model.
 - Changed request URI mapping to use `requestContext.domainName` with an explicit default `https` scheme instead of deriving the origin from `Host`, `Forwarded`, or `X-Forwarded-Proto` headers.
 
 ## 1.0.0-preview2
@@ -24,14 +25,13 @@
 
 ### Migration
 
-Configure AWS Lambda router settings through immutable record updates:
+Configure AWS Lambda router settings inline while creating the router:
 
 ```csharp
 ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
-    .ConfigureRouting(config => config with
+    .CreateRouter(config =>
     {
-        LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
-    })
-    .CreateRouter();
+        config.LambdaTimeoutBuffer = TimeSpan.FromSeconds(3);
+    });
 ```

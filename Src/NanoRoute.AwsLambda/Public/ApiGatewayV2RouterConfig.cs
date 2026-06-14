@@ -12,13 +12,13 @@ namespace NanoRoute.AwsLambda
     /// </summary>
     /// <example>
     /// <code>
-    /// builder.ConfigureRouting(config =&gt; config with
+    /// ApiGatewayV2Router router = builder.CreateRouter(config =&gt;
     /// {
-    ///     LambdaTimeoutBuffer = TimeSpan.FromSeconds(2)
+    ///     config.LambdaTimeoutBuffer = TimeSpan.FromSeconds(2);
     /// });
     /// </code>
     /// </example>
-    public sealed record ApiGatewayV2RouterConfig : RouterConfig
+    public sealed class ApiGatewayV2RouterConfig : RouterConfig
     {
         /// <summary>
         /// Gets or sets the amount of time reserved before the Lambda invocation timeout is reached.
@@ -26,16 +26,16 @@ namespace NanoRoute.AwsLambda
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is negative.</exception>
         /// <example>
         /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with
+        /// ApiGatewayV2Router router = builder.CreateRouter(config =&gt;
         /// {
-        ///     LambdaTimeoutBuffer = TimeSpan.FromSeconds(2)
+        ///     config.LambdaTimeoutBuffer = TimeSpan.FromSeconds(2);
         /// });
         /// </code>
         /// </example>
         public TimeSpan LambdaTimeoutBuffer
         {
             get;
-            init
+            set
             {
                 ArgumentOutOfRangeException.ThrowIfLessThan(value, TimeSpan.Zero);
                 field = value;
@@ -52,9 +52,9 @@ namespace NanoRoute.AwsLambda
         /// <exception cref="ArgumentNullException">Thrown when the assigned value is <see langword="null"/>.</exception>
         /// <example>
         /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with
+        /// ApiGatewayV2Router router = builder.CreateRouter(config =&gt;
         /// {
-        ///     RequestScheme = "https"
+        ///     config.RequestScheme = "https";
         /// });
         /// </code>
         /// </example>
@@ -78,9 +78,9 @@ namespace NanoRoute.AwsLambda
         /// </remarks>
         /// <example>
         /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with
+        /// ApiGatewayV2Router router = builder.CreateRouter(config =&gt;
         /// {
-        ///     RequestDomain = "api.example.com"
+        ///     config.RequestDomain = "api.example.com";
         /// });
         /// </code>
         /// </example>
