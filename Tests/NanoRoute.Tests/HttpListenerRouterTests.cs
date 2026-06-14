@@ -73,10 +73,12 @@ namespace NanoRoute.Tests
 
         private async Task<HttpListenerContext> HandleRequest(CancellationToken cancellation = default)
         {
-            HttpListenerContext context = await _listener.GetContextAsync();
+            HttpListenerContext context = await GetContext();
             await _router.Route(context, new Mock<IServiceProvider>(MockBehavior.Strict).Object, cancellation);
             return context;
         }
+
+        private Task<HttpListenerContext> GetContext() => _listener.GetContextAsync();
 
         private static Uri RelativeUri(string value) => new(value, UriKind.Relative);
 
@@ -236,77 +238,49 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Route_ShouldCopyContentHeadersToRequestContent()
+        public async Task GetRequest_ShouldCopyContentHeadersToRequestContent()
         {
-            CreateRouter(bldr => bldr
-                .AddHandler("POST", "/welcome/", async (context, _) =>
-                {
-                    Assert.That(context.Request.Content, Is.Not.Null);
-                    Assert.That(context.Request.Content!.Headers.ContentType, Is.Not.Null);
-                    Assert.That(context.Request.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
-                    Assert.That(context.Request.Content.Headers.ContentType!.CharSet, Is.EqualTo("utf-8"));
-                    Assert.That(context.Request.Headers.Any(header => string.Equals(header.Key, "content-type", StringComparison.OrdinalIgnoreCase)), Is.False);
-
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent
-                        (
-                            "Hello " + JsonSerializer.Deserialize<HelloRequest>(await context.Request.Content!.ReadAsStringAsync())!.Name
-                        )
-                    };
-                }));
-
             Task<HttpResponseMessage> resp = _client.PostAsync(RelativeUri("welcome"), new StringContent(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }), Encoding.UTF8, "application/json"));
+            HttpListenerContext context = await GetContext();
 
-            await HandleRequest();
+            using HttpRequestMessage requestMessage = HttpListenerRouter.GetRequest(context.Request);
 
-            HttpResponseMessage msg = await resp;
-
-            Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(await msg.Content.ReadAsStringAsync(), Is.EqualTo("Hello Spikey"));
+            Assert.That(requestMessage.Method, Is.EqualTo(HttpMethod.Post));
+            Assert.That(requestMessage.RequestUri!.AbsolutePath, Is.EqualTo("/welcome"));
+            Assert.That(requestMessage.Content, Is.Not.Null);
+            Assert.That(requestMessage.Content!.Headers.ContentType, Is.Not.Null);
+            Assert.That(requestMessage.Content.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
+            Assert.That(requestMessage.Content.Headers.ContentType!.CharSet, Is.EqualTo("utf-8"));
+            Assert.That(requestMessage.Headers.Any(header => string.Equals(header.Key, "content-type", StringComparison.OrdinalIgnoreCase)), Is.False);
+            Assert.That(JsonSerializer.Deserialize<HelloRequest>(await requestMessage.Content.ReadAsStringAsync())!.Name, Is.EqualTo("Spikey"));
         }
 
         [Test]
-        public async Task Route_ShouldExposeOriginalHttpListenerRequest()
+        public async Task GetRequest_ShouldExposeOriginalHttpListenerRequest()
         {
-            CreateRouter(bldr => bldr
-                .AddValueParser("str", (ReadOnlyMemory<char> segment, object? _, out object? parsed) => { parsed = segment.ToString(); return true; })
-                .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (context, _) =>
-                {
-                    Assert.That(context.Request.OriginalRequest, Is.InstanceOf<HttpListenerRequest>());
-
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }));
-
             Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
+            HttpListenerContext context = await GetContext();
 
-            await HandleRequest();
+            using HttpRequestMessage requestMessage = HttpListenerRouter.GetRequest(context.Request);
 
-            HttpResponseMessage msg = await resp;
-
-            Assert.That(msg.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(requestMessage.OriginalRequest, Is.SameAs(context.Request));
+            Assert.That(requestMessage.TraceId, Is.EqualTo(context.Request.RequestTraceIdentifier.ToString("N")));
         }
 
         [Test]
-        public async Task Route_ShouldIgnoreReservedResponseHeaders()
+        public async Task HandleResponse_ShouldIgnoreReservedResponseHeaders()
         {
-            CreateRouter(bldr => bldr
-                .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) =>
-                {
-                    HttpResponseMessage resp = new(HttpStatusCode.OK) { Content = new StringContent("Hello") };
-
-                    resp.Headers.Add("X-Custom-Response-Header", "kutya");
-                    resp.Headers.Add("Server", "CustomServer");
-                    resp.Headers.Add("Keep-Alive", "timeout=5");
-                    resp.Headers.WwwAuthenticate.Add(new AuthenticationHeaderValue("Basic", "realm=\"test\""));
-                    resp.Content.Headers.Add("Content-Length", "999");
-
-                    return resp;
-                }));
-
             Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
+            HttpListenerContext context = await GetContext();
 
-            await HandleRequest();
+            using HttpResponseMessage responseMessage = new(HttpStatusCode.OK) { Content = new StringContent("Hello") };
+            responseMessage.Headers.Add("X-Custom-Response-Header", "kutya");
+            responseMessage.Headers.Add("Server", "CustomServer");
+            responseMessage.Headers.Add("Keep-Alive", "timeout=5");
+            responseMessage.Headers.WwwAuthenticate.Add(new AuthenticationHeaderValue("Basic", "realm=\"test\""));
+            responseMessage.Content.Headers.Add("Content-Length", "999");
+
+            await HttpListenerRouter.HandleResponse(responseMessage, context.Response, CancellationToken.None);
 
             HttpResponseMessage msg = await resp;
 
@@ -320,25 +294,19 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Route_ShouldPreserveMultiValueResponseHeaders()
+        public async Task HandleResponse_ShouldPreserveMultiValueResponseHeaders()
         {
-            CreateRouter(bldr => bldr
-                .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) =>
-                {
-                    HttpResponseMessage resp = new(HttpStatusCode.OK);
-
-                    resp.Headers.TryAddWithoutValidation("Set-Cookie", new string[]
-                    {
-                        "first=1; Path=/",
-                        "second=2; Path=/"
-                    });
-
-                    return resp;
-                }));
-
             Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
+            HttpListenerContext context = await GetContext();
 
-            await HandleRequest();
+            using HttpResponseMessage responseMessage = new(HttpStatusCode.OK);
+            responseMessage.Headers.TryAddWithoutValidation("Set-Cookie", new string[]
+            {
+                "first=1; Path=/",
+                "second=2; Path=/"
+            });
+
+            await HttpListenerRouter.HandleResponse(responseMessage, context.Response, CancellationToken.None);
 
             HttpResponseMessage msg = await resp;
 
@@ -352,27 +320,24 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Route_ShouldCopyResponseContentHeaders()
+        public async Task HandleResponse_ShouldCopyResponseContentHeaders()
         {
-            CreateRouter(bldr => bldr
-                .AddHandler("GET", "/welcome/", async (_, _) =>
-                {
-                    StringContent content = new(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }));
-                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json")
-                    {
-                        CharSet = "utf-8"
-                    };
-                    content.Headers.ContentLanguage.Add("en");
-
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = content
-                    };
-                }));
-
             Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri("welcome"));
+            HttpListenerContext context = await GetContext();
 
-            await HandleRequest();
+            StringContent content = new(JsonSerializer.Serialize(new HelloRequest { Name = "Spikey" }));
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json")
+            {
+                CharSet = "utf-8"
+            };
+            content.Headers.ContentLanguage.Add("en");
+
+            using HttpResponseMessage responseMessage = new(HttpStatusCode.OK)
+            {
+                Content = content
+            };
+
+            await HttpListenerRouter.HandleResponse(responseMessage, context.Response, CancellationToken.None);
 
             HttpResponseMessage msg = await resp;
 
@@ -385,14 +350,14 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task Route_ShouldHandleResponsesWithoutContent()
+        public async Task HandleResponse_ShouldHandleResponsesWithoutContent()
         {
-            CreateRouter(bldr => bldr
-                .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.NoContent)));
-
             Task<HttpResponseMessage> resp = _client.GetAsync(RelativeUri(""));
+            HttpListenerContext context = await GetContext();
 
-            await HandleRequest();
+            using HttpResponseMessage responseMessage = new(HttpStatusCode.NoContent);
+
+            await HttpListenerRouter.HandleResponse(responseMessage, context.Response, CancellationToken.None);
 
             HttpResponseMessage msg = await resp;
 
