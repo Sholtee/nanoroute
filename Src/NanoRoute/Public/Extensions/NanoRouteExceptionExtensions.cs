@@ -508,7 +508,12 @@ namespace NanoRoute
             /// </code>
             /// </example>
             [DoesNotReturn]
-            public static void Throw(HttpStatusCode status, string title, params IEnumerable<string> errors) => Throw(status, title, null, errors, null);
+            public static void Throw(HttpStatusCode status, string title, params string[] errors)
+            {
+                Ensure.NotNull(errors);
+
+                Throw(status, title, null, errors.Length > 0 ? errors : null, null);
+            }
 
             /// <summary>
             /// Throws an <see cref="HttpRequestException"/> enriched with routing-specific metadata.
@@ -535,17 +540,14 @@ namespace NanoRoute
             [DoesNotReturn]
             public static void Throw(HttpStatusCode status, string title, Exception? original = null, IEnumerable<string>? errors = null, IEnumerable<string>? developerMessages = null)
             {
-                HttpRequestException ex = new(title, original);
+                Ensure.NotNull(title);
 
-                ex.Status = status;
-
-                if (errors?.ToArray() is { Length: > 0 } err)
-                    ex.Errors = err;
-
-                if (developerMessages?.ToArray() is { Length: > 0 } dev)
-                    ex.DeveloperMessages = dev;
-
-                throw ex;
+                throw new HttpRequestException(title, original)
+                {
+                    Status = status,
+                    Errors = errors,
+                    DeveloperMessages = developerMessages
+                };
             }
         }
 
