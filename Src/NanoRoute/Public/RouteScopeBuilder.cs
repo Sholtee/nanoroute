@@ -216,7 +216,7 @@ namespace NanoRoute
             Ensure.NotNull(pattern);
             Ensure.NotNull(handler);
 
-            if (!Enum.TryParse(verb, ignoreCase: true, out HttpVerb v))
+            if (!HttpVerb.TryParseFast(verb, out HttpVerb v))
                 throw new ArgumentException
                 (
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, verb), nameof(verb)
