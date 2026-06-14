@@ -2,6 +2,18 @@
 
 ## 1.0.0-preview4
 
+### Breaking Changes
+
+- Removed the broad `ConfigureRouting()`, `ConfigureQueryParsing()`, `ConfigureJsonErrorDetails()`, and `ConfigureExceptionHandling()` configuration methods.
+- Removed `ConfigureBuilderDelegate<TConfig>`.
+- Removed `BuilderMetadata` and `RouteScopeBuilder.Metadata`.
+- Removed `QueryParsingConfig`.
+- Removed `ExceptionHandlingConfig` and `ExceptionNormalizer.For<TException>()`.
+- Replaced router matching configuration with `UseMatchingPrecedence()`.
+- Replaced query-binding configuration with `AddQueryBindings(..., unexpected: ...)` and `WithQueryBindings(..., unexpected: ...)` overloads.
+- Replaced JSON error-detail configuration with `AddJsonErrorDetails(options => ...)` overloads that configure JSON diagnostics, `ErrorDetails` metadata, and the internally registered exception handler.
+- Replaced exception-normalizer configuration with `AddExceptionHandler(options => options.Map<TException>(...))` overloads that configure the exception handler being registered.
+
 ### Added
 
 - Added `ValueParseResult.False` as a reusable non-match result for asynchronous value parsers.

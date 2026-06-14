@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -123,13 +122,11 @@ namespace NanoRoute
         /// options.Map&lt;InvalidOperationException&gt;(static ex =&gt; new HttpRequestException("Conflict", ex, HttpStatusCode.Conflict));
         /// </code>
         /// </example>
-        public ExceptionHandlingOptions Map<TException>(TypedExceptionNormalizer<TException> normalizer) where TException : Exception
+        public void Map<TException>(TypedExceptionNormalizer<TException> normalizer) where TException : Exception
         {
             Ensure.NotNull(normalizer);
 
-            ExceptionNormalizers = ExceptionNormalizers.SetItem(typeof(TException), ex => normalizer((TException) ex));
-
-            return this;
+            ExceptionNormalizers.Add(typeof(TException), ex => normalizer((TException) ex));
         }
 
         /// <summary>
@@ -150,7 +147,7 @@ namespace NanoRoute
         /// );
         /// </code>
         /// </example>
-        public ImmutableDictionary<Type, ExceptionNormalizer> ExceptionNormalizers
+        public Dictionary<Type, ExceptionNormalizer> ExceptionNormalizers
         {
             get;
             set
@@ -158,7 +155,7 @@ namespace NanoRoute
                 Ensure.NotNull(value);
                 field = value;
             }
-        } = ImmutableDictionary<Type, ExceptionNormalizer>.Empty;
+        } = [];
     }
 
     /// <summary>

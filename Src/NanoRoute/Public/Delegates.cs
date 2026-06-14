@@ -14,9 +14,10 @@ namespace NanoRoute
     /// </summary>
     /// <typeparam name="TRouter">The concrete router type produced by the factory.</typeparam>
     /// <typeparam name="TConfig">The strongly typed router configuration used by the builder.</typeparam>
-    /// <param name="routerBuilder">
+    /// <param name="scope">
     /// The builder that contains the current route registrations, parser registrations, and configuration.
     /// </param>
+    /// <param name="config">TODO</param>
     /// <returns>
     /// A <typeparamref name="TRouter"/> instance backed by the builder's current route snapshot.
     /// </returns>
@@ -28,7 +29,7 @@ namespace NanoRoute
     /// var builder = new RouterBuilder&lt;MyRouter, RouterConfig&gt;(static b =&gt; new MyRouter(b));
     /// </code>
     /// </example>
-    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouterBuilder<TRouter, TConfig> routerBuilder) where TRouter : Router where TConfig : RouterConfig, new();
+    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouteScopeBuilder scope, TConfig config) where TRouter : Router where TConfig : RouterConfig;
 
     /// <summary>
     /// Invokes the next compatible handler in the current routing pipeline.

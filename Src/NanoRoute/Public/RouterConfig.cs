@@ -12,7 +12,7 @@ namespace NanoRoute
     /// </summary>
     /// <example>
     /// <code>
-    /// builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.ParameterizedFirst });
+    /// builder.UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst);
     /// </code>
     /// </example>
     public enum MatchingPrecedence
@@ -22,7 +22,7 @@ namespace NanoRoute
         /// </summary>
         /// <example>
         /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.LiteralFirst });
+        /// builder.UseMatchingPrecedence(MatchingPrecedence.LiteralFirst);
         /// </code>
         /// </example>
         LiteralFirst,
@@ -32,7 +32,7 @@ namespace NanoRoute
         /// </summary>
         /// <example>
         /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.ParameterizedFirst });
+        /// builder.UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst);
         /// </code>
         /// </example>
         ParameterizedFirst
@@ -43,13 +43,10 @@ namespace NanoRoute
     /// </summary>
     /// <example>
     /// <code>
-    /// builder.ConfigureRouting(config =&gt; config with
-    /// {
-    ///     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
-    /// });
+    /// builder.UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst);
     /// </code>
     /// </example>
-    public record RouterConfig
+    public class RouterConfig
     {
         /// <summary>
         /// Gets or sets how NanoRoute prioritizes literal and parameterized child segments at the same depth.
@@ -57,19 +54,19 @@ namespace NanoRoute
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is not a defined <see cref="MatchingPrecedence"/> value.</exception>
         /// <example>
         /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.ParameterizedFirst });
+        /// builder.UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst);
         /// </code>
         /// </example>
         public MatchingPrecedence MatchingPrecedence
         {
             get;
-            init
+            set
             {
                 if (!Enum.IsDefined(typeof(MatchingPrecedence), value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 field = value;
             }
-        }
+        } = MatchingPrecedence.LiteralFirst;
     }
 }

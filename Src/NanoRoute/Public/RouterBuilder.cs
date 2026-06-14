@@ -12,7 +12,7 @@ namespace NanoRoute
     /// <summary>
     /// Builds a concrete <see cref="Router"/> type together with its strongly typed configuration object.
     /// </summary>
-    /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter"/>.</typeparam>
+    /// <typeparam name="TRouter">The router type produced by <see cref="CreateRouter(Action{TConfig})"/>.</typeparam>
     /// <typeparam name="TConfig">The configuration type exposed by <see cref="RouterConfig"/>.</typeparam>
     /// <example>
     /// <code>
@@ -105,37 +105,6 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Updates the router configuration object that will be used by future router instances.
-        /// </summary>
-        /// <param name="updateConfig">A callback that returns the updated <see cref="RouterConfig"/> instance.</param>
-        /// <returns>The current builder.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown when <paramref name="updateConfig"/> is <see langword="null"/> or returns <see langword="null"/>.
-        /// </exception>
-        /// <example>
-        /// <code>
-        /// builder.ConfigureRouting(config =&gt; config with
-        /// {
-        ///     MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
-        /// });
-        /// </code>
-        /// </example>
-        public RouterBuilder<TRouter, TConfig> ConfigureRouting(ConfigureBuilderDelegate<TConfig> updateConfig)
-        {
-            Ensure.NotNull(updateConfig);
-
-            RouterConfig = updateConfig(RouterConfig);
-            Ensure.NotNull(RouterConfig);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Gets the configuration object applied when <see cref="CreateRouter"/> is called.
-        /// </summary>
-        public TConfig RouterConfig { get; private set; } = new();
-
-        /// <summary>
         /// Creates a router from the builder's current routes, parser registrations, and configuration.
         /// </summary>
         /// <returns>A new <typeparamref name="TRouter"/> instance.</returns>
@@ -148,7 +117,22 @@ namespace NanoRoute
         /// MyRouter router = builder.CreateRouter();
         /// </code>
         /// </example>
-        public TRouter CreateRouter() => _routerFactory(this);
+        public TRouter CreateRouter() => CreateRouter(static _ => { });
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="configureRouting"></param>
+        /// <returns></returns>
+        public TRouter CreateRouter(Action<TConfig> configureRouting)
+        {
+            Ensure.NotNull(configureRouting);
+
+            TConfig config = new();
+            configureRouting(config);
+
+            return _routerFactory(this, config);
+        }
     }
 }
 
