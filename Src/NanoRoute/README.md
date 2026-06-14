@@ -142,6 +142,7 @@ public interface IUserRepository
 - `AddJsonBody()` and `WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - Typed handlers can bind route values, query values, JSON bodies, services, `RequestContext`, and `CancellationToken` into request objects.
 - `AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses.
+- `HttpMethod.For(...)` returns shared known `HttpMethod` instances and supports custom method names.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 - Native AOT JSON apps should pass source-generated `JsonTypeInfo` values to `WithJsonBody(...)` and `HttpResponseMessage.Json(...)`.
 
