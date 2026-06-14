@@ -358,6 +358,27 @@ references:
   commentId: Overload:NanoRoute.HttpMessageRouter.Route
   fullName: NanoRoute.HttpMessageRouter.Route
   nameWithType: HttpMessageRouter.Route
+- uid: NanoRoute.HttpMethodExtensions
+  name: HttpMethodExtensions
+  href: NanoRoute.HttpMethodExtensions.html
+  commentId: T:NanoRoute.HttpMethodExtensions
+  fullName: NanoRoute.HttpMethodExtensions
+  nameWithType: HttpMethodExtensions
+- uid: NanoRoute.HttpMethodExtensions.For(System.String)
+  name: For(string)
+  href: NanoRoute.HttpMethodExtensions.html#NanoRoute_HttpMethodExtensions_For_System_String_
+  commentId: M:NanoRoute.HttpMethodExtensions.For(System.String)
+  name.vb: For(String)
+  fullName: NanoRoute.HttpMethodExtensions.For(string)
+  fullName.vb: NanoRoute.HttpMethodExtensions.For(String)
+  nameWithType: HttpMethodExtensions.For(string)
+  nameWithType.vb: HttpMethodExtensions.For(String)
+- uid: NanoRoute.HttpMethodExtensions.For*
+  name: For
+  href: NanoRoute.HttpMethodExtensions.html#NanoRoute_HttpMethodExtensions_For_
+  commentId: Overload:NanoRoute.HttpMethodExtensions.For
+  fullName: NanoRoute.HttpMethodExtensions.For
+  nameWithType: HttpMethodExtensions.For
 - uid: NanoRoute.HttpRequestMessageExtensions
   name: HttpRequestMessageExtensions
   href: NanoRoute.HttpRequestMessageExtensions.html

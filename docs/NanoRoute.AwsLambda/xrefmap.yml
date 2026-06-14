@@ -142,6 +142,30 @@ references:
   commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.PrintMembers
   fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.PrintMembers
   nameWithType: ApiGatewayV2RouterConfig.PrintMembers
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain
+  name: RequestDomain
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestDomain
+  commentId: P:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain
+  nameWithType: ApiGatewayV2RouterConfig.RequestDomain
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain*
+  name: RequestDomain
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestDomain_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain
+  nameWithType: ApiGatewayV2RouterConfig.RequestDomain
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme
+  name: RequestScheme
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestScheme
+  commentId: P:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme
+  nameWithType: ApiGatewayV2RouterConfig.RequestScheme
+- uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme*
+  name: RequestScheme
+  href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestScheme_
+  commentId: Overload:NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme
+  fullName: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme
+  nameWithType: ApiGatewayV2RouterConfig.RequestScheme
 - uid: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.ToString
   name: ToString()
   href: NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.html#NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_ToString

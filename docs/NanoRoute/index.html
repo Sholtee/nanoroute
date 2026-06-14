@@ -146,6 +146,7 @@ public interface IUserRepository
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html">ErrorDetails</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ValueParserDelegate.html">ValueParserDelegate</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestHandlerDelegate.html">RequestHandlerDelegate</a></li>
+<li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpMethodExtensions.html">HttpMethodExtensions</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteHandlerExtensions.html">NanoRouteHandlerExtensions</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRouteEndpointExtensions.html">NanoRouteEndpointExtensions</a></li>
 <li><a href="https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.NanoRoutePrefixExtensions.html">NanoRoutePrefixExtensions</a></li>
@@ -553,6 +554,7 @@ using HttpResponseMessage response = await router.Route(request, services);
 <li><code>AddJsonBody()</code> and <code>EndpointBuilder.WithJsonBody()</code> bind JSON request content into <code>RequestContext.Parameters</code>.</li>
 <li><code>AddJsonErrorDetails()</code> turns routing exceptions into JSON <code>ErrorDetails</code> responses.</li>
 <li><code>ConfigureJsonErrorDetails()</code> customizes JSON <code>ErrorDetails</code> response diagnostics and serialization metadata used by subsequently registered <code>AddJsonErrorDetails()</code> middleware.</li>
+<li><code>HttpMethod.For(...)</code> returns shared known <code>HttpMethod</code> instances and creates custom methods for valid extension verbs.</li>
 <li><code>HttpResponseMessage.Json(...)</code> creates JSON responses with the library's serializer defaults.</li>
 </ul>
 

@@ -164,6 +164,91 @@
       </tr>
     </tbody>
   </table>
+  <a id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestDomain_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain*"></a>
+  <h4 id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestDomain" data-uid="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain">RequestDomain</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the host, optionally including a port, used when mapping AWS HTTP API and Lambda Function URL
+events to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage.requesturi">RequestUri</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string? RequestDomain { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestDomain_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>When this value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, the adapter uses <code>requestContext.domainName</code> from the AWS event.
+Set this value when your application needs a canonical public host that differs from the event domain name.</p>
+</div>
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestDomain_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with
+{
+    RequestDomain = "api.example.com"
+});</code></pre>
+
+  <a id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestScheme_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme*"></a>
+  <h4 id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestScheme" data-uid="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme">RequestScheme</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the URI scheme used when mapping AWS HTTP API and Lambda Function URL events to
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage.requesturi">RequestUri</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string RequestScheme { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestScheme_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The default is <code>https</code>.</p>
+</div>
+  <h5 id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_RequestScheme_examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with
+{
+    RequestScheme = "https"
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when the assigned value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
 </h3>
   <a id="NanoRoute_AwsLambda_ApiGatewayV2RouterConfig_Equals_" data-uid="NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.Equals*"></a>

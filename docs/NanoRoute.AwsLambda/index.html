@@ -178,14 +178,22 @@ ApiGatewayV2Router router = ApiGatewayV2Router
 <h2 id="request-mapping">Request Mapping</h2>
 <p><code>ApiGatewayV2Router</code> converts the API Gateway event into an <code>HttpRequestMessage</code> before executing the NanoRoute pipeline.</p>
 <ul>
-<li>The request URI is built from <code>RawPath</code>, <code>RawQueryString</code>, the <code>Host</code> header, and the request scheme.</li>
-<li>The scheme is read from <code>Forwarded: proto=...</code>, <code>X-Forwarded-Proto</code>, or inferred as <code>https</code> for Lambda Function URL domains.</li>
+<li><code>RequestScheme</code> defaults to <code>https</code>; set <code>RequestDomain</code> when the Lambda should route against a canonical public host instead of the event domain.</li>
 <li>Request headers are copied onto the <code>HttpRequestMessage</code> or its content headers.</li>
 <li>Plain request bodies are exposed as <code>StringContent</code>; base64-encoded request bodies are exposed as <code>StreamContent</code>.</li>
 <li>The original <code>APIGatewayHttpApiV2ProxyRequest</code> is available through the NanoRoute request context as the original request object.</li>
 <li>The API Gateway request id is used as the NanoRoute trace id.</li>
 </ul>
-<p>Payload format <code>2.0</code> does not include the scheme directly, so the adapter derives it from forwarding metadata or the Lambda Function URL domain. If the adapter cannot determine the scheme or host, the request cannot be mapped to an absolute <code>HttpRequestMessage.RequestUri</code> and routing fails before handlers run.</p>
+<p>If the adapter cannot determine a host from <code>RequestDomain</code> or <code>requestContext.domainName</code>, the request cannot be mapped to an absolute <code>HttpRequestMessage.RequestUri</code> and routing fails before handlers run.</p>
+<pre><code class="lang-csharp">ApiGatewayV2Router router = ApiGatewayV2Router
+    .CreateBuilder()
+    .ConfigureRouting(config =&gt; config with
+    {
+        RequestScheme = &quot;https&quot;,
+        RequestDomain = &quot;api.example.com&quot;
+    })
+    .CreateRouter();
+</code></pre>
 <h2 id="response-mapping">Response Mapping</h2>
 <p>NanoRoute handlers return ordinary <code>HttpResponseMessage</code> instances.</p>
 <ul>
@@ -253,7 +261,7 @@ ApiGatewayV2Router router = ApiGatewayV2Router
 <ul>
 <li><code>ApiGatewayV2Router.CreateBuilder()</code> starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.</li>
 <li><code>ApiGatewayV2Router</code> derives from the core <code>RouterBase&lt;ApiGatewayV2RouterConfig&gt;</code> helper.</li>
-<li><code>ApiGatewayV2RouterConfig</code> inherits the core <code>RouterConfig</code>, including <code>MatchingPrecedence</code>, and adds <code>LambdaTimeoutBuffer</code>.</li>
+<li><code>ApiGatewayV2RouterConfig</code> inherits the core <code>RouterConfig</code>, including <code>MatchingPrecedence</code>, and adds <code>LambdaTimeoutBuffer</code>, <code>RequestScheme</code>, and <code>RequestDomain</code>.</li>
 <li><code>ConfigureRouting()</code> customizes <code>ApiGatewayV2RouterConfig</code> before creating a router snapshot.</li>
 <li><code>Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, ILambdaContext)</code> executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.</li>
 <li><code>AddDefaultValueParsers()</code> registers the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code> route parsers.</li>
