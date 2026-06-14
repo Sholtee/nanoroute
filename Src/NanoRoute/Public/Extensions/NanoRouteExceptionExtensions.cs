@@ -168,8 +168,34 @@ namespace NanoRoute
     /// </example>
     public static class NanoRouteExceptionExtensions
     {
+        #region Private
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly Action<ExceptionHandlingOptions> s_noopConfigure = static _ => { };
+
+        private const string
+            ErrorsName = "Errors",
+            DeveloperMessagesName = "DeveloperMessages",
+            StatusName = "StatusCode";
+
+        private static T? GetProperty<T>(HttpRequestException requestException, string key)
+        {
+            Ensure.NotNull(requestException);
+
+            if (!requestException.Data.Contains(key))
+                return default;
+
+            return (T) requestException.Data[key];
+        }
+
+        private static void SetProperty(HttpRequestException requestException, string key, object? value)
+        {
+            Ensure.NotNull(requestException);
+            if (value is null)
+                requestException.Data.Remove(key);
+            else
+                requestException.Data[key] = value;
+        }
+        #endregion
 
         extension<TBuilder>(TBuilder routeScopeBuilder) where TBuilder : RouteScopeBuilder
         {
@@ -467,51 +493,6 @@ namespace NanoRoute
             }
         }
 
-        /// <summary>
-        /// The <see cref="Exception.Data"/> key used to store client-facing error messages.
-        /// </summary>
-        /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
-        /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// HttpRequestException exception = ...
-        /// object? errors = exception.Data[NanoRouteExceptionExtensions.ErrorsName];
-        /// </code>
-        /// </example>
-        public const string ErrorsName = "Errors";
-
-        /// <summary>
-        /// The <see cref="Exception.Data"/> key used to store developer-facing diagnostic details.
-        /// </summary>
-        /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
-        /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// HttpRequestException exception = ...
-        /// object? messages = exception.Data[NanoRouteExceptionExtensions.DeveloperMessagesName];
-        /// </code>
-        /// </example>
-        public const string DeveloperMessagesName = "DeveloperMessages";
-
-        /// <summary>
-        /// The <see cref="Exception.Data"/> key used to store the HTTP status code.
-        /// </summary>
-        /// <remarks>
-        /// Written by <see cref="Throw(HttpStatusCode, string, Exception, IEnumerable{string}, IEnumerable{string})"/>
-        /// and read by <see cref="GetErrorDetails(HttpRequestException, bool, string)"/>.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// HttpRequestException exception = ...
-        /// object? status = exception.Data[NanoRouteExceptionExtensions.StatusName];
-        /// </code>
-        /// </example>
-        public const string StatusName = "StatusCode";
-
         extension(HttpRequestException)
         {
             /// <summary>
@@ -556,13 +537,13 @@ namespace NanoRoute
             {
                 HttpRequestException ex = new(title, original);
 
-                ex.Data[StatusName] = status;
+                ex.Status = status;
 
                 if (errors?.ToArray() is { Length: > 0 } err)
-                    ex.Data[ErrorsName] = err;  // On .NET FW the Data members must be serializable (string[] it is)
+                    ex.Errors = err;
 
                 if (developerMessages?.ToArray() is { Length: > 0 } dev)
-                    ex.Data[DeveloperMessagesName] = dev;
+                    ex.DeveloperMessages = dev;
 
                 throw ex;
             }
@@ -570,6 +551,56 @@ namespace NanoRoute
 
         extension(HttpRequestException requestException)
         {
+            /// <summary>
+            /// Gets or sets the HTTP status code associated with this exception.
+            /// </summary>
+            /// <exception cref="ArgumentNullException">Thrown when the extended exception is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// exception.Status = HttpStatusCode.BadRequest;
+            /// HttpStatusCode status = exception.Status;
+            /// </code>
+            /// </example>
+            public HttpStatusCode Status
+            {
+                get => GetProperty<HttpStatusCode?>(requestException, StatusName) ?? HttpStatusCode.InternalServerError;
+                set => SetProperty(requestException, StatusName, value);
+            }
+
+            /// <summary>
+            /// Gets or sets the client-facing error messages associated with this exception.
+            /// </summary>
+            /// <exception cref="ArgumentNullException">Thrown when the extended exception is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// exception.Errors = ["Missing id."];
+            /// IEnumerable&lt;string&gt;? errors = exception.Errors;
+            /// </code>
+            /// </example>
+            public IEnumerable<string>? Errors
+            {
+                get => GetProperty<IEnumerable<string>>(requestException, ErrorsName);
+
+                // On .NET Framework, Data members must be serializable; string[] is.
+                set => SetProperty(requestException, ErrorsName, value?.ToArray());
+            }
+
+            /// <summary>
+            /// Gets or sets the developer-facing diagnostic messages associated with this exception.
+            /// </summary>
+            /// <exception cref="ArgumentNullException">Thrown when the extended exception is <see langword="null"/>.</exception>
+            /// <example>
+            /// <code>
+            /// exception.DeveloperMessages = [original.ToString()];
+            /// IEnumerable&lt;string&gt;? messages = exception.DeveloperMessages;
+            /// </code>
+            /// </example>
+            public IEnumerable<string>? DeveloperMessages
+            {
+                get => GetProperty<IEnumerable<string>>(requestException, DeveloperMessagesName);
+                set => SetProperty(requestException, DeveloperMessagesName, value?.ToArray());
+            }
+
             /// <summary>
             /// Converts an <see cref="HttpRequestException"/> into an <see cref="ErrorDetails"/> payload.
             /// </summary>
@@ -590,16 +621,11 @@ namespace NanoRoute
 
                 return new ErrorDetails
                 {
-                    Status = requestException.Data[StatusName] switch
-                    {
-                        HttpStatusCode status => status,
-                        int intStatus => (HttpStatusCode) intStatus,
-                        _ => HttpStatusCode.InternalServerError
-                    },
+                    Status = requestException.Status,
                     Title = requestException.Message,
                     TraceId = traceId ?? Guid.NewGuid().ToString("N"),
-                    Errors = requestException.Data[ErrorsName] as IEnumerable<string>,
-                    DeveloperMessages = populateErrorInfo ? requestException.Data[DeveloperMessagesName] as IEnumerable<string> : null
+                    Errors = requestException.Errors,
+                    DeveloperMessages = populateErrorInfo ? requestException.DeveloperMessages : null
                 };
             }
         }

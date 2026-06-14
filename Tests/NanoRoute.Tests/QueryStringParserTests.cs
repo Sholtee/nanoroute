@@ -191,8 +191,8 @@ namespace NanoRoute.Tests
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new List<string> { string.Format(Resources.Culture, Resources.ERR_QUERY_DUPLICATE_PARAMETER, "filter") }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new List<string> { string.Format(Resources.Culture, Resources.ERR_QUERY_DUPLICATE_PARAMETER, "filter") }));
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
         }
 
@@ -280,8 +280,8 @@ namespace NanoRoute.Tests
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_MISSING_PARAMETER, "filter") }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_MISSING_PARAMETER, "filter") }));
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Never);
         }
 
@@ -358,8 +358,8 @@ namespace NanoRoute.Tests
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Once);
         }
 
@@ -375,8 +375,8 @@ namespace NanoRoute.Tests
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.Null);
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.Null);
             mockParser.Verify(parser => parser.Invoke(It.IsAny<ValueParserContext>()), Times.Never);
         }
 
@@ -390,8 +390,8 @@ namespace NanoRoute.Tests
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_INVALID_PARAMETER, "filter") }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_INVALID_PARAMETER, "filter") }));
         }
 
         [Test]
@@ -404,8 +404,8 @@ namespace NanoRoute.Tests
             ).AsTask())!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { Resources.ERR_DECODING_FAILED }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { Resources.ERR_DECODING_FAILED }));
         }
     }
 }

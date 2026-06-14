@@ -18,16 +18,16 @@ namespace NanoRoute.Tests
         private static HttpRequestException NormalizeConflict(Exception ex)
         {
             HttpRequestException normalized = new("conflict", ex);
-            normalized.Data[NanoRouteExceptionExtensions.StatusName] = HttpStatusCode.Conflict;
-            normalized.Data[NanoRouteExceptionExtensions.ErrorsName] = new[] { "custom-error" };
-            normalized.Data[NanoRouteExceptionExtensions.DeveloperMessagesName] = new[] { "custom-developer-message" };
+            normalized.Status = HttpStatusCode.Conflict;
+            normalized.Errors = new[] { "custom-error" };
+            normalized.DeveloperMessages = new[] { "custom-developer-message" };
             return normalized;
         }
 
         private static HttpRequestException NormalizeTeapot(Exception ex)
         {
             HttpRequestException normalized = new("teapot", ex);
-            normalized.Data[NanoRouteExceptionExtensions.StatusName] = (HttpStatusCode) 418;
+            normalized.Status = (HttpStatusCode) 418;
             return normalized;
         }
 
@@ -46,7 +46,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(handled.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(handled.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
 
             Assert.That(async () => await router.Route
             (
@@ -70,7 +70,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(handled.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(handled.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
 
             Assert.That(async () => await router.Route
             (
@@ -100,9 +100,9 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo("conflict"));
                 Assert.That(ex.InnerException, Is.InstanceOf<NotSupportedException>());
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { "custom-error" }));
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.DeveloperMessagesName], Is.EquivalentTo(new[] { "custom-developer-message" }));
+                Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.Conflict));
+                Assert.That(ex.Errors, Is.EquivalentTo(new[] { "custom-error" }));
+                Assert.That(ex.DeveloperMessages, Is.EquivalentTo(new[] { "custom-developer-message" }));
             });
         }
 
@@ -127,7 +127,7 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo("conflict"));
                 Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
+                Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.Conflict));
             });
         }
 
@@ -153,7 +153,7 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo("teapot"));
                 Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo((HttpStatusCode) 418));
+                Assert.That(ex.Status, Is.EqualTo((HttpStatusCode) 418));
             });
         }
 
@@ -178,7 +178,7 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo(Properties.Resources.ERR_INTERNAL_ERROR));
                 Assert.That(ex.InnerException, Is.InstanceOf<InvalidOperationException>());
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
+                Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
             });
         }
 
@@ -201,7 +201,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.Conflict));
         }
 
         [Test]
@@ -236,8 +236,8 @@ namespace NanoRoute.Tests
 
             Assert.Multiple(() =>
             {
-                Assert.That(parentEx.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.Conflict));
-                Assert.That(childEx.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo((HttpStatusCode) 418));
+                Assert.That(parentEx.Status, Is.EqualTo(HttpStatusCode.Conflict));
+                Assert.That(childEx.Status, Is.EqualTo((HttpStatusCode) 418));
             });
         }
 
@@ -265,8 +265,8 @@ namespace NanoRoute.Tests
             {
                 Assert.That(ex.Message, Is.EqualTo(Properties.Resources.ERR_INTERNAL_ERROR));
                 Assert.That(ex.InnerException, Is.SameAs(aggregate));
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.InternalServerError));
-                Assert.That(ex.Data[NanoRouteExceptionExtensions.DeveloperMessagesName], Is.EquivalentTo(new[]
+                Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
+                Assert.That(ex.DeveloperMessages, Is.EquivalentTo(new[]
                 {
                     aggregate.InnerExceptions[0].ToString(),
                     aggregate.InnerExceptions[1].ToString()
@@ -312,19 +312,6 @@ namespace NanoRoute.Tests
         });
 
         [Test]
-        public void GetErrorDetails_ShouldAcceptIntegerStatusCodes()
-        {
-            HttpRequestException ex = new("teapot");
-            ex.Data[NanoRouteExceptionExtensions.StatusName] = 404;
-
-            ErrorDetails details = ex.GetErrorDetails(traceId: "trace");
-
-            Assert.That(details.Status, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(details.Title, Is.EqualTo("teapot"));
-            Assert.That(details.TraceId, Is.EqualTo("trace"));
-        }
-
-        [Test]
         public void GetErrorDetails_ShouldUseInternalServerErrorWhenStatusCodeIsMissing()
         {
             ErrorDetails details = new HttpRequestException("boom").GetErrorDetails(traceId: "trace");
@@ -332,6 +319,33 @@ namespace NanoRoute.Tests
             Assert.That(details.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
             Assert.That(details.Title, Is.EqualTo("boom"));
             Assert.That(details.TraceId, Is.EqualTo("trace"));
+        }
+
+        [Test]
+        public void HttpRequestExceptionProperties_ShouldThrow_WhenExceptionIsNull()
+        {
+            HttpRequestException ex = null!;
+
+            Assert.Multiple(() =>
+            {
+                ArgumentNullException thrown = Assert.Throws<ArgumentNullException>(() => _ = ex.Status)!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => ex.Status = HttpStatusCode.BadRequest)!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => _ = ex.Errors)!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => ex.Errors = new[] { "custom-error" })!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => _ = ex.DeveloperMessages)!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+
+                thrown = Assert.Throws<ArgumentNullException>(() => ex.DeveloperMessages = new[] { "custom-developer-message" })!;
+                Assert.That(thrown.ParamName, Is.EqualTo("requestException"));
+            });
         }
     }
 }

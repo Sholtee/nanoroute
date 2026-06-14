@@ -83,7 +83,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
         }
 
         [Test]
@@ -133,8 +133,8 @@ namespace NanoRoute.Tests
             ))!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_MISSING_PARAMETER, "filter") }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_MISSING_PARAMETER, "filter") }));
         }
 
         [Test]
@@ -274,8 +274,8 @@ namespace NanoRoute.Tests
             ))!;
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
         }
 
         [Test]
@@ -297,7 +297,7 @@ namespace NanoRoute.Tests
                 s_services
             ))!;
 
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
 
             HttpResponseMessage response = await router.Route
             (

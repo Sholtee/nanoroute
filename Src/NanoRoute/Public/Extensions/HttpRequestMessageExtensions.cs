@@ -23,6 +23,7 @@ namespace NanoRoute
     /// </example>
     public static class HttpRequestMessageExtensions
     {
+        #region Private
         private const string
             OriginalRequestPropertyKey = "OriginalRequest",
             TraceIdPropertyKey = "TraceId";
@@ -42,6 +43,24 @@ namespace NanoRoute
             "Expires",
             "Last-Modified"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
+        private static object? GetProperty(HttpRequestMessage request, string key)
+        {
+            Ensure.NotNull(request);
+            return request.Properties.TryGetValue(key, out object? value)
+                ? value
+                : null;
+        }
+
+        private static void SetProperty(HttpRequestMessage request, string key, object? value)
+        {
+            Ensure.NotNull(request);
+            if (value is null)
+                request.Properties.Remove(key);
+            else
+                request.Properties[key] = value;
+        }
+        #endregion
 
         extension(HttpRequestMessage)
         {
@@ -71,21 +90,8 @@ namespace NanoRoute
             /// </example>
             public object? OriginalRequest
             {
-                get
-                {
-                    Ensure.NotNull(request);
-                    return request.Properties.TryGetValue(OriginalRequestPropertyKey, out object? originalRequest)
-                        ? originalRequest
-                        : null;
-                }
-                set
-                {
-                    Ensure.NotNull(request);
-                    if (value is null)
-                        request.Properties.Remove(OriginalRequestPropertyKey);
-                    else
-                        request.Properties[OriginalRequestPropertyKey] = value;
-                }
+                get => GetProperty(request, OriginalRequestPropertyKey);
+                set => SetProperty(request, OriginalRequestPropertyKey, value);
             }
 
             /// <summary>
@@ -100,21 +106,8 @@ namespace NanoRoute
             /// </example>
             public string? TraceId
             {
-                get
-                {
-                    Ensure.NotNull(request);
-                    return request.Properties.TryGetValue(TraceIdPropertyKey, out object? traceId)
-                        ? traceId.ToString()
-                        : null;
-                }
-                set
-                {
-                    Ensure.NotNull(request);
-                    if (value is null)
-                        request.Properties.Remove(TraceIdPropertyKey);
-                    else
-                        request.Properties[TraceIdPropertyKey] = value;
-                }
+                get => GetProperty(request, TraceIdPropertyKey)?.ToString();
+                set => SetProperty(request, TraceIdPropertyKey, value);
             }
         }
     }

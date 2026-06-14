@@ -143,6 +143,7 @@ public interface IUserRepository
 - `AddJsonBody()` and `WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - Typed handlers can bind route values, query values, JSON bodies, services, `RequestContext`, and `CancellationToken` into request objects.
 - `AddExceptionHandler(options => ...)` maps exception types for one exception-handling middleware registration.
+- `HttpRequestException` extension properties expose routing status, client-facing errors, and developer-facing messages.
 - `AddJsonErrorDetails(options => ...)` turns routing and normalized exception failures into JSON `ErrorDetails` responses and configures diagnostics, `ErrorDetails` metadata, and exception normalization for that middleware registration.
 - `HttpMethod.For(...)` returns shared known `HttpMethod` instances and supports custom method names.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.

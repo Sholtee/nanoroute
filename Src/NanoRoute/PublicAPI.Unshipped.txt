@@ -1,6 +1,3 @@
-const NanoRoute.NanoRouteExceptionExtensions.DeveloperMessagesName = "DeveloperMessages" -> string!
-const NanoRoute.NanoRouteExceptionExtensions.ErrorsName = "Errors" -> string!
-const NanoRoute.NanoRouteExceptionExtensions.StatusName = "StatusCode" -> string!
 const NanoRoute.RouteScopeBuilder.CurrentExact = "/" -> string!
 const NanoRoute.RouteScopeBuilder.CurrentPrefix = "/*" -> string!
 NanoRoute.BindArgumentsDelegate
@@ -57,7 +54,13 @@ NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!).CreateEndpo
 NanoRoute.NanoRouteEndpointExtensions.extension<TBuilder>(TBuilder!).CreateEndpoint(System.Collections.Generic.IEnumerable<string!>! verbs, string! pattern) -> NanoRoute.EndpointBuilder!
 NanoRoute.NanoRouteExceptionExtensions
 NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!)
+NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).DeveloperMessages.get -> System.Collections.Generic.IEnumerable<string!>?
+NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).DeveloperMessages.set -> void
+NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Errors.get -> System.Collections.Generic.IEnumerable<string!>?
+NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Errors.set -> void
 NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).GetErrorDetails(bool populateErrorInfo = false, string? traceId = null) -> NanoRoute.ErrorDetails!
+NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Status.get -> System.Net.HttpStatusCode
+NanoRoute.NanoRouteExceptionExtensions.extension(System.Net.Http.HttpRequestException!).Status.set -> void
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!)
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler() -> TBuilder!
 NanoRoute.NanoRouteExceptionExtensions.extension<TBuilder>(TBuilder!).AddExceptionHandler(string! pattern) -> TBuilder!

@@ -380,8 +380,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route(request, s_services))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new string[] { Resources.ERR_MISSING_BODY }));
         }
 
         [Test]
@@ -399,8 +399,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route(request, s_services))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.EquivalentTo(new[] { Resources.ERR_BAD_CONTENT_TYPE }));
         }
 
         [Test]
@@ -418,8 +418,8 @@ namespace NanoRoute.Tests
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route(request, s_services))!;
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.StatusName], Is.EqualTo(HttpStatusCode.BadRequest));
-            Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.Not.Null);
+            Assert.That(ex.Status, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(ex.Errors, Is.Not.Null);
         }
 
         [Test]

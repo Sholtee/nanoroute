@@ -13,6 +13,7 @@
 - Replaced query-binding configuration with `AddQueryBindings(..., unexpected: ...)` and `WithQueryBindings(..., unexpected: ...)` overloads.
 - Replaced JSON error-detail configuration with `AddJsonErrorDetails(options => ...)` overloads that configure JSON diagnostics, `ErrorDetails` metadata, and the internally registered exception handler.
 - Replaced exception-normalizer configuration with `AddExceptionHandler(options => options.Map<TException>(...))` overloads that configure the exception handler being registered.
+- Replaced public exception metadata key constants with `HttpRequestException` extension properties for status, client-facing errors, and developer-facing messages.
 
 ### Added
 

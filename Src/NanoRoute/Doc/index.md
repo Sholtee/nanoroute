@@ -432,6 +432,8 @@ They also have middleware-style overloads that receive `CallNextHandlerDelegate`
 
 `AddExceptionHandler()` adds middleware that converts unexpected exceptions into enriched `HttpRequestException` values. Existing `HttpRequestException` values are passed through unchanged, and `OperationCanceledException` still propagates to the caller.
 
+Use the `Status`, `Errors`, and `DeveloperMessages` extension properties on `HttpRequestException` to read or customize NanoRoute error metadata.
+
 Pass an options callback to `AddExceptionHandler()` when one exception-handling middleware should customize how specific exception types are normalized. Normalizers are matched against the thrown exception's runtime type first, then against its base exception types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered:
 
 ```csharp
@@ -545,6 +547,7 @@ If neither `HttpMessageRouter` nor `HttpListenerRouter` fits the transport you w
 - Query-binding overloads that take `UnexpectedParameterBehavior` can reject undeclared query-string keys per registration.
 - `AddHandler<TRequestContext>()` and `EndpointBuilder.WithHandler<TRequestContext>()` project `RequestContext` into a typed request object before invoking the handler.
 - `AddExceptionHandler(options => ...)` customizes exception normalization for that middleware registration.
+- `HttpRequestException` extension properties expose routing status, client-facing errors, and developer-facing messages.
 - `AddJsonBody()` and `EndpointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails(options => ...)` turns routing exceptions into JSON `ErrorDetails` responses and configures diagnostics, serialization metadata, and exception normalization for that middleware registration.
 - `HttpMethod.For(...)` returns shared known `HttpMethod` instances and creates custom methods for valid extension verbs.
