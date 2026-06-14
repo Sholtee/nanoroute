@@ -5,6 +5,7 @@
 ### Added
 
 - Added `HttpMessageRouter` for routing already materialized `HttpRequestMessage` instances without writing a custom router wrapper.
+- Added `HttpMethod.For(...)` to return shared known `HttpMethod` instances while still supporting custom method names.
 - Added public `RouterBase<TConfig>` for custom transport adapters that want shared configuration storage and request-pipeline snapshot creation.
 - Added `ValueParseResult.False` as a reusable non-match result for asynchronous value parsers.
 

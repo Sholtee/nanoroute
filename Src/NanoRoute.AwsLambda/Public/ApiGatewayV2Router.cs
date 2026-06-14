@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ using Amazon.Lambda.Core;
 
 namespace NanoRoute.AwsLambda
 {
+    using Properties;
+
     /// <summary>
     /// Routes API Gateway HTTP API and Lambda Function URL <see cref="APIGatewayHttpApiV2ProxyRequest"/> instances through a NanoRoute pipeline.
     /// </summary>
@@ -31,9 +34,124 @@ namespace NanoRoute.AwsLambda
     /// </example>
     public sealed class ApiGatewayV2Router : RouterBase<ApiGatewayV2RouterConfig>
     {
+        #region Private
+        internal HttpRequestMessage CreateRequestMessage(APIGatewayHttpApiV2ProxyRequest request)
+        {
+            if (!Uri.TryCreate($"{Config.RequestScheme}://{Config.RequestDomain ?? request.RequestContext.DomainName}", UriKind.Absolute, out Uri? baseUri))
+                throw new InvalidOperationException(Resources.ERR_UNKNOWN_URI);
+
+            UriBuilder uriBuilder = new(baseUri)
+            {
+                Path = request.RawPath is { Length: > 0 } path ? path : "/",
+                Query = request.RawQueryString is { Length: > 0 } query ? query : null
+            };
+
+            HttpRequestMessage requestMessage = new
+            (
+                HttpMethod.For(request.RequestContext.Http.Method),
+                uriBuilder.Uri
+            )
+            {
+                Content = request switch
+                {
+                    { IsBase64Encoded: false } and { Body.Length: > 0 } => new StringContent(request.Body),
+                    { IsBase64Encoded: true } and { Body.Length: > 0 } => new StreamContent
+                    (
+                        new Base64BodyReaderStream(request.Body)
+                    ),
+                    _ => null
+                }
+            };
+
+            requestMessage.Content?.Headers.Clear();
+
+            HttpHeaders
+                requestHeaders = requestMessage.Headers,
+                contentHeaders = requestMessage.Content?.Headers!;
+
+            foreach (KeyValuePair<string, string> header in request.Headers)
+            {
+                HttpHeaders headers = contentHeaders is not null && HttpRequestMessage.ContentHeaders.Contains(header.Key)
+                    ? contentHeaders
+                    : requestHeaders;
+
+                headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+
+            requestMessage.OriginalRequest = request;
+            requestMessage.TraceId = request.RequestContext.RequestId;
+
+            return requestMessage;
+        }
+
+        internal static async Task<APIGatewayHttpApiV2ProxyResponse> CreateResponse(HttpResponseMessage responseMessage)
+        {
+            Dictionary<string, string> headers = new(StringComparer.OrdinalIgnoreCase);
+            List<string> cookies = new();
+
+            APIGatewayHttpApiV2ProxyResponse response = new()
+            {
+                StatusCode = (int) responseMessage.StatusCode
+            };
+
+            CopyHeaders(responseMessage.Headers, headers, cookies);
+
+            if (responseMessage.Content is { } content)
+            {
+                CopyHeaders(content.Headers, headers, cookies);
+
+                switch (content)
+                {
+                    case StringContent stringContent:
+                    {
+                        if (await stringContent.ReadAsStringAsync().ConfigureAwait(false) is { Length: > 0 } body)
+                            response.Body = body;
+                        break;
+                    }
+                    default:
+                    {
+                        using Base64BodyWriterStream destination = new();
+
+                        await content.CopyToAsync(destination).ConfigureAwait(false);
+
+                        if (destination.GetBody() is { Length: > 0 } body)
+                        {
+                            response.Body = body;
+                            response.IsBase64Encoded = true;
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            response.Headers = headers;
+            response.Cookies = cookies.ToArray();
+
+            return response;
+
+            static void CopyHeaders(HttpHeaders source, Dictionary<string, string> headers, List<string> cookies)
+            {
+                foreach (KeyValuePair<string, IEnumerable<string>> header in source)
+                {
+                    if (string.Equals(header.Key, "Set-Cookie", StringComparison.OrdinalIgnoreCase))
+                    {
+                        cookies.AddRange(header.Value);
+                        continue;
+                    }
+
+                    foreach (string value in header.Value)
+                        headers[header.Key] = headers.TryGetValue(header.Key, out string? existing)
+                            ? $"{existing},{value}"
+                            : value;
+                }
+            }
+        }
+
         private ApiGatewayV2Router(RouterBuilder<ApiGatewayV2Router, ApiGatewayV2RouterConfig> builder) : base(builder, builder.RouterConfig)
         {
         }
+        #endregion
 
         /// <summary>
         /// Creates a strongly typed builder for <see cref="ApiGatewayV2Router"/>.
@@ -83,13 +201,13 @@ namespace NanoRoute.AwsLambda
             using CancellationTokenSource cts = new();
             cts.CancelAfter(cancellationDelay);
 
-            using HttpRequestMessage requestMessage = request.CreateRequestMessage();
+            using HttpRequestMessage requestMessage = CreateRequestMessage(request);
 
             try
             {
                 using HttpResponseMessage responseMessage = await Route(requestMessage, services, cts.Token).ConfigureAwait(false);
 
-                return await responseMessage.CreateResponse().ConfigureAwait(false);
+                return await CreateResponse(responseMessage).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {

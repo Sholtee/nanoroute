@@ -3,4 +3,8 @@ NanoRoute.AwsLambda.ApiGatewayV2Router.Route(Amazon.Lambda.APIGatewayEvents.APIG
 NanoRoute.AwsLambda.ApiGatewayV2RouterConfig
 NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer.get -> System.TimeSpan
 NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.LambdaTimeoutBuffer.init -> void
+NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain.get -> string?
+NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestDomain.set -> void
+NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme.get -> string!
+NanoRoute.AwsLambda.ApiGatewayV2RouterConfig.RequestScheme.set -> void
 static NanoRoute.AwsLambda.ApiGatewayV2Router.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.AwsLambda.ApiGatewayV2Router!, NanoRoute.AwsLambda.ApiGatewayV2RouterConfig!>!

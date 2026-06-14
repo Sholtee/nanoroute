@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -36,6 +37,7 @@ namespace NanoRoute
     public sealed class HttpListenerRouter : RouterBase<HttpListenerRouterConfig>
     {
         #region Private
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly FrozenSet<string> s_managedResponseHeaders = new List<string>
         {
             "Content-Length",
@@ -46,27 +48,11 @@ namespace NanoRoute
             "WWW-Authenticate"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-        private static readonly FrozenDictionary<string, HttpMethod> s_httpMethods = new Dictionary<string, HttpMethod>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["DELETE"] = HttpMethod.Delete,
-            ["GET"] = HttpMethod.Get,
-            ["HEAD"] = HttpMethod.Head,
-            ["OPTIONS"] = HttpMethod.Options,
-#if NETSTANDARD2_0
-            ["PATCH"] = new HttpMethod("PATCH"),
-#else
-            ["PATCH"] = HttpMethod.Patch,
-#endif
-            ["POST"] = HttpMethod.Post,
-            ["PUT"] = HttpMethod.Put,
-            ["TRACE"] = HttpMethod.Trace
-        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
-
         private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig)
         {
         }
 
-        private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
+        internal static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
             response.StatusCode = (int) responseMessage.StatusCode;
 
@@ -103,11 +89,11 @@ namespace NanoRoute
             }
         }
 
-        private static HttpRequestMessage GetRequest(HttpListenerRequest request)
+        internal static HttpRequestMessage GetRequest(HttpListenerRequest request)
         {
             HttpRequestMessage requestMessage = new
             (
-                s_httpMethods.TryGetValue(request.HttpMethod, out HttpMethod? httpMethod) ? httpMethod : new HttpMethod(request.HttpMethod),
+                HttpMethod.For(request.HttpMethod),
                 request.Url
             );
 
@@ -117,8 +103,9 @@ namespace NanoRoute
                 requestMessage.Content.Headers.Clear();
             }
 
-            HttpHeaders requestHeaders = requestMessage.Headers;
-            HttpHeaders? contentHeaders = requestMessage.Content?.Headers;
+            HttpHeaders
+                requestHeaders = requestMessage.Headers,
+                contentHeaders = requestMessage.Content?.Headers!;
 
             for (int i = 0; i < request.Headers.Count; i++)
             {

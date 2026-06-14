@@ -66,7 +66,7 @@ nanoroute/
 |       |-- Doc/                        DocFX documentation sources
 |       |   |-- docfx.json              DocFX build configuration
 |       |   |-- index.md                AWS Lambda package documentation landing page
-|       |-- Private/                    API Gateway DTO mapping helpers
+|       |-- Private/                    Lambda request and response body helpers
 |       |-- Properties/                 Resources and generated metadata
 |       |-- Public/                     Public adapter API surface
 |       |-- HISTORY.md                  Version history
