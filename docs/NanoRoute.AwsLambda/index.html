@@ -187,12 +187,11 @@ ApiGatewayV2Router router = ApiGatewayV2Router
 <p>If the adapter cannot determine a host from <code>RequestDomain</code> or <code>requestContext.domainName</code>, the request cannot be mapped to an absolute <code>HttpRequestMessage.RequestUri</code> and routing fails before handlers run.</p>
 <pre><code class="lang-csharp">ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
-    .ConfigureRouting(config =&gt; config with
+    .CreateRouter(config =&gt;
     {
-        RequestScheme = &quot;https&quot;,
-        RequestDomain = &quot;api.example.com&quot;
-    })
-    .CreateRouter();
+        config.RequestScheme = &quot;https&quot;;
+        config.RequestDomain = &quot;api.example.com&quot;;
+    });
 </code></pre>
 <h2 id="response-mapping">Response Mapping</h2>
 <p>NanoRoute handlers return ordinary <code>HttpResponseMessage</code> instances.</p>
@@ -209,10 +208,6 @@ ApiGatewayV2Router router = ApiGatewayV2Router
 <p>Use <code>ApiGatewayV2RouterConfig.LambdaTimeoutBuffer</code> when your function needs a different safety window:</p>
 <pre><code class="lang-csharp">ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
-    .ConfigureRouting(config =&gt; config with
-    {
-        LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
-    })
     .AddJsonErrorDetails()
     .AddEndpoint(&quot;GET&quot;, &quot;/health/&quot;, endpoint =&gt; endpoint
         .WithHandler(static async (_, _) =&gt;
@@ -220,7 +215,10 @@ ApiGatewayV2Router router = ApiGatewayV2Router
             await Task.CompletedTask;
             return new HttpResponseMessage(HttpStatusCode.OK);
         }))
-    .CreateRouter();
+    .CreateRouter(config =&gt;
+    {
+        config.LambdaTimeoutBuffer = TimeSpan.FromSeconds(3);
+    });
 </code></pre>
 <h2 id="typed-handlers">Typed Handlers</h2>
 <p>Typed handlers work the same way under Lambda as they do in the core package. The service provider passed to <code>Route()</code> is exposed through <code>RequestContext.Services</code>, so <code>[ValueSource(ValueSource.ServiceLocator)]</code> can resolve request object dependencies from your Lambda function's service container.</p>
@@ -262,15 +260,15 @@ ApiGatewayV2Router router = ApiGatewayV2Router
 <li><code>ApiGatewayV2Router.CreateBuilder()</code> starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.</li>
 <li><code>ApiGatewayV2Router</code> derives from the core <code>RouterBase&lt;ApiGatewayV2RouterConfig&gt;</code> helper.</li>
 <li><code>ApiGatewayV2RouterConfig</code> inherits the core <code>RouterConfig</code>, including <code>MatchingPrecedence</code>, and adds <code>LambdaTimeoutBuffer</code>, <code>RequestScheme</code>, and <code>RequestDomain</code>.</li>
-<li><code>ConfigureRouting()</code> customizes <code>ApiGatewayV2RouterConfig</code> before creating a router snapshot.</li>
+<li><code>CreateRouter(config =&gt; ...)</code> customizes <code>ApiGatewayV2RouterConfig</code> while creating a router snapshot.</li>
 <li><code>Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, ILambdaContext)</code> executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.</li>
 <li><code>AddDefaultValueParsers()</code> registers the built-in <code>int</code>, <code>guid</code>, <code>bool</code>, and <code>str</code> route parsers.</li>
 <li><code>AddQueryBindings()</code> and <code>EndpointBuilder.WithQueryBindings()</code> bind selected query-string values into <code>RequestContext.Parameters</code>.</li>
-<li><code>ConfigureQueryParsing()</code> customizes query-binding behavior used by subsequently registered <code>AddQueryBindings()</code> and <code>EndpointBuilder.WithQueryBindings()</code> middleware.</li>
+<li><code>AddQueryBindings(..., unexpected: ...)</code> and <code>EndpointBuilder.WithQueryBindings(..., unexpected: ...)</code> customize query-binding behavior per registration.</li>
 <li><code>AddEndpoint()</code> and <code>CreateEndpoint()</code> capture endpoint verbs and route patterns once; endpoint helpers such as <code>WithHandler()</code>, <code>WithJsonBody()</code>, and <code>WithQueryBindings()</code> work under Lambda the same way they do in the core package.</li>
 <li><code>AddJsonBody()</code> and <code>EndpointBuilder.WithJsonBody()</code> bind JSON request content into <code>RequestContext.Parameters</code>.</li>
 <li><code>AddJsonErrorDetails()</code> turns routing exceptions into JSON <code>ErrorDetails</code> responses when explicitly added.</li>
-<li><code>ConfigureJsonErrorDetails()</code> customizes JSON <code>ErrorDetails</code> response diagnostics and serialization metadata used by subsequently registered <code>AddJsonErrorDetails()</code> middleware.</li>
+<li><code>AddJsonErrorDetails(options =&gt; ...)</code> customizes JSON <code>ErrorDetails</code> response diagnostics and serialization metadata per registration.</li>
 <li><code>AddHandler&lt;TRequest&gt;()</code> and <code>EndpointBuilder.WithHandler&lt;TRequest&gt;()</code> project <code>RequestContext</code> into a typed request object before invoking the handler.</li>
 <li><code>HttpResponseMessage.Json(...)</code> creates JSON responses with the library's serializer defaults.</li>
 </ul>

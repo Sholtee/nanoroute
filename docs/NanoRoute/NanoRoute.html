@@ -44,18 +44,14 @@
     <h3 id="classes">
 Classes
 </h3>
-      <h4><a class="xref" href="NanoRoute.BuilderMetadata.html">BuilderMetadata</a></h4>
-      <section><p>Stores extension-defined builder settings keyed by their CLR type.</p>
-</section>
       <h4><a class="xref" href="NanoRoute.EndpointBuilder.html">EndpointBuilder</a></h4>
       <section><p>Builds handlers and middleware that belong to a single route endpoint.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a></h4>
       <section><p>Describes an HTTP error in a structured, serializer-agnostic format.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.ExceptionHandlingConfig.html">ExceptionHandlingConfig</a></h4>
-      <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a> normalizes
-unexpected exceptions.</p>
+      <h4><a class="xref" href="NanoRoute.ExceptionHandlingOptions.html">ExceptionHandlingOptions</a></h4>
+      <section><p>Configures exception normalizers for a single exception-handling middleware registration.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.HttpListenerRouter.html">HttpListenerRouter</a></h4>
       <section><p>Routes <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.httplistenercontext">HttpListenerContext</a> instances through a NanoRoute pipeline.</p>
@@ -72,9 +68,8 @@ unexpected exceptions.</p>
       <h4><a class="xref" href="NanoRoute.HttpRequestMessageExtensions.html">HttpRequestMessageExtensions</a></h4>
       <section><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage">HttpRequestMessage</a> extensions.</p>
 </section>
-      <h4><a class="xref" href="NanoRoute.JsonErrorDetailsConfig.html">JsonErrorDetailsConfig</a></h4>
-      <section><p>Configures how <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</a> creates JSON
-<a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses.</p>
+      <h4><a class="xref" href="NanoRoute.JsonErrorDetailsOptions.html">JsonErrorDetailsOptions</a></h4>
+      <section><p>Configures JSON error responses and exception normalization for a JSON error-details middleware registration.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.NanoRouteEndpointExtensions.html">NanoRouteEndpointExtensions</a></h4>
       <section><p>Adds endpoint-building helpers to route scope builders.</p>
@@ -96,9 +91,6 @@ unexpected exceptions.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.NanoRouteValueParserExtensions.html">NanoRouteValueParserExtensions</a></h4>
       <section><p>Provides convenience methods for registering value parsers.</p>
-</section>
-      <h4><a class="xref" href="NanoRoute.QueryParsingConfig.html">QueryParsingConfig</a></h4>
-      <section><p>Configures how query-binding middleware parses query strings.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.RouteScopeBuilder.html">RouteScopeBuilder</a></h4>
       <section><p>Builder responsible for configuring a route scope and its child route tree.</p>
@@ -150,9 +142,6 @@ Delegates
 </section>
       <h4><a class="xref" href="NanoRoute.CallNextHandlerDelegate.html">CallNextHandlerDelegate</a></h4>
       <section><p>Invokes the next compatible handler in the current routing pipeline.</p>
-</section>
-      <h4><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate&lt;TConfig&gt;</a></h4>
-      <section><p>Updates a typed builder configuration object.</p>
 </section>
       <h4><a class="xref" href="NanoRoute.ExceptionNormalizer.html">ExceptionNormalizer</a></h4>
       <section><p>Converts an unexpected exception into an enriched <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a>.</p>

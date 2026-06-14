@@ -51,10 +51,7 @@
     <pre><code class="lang-csharp hljs">public enum UnexpectedParameterBehavior</code></pre>
   </div>
   <h5 id="NanoRoute_UnexpectedParameterBehavior_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">builder.ConfigureQueryParsing(config =&gt; config with
-{
-    UnexpectedParameterBehavior = UnexpectedParameterBehavior.Reject
-});</code></pre>
+  <pre><code class="lang-csharp">builder.AddQueryBindings("{filter:str(min=3)}", unexpected: UnexpectedParameterBehavior.Reject);</code></pre>
 
   <h3 id="fields">Fields
 </h3>

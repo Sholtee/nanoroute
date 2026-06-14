@@ -49,10 +49,6 @@
     <div class="level1"><span class="xref">RouterConfig</span></div>
       <div class="level2"><a class="xref" href="NanoRoute.HttpListenerRouterConfig.html">HttpListenerRouterConfig</a></div>
   </div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a>&gt;</div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -81,12 +77,12 @@
   <h6><strong>Assembly</strong>: NanoRoute.dll</h6>
   <h5 id="NanoRoute_RouterConfig_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public record RouterConfig : IEquatable&lt;RouterConfig&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class RouterConfig</code></pre>
   </div>
   <h5 id="NanoRoute_RouterConfig_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with
+  <pre><code class="lang-csharp">HttpMessageRouter router = builder.CreateRouter(config =&gt;
 {
-    MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
+    config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
 });</code></pre>
 
   <h3 id="constructors">Constructors
@@ -108,7 +104,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MatchingPrecedence MatchingPrecedence { get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public MatchingPrecedence MatchingPrecedence { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -126,7 +122,10 @@
     </tbody>
   </table>
   <h5 id="NanoRoute_RouterConfig_MatchingPrecedence_examples">Examples</h5>
-  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with { MatchingPrecedence = MatchingPrecedence.ParameterizedFirst });</code></pre>
+  <pre><code class="lang-csharp">HttpMessageRouter router = builder.CreateRouter(config =&gt;
+{
+    config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+});</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -144,10 +143,6 @@
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
-  </div>
 
 </article>
           </div>

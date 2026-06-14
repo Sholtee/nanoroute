@@ -13,72 +13,6 @@ references:
   commentId: T:NanoRoute.BindArgumentsDelegate
   fullName: NanoRoute.BindArgumentsDelegate
   nameWithType: BindArgumentsDelegate
-- uid: NanoRoute.BuilderMetadata
-  name: BuilderMetadata
-  href: NanoRoute.BuilderMetadata.html
-  commentId: T:NanoRoute.BuilderMetadata
-  fullName: NanoRoute.BuilderMetadata
-  nameWithType: BuilderMetadata
-- uid: NanoRoute.BuilderMetadata.GetOrDefault*
-  name: GetOrDefault
-  href: NanoRoute.BuilderMetadata.html#NanoRoute_BuilderMetadata_GetOrDefault_
-  commentId: Overload:NanoRoute.BuilderMetadata.GetOrDefault
-  fullName: NanoRoute.BuilderMetadata.GetOrDefault
-  nameWithType: BuilderMetadata.GetOrDefault
-- uid: NanoRoute.BuilderMetadata.GetOrDefault``1(``0)
-  name: GetOrDefault<T>(T)
-  href: NanoRoute.BuilderMetadata.html#NanoRoute_BuilderMetadata_GetOrDefault__1___0_
-  commentId: M:NanoRoute.BuilderMetadata.GetOrDefault``1(``0)
-  name.vb: GetOrDefault(Of T)(T)
-  fullName: NanoRoute.BuilderMetadata.GetOrDefault<T>(T)
-  fullName.vb: NanoRoute.BuilderMetadata.GetOrDefault(Of T)(T)
-  nameWithType: BuilderMetadata.GetOrDefault<T>(T)
-  nameWithType.vb: BuilderMetadata.GetOrDefault(Of T)(T)
-- uid: NanoRoute.BuilderMetadata.Remove*
-  name: Remove
-  href: NanoRoute.BuilderMetadata.html#NanoRoute_BuilderMetadata_Remove_
-  commentId: Overload:NanoRoute.BuilderMetadata.Remove
-  fullName: NanoRoute.BuilderMetadata.Remove
-  nameWithType: BuilderMetadata.Remove
-- uid: NanoRoute.BuilderMetadata.Remove``1
-  name: Remove<T>()
-  href: NanoRoute.BuilderMetadata.html#NanoRoute_BuilderMetadata_Remove__1
-  commentId: M:NanoRoute.BuilderMetadata.Remove``1
-  name.vb: Remove(Of T)()
-  fullName: NanoRoute.BuilderMetadata.Remove<T>()
-  fullName.vb: NanoRoute.BuilderMetadata.Remove(Of T)()
-  nameWithType: BuilderMetadata.Remove<T>()
-  nameWithType.vb: BuilderMetadata.Remove(Of T)()
-- uid: NanoRoute.BuilderMetadata.Set*
-  name: Set
-  href: NanoRoute.BuilderMetadata.html#NanoRoute_BuilderMetadata_Set_
-  commentId: Overload:NanoRoute.BuilderMetadata.Set
-  fullName: NanoRoute.BuilderMetadata.Set
-  nameWithType: BuilderMetadata.Set
-- uid: NanoRoute.BuilderMetadata.Set``1(``0)
-  name: Set<T>(T)
-  href: NanoRoute.BuilderMetadata.html#NanoRoute_BuilderMetadata_Set__1___0_
-  commentId: M:NanoRoute.BuilderMetadata.Set``1(``0)
-  name.vb: Set(Of T)(T)
-  fullName: NanoRoute.BuilderMetadata.Set<T>(T)
-  fullName.vb: NanoRoute.BuilderMetadata.Set(Of T)(T)
-  nameWithType: BuilderMetadata.Set<T>(T)
-  nameWithType.vb: BuilderMetadata.Set(Of T)(T)
-- uid: NanoRoute.BuilderMetadata.TryGet*
-  name: TryGet
-  href: NanoRoute.BuilderMetadata.html#NanoRoute_BuilderMetadata_TryGet_
-  commentId: Overload:NanoRoute.BuilderMetadata.TryGet
-  fullName: NanoRoute.BuilderMetadata.TryGet
-  nameWithType: BuilderMetadata.TryGet
-- uid: NanoRoute.BuilderMetadata.TryGet``1(``0@)
-  name: TryGet<T>(out T?)
-  href: NanoRoute.BuilderMetadata.html#NanoRoute_BuilderMetadata_TryGet__1___0__
-  commentId: M:NanoRoute.BuilderMetadata.TryGet``1(``0@)
-  name.vb: TryGet(Of T)(T)
-  fullName: NanoRoute.BuilderMetadata.TryGet<T>(out T?)
-  fullName.vb: NanoRoute.BuilderMetadata.TryGet(Of T)(T)
-  nameWithType: BuilderMetadata.TryGet<T>(out T?)
-  nameWithType.vb: BuilderMetadata.TryGet(Of T)(T)
 - uid: NanoRoute.CallNextHandlerDelegate
   name: CallNextHandlerDelegate
   href: NanoRoute.CallNextHandlerDelegate.html
@@ -97,15 +31,6 @@ references:
   commentId: Overload:NanoRoute.CallNextHandlerDelegate.Invoke
   fullName: NanoRoute.CallNextHandlerDelegate.Invoke
   nameWithType: CallNextHandlerDelegate.Invoke
-- uid: NanoRoute.ConfigureBuilderDelegate`1
-  name: ConfigureBuilderDelegate<TConfig>
-  href: NanoRoute.ConfigureBuilderDelegate-1.html
-  commentId: T:NanoRoute.ConfigureBuilderDelegate`1
-  name.vb: ConfigureBuilderDelegate(Of TConfig)
-  fullName: NanoRoute.ConfigureBuilderDelegate<TConfig>
-  fullName.vb: NanoRoute.ConfigureBuilderDelegate(Of TConfig)
-  nameWithType: ConfigureBuilderDelegate<TConfig>
-  nameWithType.vb: ConfigureBuilderDelegate(Of TConfig)
 - uid: NanoRoute.EndpointBuilder
   name: EndpointBuilder
   href: NanoRoute.EndpointBuilder.html
@@ -220,54 +145,57 @@ references:
   commentId: Overload:NanoRoute.ErrorDetails.TraceId
   fullName: NanoRoute.ErrorDetails.TraceId
   nameWithType: ErrorDetails.TraceId
-- uid: NanoRoute.ExceptionHandlingConfig
-  name: ExceptionHandlingConfig
-  href: NanoRoute.ExceptionHandlingConfig.html
-  commentId: T:NanoRoute.ExceptionHandlingConfig
-  fullName: NanoRoute.ExceptionHandlingConfig
-  nameWithType: ExceptionHandlingConfig
-- uid: NanoRoute.ExceptionHandlingConfig.#ctor
-  name: ExceptionHandlingConfig()
-  href: NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig__ctor
-  commentId: M:NanoRoute.ExceptionHandlingConfig.#ctor
+- uid: NanoRoute.ExceptionHandlingOptions
+  name: ExceptionHandlingOptions
+  href: NanoRoute.ExceptionHandlingOptions.html
+  commentId: T:NanoRoute.ExceptionHandlingOptions
+  fullName: NanoRoute.ExceptionHandlingOptions
+  nameWithType: ExceptionHandlingOptions
+- uid: NanoRoute.ExceptionHandlingOptions.#ctor
+  name: ExceptionHandlingOptions()
+  href: NanoRoute.ExceptionHandlingOptions.html#NanoRoute_ExceptionHandlingOptions__ctor
+  commentId: M:NanoRoute.ExceptionHandlingOptions.#ctor
   name.vb: New()
-  fullName: NanoRoute.ExceptionHandlingConfig.ExceptionHandlingConfig()
-  fullName.vb: NanoRoute.ExceptionHandlingConfig.New()
-  nameWithType: ExceptionHandlingConfig.ExceptionHandlingConfig()
-  nameWithType.vb: ExceptionHandlingConfig.New()
-- uid: NanoRoute.ExceptionHandlingConfig.#ctor*
-  name: ExceptionHandlingConfig
-  href: NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig__ctor_
-  commentId: Overload:NanoRoute.ExceptionHandlingConfig.#ctor
+  fullName: NanoRoute.ExceptionHandlingOptions.ExceptionHandlingOptions()
+  fullName.vb: NanoRoute.ExceptionHandlingOptions.New()
+  nameWithType: ExceptionHandlingOptions.ExceptionHandlingOptions()
+  nameWithType.vb: ExceptionHandlingOptions.New()
+- uid: NanoRoute.ExceptionHandlingOptions.#ctor*
+  name: ExceptionHandlingOptions
+  href: NanoRoute.ExceptionHandlingOptions.html#NanoRoute_ExceptionHandlingOptions__ctor_
+  commentId: Overload:NanoRoute.ExceptionHandlingOptions.#ctor
   name.vb: New
-  fullName: NanoRoute.ExceptionHandlingConfig.ExceptionHandlingConfig
-  fullName.vb: NanoRoute.ExceptionHandlingConfig.New
-  nameWithType: ExceptionHandlingConfig.ExceptionHandlingConfig
-  nameWithType.vb: ExceptionHandlingConfig.New
-- uid: NanoRoute.ExceptionHandlingConfig.Default
-  name: Default
-  href: NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig_Default
-  commentId: P:NanoRoute.ExceptionHandlingConfig.Default
-  fullName: NanoRoute.ExceptionHandlingConfig.Default
-  nameWithType: ExceptionHandlingConfig.Default
-- uid: NanoRoute.ExceptionHandlingConfig.Default*
-  name: Default
-  href: NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig_Default_
-  commentId: Overload:NanoRoute.ExceptionHandlingConfig.Default
-  fullName: NanoRoute.ExceptionHandlingConfig.Default
-  nameWithType: ExceptionHandlingConfig.Default
-- uid: NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers
+  fullName: NanoRoute.ExceptionHandlingOptions.ExceptionHandlingOptions
+  fullName.vb: NanoRoute.ExceptionHandlingOptions.New
+  nameWithType: ExceptionHandlingOptions.ExceptionHandlingOptions
+  nameWithType.vb: ExceptionHandlingOptions.New
+- uid: NanoRoute.ExceptionHandlingOptions.ExceptionNormalizers
   name: ExceptionNormalizers
-  href: NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers
-  commentId: P:NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers
-  fullName: NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers
-  nameWithType: ExceptionHandlingConfig.ExceptionNormalizers
-- uid: NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers*
+  href: NanoRoute.ExceptionHandlingOptions.html#NanoRoute_ExceptionHandlingOptions_ExceptionNormalizers
+  commentId: P:NanoRoute.ExceptionHandlingOptions.ExceptionNormalizers
+  fullName: NanoRoute.ExceptionHandlingOptions.ExceptionNormalizers
+  nameWithType: ExceptionHandlingOptions.ExceptionNormalizers
+- uid: NanoRoute.ExceptionHandlingOptions.ExceptionNormalizers*
   name: ExceptionNormalizers
-  href: NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers_
-  commentId: Overload:NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers
-  fullName: NanoRoute.ExceptionHandlingConfig.ExceptionNormalizers
-  nameWithType: ExceptionHandlingConfig.ExceptionNormalizers
+  href: NanoRoute.ExceptionHandlingOptions.html#NanoRoute_ExceptionHandlingOptions_ExceptionNormalizers_
+  commentId: Overload:NanoRoute.ExceptionHandlingOptions.ExceptionNormalizers
+  fullName: NanoRoute.ExceptionHandlingOptions.ExceptionNormalizers
+  nameWithType: ExceptionHandlingOptions.ExceptionNormalizers
+- uid: NanoRoute.ExceptionHandlingOptions.Map*
+  name: Map
+  href: NanoRoute.ExceptionHandlingOptions.html#NanoRoute_ExceptionHandlingOptions_Map_
+  commentId: Overload:NanoRoute.ExceptionHandlingOptions.Map
+  fullName: NanoRoute.ExceptionHandlingOptions.Map
+  nameWithType: ExceptionHandlingOptions.Map
+- uid: NanoRoute.ExceptionHandlingOptions.Map``1(NanoRoute.TypedExceptionNormalizer{``0})
+  name: Map<TException>(TypedExceptionNormalizer<TException>)
+  href: NanoRoute.ExceptionHandlingOptions.html#NanoRoute_ExceptionHandlingOptions_Map__1_NanoRoute_TypedExceptionNormalizer___0__
+  commentId: M:NanoRoute.ExceptionHandlingOptions.Map``1(NanoRoute.TypedExceptionNormalizer{``0})
+  name.vb: Map(Of TException)(TypedExceptionNormalizer(Of TException))
+  fullName: NanoRoute.ExceptionHandlingOptions.Map<TException>(NanoRoute.TypedExceptionNormalizer<TException>)
+  fullName.vb: NanoRoute.ExceptionHandlingOptions.Map(Of TException)(NanoRoute.TypedExceptionNormalizer(Of TException))
+  nameWithType: ExceptionHandlingOptions.Map<TException>(TypedExceptionNormalizer<TException>)
+  nameWithType.vb: ExceptionHandlingOptions.Map(Of TException)(TypedExceptionNormalizer(Of TException))
 - uid: NanoRoute.ExceptionNormalizer
   name: ExceptionNormalizer
   href: NanoRoute.ExceptionNormalizer.html
@@ -451,66 +379,54 @@ references:
   commentId: Overload:NanoRoute.HttpRequestMessageExtensions.set_TraceId
   fullName: NanoRoute.HttpRequestMessageExtensions.set_TraceId
   nameWithType: HttpRequestMessageExtensions.set_TraceId
-- uid: NanoRoute.JsonErrorDetailsConfig
-  name: JsonErrorDetailsConfig
-  href: NanoRoute.JsonErrorDetailsConfig.html
-  commentId: T:NanoRoute.JsonErrorDetailsConfig
-  fullName: NanoRoute.JsonErrorDetailsConfig
-  nameWithType: JsonErrorDetailsConfig
-- uid: NanoRoute.JsonErrorDetailsConfig.#ctor
-  name: JsonErrorDetailsConfig()
-  href: NanoRoute.JsonErrorDetailsConfig.html#NanoRoute_JsonErrorDetailsConfig__ctor
-  commentId: M:NanoRoute.JsonErrorDetailsConfig.#ctor
+- uid: NanoRoute.JsonErrorDetailsOptions
+  name: JsonErrorDetailsOptions
+  href: NanoRoute.JsonErrorDetailsOptions.html
+  commentId: T:NanoRoute.JsonErrorDetailsOptions
+  fullName: NanoRoute.JsonErrorDetailsOptions
+  nameWithType: JsonErrorDetailsOptions
+- uid: NanoRoute.JsonErrorDetailsOptions.#ctor
+  name: JsonErrorDetailsOptions()
+  href: NanoRoute.JsonErrorDetailsOptions.html#NanoRoute_JsonErrorDetailsOptions__ctor
+  commentId: M:NanoRoute.JsonErrorDetailsOptions.#ctor
   name.vb: New()
-  fullName: NanoRoute.JsonErrorDetailsConfig.JsonErrorDetailsConfig()
-  fullName.vb: NanoRoute.JsonErrorDetailsConfig.New()
-  nameWithType: JsonErrorDetailsConfig.JsonErrorDetailsConfig()
-  nameWithType.vb: JsonErrorDetailsConfig.New()
-- uid: NanoRoute.JsonErrorDetailsConfig.#ctor*
-  name: JsonErrorDetailsConfig
-  href: NanoRoute.JsonErrorDetailsConfig.html#NanoRoute_JsonErrorDetailsConfig__ctor_
-  commentId: Overload:NanoRoute.JsonErrorDetailsConfig.#ctor
+  fullName: NanoRoute.JsonErrorDetailsOptions.JsonErrorDetailsOptions()
+  fullName.vb: NanoRoute.JsonErrorDetailsOptions.New()
+  nameWithType: JsonErrorDetailsOptions.JsonErrorDetailsOptions()
+  nameWithType.vb: JsonErrorDetailsOptions.New()
+- uid: NanoRoute.JsonErrorDetailsOptions.#ctor*
+  name: JsonErrorDetailsOptions
+  href: NanoRoute.JsonErrorDetailsOptions.html#NanoRoute_JsonErrorDetailsOptions__ctor_
+  commentId: Overload:NanoRoute.JsonErrorDetailsOptions.#ctor
   name.vb: New
-  fullName: NanoRoute.JsonErrorDetailsConfig.JsonErrorDetailsConfig
-  fullName.vb: NanoRoute.JsonErrorDetailsConfig.New
-  nameWithType: JsonErrorDetailsConfig.JsonErrorDetailsConfig
-  nameWithType.vb: JsonErrorDetailsConfig.New
-- uid: NanoRoute.JsonErrorDetailsConfig.Default
-  name: Default
-  href: NanoRoute.JsonErrorDetailsConfig.html#NanoRoute_JsonErrorDetailsConfig_Default
-  commentId: P:NanoRoute.JsonErrorDetailsConfig.Default
-  fullName: NanoRoute.JsonErrorDetailsConfig.Default
-  nameWithType: JsonErrorDetailsConfig.Default
-- uid: NanoRoute.JsonErrorDetailsConfig.Default*
-  name: Default
-  href: NanoRoute.JsonErrorDetailsConfig.html#NanoRoute_JsonErrorDetailsConfig_Default_
-  commentId: Overload:NanoRoute.JsonErrorDetailsConfig.Default
-  fullName: NanoRoute.JsonErrorDetailsConfig.Default
-  nameWithType: JsonErrorDetailsConfig.Default
-- uid: NanoRoute.JsonErrorDetailsConfig.ErrorDetailsTypeInfo
+  fullName: NanoRoute.JsonErrorDetailsOptions.JsonErrorDetailsOptions
+  fullName.vb: NanoRoute.JsonErrorDetailsOptions.New
+  nameWithType: JsonErrorDetailsOptions.JsonErrorDetailsOptions
+  nameWithType.vb: JsonErrorDetailsOptions.New
+- uid: NanoRoute.JsonErrorDetailsOptions.ErrorDetailsTypeInfo
   name: ErrorDetailsTypeInfo
-  href: NanoRoute.JsonErrorDetailsConfig.html#NanoRoute_JsonErrorDetailsConfig_ErrorDetailsTypeInfo
-  commentId: P:NanoRoute.JsonErrorDetailsConfig.ErrorDetailsTypeInfo
-  fullName: NanoRoute.JsonErrorDetailsConfig.ErrorDetailsTypeInfo
-  nameWithType: JsonErrorDetailsConfig.ErrorDetailsTypeInfo
-- uid: NanoRoute.JsonErrorDetailsConfig.ErrorDetailsTypeInfo*
+  href: NanoRoute.JsonErrorDetailsOptions.html#NanoRoute_JsonErrorDetailsOptions_ErrorDetailsTypeInfo
+  commentId: P:NanoRoute.JsonErrorDetailsOptions.ErrorDetailsTypeInfo
+  fullName: NanoRoute.JsonErrorDetailsOptions.ErrorDetailsTypeInfo
+  nameWithType: JsonErrorDetailsOptions.ErrorDetailsTypeInfo
+- uid: NanoRoute.JsonErrorDetailsOptions.ErrorDetailsTypeInfo*
   name: ErrorDetailsTypeInfo
-  href: NanoRoute.JsonErrorDetailsConfig.html#NanoRoute_JsonErrorDetailsConfig_ErrorDetailsTypeInfo_
-  commentId: Overload:NanoRoute.JsonErrorDetailsConfig.ErrorDetailsTypeInfo
-  fullName: NanoRoute.JsonErrorDetailsConfig.ErrorDetailsTypeInfo
-  nameWithType: JsonErrorDetailsConfig.ErrorDetailsTypeInfo
-- uid: NanoRoute.JsonErrorDetailsConfig.PopulateErrorInfo
+  href: NanoRoute.JsonErrorDetailsOptions.html#NanoRoute_JsonErrorDetailsOptions_ErrorDetailsTypeInfo_
+  commentId: Overload:NanoRoute.JsonErrorDetailsOptions.ErrorDetailsTypeInfo
+  fullName: NanoRoute.JsonErrorDetailsOptions.ErrorDetailsTypeInfo
+  nameWithType: JsonErrorDetailsOptions.ErrorDetailsTypeInfo
+- uid: NanoRoute.JsonErrorDetailsOptions.PopulateErrorInfo
   name: PopulateErrorInfo
-  href: NanoRoute.JsonErrorDetailsConfig.html#NanoRoute_JsonErrorDetailsConfig_PopulateErrorInfo
-  commentId: P:NanoRoute.JsonErrorDetailsConfig.PopulateErrorInfo
-  fullName: NanoRoute.JsonErrorDetailsConfig.PopulateErrorInfo
-  nameWithType: JsonErrorDetailsConfig.PopulateErrorInfo
-- uid: NanoRoute.JsonErrorDetailsConfig.PopulateErrorInfo*
+  href: NanoRoute.JsonErrorDetailsOptions.html#NanoRoute_JsonErrorDetailsOptions_PopulateErrorInfo
+  commentId: P:NanoRoute.JsonErrorDetailsOptions.PopulateErrorInfo
+  fullName: NanoRoute.JsonErrorDetailsOptions.PopulateErrorInfo
+  nameWithType: JsonErrorDetailsOptions.PopulateErrorInfo
+- uid: NanoRoute.JsonErrorDetailsOptions.PopulateErrorInfo*
   name: PopulateErrorInfo
-  href: NanoRoute.JsonErrorDetailsConfig.html#NanoRoute_JsonErrorDetailsConfig_PopulateErrorInfo_
-  commentId: Overload:NanoRoute.JsonErrorDetailsConfig.PopulateErrorInfo
-  fullName: NanoRoute.JsonErrorDetailsConfig.PopulateErrorInfo
-  nameWithType: JsonErrorDetailsConfig.PopulateErrorInfo
+  href: NanoRoute.JsonErrorDetailsOptions.html#NanoRoute_JsonErrorDetailsOptions_PopulateErrorInfo_
+  commentId: Overload:NanoRoute.JsonErrorDetailsOptions.PopulateErrorInfo
+  fullName: NanoRoute.JsonErrorDetailsOptions.PopulateErrorInfo
+  nameWithType: JsonErrorDetailsOptions.PopulateErrorInfo
 - uid: NanoRoute.MatchingPrecedence
   name: MatchingPrecedence
   href: NanoRoute.MatchingPrecedence.html
@@ -604,6 +520,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder)
   nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder)
   nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder)
+- uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Action{NanoRoute.ExceptionHandlingOptions})
+  name: AddExceptionHandler<TBuilder>(TBuilder, Action<ExceptionHandlingOptions>)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Action_NanoRoute_ExceptionHandlingOptions__
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Action{NanoRoute.ExceptionHandlingOptions})
+  name.vb: AddExceptionHandler(Of TBuilder)(TBuilder, Action(Of ExceptionHandlingOptions))
+  fullName: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, System.Action<NanoRoute.ExceptionHandlingOptions>)
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, System.Action(Of NanoRoute.ExceptionHandlingOptions))
+  nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, Action<ExceptionHandlingOptions>)
+  nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, Action(Of ExceptionHandlingOptions))
 - uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String})
   name: AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>)
   href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__
@@ -613,6 +538,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String))
   nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>)
   nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, IEnumerable(Of String))
+- uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Action{NanoRoute.ExceptionHandlingOptions})
+  name: AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>, Action<ExceptionHandlingOptions>)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_Action_NanoRoute_ExceptionHandlingOptions__
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Action{NanoRoute.ExceptionHandlingOptions})
+  name.vb: AddExceptionHandler(Of TBuilder)(TBuilder, IEnumerable(Of String), Action(Of ExceptionHandlingOptions))
+  fullName: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, System.Action<NanoRoute.ExceptionHandlingOptions>)
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), System.Action(Of NanoRoute.ExceptionHandlingOptions))
+  nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>, Action<ExceptionHandlingOptions>)
+  nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, IEnumerable(Of String), Action(Of ExceptionHandlingOptions))
 - uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)
   name: AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>, string)
   href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_
@@ -622,6 +556,24 @@ references:
   fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String)
   nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>, string)
   nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, IEnumerable(Of String), String)
+- uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.ExceptionHandlingOptions)
+  name: AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>, string, ExceptionHandlingOptions)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_ExceptionHandlingOptions_
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.ExceptionHandlingOptions)
+  name.vb: AddExceptionHandler(Of TBuilder)(TBuilder, IEnumerable(Of String), String, ExceptionHandlingOptions)
+  fullName: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string, NanoRoute.ExceptionHandlingOptions)
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, NanoRoute.ExceptionHandlingOptions)
+  nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>, string, ExceptionHandlingOptions)
+  nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, IEnumerable(Of String), String, ExceptionHandlingOptions)
+- uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.ExceptionHandlingOptions})
+  name: AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>, string, Action<ExceptionHandlingOptions>)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_ExceptionHandlingOptions__
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.ExceptionHandlingOptions})
+  name.vb: AddExceptionHandler(Of TBuilder)(TBuilder, IEnumerable(Of String), String, Action(Of ExceptionHandlingOptions))
+  fullName: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string, System.Action<NanoRoute.ExceptionHandlingOptions>)
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, System.Action(Of NanoRoute.ExceptionHandlingOptions))
+  nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, IEnumerable<string>, string, Action<ExceptionHandlingOptions>)
+  nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, IEnumerable(Of String), String, Action(Of ExceptionHandlingOptions))
 - uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String)
   name: AddExceptionHandler<TBuilder>(TBuilder, string)
   href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_
@@ -631,6 +583,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, String)
   nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, string)
   nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, String)
+- uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String,System.Action{NanoRoute.ExceptionHandlingOptions})
+  name: AddExceptionHandler<TBuilder>(TBuilder, string, Action<ExceptionHandlingOptions>)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_Action_NanoRoute_ExceptionHandlingOptions__
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String,System.Action{NanoRoute.ExceptionHandlingOptions})
+  name.vb: AddExceptionHandler(Of TBuilder)(TBuilder, String, Action(Of ExceptionHandlingOptions))
+  fullName: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, string, System.Action<NanoRoute.ExceptionHandlingOptions>)
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, String, System.Action(Of NanoRoute.ExceptionHandlingOptions))
+  nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, string, Action<ExceptionHandlingOptions>)
+  nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, String, Action(Of ExceptionHandlingOptions))
 - uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String,System.String)
   name: AddExceptionHandler<TBuilder>(TBuilder, string, string)
   href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String_
@@ -640,48 +601,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, String, String)
   nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, string, string)
   nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, String, String)
-- uid: NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling*
-  name: ConfigureExceptionHandling
-  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling_
-  commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling
-  fullName: NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling
-  nameWithType: NanoRouteExceptionExtensions.ConfigureExceptionHandling
-- uid: NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.ExceptionHandlingConfig})
-  name: ConfigureExceptionHandling<TBuilder>(TBuilder, ConfigureBuilderDelegate<ExceptionHandlingConfig>)
-  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig__
-  commentId: M:NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.ExceptionHandlingConfig})
-  name.vb: ConfigureExceptionHandling(Of TBuilder)(TBuilder, ConfigureBuilderDelegate(Of ExceptionHandlingConfig))
-  fullName: NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling<TBuilder>(TBuilder, NanoRoute.ConfigureBuilderDelegate<NanoRoute.ExceptionHandlingConfig>)
-  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.ConfigureExceptionHandling(Of TBuilder)(TBuilder, NanoRoute.ConfigureBuilderDelegate(Of NanoRoute.ExceptionHandlingConfig))
-  nameWithType: NanoRouteExceptionExtensions.ConfigureExceptionHandling<TBuilder>(TBuilder, ConfigureBuilderDelegate<ExceptionHandlingConfig>)
-  nameWithType.vb: NanoRouteExceptionExtensions.ConfigureExceptionHandling(Of TBuilder)(TBuilder, ConfigureBuilderDelegate(Of ExceptionHandlingConfig))
-- uid: NanoRoute.NanoRouteExceptionExtensions.DeveloperMessagesName
-  name: DeveloperMessagesName
-  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_DeveloperMessagesName
-  commentId: F:NanoRoute.NanoRouteExceptionExtensions.DeveloperMessagesName
-  fullName: NanoRoute.NanoRouteExceptionExtensions.DeveloperMessagesName
-  nameWithType: NanoRouteExceptionExtensions.DeveloperMessagesName
-- uid: NanoRoute.NanoRouteExceptionExtensions.ErrorsName
-  name: ErrorsName
-  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_ErrorsName
-  commentId: F:NanoRoute.NanoRouteExceptionExtensions.ErrorsName
-  fullName: NanoRoute.NanoRouteExceptionExtensions.ErrorsName
-  nameWithType: NanoRouteExceptionExtensions.ErrorsName
-- uid: NanoRoute.NanoRouteExceptionExtensions.For*
-  name: For
-  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_For_
-  commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.For
-  fullName: NanoRoute.NanoRouteExceptionExtensions.For
-  nameWithType: NanoRouteExceptionExtensions.For
-- uid: NanoRoute.NanoRouteExceptionExtensions.For``1(NanoRoute.TypedExceptionNormalizer{``0})
-  name: For<TException>(TypedExceptionNormalizer<TException>)
-  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_For__1_NanoRoute_TypedExceptionNormalizer___0__
-  commentId: M:NanoRoute.NanoRouteExceptionExtensions.For``1(NanoRoute.TypedExceptionNormalizer{``0})
-  name.vb: For(Of TException)(TypedExceptionNormalizer(Of TException))
-  fullName: NanoRoute.NanoRouteExceptionExtensions.For<TException>(NanoRoute.TypedExceptionNormalizer<TException>)
-  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.For(Of TException)(NanoRoute.TypedExceptionNormalizer(Of TException))
-  nameWithType: NanoRouteExceptionExtensions.For<TException>(TypedExceptionNormalizer<TException>)
-  nameWithType.vb: NanoRouteExceptionExtensions.For(Of TException)(TypedExceptionNormalizer(Of TException))
+- uid: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String,System.String,System.Action{NanoRoute.ExceptionHandlingOptions})
+  name: AddExceptionHandler<TBuilder>(TBuilder, string, string, Action<ExceptionHandlingOptions>)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String_System_Action_NanoRoute_ExceptionHandlingOptions__
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler``1(``0,System.String,System.String,System.Action{NanoRoute.ExceptionHandlingOptions})
+  name.vb: AddExceptionHandler(Of TBuilder)(TBuilder, String, String, Action(Of ExceptionHandlingOptions))
+  fullName: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, string, string, System.Action<NanoRoute.ExceptionHandlingOptions>)
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, String, String, System.Action(Of NanoRoute.ExceptionHandlingOptions))
+  nameWithType: NanoRouteExceptionExtensions.AddExceptionHandler<TBuilder>(TBuilder, string, string, Action<ExceptionHandlingOptions>)
+  nameWithType.vb: NanoRouteExceptionExtensions.AddExceptionHandler(Of TBuilder)(TBuilder, String, String, Action(Of ExceptionHandlingOptions))
 - uid: NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails(System.Net.Http.HttpRequestException,System.Boolean,System.String)
   name: GetErrorDetails(HttpRequestException, bool, string?)
   href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_GetErrorDetails_System_Net_Http_HttpRequestException_System_Boolean_System_String_
@@ -697,21 +625,6 @@ references:
   commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails
   fullName: NanoRoute.NanoRouteExceptionExtensions.GetErrorDetails
   nameWithType: NanoRouteExceptionExtensions.GetErrorDetails
-- uid: NanoRoute.NanoRouteExceptionExtensions.StatusName
-  name: StatusName
-  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_StatusName
-  commentId: F:NanoRoute.NanoRouteExceptionExtensions.StatusName
-  fullName: NanoRoute.NanoRouteExceptionExtensions.StatusName
-  nameWithType: NanoRouteExceptionExtensions.StatusName
-- uid: NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode,System.String,System.Collections.Generic.IEnumerable{System.String})
-  name: Throw(HttpStatusCode, string, params IEnumerable<string>)
-  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Collections_Generic_IEnumerable_System_String__
-  commentId: M:NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode,System.String,System.Collections.Generic.IEnumerable{System.String})
-  name.vb: Throw(HttpStatusCode, String, IEnumerable(Of String))
-  fullName: NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode, string, params System.Collections.Generic.IEnumerable<string>)
-  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode, String, System.Collections.Generic.IEnumerable(Of String))
-  nameWithType: NanoRouteExceptionExtensions.Throw(HttpStatusCode, string, params IEnumerable<string>)
-  nameWithType.vb: NanoRouteExceptionExtensions.Throw(HttpStatusCode, String, IEnumerable(Of String))
 - uid: NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode,System.String,System.Exception,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})
   name: Throw(HttpStatusCode, string, Exception?, IEnumerable<string>?, IEnumerable<string>?)
   href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_Exception_System_Collections_Generic_IEnumerable_System_String__System_Collections_Generic_IEnumerable_System_String__
@@ -721,12 +634,99 @@ references:
   fullName.vb: NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode, String, System.Exception, System.Collections.Generic.IEnumerable(Of String), System.Collections.Generic.IEnumerable(Of String))
   nameWithType: NanoRouteExceptionExtensions.Throw(HttpStatusCode, string, Exception?, IEnumerable<string>?, IEnumerable<string>?)
   nameWithType.vb: NanoRouteExceptionExtensions.Throw(HttpStatusCode, String, Exception, IEnumerable(Of String), IEnumerable(Of String))
+- uid: NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode,System.String,System.String[])
+  name: Throw(HttpStatusCode, string, params string[])
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_System_Net_HttpStatusCode_System_String_System_String___
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode,System.String,System.String[])
+  name.vb: Throw(HttpStatusCode, String, ParamArray String())
+  fullName: NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode, string, params string[])
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.Throw(System.Net.HttpStatusCode, String, ParamArray String())
+  nameWithType: NanoRouteExceptionExtensions.Throw(HttpStatusCode, string, params string[])
+  nameWithType.vb: NanoRouteExceptionExtensions.Throw(HttpStatusCode, String, ParamArray String())
 - uid: NanoRoute.NanoRouteExceptionExtensions.Throw*
   name: Throw
   href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_Throw_
   commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.Throw
   fullName: NanoRoute.NanoRouteExceptionExtensions.Throw
   nameWithType: NanoRouteExceptionExtensions.Throw
+- uid: NanoRoute.NanoRouteExceptionExtensions.get_DeveloperMessages(System.Net.Http.HttpRequestException)
+  name: get_DeveloperMessages(HttpRequestException)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_get_DeveloperMessages_System_Net_Http_HttpRequestException_
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.get_DeveloperMessages(System.Net.Http.HttpRequestException)
+  fullName: NanoRoute.NanoRouteExceptionExtensions.get_DeveloperMessages(System.Net.Http.HttpRequestException)
+  nameWithType: NanoRouteExceptionExtensions.get_DeveloperMessages(HttpRequestException)
+- uid: NanoRoute.NanoRouteExceptionExtensions.get_DeveloperMessages*
+  name: get_DeveloperMessages
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_get_DeveloperMessages_
+  commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.get_DeveloperMessages
+  fullName: NanoRoute.NanoRouteExceptionExtensions.get_DeveloperMessages
+  nameWithType: NanoRouteExceptionExtensions.get_DeveloperMessages
+- uid: NanoRoute.NanoRouteExceptionExtensions.get_Errors(System.Net.Http.HttpRequestException)
+  name: get_Errors(HttpRequestException)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_get_Errors_System_Net_Http_HttpRequestException_
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.get_Errors(System.Net.Http.HttpRequestException)
+  fullName: NanoRoute.NanoRouteExceptionExtensions.get_Errors(System.Net.Http.HttpRequestException)
+  nameWithType: NanoRouteExceptionExtensions.get_Errors(HttpRequestException)
+- uid: NanoRoute.NanoRouteExceptionExtensions.get_Errors*
+  name: get_Errors
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_get_Errors_
+  commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.get_Errors
+  fullName: NanoRoute.NanoRouteExceptionExtensions.get_Errors
+  nameWithType: NanoRouteExceptionExtensions.get_Errors
+- uid: NanoRoute.NanoRouteExceptionExtensions.get_Status(System.Net.Http.HttpRequestException)
+  name: get_Status(HttpRequestException)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_get_Status_System_Net_Http_HttpRequestException_
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.get_Status(System.Net.Http.HttpRequestException)
+  fullName: NanoRoute.NanoRouteExceptionExtensions.get_Status(System.Net.Http.HttpRequestException)
+  nameWithType: NanoRouteExceptionExtensions.get_Status(HttpRequestException)
+- uid: NanoRoute.NanoRouteExceptionExtensions.get_Status*
+  name: get_Status
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_get_Status_
+  commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.get_Status
+  fullName: NanoRoute.NanoRouteExceptionExtensions.get_Status
+  nameWithType: NanoRouteExceptionExtensions.get_Status
+- uid: NanoRoute.NanoRouteExceptionExtensions.set_DeveloperMessages(System.Net.Http.HttpRequestException,System.Collections.Generic.IEnumerable{System.String})
+  name: set_DeveloperMessages(HttpRequestException, IEnumerable<string>?)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_set_DeveloperMessages_System_Net_Http_HttpRequestException_System_Collections_Generic_IEnumerable_System_String__
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.set_DeveloperMessages(System.Net.Http.HttpRequestException,System.Collections.Generic.IEnumerable{System.String})
+  name.vb: set_DeveloperMessages(HttpRequestException, IEnumerable(Of String))
+  fullName: NanoRoute.NanoRouteExceptionExtensions.set_DeveloperMessages(System.Net.Http.HttpRequestException, System.Collections.Generic.IEnumerable<string>?)
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.set_DeveloperMessages(System.Net.Http.HttpRequestException, System.Collections.Generic.IEnumerable(Of String))
+  nameWithType: NanoRouteExceptionExtensions.set_DeveloperMessages(HttpRequestException, IEnumerable<string>?)
+  nameWithType.vb: NanoRouteExceptionExtensions.set_DeveloperMessages(HttpRequestException, IEnumerable(Of String))
+- uid: NanoRoute.NanoRouteExceptionExtensions.set_DeveloperMessages*
+  name: set_DeveloperMessages
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_set_DeveloperMessages_
+  commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.set_DeveloperMessages
+  fullName: NanoRoute.NanoRouteExceptionExtensions.set_DeveloperMessages
+  nameWithType: NanoRouteExceptionExtensions.set_DeveloperMessages
+- uid: NanoRoute.NanoRouteExceptionExtensions.set_Errors(System.Net.Http.HttpRequestException,System.Collections.Generic.IEnumerable{System.String})
+  name: set_Errors(HttpRequestException, IEnumerable<string>?)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_set_Errors_System_Net_Http_HttpRequestException_System_Collections_Generic_IEnumerable_System_String__
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.set_Errors(System.Net.Http.HttpRequestException,System.Collections.Generic.IEnumerable{System.String})
+  name.vb: set_Errors(HttpRequestException, IEnumerable(Of String))
+  fullName: NanoRoute.NanoRouteExceptionExtensions.set_Errors(System.Net.Http.HttpRequestException, System.Collections.Generic.IEnumerable<string>?)
+  fullName.vb: NanoRoute.NanoRouteExceptionExtensions.set_Errors(System.Net.Http.HttpRequestException, System.Collections.Generic.IEnumerable(Of String))
+  nameWithType: NanoRouteExceptionExtensions.set_Errors(HttpRequestException, IEnumerable<string>?)
+  nameWithType.vb: NanoRouteExceptionExtensions.set_Errors(HttpRequestException, IEnumerable(Of String))
+- uid: NanoRoute.NanoRouteExceptionExtensions.set_Errors*
+  name: set_Errors
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_set_Errors_
+  commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.set_Errors
+  fullName: NanoRoute.NanoRouteExceptionExtensions.set_Errors
+  nameWithType: NanoRouteExceptionExtensions.set_Errors
+- uid: NanoRoute.NanoRouteExceptionExtensions.set_Status(System.Net.Http.HttpRequestException,System.Net.HttpStatusCode)
+  name: set_Status(HttpRequestException, HttpStatusCode)
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_set_Status_System_Net_Http_HttpRequestException_System_Net_HttpStatusCode_
+  commentId: M:NanoRoute.NanoRouteExceptionExtensions.set_Status(System.Net.Http.HttpRequestException,System.Net.HttpStatusCode)
+  fullName: NanoRoute.NanoRouteExceptionExtensions.set_Status(System.Net.Http.HttpRequestException, System.Net.HttpStatusCode)
+  nameWithType: NanoRouteExceptionExtensions.set_Status(HttpRequestException, HttpStatusCode)
+- uid: NanoRoute.NanoRouteExceptionExtensions.set_Status*
+  name: set_Status
+  href: NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_set_Status_
+  commentId: Overload:NanoRoute.NanoRouteExceptionExtensions.set_Status
+  fullName: NanoRoute.NanoRouteExceptionExtensions.set_Status
+  nameWithType: NanoRouteExceptionExtensions.set_Status
 - uid: NanoRoute.NanoRouteHandlerExtensions
   name: NanoRouteHandlerExtensions
   href: NanoRoute.NanoRouteHandlerExtensions.html
@@ -961,6 +961,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder)
   nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder)
   nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder)
+- uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name: AddJsonErrorDetails<TBuilder>(TBuilder, Action<JsonErrorDetailsOptions>)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Action_NanoRoute_JsonErrorDetailsOptions__
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name.vb: AddJsonErrorDetails(Of TBuilder)(TBuilder, Action(Of JsonErrorDetailsOptions))
+  fullName: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, System.Action<NanoRoute.JsonErrorDetailsOptions>)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, System.Action(Of NanoRoute.JsonErrorDetailsOptions))
+  nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, Action<JsonErrorDetailsOptions>)
+  nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, Action(Of JsonErrorDetailsOptions))
 - uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String})
   name: AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>)
   href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__
@@ -970,6 +979,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String))
   nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>)
   nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, IEnumerable(Of String))
+- uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name: AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>, Action<JsonErrorDetailsOptions>)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_Action_NanoRoute_JsonErrorDetailsOptions__
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name.vb: AddJsonErrorDetails(Of TBuilder)(TBuilder, IEnumerable(Of String), Action(Of JsonErrorDetailsOptions))
+  fullName: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, System.Action<NanoRoute.JsonErrorDetailsOptions>)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), System.Action(Of NanoRoute.JsonErrorDetailsOptions))
+  nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>, Action<JsonErrorDetailsOptions>)
+  nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, IEnumerable(Of String), Action(Of JsonErrorDetailsOptions))
 - uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)
   name: AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>, string)
   href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_
@@ -979,6 +997,24 @@ references:
   fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String)
   nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>, string)
   nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, IEnumerable(Of String), String)
+- uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.JsonErrorDetailsOptions)
+  name: AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>, string, JsonErrorDetailsOptions)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_JsonErrorDetailsOptions_
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.JsonErrorDetailsOptions)
+  name.vb: AddJsonErrorDetails(Of TBuilder)(TBuilder, IEnumerable(Of String), String, JsonErrorDetailsOptions)
+  fullName: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string, NanoRoute.JsonErrorDetailsOptions)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, NanoRoute.JsonErrorDetailsOptions)
+  nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>, string, JsonErrorDetailsOptions)
+  nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, IEnumerable(Of String), String, JsonErrorDetailsOptions)
+- uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name: AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>, string, Action<JsonErrorDetailsOptions>)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name.vb: AddJsonErrorDetails(Of TBuilder)(TBuilder, IEnumerable(Of String), String, Action(Of JsonErrorDetailsOptions))
+  fullName: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string, System.Action<NanoRoute.JsonErrorDetailsOptions>)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, System.Action(Of NanoRoute.JsonErrorDetailsOptions))
+  nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, IEnumerable<string>, string, Action<JsonErrorDetailsOptions>)
+  nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, IEnumerable(Of String), String, Action(Of JsonErrorDetailsOptions))
 - uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String)
   name: AddJsonErrorDetails<TBuilder>(TBuilder, string)
   href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_
@@ -988,6 +1024,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, String)
   nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, string)
   nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, String)
+- uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name: AddJsonErrorDetails<TBuilder>(TBuilder, string, Action<JsonErrorDetailsOptions>)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name.vb: AddJsonErrorDetails(Of TBuilder)(TBuilder, String, Action(Of JsonErrorDetailsOptions))
+  fullName: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, string, System.Action<NanoRoute.JsonErrorDetailsOptions>)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, String, System.Action(Of NanoRoute.JsonErrorDetailsOptions))
+  nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, string, Action<JsonErrorDetailsOptions>)
+  nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, String, Action(Of JsonErrorDetailsOptions))
 - uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.String)
   name: AddJsonErrorDetails<TBuilder>(TBuilder, string, string)
   href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_
@@ -997,21 +1042,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, String, String)
   nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, string, string)
   nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, String, String)
-- uid: NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails*
-  name: ConfigureJsonErrorDetails
-  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails_
-  commentId: Overload:NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails
-  fullName: NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails
-  nameWithType: NanoRouteJsonExtensions.ConfigureJsonErrorDetails
-- uid: NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.JsonErrorDetailsConfig})
-  name: ConfigureJsonErrorDetails<TBuilder>(TBuilder, ConfigureBuilderDelegate<JsonErrorDetailsConfig>)
-  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__
-  commentId: M:NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.JsonErrorDetailsConfig})
-  name.vb: ConfigureJsonErrorDetails(Of TBuilder)(TBuilder, ConfigureBuilderDelegate(Of JsonErrorDetailsConfig))
-  fullName: NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails<TBuilder>(TBuilder, NanoRoute.ConfigureBuilderDelegate<NanoRoute.JsonErrorDetailsConfig>)
-  fullName.vb: NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails(Of TBuilder)(TBuilder, NanoRoute.ConfigureBuilderDelegate(Of NanoRoute.JsonErrorDetailsConfig))
-  nameWithType: NanoRouteJsonExtensions.ConfigureJsonErrorDetails<TBuilder>(TBuilder, ConfigureBuilderDelegate<JsonErrorDetailsConfig>)
-  nameWithType.vb: NanoRouteJsonExtensions.ConfigureJsonErrorDetails(Of TBuilder)(TBuilder, ConfigureBuilderDelegate(Of JsonErrorDetailsConfig))
+- uid: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name: AddJsonErrorDetails<TBuilder>(TBuilder, string, string, Action<JsonErrorDetailsOptions>)
+  href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__
+  commentId: M:NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})
+  name.vb: AddJsonErrorDetails(Of TBuilder)(TBuilder, String, String, Action(Of JsonErrorDetailsOptions))
+  fullName: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, string, string, System.Action<NanoRoute.JsonErrorDetailsOptions>)
+  fullName.vb: NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, String, String, System.Action(Of NanoRoute.JsonErrorDetailsOptions))
+  nameWithType: NanoRouteJsonExtensions.AddJsonErrorDetails<TBuilder>(TBuilder, string, string, Action<JsonErrorDetailsOptions>)
+  nameWithType.vb: NanoRouteJsonExtensions.AddJsonErrorDetails(Of TBuilder)(TBuilder, String, String, Action(Of JsonErrorDetailsOptions))
 - uid: NanoRoute.NanoRouteJsonExtensions.Json(System.Net.HttpStatusCode,System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo)
   name: Json(HttpStatusCode, object?, JsonTypeInfo)
   href: NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_Json_System_Net_HttpStatusCode_System_Object_System_Text_Json_Serialization_Metadata_JsonTypeInfo_
@@ -1150,6 +1189,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String)
   nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, IEnumerable<string>, string)
   nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, IEnumerable(Of String), String)
+- uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.UnexpectedParameterBehavior)
+  name: AddQueryBindings<TBuilder>(TBuilder, IEnumerable<string>, string, UnexpectedParameterBehavior)
+  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_UnexpectedParameterBehavior_
+  commentId: M:NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.UnexpectedParameterBehavior)
+  name.vb: AddQueryBindings(Of TBuilder)(TBuilder, IEnumerable(Of String), String, UnexpectedParameterBehavior)
+  fullName: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string, NanoRoute.UnexpectedParameterBehavior)
+  fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, NanoRoute.UnexpectedParameterBehavior)
+  nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, IEnumerable<string>, string, UnexpectedParameterBehavior)
+  nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, IEnumerable(Of String), String, UnexpectedParameterBehavior)
 - uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.String)
   name: AddQueryBindings<TBuilder>(TBuilder, IEnumerable<string>, string, string)
   href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_
@@ -1159,6 +1207,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, String)
   nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, IEnumerable<string>, string, string)
   nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, IEnumerable(Of String), String, String)
+- uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name: AddQueryBindings<TBuilder>(TBuilder, IEnumerable<string>, string, string, UnexpectedParameterBehavior)
+  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_NanoRoute_UnexpectedParameterBehavior_
+  commentId: M:NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name.vb: AddQueryBindings(Of TBuilder)(TBuilder, IEnumerable(Of String), String, String, UnexpectedParameterBehavior)
+  fullName: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, System.Collections.Generic.IEnumerable<string>, string, string, NanoRoute.UnexpectedParameterBehavior)
+  fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, System.Collections.Generic.IEnumerable(Of String), String, String, NanoRoute.UnexpectedParameterBehavior)
+  nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, IEnumerable<string>, string, string, UnexpectedParameterBehavior)
+  nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, IEnumerable(Of String), String, String, UnexpectedParameterBehavior)
 - uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String)
   name: AddQueryBindings<TBuilder>(TBuilder, string)
   href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_
@@ -1168,6 +1225,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String)
   nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string)
   nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String)
+- uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name: AddQueryBindings<TBuilder>(TBuilder, string, UnexpectedParameterBehavior)
+  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_NanoRoute_UnexpectedParameterBehavior_
+  commentId: M:NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name.vb: AddQueryBindings(Of TBuilder)(TBuilder, String, UnexpectedParameterBehavior)
+  fullName: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string, NanoRoute.UnexpectedParameterBehavior)
+  fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, NanoRoute.UnexpectedParameterBehavior)
+  nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string, UnexpectedParameterBehavior)
+  nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, UnexpectedParameterBehavior)
 - uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String)
   name: AddQueryBindings<TBuilder>(TBuilder, string, string)
   href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_
@@ -1177,6 +1243,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, String)
   nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string, string)
   nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, String)
+- uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name: AddQueryBindings<TBuilder>(TBuilder, string, string, UnexpectedParameterBehavior)
+  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_NanoRoute_UnexpectedParameterBehavior_
+  commentId: M:NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name.vb: AddQueryBindings(Of TBuilder)(TBuilder, String, String, UnexpectedParameterBehavior)
+  fullName: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string, string, NanoRoute.UnexpectedParameterBehavior)
+  fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, String, NanoRoute.UnexpectedParameterBehavior)
+  nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string, string, UnexpectedParameterBehavior)
+  nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, String, UnexpectedParameterBehavior)
 - uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String,System.String)
   name: AddQueryBindings<TBuilder>(TBuilder, string, string, string)
   href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_String_
@@ -1186,21 +1261,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, String, String)
   nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string, string, string)
   nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, String, String)
-- uid: NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing*
-  name: ConfigureQueryParsing
-  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing_
-  commentId: Overload:NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing
-  fullName: NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing
-  nameWithType: NanoRouteQueryExtensions.ConfigureQueryParsing
-- uid: NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.QueryParsingConfig})
-  name: ConfigureQueryParsing<TBuilder>(TBuilder, ConfigureBuilderDelegate<QueryParsingConfig>)
-  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__
-  commentId: M:NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.QueryParsingConfig})
-  name.vb: ConfigureQueryParsing(Of TBuilder)(TBuilder, ConfigureBuilderDelegate(Of QueryParsingConfig))
-  fullName: NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing<TBuilder>(TBuilder, NanoRoute.ConfigureBuilderDelegate<NanoRoute.QueryParsingConfig>)
-  fullName.vb: NanoRoute.NanoRouteQueryExtensions.ConfigureQueryParsing(Of TBuilder)(TBuilder, NanoRoute.ConfigureBuilderDelegate(Of NanoRoute.QueryParsingConfig))
-  nameWithType: NanoRouteQueryExtensions.ConfigureQueryParsing<TBuilder>(TBuilder, ConfigureBuilderDelegate<QueryParsingConfig>)
-  nameWithType.vb: NanoRouteQueryExtensions.ConfigureQueryParsing(Of TBuilder)(TBuilder, ConfigureBuilderDelegate(Of QueryParsingConfig))
+- uid: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name: AddQueryBindings<TBuilder>(TBuilder, string, string, string, UnexpectedParameterBehavior)
+  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_String_NanoRoute_UnexpectedParameterBehavior_
+  commentId: M:NanoRoute.NanoRouteQueryExtensions.AddQueryBindings``1(``0,System.String,System.String,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name.vb: AddQueryBindings(Of TBuilder)(TBuilder, String, String, String, UnexpectedParameterBehavior)
+  fullName: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string, string, string, NanoRoute.UnexpectedParameterBehavior)
+  fullName.vb: NanoRoute.NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, String, String, NanoRoute.UnexpectedParameterBehavior)
+  nameWithType: NanoRouteQueryExtensions.AddQueryBindings<TBuilder>(TBuilder, string, string, string, UnexpectedParameterBehavior)
+  nameWithType.vb: NanoRouteQueryExtensions.AddQueryBindings(Of TBuilder)(TBuilder, String, String, String, UnexpectedParameterBehavior)
 - uid: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder,System.String)
   name: WithQueryBindings(EndpointBuilder, string)
   href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndpointBuilder_System_String_
@@ -1210,6 +1279,15 @@ references:
   fullName.vb: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder, String)
   nameWithType: NanoRouteQueryExtensions.WithQueryBindings(EndpointBuilder, string)
   nameWithType.vb: NanoRouteQueryExtensions.WithQueryBindings(EndpointBuilder, String)
+- uid: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name: WithQueryBindings(EndpointBuilder, string, UnexpectedParameterBehavior)
+  href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_NanoRoute_EndpointBuilder_System_String_NanoRoute_UnexpectedParameterBehavior_
+  commentId: M:NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder,System.String,NanoRoute.UnexpectedParameterBehavior)
+  name.vb: WithQueryBindings(EndpointBuilder, String, UnexpectedParameterBehavior)
+  fullName: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder, string, NanoRoute.UnexpectedParameterBehavior)
+  fullName.vb: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings(NanoRoute.EndpointBuilder, String, NanoRoute.UnexpectedParameterBehavior)
+  nameWithType: NanoRouteQueryExtensions.WithQueryBindings(EndpointBuilder, string, UnexpectedParameterBehavior)
+  nameWithType.vb: NanoRouteQueryExtensions.WithQueryBindings(EndpointBuilder, String, UnexpectedParameterBehavior)
 - uid: NanoRoute.NanoRouteQueryExtensions.WithQueryBindings*
   name: WithQueryBindings
   href: NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_WithQueryBindings_
@@ -1354,54 +1432,6 @@ references:
   fullName.vb: NanoRoute.NanoRouteValueParserExtensions.AddValueParser(Of TBuilder)(TBuilder, String, NanoRoute.ValueParserDelegate)
   nameWithType: NanoRouteValueParserExtensions.AddValueParser<TBuilder>(TBuilder, string, ValueParserDelegate)
   nameWithType.vb: NanoRouteValueParserExtensions.AddValueParser(Of TBuilder)(TBuilder, String, ValueParserDelegate)
-- uid: NanoRoute.QueryParsingConfig
-  name: QueryParsingConfig
-  href: NanoRoute.QueryParsingConfig.html
-  commentId: T:NanoRoute.QueryParsingConfig
-  fullName: NanoRoute.QueryParsingConfig
-  nameWithType: QueryParsingConfig
-- uid: NanoRoute.QueryParsingConfig.#ctor
-  name: QueryParsingConfig()
-  href: NanoRoute.QueryParsingConfig.html#NanoRoute_QueryParsingConfig__ctor
-  commentId: M:NanoRoute.QueryParsingConfig.#ctor
-  name.vb: New()
-  fullName: NanoRoute.QueryParsingConfig.QueryParsingConfig()
-  fullName.vb: NanoRoute.QueryParsingConfig.New()
-  nameWithType: QueryParsingConfig.QueryParsingConfig()
-  nameWithType.vb: QueryParsingConfig.New()
-- uid: NanoRoute.QueryParsingConfig.#ctor*
-  name: QueryParsingConfig
-  href: NanoRoute.QueryParsingConfig.html#NanoRoute_QueryParsingConfig__ctor_
-  commentId: Overload:NanoRoute.QueryParsingConfig.#ctor
-  name.vb: New
-  fullName: NanoRoute.QueryParsingConfig.QueryParsingConfig
-  fullName.vb: NanoRoute.QueryParsingConfig.New
-  nameWithType: QueryParsingConfig.QueryParsingConfig
-  nameWithType.vb: QueryParsingConfig.New
-- uid: NanoRoute.QueryParsingConfig.Default
-  name: Default
-  href: NanoRoute.QueryParsingConfig.html#NanoRoute_QueryParsingConfig_Default
-  commentId: P:NanoRoute.QueryParsingConfig.Default
-  fullName: NanoRoute.QueryParsingConfig.Default
-  nameWithType: QueryParsingConfig.Default
-- uid: NanoRoute.QueryParsingConfig.Default*
-  name: Default
-  href: NanoRoute.QueryParsingConfig.html#NanoRoute_QueryParsingConfig_Default_
-  commentId: Overload:NanoRoute.QueryParsingConfig.Default
-  fullName: NanoRoute.QueryParsingConfig.Default
-  nameWithType: QueryParsingConfig.Default
-- uid: NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior
-  name: UnexpectedParameterBehavior
-  href: NanoRoute.QueryParsingConfig.html#NanoRoute_QueryParsingConfig_UnexpectedParameterBehavior
-  commentId: P:NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior
-  fullName: NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior
-  nameWithType: QueryParsingConfig.UnexpectedParameterBehavior
-- uid: NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior*
-  name: UnexpectedParameterBehavior
-  href: NanoRoute.QueryParsingConfig.html#NanoRoute_QueryParsingConfig_UnexpectedParameterBehavior_
-  commentId: Overload:NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior
-  fullName: NanoRoute.QueryParsingConfig.UnexpectedParameterBehavior
-  nameWithType: QueryParsingConfig.UnexpectedParameterBehavior
 - uid: NanoRoute.RequestContext
   name: RequestContext
   href: NanoRoute.RequestContext.html
@@ -1549,18 +1579,6 @@ references:
   commentId: F:NanoRoute.RouteScopeBuilder.CurrentPrefix
   fullName: NanoRoute.RouteScopeBuilder.CurrentPrefix
   nameWithType: RouteScopeBuilder.CurrentPrefix
-- uid: NanoRoute.RouteScopeBuilder.Metadata
-  name: Metadata
-  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata
-  commentId: P:NanoRoute.RouteScopeBuilder.Metadata
-  fullName: NanoRoute.RouteScopeBuilder.Metadata
-  nameWithType: RouteScopeBuilder.Metadata
-- uid: NanoRoute.RouteScopeBuilder.Metadata*
-  name: Metadata
-  href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata_
-  commentId: Overload:NanoRoute.RouteScopeBuilder.Metadata
-  fullName: NanoRoute.RouteScopeBuilder.Metadata
-  nameWithType: RouteScopeBuilder.Metadata
 - uid: NanoRoute.RouteScopeBuilder.Patterns
   name: Patterns
   href: NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Patterns
@@ -1705,23 +1723,6 @@ references:
   fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).AddValueParser
   nameWithType: RouterBuilder<TRouter, TConfig>.AddValueParser
   nameWithType.vb: RouterBuilder(Of TRouter, TConfig).AddValueParser
-- uid: NanoRoute.RouterBuilder`2.ConfigureRouting(NanoRoute.ConfigureBuilderDelegate{`1})
-  name: ConfigureRouting(ConfigureBuilderDelegate<TConfig>)
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_ConfigureRouting_NanoRoute_ConfigureBuilderDelegate__1__
-  commentId: M:NanoRoute.RouterBuilder`2.ConfigureRouting(NanoRoute.ConfigureBuilderDelegate{`1})
-  name.vb: ConfigureRouting(ConfigureBuilderDelegate(Of TConfig))
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.ConfigureRouting(NanoRoute.ConfigureBuilderDelegate<TConfig>)
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).ConfigureRouting(NanoRoute.ConfigureBuilderDelegate(Of TConfig))
-  nameWithType: RouterBuilder<TRouter, TConfig>.ConfigureRouting(ConfigureBuilderDelegate<TConfig>)
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).ConfigureRouting(ConfigureBuilderDelegate(Of TConfig))
-- uid: NanoRoute.RouterBuilder`2.ConfigureRouting*
-  name: ConfigureRouting
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_ConfigureRouting_
-  commentId: Overload:NanoRoute.RouterBuilder`2.ConfigureRouting
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.ConfigureRouting
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).ConfigureRouting
-  nameWithType: RouterBuilder<TRouter, TConfig>.ConfigureRouting
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).ConfigureRouting
 - uid: NanoRoute.RouterBuilder`2.CreateRouter
   name: CreateRouter()
   href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter
@@ -1730,6 +1731,15 @@ references:
   fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).CreateRouter()
   nameWithType: RouterBuilder<TRouter, TConfig>.CreateRouter()
   nameWithType.vb: RouterBuilder(Of TRouter, TConfig).CreateRouter()
+- uid: NanoRoute.RouterBuilder`2.CreateRouter(System.Action{`1})
+  name: CreateRouter(Action<TConfig>)
+  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter_System_Action__1__
+  commentId: M:NanoRoute.RouterBuilder`2.CreateRouter(System.Action{`1})
+  name.vb: CreateRouter(Action(Of TConfig))
+  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.CreateRouter(System.Action<TConfig>)
+  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).CreateRouter(System.Action(Of TConfig))
+  nameWithType: RouterBuilder<TRouter, TConfig>.CreateRouter(Action<TConfig>)
+  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).CreateRouter(Action(Of TConfig))
 - uid: NanoRoute.RouterBuilder`2.CreateRouter*
   name: CreateRouter
   href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter_
@@ -1738,22 +1748,6 @@ references:
   fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).CreateRouter
   nameWithType: RouterBuilder<TRouter, TConfig>.CreateRouter
   nameWithType.vb: RouterBuilder(Of TRouter, TConfig).CreateRouter
-- uid: NanoRoute.RouterBuilder`2.RouterConfig
-  name: RouterConfig
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_RouterConfig
-  commentId: P:NanoRoute.RouterBuilder`2.RouterConfig
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).RouterConfig
-  nameWithType: RouterBuilder<TRouter, TConfig>.RouterConfig
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).RouterConfig
-- uid: NanoRoute.RouterBuilder`2.RouterConfig*
-  name: RouterConfig
-  href: NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_RouterConfig_
-  commentId: Overload:NanoRoute.RouterBuilder`2.RouterConfig
-  fullName: NanoRoute.RouterBuilder<TRouter, TConfig>.RouterConfig
-  fullName.vb: NanoRoute.RouterBuilder(Of TRouter, TConfig).RouterConfig
-  nameWithType: RouterBuilder<TRouter, TConfig>.RouterConfig
-  nameWithType.vb: RouterBuilder(Of TRouter, TConfig).RouterConfig
 - uid: NanoRoute.RouterConfig
   name: RouterConfig
   href: NanoRoute.RouterConfig.html

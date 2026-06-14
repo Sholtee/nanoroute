@@ -105,8 +105,8 @@ pipeline. The constructor captures an immutable route snapshot, and derived adap
   <h5 id="NanoRoute_RouterBase_1_examples"><strong>Examples</strong></h5>
   <pre><code class="lang-csharp">public sealed class MyRouter : RouterBase&lt;RouterConfig&gt;
 {
-    private MyRouter(RouterBuilder&lt;MyRouter, RouterConfig&gt; builder)
-        : base(builder, builder.RouterConfig)
+    private MyRouter(RouteScopeBuilder routes, RouterConfig config)
+        : base(routes, config)
     {
     }
 

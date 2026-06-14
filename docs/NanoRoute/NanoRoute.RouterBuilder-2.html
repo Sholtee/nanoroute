@@ -67,9 +67,6 @@
       <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_BasePattern">RouteScopeBuilder.BasePattern</a>
     </div>
     <div>
-      <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata">RouteScopeBuilder.Metadata</a>
-    </div>
-    <div>
       <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Patterns">RouteScopeBuilder.Patterns</a>
     </div>
     <div>
@@ -108,12 +105,12 @@
     <tbody>
       <tr>
         <td><span class="parametername">TRouter</span></td>
-        <td><p>The router type produced by <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter">CreateRouter()</a>.</p>
+        <td><p>The router type produced by <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter_System_Action__1__">CreateRouter(Action&lt;TConfig&gt;)</a>.</p>
 </td>
       </tr>
       <tr>
         <td><span class="parametername">TConfig</span></td>
-        <td><p>The configuration type exposed by <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_RouterConfig">RouterConfig</a>.</p>
+        <td><p>The configuration type exposed by <a class="xref" href="NanoRoute.RouterConfig.html">RouterConfig</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -167,32 +164,6 @@
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
         <td><p>Thrown when <code class="paramref">routerFactory</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="properties">Properties
-</h3>
-  <a id="NanoRoute_RouterBuilder_2_RouterConfig_" data-uid="NanoRoute.RouterBuilder`2.RouterConfig*"></a>
-  <h4 id="NanoRoute_RouterBuilder_2_RouterConfig" data-uid="NanoRoute.RouterBuilder`2.RouterConfig">RouterConfig</h4>
-  <div class="markdown level1 summary"><p>Gets the configuration object applied when <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter">CreateRouter()</a> is called.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TConfig RouterConfig { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TConfig</span></td>
-        <td></td>
       </tr>
     </tbody>
   </table>
@@ -373,74 +344,9 @@ parameter name.</p>
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_RouterBuilder_2_ConfigureRouting_" data-uid="NanoRoute.RouterBuilder`2.ConfigureRouting*"></a>
-  <h4 id="NanoRoute_RouterBuilder_2_ConfigureRouting_NanoRoute_ConfigureBuilderDelegate__1__" data-uid="NanoRoute.RouterBuilder`2.ConfigureRouting(NanoRoute.ConfigureBuilderDelegate{`1})">ConfigureRouting(ConfigureBuilderDelegate&lt;TConfig&gt;)</h4>
-  <div class="markdown level1 summary"><p>Updates the router configuration object that will be used by future router instances.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RouterBuilder&lt;TRouter, TConfig&gt; ConfigureRouting(ConfigureBuilderDelegate&lt;TConfig&gt; updateConfig)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate</a>&lt;TConfig&gt;</td>
-        <td><span class="parametername">updateConfig</span></td>
-        <td><p>A callback that returns the updated <a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_RouterConfig">RouterConfig</a> instance.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="NanoRoute.RouterBuilder-2.html">RouterBuilder</a>&lt;TRouter, TConfig&gt;</td>
-        <td><p>The current builder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="NanoRoute_RouterBuilder_2_ConfigureRouting_NanoRoute_ConfigureBuilderDelegate__1___examples">Examples</h5>
-  <pre><code class="lang-csharp">builder.ConfigureRouting(config =&gt; config with
-{
-    MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
-});</code></pre>
-
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">updateConfig</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> or returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <a id="NanoRoute_RouterBuilder_2_CreateRouter_" data-uid="NanoRoute.RouterBuilder`2.CreateRouter*"></a>
   <h4 id="NanoRoute_RouterBuilder_2_CreateRouter" data-uid="NanoRoute.RouterBuilder`2.CreateRouter">CreateRouter()</h4>
-  <div class="markdown level1 summary"><p>Creates a router from the builder's current routes, parser registrations, and configuration.</p>
+  <div class="markdown level1 summary"><p>Creates a router from the builder's current routes and parser registrations with default configuration.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -464,12 +370,81 @@ parameter name.</p>
     </tbody>
   </table>
   <h5 id="NanoRoute_RouterBuilder_2_CreateRouter_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The created router is an immutable snapshot. Later changes to the builder or its configuration do not
-affect routers that have already been created.</p>
+  <div class="markdown level1 remarks"><p>The created router is an immutable snapshot. Later changes to the builder do not affect routers that
+have already been created.</p>
 </div>
   <h5 id="NanoRoute_RouterBuilder_2_CreateRouter_examples">Examples</h5>
   <pre><code class="lang-csharp">MyRouter router = builder.CreateRouter();</code></pre>
 
+  <a id="NanoRoute_RouterBuilder_2_CreateRouter_" data-uid="NanoRoute.RouterBuilder`2.CreateRouter*"></a>
+  <h4 id="NanoRoute_RouterBuilder_2_CreateRouter_System_Action__1__" data-uid="NanoRoute.RouterBuilder`2.CreateRouter(System.Action{`1})">CreateRouter(Action&lt;TConfig&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a router from the builder's current routes and parser registrations with inline configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TRouter CreateRouter(Action&lt;TConfig&gt; configureRouting)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;TConfig&gt;</td>
+        <td><span class="parametername">configureRouting</span></td>
+        <td><p>A callback that configures the new router instance before it is created.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TRouter</span></td>
+        <td><p>A new <code class="typeparamref">TRouter</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_RouterBuilder_2_CreateRouter_System_Action__1___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The callback receives a fresh <code class="typeparamref">TConfig</code> instance for this router. Later calls to
+<a class="xref" href="NanoRoute.RouterBuilder-2.html#NanoRoute_RouterBuilder_2_CreateRouter_System_Action__1__">CreateRouter(Action&lt;TConfig&gt;)</a> receive their own configuration instances.</p>
+</div>
+  <h5 id="NanoRoute_RouterBuilder_2_CreateRouter_System_Action__1___examples">Examples</h5>
+  <pre><code class="lang-csharp">MyRouter router = builder.CreateRouter(config =&gt;
+{
+    config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+});</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">configureRouting</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteEndpointExtensions.html#NanoRoute_NanoRouteEndpointExtensions_AddEndpoint__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_EndpointBuilder__">NanoRouteEndpointExtensions.AddEndpoint&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Action&lt;EndpointBuilder&gt;)</a>
@@ -487,19 +462,34 @@ affect routers that have already been created.</p>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a>
   </div>
   <div>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Action_NanoRoute_ExceptionHandlingOptions__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, Action&lt;ExceptionHandlingOptions&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_Action_NanoRoute_ExceptionHandlingOptions__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, Action&lt;ExceptionHandlingOptions&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</a>
   </div>
   <div>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_ExceptionHandlingOptions_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, ExceptionHandlingOptions)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_ExceptionHandlingOptions__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Action&lt;ExceptionHandlingOptions&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_Action_NanoRoute_ExceptionHandlingOptions__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string, Action&lt;ExceptionHandlingOptions&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String_">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_ConfigureExceptionHandling__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_ExceptionHandlingConfig__">NanoRouteExceptionExtensions.ConfigureExceptionHandling&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;ExceptionHandlingConfig&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_System_String_System_String_System_Action_NanoRoute_ExceptionHandlingOptions__">NanoRouteExceptionExtensions.AddExceptionHandler&lt;TBuilder&gt;(TBuilder, string, string, Action&lt;ExceptionHandlingOptions&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteHandlerExtensions.html#NanoRoute_NanoRouteHandlerExtensions_AddHandler__1___0_System_Collections_Generic_IEnumerable_System_String__NanoRoute_RequestHandlerDelegate_">NanoRouteHandlerExtensions.AddHandler&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, RequestHandlerDelegate)</a>
@@ -562,19 +552,34 @@ affect routers that have already been created.</p>
       <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder)</a>
   </div>
   <div>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Action_NanoRoute_JsonErrorDetailsOptions__">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, Action&lt;JsonErrorDetailsOptions&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_Action_NanoRoute_JsonErrorDetailsOptions__">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, Action&lt;JsonErrorDetailsOptions&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</a>
   </div>
   <div>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_JsonErrorDetailsOptions_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, JsonErrorDetailsOptions)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Action&lt;JsonErrorDetailsOptions&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, Action&lt;JsonErrorDetailsOptions&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__">NanoRouteJsonExtensions.ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__">NanoRouteJsonExtensions.AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, string, Action&lt;JsonErrorDetailsOptions&gt;)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRoutePrefixExtensions.html#NanoRoute_NanoRoutePrefixExtensions_AddPrefix__1___0_System_String_System_Action_NanoRoute_RouteScopeBuilder__">NanoRoutePrefixExtensions.AddPrefix&lt;TBuilder&gt;(TBuilder, string, Action&lt;RouteScopeBuilder&gt;)</a>
@@ -583,19 +588,31 @@ affect routers that have already been created.</p>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</a>
   </div>
   <div>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_UnexpectedParameterBehavior_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, UnexpectedParameterBehavior)</a>
+  </div>
+  <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_String_NanoRoute_UnexpectedParameterBehavior_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, string, UnexpectedParameterBehavior)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string)</a>
   </div>
   <div>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_NanoRoute_UnexpectedParameterBehavior_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, UnexpectedParameterBehavior)</a>
+  </div>
+  <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_NanoRoute_UnexpectedParameterBehavior_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string, UnexpectedParameterBehavior)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_String_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string, string)</a>
   </div>
   <div>
-      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_ConfigureQueryParsing__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_QueryParsingConfig__">NanoRouteQueryExtensions.ConfigureQueryParsing&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;QueryParsingConfig&gt;)</a>
+      <a class="xref" href="NanoRoute.NanoRouteQueryExtensions.html#NanoRoute_NanoRouteQueryExtensions_AddQueryBindings__1___0_System_String_System_String_System_String_NanoRoute_UnexpectedParameterBehavior_">NanoRouteQueryExtensions.AddQueryBindings&lt;TBuilder&gt;(TBuilder, string, string, string, UnexpectedParameterBehavior)</a>
   </div>
   <div>
       <a class="xref" href="NanoRoute.NanoRouteValueParserExtensions.html#NanoRoute_NanoRouteValueParserExtensions_AddBoolParser__1___0_">NanoRouteValueParserExtensions.AddBoolParser&lt;TBuilder&gt;(TBuilder)</a>

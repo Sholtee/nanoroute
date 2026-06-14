@@ -1366,6 +1366,91 @@ middleware is bound to the whole current builder scope for all supported HTTP me
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Action_NanoRoute_JsonErrorDetailsOptions__" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Action{NanoRoute.JsonErrorDetailsOptions})">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, Action&lt;JsonErrorDetailsOptions&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for all supported HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddJsonErrorDetails&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, Action&lt;JsonErrorDetailsOptions&gt; configure) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.JsonErrorDetailsOptions.html">JsonErrorDetailsOptions</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>Configures JSON error rendering and exception normalization for this middleware registration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Action_NanoRoute_JsonErrorDetailsOptions___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddJsonErrorDetails(options =&gt; options.Map&lt;NotSupportedException&gt;
+(
+    static ex =&gt; new HttpRequestException("Not supported", ex, HttpStatusCode.BadRequest)
+));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code> or <code class="paramref">configure</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
   <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String})">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;)</h4>
   <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for the selected HTTP methods.</p>
 </div>
@@ -1457,6 +1542,99 @@ middleware is bound to the whole current builder scope for the selected HTTP met
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_Action_NanoRoute_JsonErrorDetailsOptions__" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.Action{NanoRoute.JsonErrorDetailsOptions})">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, Action&lt;JsonErrorDetailsOptions&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for the selected HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddJsonErrorDetails&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, Action&lt;JsonErrorDetailsOptions&gt; configure) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that should use the error-detail middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.JsonErrorDetailsOptions.html">JsonErrorDetailsOptions</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>Configures JSON error rendering and exception normalization for this middleware registration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_Action_NanoRoute_JsonErrorDetailsOptions___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddJsonErrorDetails(["GET", "POST"], options =&gt; options.PopulateErrorInfo = true);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, or <code class="paramref">configure</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not a supported HTTP method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
   <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string)</h4>
   <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses.</p>
 </div>
@@ -1530,16 +1708,242 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
   <div class="markdown level1 remarks"><p>This helper wraps <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httprequestexception">HttpRequestException</a> values into JSON responses and also installs
 <a class="xref" href="NanoRoute.NanoRouteExceptionExtensions.html#NanoRoute_NanoRouteExceptionExtensions_AddExceptionHandler__1___0_">AddExceptionHandler&lt;TBuilder&gt;(TBuilder)</a> so unexpected
 exceptions are normalized before they reach the client. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> is
-not translated into JSON and continues to propagate to the caller unchanged. Use
-<a class="xref" href="NanoRoute.NanoRouteJsonExtensions.html#NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__">ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</a> before
-calling this method to include developer diagnostics or replace the <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a>
-serialization metadata.</p>
+not translated into JSON and continues to propagate to the caller unchanged. Use a callback overload
+to include developer diagnostics, replace the <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> serialization metadata, or
+customize exception normalization.</p>
 </div>
   <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String__examples">Examples</h5>
   <pre><code class="lang-csharp">routerBuilder
     .AddJsonErrorDetails()
     .AddHandler("GET", "/items/{id:int}/", (context, _) =&gt;
         throw new InvalidOperationException("Unexpected state"));</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, or <code class="paramref">pattern</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_JsonErrorDetailsOptions_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,NanoRoute.JsonErrorDetailsOptions)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, JsonErrorDetailsOptions)</h4>
+  <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddJsonErrorDetails&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, JsonErrorDetailsOptions options) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that should use the error-detail middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the error-detail middleware should be inserted. Use <code>/</code> to apply it to
+the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="NanoRoute.JsonErrorDetailsOptions.html">JsonErrorDetailsOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>The JSON error rendering and exception-normalization options used by this middleware registration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_NanoRoute_JsonErrorDetailsOptions__examples">Examples</h5>
+  <pre><code class="lang-csharp">JsonErrorDetailsOptions options = new()
+{
+    PopulateErrorInfo = true
+};
+
+options.Map&lt;NotSupportedException&gt;
+(
+    static ex =&gt; new HttpRequestException("Not supported", ex, HttpStatusCode.BadRequest)
+);
+
+builder.AddJsonErrorDetails(["GET", "POST"], "/api/*", options);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verbs</code>, <code class="paramref">pattern</code>, or <code class="paramref">options</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when an entry in <code class="paramref">verbs</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.Collections.Generic.IEnumerable{System.String},System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, IEnumerable&lt;string&gt;, string, Action&lt;JsonErrorDetailsOptions&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddJsonErrorDetails&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, IEnumerable&lt;string&gt; verbs, string pattern, Action&lt;JsonErrorDetailsOptions&gt; configure) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">verbs</span></td>
+        <td><p>The HTTP methods that should use the error-detail middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the error-detail middleware should be inserted. Use <code>/</code> to apply it to
+the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.JsonErrorDetailsOptions.html">JsonErrorDetailsOptions</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>Configures JSON error rendering and exception normalization for this middleware registration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_Collections_Generic_IEnumerable_System_String__System_String_System_Action_NanoRoute_JsonErrorDetailsOptions___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddJsonErrorDetails(["GET", "POST"], "/api/*", options =&gt;
+{
+    options.PopulateErrorInfo = true;
+    options.Map&lt;NotSupportedException&gt;
+    (
+        static ex =&gt; new HttpRequestException("Not supported", ex, HttpStatusCode.BadRequest)
+    );
+});</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -1661,6 +2065,105 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
     </tbody>
   </table>
   <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, Action&lt;JsonErrorDetailsOptions&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for all supported HTTP methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TBuilder AddJsonErrorDetails&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string pattern, Action&lt;JsonErrorDetailsOptions&gt; configure) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><span class="parametername">routeScopeBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the error-detail middleware should be inserted. Use <code>/</code> to apply it to
+the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.JsonErrorDetailsOptions.html">JsonErrorDetailsOptions</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>Configures JSON error rendering and exception normalization for this middleware registration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBuilder</span></td>
+        <td><p>The current <code class="paramref">routeScopeBuilder</code> instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBuilder</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_Action_NanoRoute_JsonErrorDetailsOptions___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddJsonErrorDetails("/api/*", options =&gt; options.PopulateErrorInfo = true);</code></pre>
+
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">pattern</code>, or <code class="paramref">configure</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
   <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.String)">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, string)</h4>
   <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for a single HTTP method.</p>
 </div>
@@ -1759,14 +2262,14 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
       </tr>
     </tbody>
   </table>
-  <a id="NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails*"></a>
-  <h4 id="NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig__" data-uid="NanoRoute.NanoRouteJsonExtensions.ConfigureJsonErrorDetails``1(``0,NanoRoute.ConfigureBuilderDelegate{NanoRoute.JsonErrorDetailsConfig})">ConfigureJsonErrorDetails&lt;TBuilder&gt;(TBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt;)</h4>
-  <div class="markdown level1 summary"><p>Updates the JSON error-detail configuration visible from the current builder scope.</p>
+  <a id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails_" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails*"></a>
+  <h4 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_System_Action_NanoRoute_JsonErrorDetailsOptions__" data-uid="NanoRoute.NanoRouteJsonExtensions.AddJsonErrorDetails``1(``0,System.String,System.String,System.Action{NanoRoute.JsonErrorDetailsOptions})">AddJsonErrorDetails&lt;TBuilder&gt;(TBuilder, string, string, Action&lt;JsonErrorDetailsOptions&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds middleware that converts router exceptions into JSON <a class="xref" href="NanoRoute.ErrorDetails.html">ErrorDetails</a> responses for a single HTTP method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TBuilder ConfigureJsonErrorDetails&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, ConfigureBuilderDelegate&lt;JsonErrorDetailsConfig&gt; configure) where TBuilder : notnull, RouteScopeBuilder</code></pre>
+    <pre><code class="lang-csharp hljs">public static TBuilder AddJsonErrorDetails&lt;TBuilder&gt;(this TBuilder routeScopeBuilder, string verb, string pattern, Action&lt;JsonErrorDetailsOptions&gt; configure) where TBuilder : notnull, RouteScopeBuilder</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1784,9 +2287,22 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="NanoRoute.ConfigureBuilderDelegate-1.html">ConfigureBuilderDelegate</a>&lt;<a class="xref" href="NanoRoute.JsonErrorDetailsConfig.html">JsonErrorDetailsConfig</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">verb</span></td>
+        <td><p>The HTTP method that should use the error-detail middleware.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">pattern</span></td>
+        <td><p>The route pattern where the error-detail middleware should be inserted. Use <code>/</code> to apply it to
+the whole pipeline, or a narrower prefix/exact pattern to scope JSON error responses to selected routes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="NanoRoute.JsonErrorDetailsOptions.html">JsonErrorDetailsOptions</a>&gt;</td>
         <td><span class="parametername">configure</span></td>
-        <td><p>A callback that receives the current configuration and returns the replacement configuration.</p>
+        <td><p>Configures JSON error rendering and exception normalization for this middleware registration.</p>
 </td>
       </tr>
     </tbody>
@@ -1822,16 +2338,8 @@ the whole pipeline, or a narrower prefix/exact pattern to scope JSON error respo
       </tr>
     </tbody>
   </table>
-  <h5 id="NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The configuration is stored in <a class="xref" href="NanoRoute.RouteScopeBuilder.html#NanoRoute_RouteScopeBuilder_Metadata">Metadata</a>. Child builders created after this
-method is called inherit the updated configuration; existing child builders keep their own scoped copy.
-Registered JSON error-detail middleware snapshots the configuration that is current at registration time.</p>
-</div>
-  <h5 id="NanoRoute_NanoRouteJsonExtensions_ConfigureJsonErrorDetails__1___0_NanoRoute_ConfigureBuilderDelegate_NanoRoute_JsonErrorDetailsConfig___examples">Examples</h5>
-  <pre><code class="lang-csharp">builder.ConfigureJsonErrorDetails(config =&gt; config with
-{
-    PopulateErrorInfo = true
-});</code></pre>
+  <h5 id="NanoRoute_NanoRouteJsonExtensions_AddJsonErrorDetails__1___0_System_String_System_String_System_Action_NanoRoute_JsonErrorDetailsOptions___examples">Examples</h5>
+  <pre><code class="lang-csharp">builder.AddJsonErrorDetails("GET", "/api/*", options =&gt; options.PopulateErrorInfo = true);</code></pre>
 
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -1844,8 +2352,17 @@ Registered JSON error-detail middleware snapshots the configuration that is curr
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">configure</code>, or the value returned
-by <code class="paramref">configure</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><p>Thrown when <code class="paramref">routeScopeBuilder</code>, <code class="paramref">verb</code>, <code class="paramref">pattern</code>, or <code class="paramref">configure</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown when <code class="paramref">verb</code> is not supported or <code class="paramref">pattern</code> has invalid route-template syntax.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown when <code class="paramref">pattern</code> uses unsupported route-template features, references a missing value parser, or conflicts with an existing parser-backed branch.</p>
 </td>
       </tr>
     </tbody>

@@ -100,13 +100,13 @@
     </tbody>
   </table>
   <h5 id="NanoRoute_TypedExceptionNormalizer_1_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>Use this delegate with <code>ExceptionNormalizer.For&lt;TException&gt;(...)</code> to register typed
-normalizers in <a class="xref" href="NanoRoute.ExceptionHandlingConfig.html#NanoRoute_ExceptionHandlingConfig_ExceptionNormalizers">ExceptionNormalizers</a> without manually casting from
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>. Exception handlers check the exact runtime type first, then walk base exception
-types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered.</p>
+  <div class="markdown level0 remarks"><p>Use this delegate with <a class="xref" href="NanoRoute.ExceptionHandlingOptions.html#NanoRoute_ExceptionHandlingOptions_Map__1_NanoRoute_TypedExceptionNormalizer___0__">Map&lt;TException&gt;(TypedExceptionNormalizer&lt;TException&gt;)</a>
+to register typed normalizers without manually casting from <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>. Exception handlers
+check the exact runtime type first, then walk base exception types, so a base-type normalizer handles
+derived exceptions unless a more specific normalizer is registered.</p>
 </div>
   <h5 id="NanoRoute_TypedExceptionNormalizer_1_examples"><strong>Examples</strong></h5>
-  <pre><code class="lang-csharp">ExceptionNormalizer.For&lt;InvalidOperationException&gt;
+  <pre><code class="lang-csharp">options.Map&lt;InvalidOperationException&gt;
 (
     static ex =&gt; new HttpRequestException("Bad state", ex, HttpStatusCode.Conflict)
 );</code></pre>
