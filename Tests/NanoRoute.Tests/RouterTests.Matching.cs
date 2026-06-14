@@ -219,10 +219,12 @@ namespace NanoRoute.Tests
                     parsed = segment.ToString();
                     return true;
                 })
-                .ConfigureRouting(config => config with { MatchingPrecedence = matchingPrecedence })
                 .AddHandler("GET", "/items/literal/", mockLiteralHandler.Object)
                 .AddHandler("GET", "/items/{value:str}/", mockParameterizedHandler.Object)
-                .CreateRouter();
+                .CreateRouter(config =>
+                {
+                    config.MatchingPrecedence = matchingPrecedence;
+                });
 
             _request.RequestUri = new Uri("https://www.exmaple.com/items/literal");
 

@@ -26,8 +26,8 @@ namespace NanoRoute
     /// <code>
     /// public sealed class MyRouter : RouterBase&lt;RouterConfig&gt;
     /// {
-    ///     private MyRouter(RouterBuilder&lt;MyRouter, RouterConfig&gt; builder)
-    ///         : base(builder, builder.RouterConfig)
+    ///     private MyRouter(RouteScopeBuilder routes, RouterConfig config)
+    ///         : base(routes, config)
     ///     {
     ///     }
     ///

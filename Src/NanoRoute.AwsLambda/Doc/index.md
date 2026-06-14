@@ -167,12 +167,11 @@ If the adapter cannot determine a host from `RequestDomain` or `requestContext.d
 ```csharp
 ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
-    .ConfigureRouting(config => config with
+    .CreateRouter(config =>
     {
-        RequestScheme = "https",
-        RequestDomain = "api.example.com"
-    })
-    .CreateRouter();
+        config.RequestScheme = "https";
+        config.RequestDomain = "api.example.com";
+    });
 ```
 
 ## Response Mapping
@@ -197,10 +196,6 @@ Use `ApiGatewayV2RouterConfig.LambdaTimeoutBuffer` when your function needs a di
 ```csharp
 ApiGatewayV2Router router = ApiGatewayV2Router
     .CreateBuilder()
-    .ConfigureRouting(config => config with
-    {
-        LambdaTimeoutBuffer = TimeSpan.FromSeconds(3)
-    })
     .AddJsonErrorDetails()
     .AddEndpoint("GET", "/health/", endpoint => endpoint
         .WithHandler(static async (_, _) =>
@@ -208,7 +203,10 @@ ApiGatewayV2Router router = ApiGatewayV2Router
             await Task.CompletedTask;
             return new HttpResponseMessage(HttpStatusCode.OK);
         }))
-    .CreateRouter();
+    .CreateRouter(config =>
+    {
+        config.LambdaTimeoutBuffer = TimeSpan.FromSeconds(3);
+    });
 ```
 
 ## Typed Handlers
@@ -255,15 +253,15 @@ ApiGatewayV2Router router = ApiGatewayV2Router
 - `ApiGatewayV2Router.CreateBuilder()` starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.
 - `ApiGatewayV2Router` derives from the core `RouterBase<ApiGatewayV2RouterConfig>` helper.
 - `ApiGatewayV2RouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`, and adds `LambdaTimeoutBuffer`, `RequestScheme`, and `RequestDomain`.
-- `ConfigureRouting()` customizes `ApiGatewayV2RouterConfig` before creating a router snapshot.
+- `CreateRouter(config => ...)` customizes `ApiGatewayV2RouterConfig` while creating a router snapshot.
 - `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, ILambdaContext)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
 - `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
-- `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` middleware.
+- `AddQueryBindings(..., unexpected: ...)` and `EndpointBuilder.WithQueryBindings(..., unexpected: ...)` customize query-binding behavior per registration.
 - `AddEndpoint()` and `CreateEndpoint()` capture endpoint verbs and route patterns once; endpoint helpers such as `WithHandler()`, `WithJsonBody()`, and `WithQueryBindings()` work under Lambda the same way they do in the core package.
 - `AddJsonBody()` and `EndpointBuilder.WithJsonBody()` bind JSON request content into `RequestContext.Parameters`.
 - `AddJsonErrorDetails()` turns routing exceptions into JSON `ErrorDetails` responses when explicitly added.
-- `ConfigureJsonErrorDetails()` customizes JSON `ErrorDetails` response diagnostics and serialization metadata used by subsequently registered `AddJsonErrorDetails()` middleware.
+- `AddJsonErrorDetails(options => ...)` customizes JSON `ErrorDetails` response diagnostics and serialization metadata per registration.
 - `AddHandler<TRequest>()` and `EndpointBuilder.WithHandler<TRequest>()` project `RequestContext` into a typed request object before invoking the handler.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 

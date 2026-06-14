@@ -25,21 +25,17 @@ namespace NanoRoute.Tests
         [Test]
         public void CreateBuilder_ShouldCreateRouterWithConfigSnapshot()
         {
-            RouterBuilder<HttpMessageRouter, RouterConfig> builder = HttpMessageRouter
-                .CreateBuilder()
-                .ConfigureRouting(static config => config with
-                {
-                    MatchingPrecedence = MatchingPrecedence.ParameterizedFirst
-                });
+            RouterBuilder<HttpMessageRouter, RouterConfig> builder = HttpMessageRouter.CreateBuilder();
 
-            HttpMessageRouter router = builder.CreateRouter();
-
-            builder.ConfigureRouting(static config => config with
+            HttpMessageRouter router = builder.CreateRouter(static config =>
             {
-                MatchingPrecedence = MatchingPrecedence.LiteralFirst
+                config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
             });
 
+            HttpMessageRouter defaultRouter = builder.CreateRouter();
+
             Assert.That(router.Config.MatchingPrecedence, Is.EqualTo(MatchingPrecedence.ParameterizedFirst));
+            Assert.That(defaultRouter.Config.MatchingPrecedence, Is.EqualTo(MatchingPrecedence.LiteralFirst));
         }
 
         [Test]

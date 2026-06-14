@@ -105,12 +105,12 @@ namespace NanoRoute
         }
 
         /// <summary>
-        /// Creates a router from the builder's current routes, parser registrations, and configuration.
+        /// Creates a router from the builder's current routes and parser registrations with default configuration.
         /// </summary>
         /// <returns>A new <typeparamref name="TRouter"/> instance.</returns>
         /// <remarks>
-        /// The created router is an immutable snapshot. Later changes to the builder or its configuration do not
-        /// affect routers that have already been created.
+        /// The created router is an immutable snapshot. Later changes to the builder do not affect routers that
+        /// have already been created.
         /// </remarks>
         /// <example>
         /// <code>
@@ -120,10 +120,25 @@ namespace NanoRoute
         public TRouter CreateRouter() => CreateRouter(static _ => { });
 
         /// <summary>
-        /// TODO
+        /// Creates a router from the builder's current routes and parser registrations with inline configuration.
         /// </summary>
-        /// <param name="configureRouting"></param>
-        /// <returns></returns>
+        /// <param name="configureRouting">A callback that configures the new router instance before it is created.</param>
+        /// <returns>A new <typeparamref name="TRouter"/> instance.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when <paramref name="configureRouting"/> is <see langword="null"/>.
+        /// </exception>
+        /// <remarks>
+        /// The callback receives a fresh <typeparamref name="TConfig"/> instance for this router. Later calls to
+        /// <see cref="CreateRouter(Action{TConfig})"/> receive their own configuration instances.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// MyRouter router = builder.CreateRouter(config =&gt;
+        /// {
+        ///     config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+        /// });
+        /// </code>
+        /// </example>
         public TRouter CreateRouter(Action<TConfig> configureRouting)
         {
             Ensure.NotNull(configureRouting);

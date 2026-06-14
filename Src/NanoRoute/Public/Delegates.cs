@@ -15,21 +15,21 @@ namespace NanoRoute
     /// <typeparam name="TRouter">The concrete router type produced by the factory.</typeparam>
     /// <typeparam name="TConfig">The strongly typed router configuration used by the builder.</typeparam>
     /// <param name="scope">
-    /// The builder that contains the current route registrations, parser registrations, and configuration.
+    /// The route scope that contains the current route and parser registrations.
     /// </param>
-    /// <param name="config">TODO</param>
+    /// <param name="config">The configuration assigned to the router instance being created.</param>
     /// <returns>
     /// A <typeparamref name="TRouter"/> instance backed by the builder's current route snapshot.
     /// </returns>
     /// <remarks>
-    /// Exceptions thrown by the factory propagate to the caller of <see cref="RouterBuilder{TRouter, TConfig}.CreateRouter"/>.
+    /// Exceptions thrown by the factory propagate to the caller of <see cref="RouterBuilder{TRouter, TConfig}.CreateRouter(Action{TConfig})"/>.
     /// </remarks>
     /// <example>
     /// <code>
-    /// var builder = new RouterBuilder&lt;MyRouter, RouterConfig&gt;(static b =&gt; new MyRouter(b));
+    /// var builder = new RouterBuilder&lt;MyRouter, RouterConfig&gt;(static (scope, config) =&gt; new MyRouter(scope, config));
     /// </code>
     /// </example>
-    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouteScopeBuilder scope, TConfig config) where TRouter : Router where TConfig : RouterConfig;
+    public delegate TRouter RouterFactoryDelegate<TRouter, TConfig>(RouteScopeBuilder scope, TConfig config) where TRouter : RouterBase<TConfig> where TConfig : RouterConfig;
 
     /// <summary>
     /// Invokes the next compatible handler in the current routing pipeline.

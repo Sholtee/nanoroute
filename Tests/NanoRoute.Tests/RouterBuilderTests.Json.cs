@@ -90,11 +90,10 @@ namespace NanoRoute.Tests
         public async Task AddJsonErrorDetails_ShouldHandleNotFoundEvents(bool populateErrorInfo)
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureJsonErrorDetails(config => config with
+                .AddJsonErrorDetails(options =>
                 {
-                    PopulateErrorInfo = populateErrorInfo
+                    options.PopulateErrorInfo = populateErrorInfo;
                 })
-                .AddJsonErrorDetails()
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
@@ -121,11 +120,10 @@ namespace NanoRoute.Tests
             const string ERROR_MSG = "Oooops";
 
             HttpMessageRouter router = _routerBuilder
-                .ConfigureJsonErrorDetails(config => config with
+                .AddJsonErrorDetails(options =>
                 {
-                    PopulateErrorInfo = populateErrorInfo
+                    options.PopulateErrorInfo = populateErrorInfo;
                 })
-                .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere/", (_, _) => throw new Exception(ERROR_MSG))
                 .CreateRouter();
 
@@ -197,11 +195,10 @@ namespace NanoRoute.Tests
             );
 
             HttpMessageRouter router = _routerBuilder
-                .ConfigureJsonErrorDetails(config => config with
+                .AddJsonErrorDetails(options =>
                 {
-                    PopulateErrorInfo = populateErrorInfo
+                    options.PopulateErrorInfo = populateErrorInfo;
                 })
-                .AddJsonErrorDetails()
                 .AddHandler("GET", "/somewhere/", (_, _) => throw aggregate)
                 .CreateRouter();
 
@@ -242,14 +239,13 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public async Task ConfigureJsonErrorDetails_ShouldConfigureErrorDetailsSerialization()
+        public async Task AddJsonErrorDetails_ShouldConfigureErrorDetailsSerialization()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureJsonErrorDetails(config => config with
+                .AddJsonErrorDetails(options =>
                 {
-                    ErrorDetailsTypeInfo = SnakeCaseErrorDetailsJsonContext.Default.ErrorDetails
+                    options.ErrorDetailsTypeInfo = SnakeCaseErrorDetailsJsonContext.Default.ErrorDetails;
                 })
-                .AddJsonErrorDetails()
                 .CreateRouter();
 
             HttpRequestMessage request = new() { RequestUri = new Uri("https://test.test") };
@@ -513,14 +509,14 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => HttpResponseMessage.Json(HttpStatusCode.OK, new TestJsonPayload { Name = "Spikey" }, (JsonSerializerOptions) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("options"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).ConfigureJsonErrorDetails(config => config))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddJsonErrorDetails(static _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureJsonErrorDetails(null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonErrorDetails((Action<JsonErrorDetailsOptions>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("configure"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureJsonErrorDetails(_ => null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("config"));
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddJsonErrorDetails(["GET"], "/", (JsonErrorDetailsOptions) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("options"));
 
             ex = Assert.Throws<ArgumentNullException>(() => new JsonErrorDetailsOptions { ErrorDetailsTypeInfo = null! })!;
             Assert.That(ex.ParamName, Is.EqualTo("value"));

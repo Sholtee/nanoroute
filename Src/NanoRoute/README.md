@@ -136,6 +136,7 @@ public interface IUserRepository
 - Prefix route patterns start with `/` and end with `/*`, for example `/items/*`.
 - `HttpMessageRouter.CreateBuilder()` creates a router for already materialized `HttpRequestMessage` requests.
 - `RouterBase<TConfig>` helps custom transport adapters expose configuration and capture a route snapshot.
+- `CreateRouter(config => ...)` customizes `RouterConfig` for one router snapshot, including `MatchingPrecedence`.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` parsers.
 - `AddPrefix()` and `CreatePrefix()` define scoped route subtrees.
 - `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`, with per-registration handling for undeclared query keys.

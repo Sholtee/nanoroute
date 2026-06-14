@@ -49,12 +49,11 @@ namespace NanoRoute.AwsLambda.Tests
         {
             ApiGatewayV2Router router = ApiGatewayV2Router
                 .CreateBuilder()
-                .ConfigureRouting(static config => config with
+                .CreateRouter(static config =>
                 {
-                    RequestScheme = "http",
-                    RequestDomain = "localhost:8080"
-                })
-                .CreateRouter();
+                    config.RequestScheme = "http";
+                    config.RequestDomain = "localhost:8080";
+                });
 
             APIGatewayHttpApiV2ProxyRequest request = CreateRequest(domainName: "ignored.example");
 

@@ -83,11 +83,10 @@ namespace NanoRoute.Tests
         public void AddExceptionHandler_ShouldUseConfiguredExceptionNormalizers()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
+                .AddExceptionHandler(options =>
                 {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeConflict)
+                    options.Map<NotSupportedException>(NormalizeConflict);
                 })
-                .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw new NotSupportedException("nope"))
                 .CreateRouter();
 
@@ -111,11 +110,10 @@ namespace NanoRoute.Tests
         public void AddExceptionHandler_ShouldUseBaseExceptionNormalizerForDerivedExceptions()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
+                .AddExceptionHandler(options =>
                 {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(SystemException), NormalizeConflict)
+                    options.Map<SystemException>(NormalizeConflict);
                 })
-                .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
                 .CreateRouter();
 
@@ -137,15 +135,11 @@ namespace NanoRoute.Tests
         public void AddExceptionHandler_ShouldPreferExactExceptionNormalizerOverBaseNormalizer()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
+                .AddExceptionHandler(options =>
                 {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItems
-                    ([
-                        new KeyValuePair<Type, ExceptionNormalizer>(typeof(SystemException), NormalizeConflict),
-                        new KeyValuePair<Type, ExceptionNormalizer>(typeof(InvalidOperationException), NormalizeTeapot)
-                    ])
+                    options.Map<SystemException>(NormalizeConflict);
+                    options.Map<InvalidOperationException>(NormalizeTeapot);
                 })
-                .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
                 .CreateRouter();
 
@@ -167,11 +161,10 @@ namespace NanoRoute.Tests
         public void AddExceptionHandler_ShouldIgnoreNonExceptionBaseNormalizers()
         {
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
+                .AddExceptionHandler(options =>
                 {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(object), NormalizeTeapot)
+                    options.ExceptionNormalizers[typeof(object)] = NormalizeTeapot;
                 })
-                .AddExceptionHandler()
                 .AddHandler("GET", "/items/", (_, _) => throw new InvalidOperationException("nope"))
                 .CreateRouter();
 
@@ -190,20 +183,17 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void AddExceptionHandler_ShouldSnapshotExceptionHandlingConfiguration()
+        public void AddExceptionHandler_ShouldSnapshotExceptionHandlingOptions()
         {
+            ExceptionHandlingOptions options = new();
+            options.Map<NotSupportedException>(NormalizeConflict);
+
             HttpMessageRouter router = _routerBuilder
-                .ConfigureExceptionHandling(config => config with
-                {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeConflict)
-                })
-                .AddExceptionHandler()
-                .ConfigureExceptionHandling(config => config with
-                {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeTeapot)
-                })
+                .AddExceptionHandler(["GET"], RouteScopeBuilder.CurrentPrefix, options)
                 .AddHandler("GET", "/items/", (_, _) => throw new NotSupportedException("nope"))
                 .CreateRouter();
+
+            options.ExceptionNormalizers[typeof(NotSupportedException)] = NormalizeTeapot;
 
             HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
@@ -215,21 +205,19 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void ConfigureExceptionHandling_ShouldUseScopedBuilderMetadata()
+        public void AddExceptionHandler_ShouldUseRegistrationSpecificOptions()
         {
             _routerBuilder
-                .ConfigureExceptionHandling(config => config with
-                {
-                    ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeConflict)
-                })
                 .AddPrefix("/child/*", child => child
-                    .ConfigureExceptionHandling(config => config with
+                    .AddExceptionHandler("/items/", options =>
                     {
-                        ExceptionNormalizers = config.ExceptionNormalizers.SetItem(typeof(NotSupportedException), NormalizeTeapot)
+                        options.Map<NotSupportedException>(NormalizeTeapot);
                     })
-                    .AddExceptionHandler("/items/")
                     .AddHandler("GET", "/items/", (_, _) => throw new NotSupportedException("child")))
-                .AddExceptionHandler("/parent/")
+                .AddExceptionHandler("/parent/", options =>
+                {
+                    options.Map<NotSupportedException>(NormalizeConflict);
+                })
                 .AddHandler("GET", "/parent/", (_, _) => throw new NotSupportedException("parent"));
 
             HttpMessageRouter router = _routerBuilder.CreateRouter();
@@ -287,14 +275,6 @@ namespace NanoRoute.Tests
         }
 
         [Test]
-        public void ConfigureExceptionHandling_ShouldReturnTheOriginalBuilder()
-        {
-            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.ConfigureExceptionHandling(static config => config);
-
-            Assert.That(result, Is.SameAs(_routerBuilder));
-        }
-
-        [Test]
         public void ExceptionHelpers_ShouldBeNullChecked() => Assert.Multiple(() =>
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddExceptionHandler())!;
@@ -309,25 +289,25 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((IReadOnlyCollection<string>) null!, "/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verbs"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler(["GET"], null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler(["GET"], (string) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((string) null!, "/"))!;
             Assert.That(ex.ParamName, Is.EqualTo("verb"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler("GET", null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler("GET", (string) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("pattern"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).ConfigureExceptionHandling(static config => config))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddExceptionHandler(static _ => { }))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureExceptionHandling(null!))!;
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler((Action<ExceptionHandlingOptions>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("configure"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureExceptionHandling(_ => null!))!;
-            Assert.That(ex.ParamName, Is.EqualTo("config"));
+            ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddExceptionHandler(["GET"], "/", (ExceptionHandlingOptions) null!))!;
+            Assert.That(ex.ParamName, Is.EqualTo("options"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => new ExceptionHandlingConfig { ExceptionNormalizers = null! })!;
+            ex = Assert.Throws<ArgumentNullException>(() => new ExceptionHandlingOptions { ExceptionNormalizers = null! })!;
             Assert.That(ex.ParamName, Is.EqualTo("value"));
         });
 

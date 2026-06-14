@@ -138,12 +138,11 @@ public interface IUserRepository
 
 ## Router Configuration
 
-`RouterConfig` controls runtime behavior that applies to a created router snapshot. Use `UseMatchingPrecedence()` when you want routers created by the builder to prefer parameterized route segments over literal segments at the same path depth.
+`RouterConfig` controls runtime behavior for one router snapshot. Pass a configuration callback to `CreateRouter(...)` when that snapshot should use non-default matching behavior.
 
 ```csharp
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
-    .UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst)
     .AddDefaultValueParsers()
     .AddEndpoint("GET", "/items/{slug:str}/", endpoint => endpoint
         .WithHandler(static async (context, _) =>
@@ -151,10 +150,13 @@ HttpListenerRouter router = HttpListenerRouter
             await Task.CompletedTask;
             return HttpResponseMessage.Json(new { slug = context.Parameters["slug"] });
         }))
-    .CreateRouter();
+    .CreateRouter(config =>
+    {
+        config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+    });
 ```
 
-Created routers are immutable snapshots: later route or configuration changes on the builder do not affect routers that have already been created.
+Created routers are immutable snapshots: later route changes on the builder and later `CreateRouter(...)` configuration callbacks do not affect routers that have already been created.
 
 ## Prefix Scopes
 

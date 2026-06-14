@@ -48,7 +48,7 @@ namespace NanoRoute
             "WWW-Authenticate"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig)
+        private HttpListenerRouter(RouteScopeBuilder routes, HttpListenerRouterConfig config) : base(routes, config)
         {
         }
 
@@ -136,7 +136,7 @@ namespace NanoRoute
         /// RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = HttpListenerRouter.CreateBuilder();
         /// </code>
         /// </example>
-        public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static builder => new HttpListenerRouter(builder));
+        public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static (routes, config) => new HttpListenerRouter(routes, config));
 
         /// <summary>
         /// Routes a single <see cref="HttpListener"/> request and writes the produced response.

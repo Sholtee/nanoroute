@@ -13,7 +13,7 @@ namespace NanoRoute
     /// HttpListenerRouterConfig config = new();
     /// </code>
     /// </example>
-    public sealed record HttpListenerRouterConfig : RouterConfig
+    public sealed class HttpListenerRouterConfig : RouterConfig
     {
     }
 }

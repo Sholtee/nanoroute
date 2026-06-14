@@ -114,7 +114,7 @@ namespace NanoRoute
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly Action<JsonErrorDetailsOptions> s_noopConfigure = static _ => { };
 
-        private static RequestHandlerDelegate CreateHandler(JsonTypeInfo typeInfo, string paramName)
+        private static RequestHandlerDelegate CreateJsonBodyHandler(JsonTypeInfo typeInfo, string paramName)
         {
             Ensure.NotNull(typeInfo);
             Ensure.NotNull(paramName);
@@ -198,7 +198,7 @@ namespace NanoRoute
             /// <exception cref="HttpRequestException">Thrown during request processing when the body is missing, the content type is not JSON, or the JSON payload is invalid.</exception>
             /// <exception cref="OperationCanceledException">Thrown during request processing when the request cancellation token is canceled.</exception>
             public TBuilder AddJsonBody(IEnumerable<string> verbs, string pattern, JsonTypeInfo typeInfo, string paramName) =>
-                routeScopeBuilder.AddHandler(verbs, pattern, CreateHandler(typeInfo, paramName));
+                routeScopeBuilder.AddHandler(verbs, pattern, CreateJsonBodyHandler(typeInfo, paramName));
 
             /// <summary>
             /// Deserializes JSON request bodies into a route parameter for a single HTTP method.
@@ -708,7 +708,7 @@ namespace NanoRoute
                         }
                         catch (HttpRequestException ex)
                         {
-                            ErrorDetails errorDetails = ex.GetErrorDetails(config.PopulateErrorInfo, context.Request.TraceId);
+                            ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, context.Request.TraceId);
 
                             return HttpResponseMessage.Json
                             (
@@ -752,7 +752,7 @@ namespace NanoRoute
 
                 return endpointBuilder.WithHandler
                 (
-                    CreateHandler(typeInfo, paramName)
+                    CreateJsonBodyHandler(typeInfo, paramName)
                 );
             }
 

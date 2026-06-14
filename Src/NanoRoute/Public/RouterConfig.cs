@@ -12,7 +12,10 @@ namespace NanoRoute
     /// </summary>
     /// <example>
     /// <code>
-    /// builder.UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst);
+    /// HttpMessageRouter router = builder.CreateRouter(config =&gt;
+    /// {
+    ///     config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+    /// });
     /// </code>
     /// </example>
     public enum MatchingPrecedence
@@ -22,7 +25,10 @@ namespace NanoRoute
         /// </summary>
         /// <example>
         /// <code>
-        /// builder.UseMatchingPrecedence(MatchingPrecedence.LiteralFirst);
+        /// HttpMessageRouter router = builder.CreateRouter(config =&gt;
+        /// {
+        ///     config.MatchingPrecedence = MatchingPrecedence.LiteralFirst;
+        /// });
         /// </code>
         /// </example>
         LiteralFirst,
@@ -32,7 +38,10 @@ namespace NanoRoute
         /// </summary>
         /// <example>
         /// <code>
-        /// builder.UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst);
+        /// HttpMessageRouter router = builder.CreateRouter(config =&gt;
+        /// {
+        ///     config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+        /// });
         /// </code>
         /// </example>
         ParameterizedFirst
@@ -43,7 +52,10 @@ namespace NanoRoute
     /// </summary>
     /// <example>
     /// <code>
-    /// builder.UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst);
+    /// HttpMessageRouter router = builder.CreateRouter(config =&gt;
+    /// {
+    ///     config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+    /// });
     /// </code>
     /// </example>
     public class RouterConfig
@@ -54,7 +66,10 @@ namespace NanoRoute
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is not a defined <see cref="MatchingPrecedence"/> value.</exception>
         /// <example>
         /// <code>
-        /// builder.UseMatchingPrecedence(MatchingPrecedence.ParameterizedFirst);
+        /// HttpMessageRouter router = builder.CreateRouter(config =&gt;
+        /// {
+        ///     config.MatchingPrecedence = MatchingPrecedence.ParameterizedFirst;
+        /// });
         /// </code>
         /// </example>
         public MatchingPrecedence MatchingPrecedence

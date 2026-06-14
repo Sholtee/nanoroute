@@ -15,8 +15,6 @@ namespace NanoRoute.Tests
 {
     internal sealed partial class RouterBuilderTests
     {
-        private sealed record EndpointMetadata(string Value);
-
         [Test]
         public async Task AddEndpoint_WithExactPattern_ShouldMatchOnlyExactPath()
         {
@@ -159,29 +157,6 @@ namespace NanoRoute.Tests
             );
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Accepted));
-        }
-
-        [Test]
-        public void EndpointBuilder_Prefix_ShouldExposeEndpointScopedRouteScope()
-        {
-            EndpointMetadata
-                missing = new(nameof(missing)),
-                parent = new(nameof(parent)),
-                endpoint = new(nameof(endpoint));
-
-            _routerBuilder.Metadata.Set(parent);
-
-            EndpointBuilder endpointBuilder = _routerBuilder.CreateEndpoint("GET", "/items/");
-
-            Assert.That(endpointBuilder.Prefix.Metadata.GetOrDefault(missing), Is.EqualTo(parent));
-
-            endpointBuilder.Prefix.Metadata.Set(endpoint);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(endpointBuilder.Prefix.Metadata.GetOrDefault(missing), Is.EqualTo(endpoint));
-                Assert.That(_routerBuilder.Metadata.GetOrDefault(missing), Is.EqualTo(parent));
-            });
         }
 
         [Test]
