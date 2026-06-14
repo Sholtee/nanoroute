@@ -131,6 +131,17 @@ namespace NanoRoute.AwsLambda.Tests
         }
 
         [Test]
+        public void RequestScheme_ShouldRejectNullValues()
+        {
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>
+            (
+                static () => new ApiGatewayV2RouterConfig { RequestScheme = null! }
+            )!;
+
+            Assert.That(ex.ParamName, Is.EqualTo("value"));
+        }
+
+        [Test]
         public void Route_ShouldBeNullCheckedForRequest()
         {
             ApiGatewayV2Router router = ApiGatewayV2Router.CreateBuilder().CreateRouter();
@@ -184,11 +195,7 @@ namespace NanoRoute.AwsLambda.Tests
             string requestId = "request-id"
         )
         {
-            Dictionary<string, string> allHeaders = new(StringComparer.OrdinalIgnoreCase)
-            {
-                ["host"] = "example.com",
-                ["x-forwarded-proto"] = "https"
-            };
+            Dictionary<string, string> allHeaders = new(StringComparer.OrdinalIgnoreCase);
 
             if (headers is not null)
                 foreach (KeyValuePair<string, string> header in headers)
@@ -200,6 +207,7 @@ namespace NanoRoute.AwsLambda.Tests
                 RawPath = rawPath,
                 RequestContext = new APIGatewayHttpApiV2ProxyRequest.ProxyRequestContext
                 {
+                    DomainName = "example.com",
                     RequestId = requestId,
                     Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription
                     {
