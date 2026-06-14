@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -33,74 +34,109 @@ namespace NanoRoute
     ///     .CreateRouter();
     /// </code>
     /// </example>
-    public sealed class HttpListenerRouter : Router<HttpListenerRouter, HttpListenerRouterConfig>
+    public sealed class HttpListenerRouter : RouterBase<HttpListenerRouterConfig>
     {
         #region Private
-        // https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistenerresponse.headers?view=net-10.0#remarks
-        private static readonly FrozenSet<string> s_reservedHeaders = new List<string>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private static readonly FrozenSet<string> s_managedResponseHeaders = new List<string>
         {
             "Content-Length",
+            "Content-Type",
             "Transfer-Encoding",
             "Keep-Alive",
-            "Server"
+            "Server",
+            "WWW-Authenticate"
         }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder) { }
+        private HttpListenerRouter(RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder) : base(builder, builder.RouterConfig)
+        {
+        }
 
-        private static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
+        internal static async Task HandleResponse(HttpResponseMessage responseMessage, HttpListenerResponse response, CancellationToken cancellation)
         {
             response.StatusCode = (int) responseMessage.StatusCode;
 
-            CopyResponseHeaders(responseMessage.Headers);
+            CopyResponseHeaders(responseMessage.Headers, response.Headers);
 
             if (responseMessage.Content is not null)
             {
-                CopyResponseHeaders(responseMessage.Content.Headers);
+                if (responseMessage.Content.Headers.ContentType is { } contentType)
+                    response.ContentType = contentType.ToString();
 
-                using Stream buffer = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                CopyResponseHeaders(responseMessage.Content.Headers, response.Headers);
+
+                using Stream contentStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+
+                if (contentStream.CanSeek)
+                {
+                    long contentLength = contentStream.Length - contentStream.Position;
+                    if (contentLength >= 0)
+                        response.ContentLength64 = contentLength;
+                }
 
                 // https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/IO/Stream.cs#L126
-                await buffer.CopyToAsync(response.OutputStream, 81920, cancellation).ConfigureAwait(false);
+                await contentStream.CopyToAsync(response.OutputStream, 81920, cancellation).ConfigureAwait(false);
             }
 
             response.Close();
 
-            void CopyResponseHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
+            static void CopyResponseHeaders(HttpHeaders headers, WebHeaderCollection target)
             {
                 foreach (KeyValuePair<string, IEnumerable<string>> header in headers)
-                    if (!s_reservedHeaders.Contains(header.Key))
-                        response.Headers.Add(header.Key, string.Join(",", header.Value));
+                    if (!s_managedResponseHeaders.Contains(header.Key))
+                        foreach (string value in header.Value)
+                            target.Add(header.Key, value);
             }
         }
 
-        private static HttpRequestMessage GetRequest(HttpListenerRequest request)
+        internal static HttpRequestMessage GetRequest(HttpListenerRequest request)
         {
             HttpRequestMessage requestMessage = new
             (
-                new HttpMethod(request.HttpMethod),
+                HttpMethod.For(request.HttpMethod),
                 request.Url
             );
 
             if (request.HasEntityBody)
-                requestMessage.Content = new StreamContent(request.InputStream);
-
-            foreach (string headerName in request.Headers.AllKeys)
             {
-                HttpHeaders headers = requestMessage.Content is not null && HttpRequestMessage.ContentHeaders.Contains(headerName)
-                    ? requestMessage.Content.Headers
-                    : requestMessage.Headers;
-
-                // Some header (like Content-Type) has its default value. Without this line we'd just append the value list
-                headers.Remove(headerName);
-                headers.TryAddWithoutValidation(headerName, request.Headers.GetValues(headerName));
+                requestMessage.Content = new StreamContent(request.InputStream);
+                requestMessage.Content.Headers.Clear();
             }
 
-            requestMessage.Properties[OriginalRequestName] = request;
-            requestMessage.Properties[TraceIdName] = request.RequestTraceIdentifier.ToString("N");
+            HttpHeaders
+                requestHeaders = requestMessage.Headers,
+                contentHeaders = requestMessage.Content?.Headers!;
+
+            for (int i = 0; i < request.Headers.Count; i++)
+            {
+                string? headerName = request.Headers.GetKey(i);
+                if (headerName is null)
+                    continue;
+
+                HttpHeaders headers = contentHeaders is not null && HttpRequestMessage.ContentHeaders.Contains(headerName)
+                    ? contentHeaders
+                    : requestHeaders;
+
+                headers.TryAddWithoutValidation(headerName, request.Headers.GetValues(i));
+            }
+
+            requestMessage.OriginalRequest = request;
+            requestMessage.TraceId = request.RequestTraceIdentifier.ToString("N");
 
             return requestMessage;
         }
         #endregion
+
+        /// <summary>
+        /// Creates a strongly typed builder for <see cref="HttpListenerRouter"/>.
+        /// </summary>
+        /// <returns>A builder that can register handlers, value parsers, and router configuration.</returns>
+        /// <example>
+        /// <code>
+        /// RouterBuilder&lt;HttpListenerRouter, HttpListenerRouterConfig&gt; builder = HttpListenerRouter.CreateBuilder();
+        /// </code>
+        /// </example>
+        public static RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> CreateBuilder() => new(static builder => new HttpListenerRouter(builder));
 
         /// <summary>
         /// Routes a single <see cref="HttpListener"/> request and writes the produced response.
@@ -112,7 +148,7 @@ namespace NanoRoute
         /// <exception cref="ArgumentNullException">
         /// Thrown when <paramref name="context"/> or <paramref name="services"/> is <see langword="null"/>.
         /// </exception>
-        /// <exception cref="ArgumentException">Thrown when the request uses an unsupported HTTP method.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the request uses an unsupported HTTP method.</exception>
         /// <exception cref="HttpRequestException">
         /// Thrown when no handler matches the request path or a matched handler signals an HTTP failure that is not
         /// translated by middleware.
@@ -123,8 +159,8 @@ namespace NanoRoute
         /// </exception>
         /// <remarks>
         /// Request and content headers are copied into the intermediate <see cref="HttpRequestMessage"/>.
-        /// The original <see cref="HttpListenerRequest"/> is stored in
-        /// <see cref="Router.OriginalRequestName"/> on the generated request message.
+        /// The original <see cref="HttpListenerRequest"/> is available through the generated request message's
+        /// <c>OriginalRequest</c> extension property.
         /// Response headers are copied back except for reserved <see cref="HttpListenerResponse"/> headers that
         /// must be managed by <see cref="HttpListener"/> itself. Cancellation is not translated into an HTTP error
         /// response by this adapter.
@@ -154,7 +190,7 @@ namespace NanoRoute
 
             try
             {
-                using HttpResponseMessage response = await Handle(request, services, cancellation).ConfigureAwait(false);
+                using HttpResponseMessage response = await Route(request, services, cancellation).ConfigureAwait(false);
 
                 await HandleResponse(response, context.Response, cancellation).ConfigureAwait(false);
             }

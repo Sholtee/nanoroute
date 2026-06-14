@@ -21,26 +21,26 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithSingleVerbAndPattern_ShouldBindHandlerToMatchingRouteAndVerb()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent("items")
                 })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 s_services
             );
 
-            HttpRequestException wrongVerb = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException wrongVerb = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
                 s_services
             ))!;
 
-            HttpRequestException wrongPath = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException wrongPath = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/1"),
                 s_services
@@ -55,7 +55,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithRouteParameters_ShouldPopulateTheRequestContext()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler("GET", "/items/{id:int}/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -63,7 +63,7 @@ namespace NanoRoute.Tests
                 })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services
@@ -76,26 +76,26 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithMultipleVerbsAndPattern_ShouldRegisterTheHandlerForEachVerb()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler(["GET", "POST"], "/items/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(context.Request.Method.Method)
                 })
                 .CreateRouter();
 
-            HttpResponseMessage getResponse = await router.Handle
+            HttpResponseMessage getResponse = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 s_services
             );
 
-            HttpResponseMessage postResponse = await router.Handle
+            HttpResponseMessage postResponse = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
                 s_services
             );
 
-            HttpRequestException deleteResponse = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException deleteResponse = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Delete, "https://test.test/items"),
                 s_services
@@ -109,7 +109,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddHandler_WithPatternOnlyOverload_ShouldRegisterTheHandlerForAllVerbs()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler("/items/", async (context, _) => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(context.Request.Method.Method)
@@ -118,7 +118,7 @@ namespace NanoRoute.Tests
 
             foreach (string verb in new[] { "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE" })
             {
-                HttpResponseMessage response = await router.Handle
+                HttpResponseMessage response = await router.Route
                 (
                     new HttpRequestMessage(new HttpMethod(verb), "https://test.test/items"),
                     s_services
@@ -137,19 +137,19 @@ namespace NanoRoute.Tests
                 .Setup(h => h.Invoke(It.IsAny<RequestContext>(), It.IsAny<CallNextHandlerDelegate>()))
                 .Returns<RequestContext, CallNextHandlerDelegate>(async (_, next) => await next());
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler(["GET"], mockHandler.Object)
                 .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted))
                 .CreateRouter();
 
-            HttpResponseMessage getResponse = await router.Handle
+            HttpResponseMessage getResponse = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 s_services
             );
 
-            HttpResponseMessage postResponse = await router.Handle
+            HttpResponseMessage postResponse = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Post, "https://test.test/items"),
                 s_services
@@ -200,7 +200,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task WithHandler_ShouldBindRouteValues()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddEndpoint("GET", "/items/{id:int}/", endpoint => endpoint
                     .WithHandler((TypedRouteRequest request) => Task.FromResult
@@ -212,7 +212,7 @@ namespace NanoRoute.Tests
                     )))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services
@@ -225,7 +225,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task WithHandler_ShouldBindRouteValuesBeforeCallingNext()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddEndpoint("GET", "/items/{id:int}/", endpoint => endpoint
                     .WithHandler(async (TypedRouteRequest request, CallNextHandlerDelegate next) =>
@@ -240,7 +240,7 @@ namespace NanoRoute.Tests
                     }))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services

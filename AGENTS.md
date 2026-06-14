@@ -14,7 +14,7 @@ For code and tests, prefer targeted discovery under the documented source, test,
 
 When Serena MCP tools are available for a code-related task, activate the repository root as the Serena project and read Serena's initial instructions before inspecting source symbols.
 
-Use Serena for focused code navigation, symbol overviews, symbol reads, reference lookup, bug diagnosis, and symbol edits when it can answer cleanly. Use shell reads such as `Get-Content` only for narrow patch context, exact diffs, non-code files, or command-oriented verification.
+Use Serena for focused code navigation, symbol overviews, symbol reads, reference lookup, bug diagnosis, and symbol edits (for example: renaming a symbol, replacing a method body, inserting a member, or deleting an unused symbol) when it can answer cleanly. Use shell reads such as `Get-Content` only for narrow patch context, exact diffs, non-code files, or command-oriented verification.
 
 Serena is not required for simple documentation-only edits, direct command-output requests, or tasks clearly confined to non-code files. If Serena is unavailable during a code-related task, continue with the approved environment-specific alternatives and mention the fallback.
 

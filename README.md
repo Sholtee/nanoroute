@@ -1,6 +1,6 @@
 # NanoRoute ![Tests](https://sholtee.github.io/nanoroute/badges/tests-badge.svg) [![Coverage](https://sholtee.github.io/nanoroute/badges/coverage-badge.svg)](https://sholtee.github.io/nanoroute/CoverageReport/) ![GitHub License](https://img.shields.io/github/license/sholtee/nanoroute) [![NuGet Version](https://img.shields.io/nuget/v/nanoroute)](https://www.nuget.org/packages/nanoroute)
 
-NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` pipelines. It includes optional `HttpListener` and AWS Lambda adapters plus focused helpers for JSON payloads, query binding, endpoint-local middleware, and error handling.
+NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` pipelines. It includes optional `HttpListener` and AWS Lambda adapters plus focused helpers for JSON payloads, query binding, endpoint-local middleware, and error handling. Custom transports can compose `RequestPipeline` directly.
 
 ## Install
 
@@ -66,7 +66,7 @@ nanoroute/
 |       |-- Doc/                        DocFX documentation sources
 |       |   |-- docfx.json              DocFX build configuration
 |       |   |-- index.md                AWS Lambda package documentation landing page
-|       |-- Private/                    API Gateway DTO mapping helpers
+|       |-- Private/                    Lambda request and response body helpers
 |       |-- Properties/                 Resources and generated metadata
 |       |-- Public/                     Public adapter API surface
 |       |-- HISTORY.md                  Version history

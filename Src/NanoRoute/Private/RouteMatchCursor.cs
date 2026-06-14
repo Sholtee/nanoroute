@@ -124,6 +124,8 @@ namespace NanoRoute.Internals
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AdvanceToNextSegment(RouteNode nextNode)
         {
+            Cancellation.ThrowIfCancellationRequested();
+
             _node = nextNode;
             _handlerIndex = 0;
 
@@ -353,8 +355,6 @@ namespace NanoRoute.Internals
             {
                 if (_phase is MatchPhase.EmitHandlers)
                 {
-                    Cancellation.ThrowIfCancellationRequested();
-
                     if (TryEmitHandler())
                         return s_true;
 

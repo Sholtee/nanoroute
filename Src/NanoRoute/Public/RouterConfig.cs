@@ -39,7 +39,7 @@ namespace NanoRoute
     }
 
     /// <summary>
-    /// Configures runtime behavior of <see cref="Router"/> instances.
+    /// Configures runtime routing behavior for router instances.
     /// </summary>
     /// <example>
     /// <code>

@@ -56,7 +56,7 @@ public sealed class Function
 
     public Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
     {
-        return Router.Route(request, Services, context.RemainingTime);
+        return Router.Route(request, Services, context);
     }
 }
 
@@ -101,7 +101,7 @@ public interface IUserRepository
 
 Prefer endpoint builders such as `AddEndpoint()` for application routes. Typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
 
-The router entry point accepts the API Gateway request, a service provider, and the Lambda remaining time. Pass `ILambdaContext.RemainingTime` so the adapter can cancel work shortly before the Lambda runtime terminates the invocation.
+The router entry point accepts the API Gateway request, a service provider, and the Lambda context.
 
 For a small working fixture, see [Tests/NanoRoute.TestLambda](https://github.com/Sholtee/nanoroute/tree/master/Tests/NanoRoute.TestLambda). It wires `ApiGatewayV2Router` into a Lambda handler and shows endpoint builders, query bindings, JSON body binding, JSON error responses, and cookie mapping in one project.
 
@@ -156,14 +156,24 @@ ApiGatewayV2Router router = ApiGatewayV2Router
 
 `ApiGatewayV2Router` converts the API Gateway event into an `HttpRequestMessage` before executing the NanoRoute pipeline.
 
-- The request URI is built from `RawPath`, `RawQueryString`, the `Host` header, and the request scheme.
-- The scheme is read from `Forwarded: proto=...`, `X-Forwarded-Proto`, or inferred as `https` for Lambda Function URL domains.
+- `RequestScheme` defaults to `https`; set `RequestDomain` when the Lambda should route against a canonical public host instead of the event domain.
 - Request headers are copied onto the `HttpRequestMessage` or its content headers.
 - Plain request bodies are exposed as `StringContent`; base64-encoded request bodies are exposed as `StreamContent`.
 - The original `APIGatewayHttpApiV2ProxyRequest` is available through the NanoRoute request context as the original request object.
 - The API Gateway request id is used as the NanoRoute trace id.
 
-Payload format `2.0` does not include the scheme directly, so the adapter derives it from forwarding metadata or the Lambda Function URL domain. If the adapter cannot determine the scheme or host, the request cannot be mapped to an absolute `HttpRequestMessage.RequestUri` and routing fails before handlers run.
+If the adapter cannot determine a host from `RequestDomain` or `requestContext.domainName`, the request cannot be mapped to an absolute `HttpRequestMessage.RequestUri` and routing fails before handlers run.
+
+```csharp
+ApiGatewayV2Router router = ApiGatewayV2Router
+    .CreateBuilder()
+    .ConfigureRouting(config => config with
+    {
+        RequestScheme = "https",
+        RequestDomain = "api.example.com"
+    })
+    .CreateRouter();
+```
 
 ## Response Mapping
 
@@ -178,7 +188,7 @@ Header values other than `Set-Cookie` are joined with commas, matching the singl
 
 ## Timeout Handling
 
-Pass `ILambdaContext.RemainingTime` to `Route()`. By default, the adapter starts cancellation one second before the Lambda timeout so async value parsers and handlers can observe `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
+Pass `ILambdaContext` to `Route()`. By default, the adapter starts cancellation one second before the Lambda timeout so async value parsers and handlers can observe `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
 
 If the invocation is already inside that safety window, the request is cancelled immediately and the adapter returns a `504 Gateway Timeout` JSON error response.
 
@@ -243,9 +253,10 @@ ApiGatewayV2Router router = ApiGatewayV2Router
 ## Common Building Blocks
 
 - `ApiGatewayV2Router.CreateBuilder()` starts a strongly typed builder for API Gateway HTTP API and Lambda Function URL payload-format-2.0 scenarios.
-- `ApiGatewayV2RouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`, and adds `LambdaTimeoutBuffer`.
+- `ApiGatewayV2Router` derives from the core `RouterBase<ApiGatewayV2RouterConfig>` helper.
+- `ApiGatewayV2RouterConfig` inherits the core `RouterConfig`, including `MatchingPrecedence`, and adds `LambdaTimeoutBuffer`, `RequestScheme`, and `RequestDomain`.
 - `ConfigureRouting()` customizes `ApiGatewayV2RouterConfig` before creating a router snapshot.
-- `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, TimeSpan)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
+- `Route(APIGatewayHttpApiV2ProxyRequest, IServiceProvider, ILambdaContext)` executes the NanoRoute pipeline and returns an API Gateway v2 proxy response.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, and `str` route parsers.
 - `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` bind selected query-string values into `RequestContext.Parameters`.
 - `ConfigureQueryParsing()` customizes query-binding behavior used by subsequently registered `AddQueryBindings()` and `EndpointBuilder.WithQueryBindings()` middleware.
@@ -265,4 +276,4 @@ This package is intentionally narrow:
 - Supported: Lambda proxy responses represented by `APIGatewayHttpApiV2ProxyResponse`.
 - Not currently supported: REST API payload format `1.0`, Application Load Balancer events, or custom event models.
 
-For unsupported transports, derive a custom router from the core `Router<TDescendant, TConfig>` type and map your event model to `HttpRequestMessage` before calling `Handle()`.
+For unsupported transports, derive from the core `RouterBase<TConfig>` and map your event model to `HttpRequestMessage` before calling the protected `Route()` method.

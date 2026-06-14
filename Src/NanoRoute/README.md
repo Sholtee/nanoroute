@@ -2,7 +2,7 @@
 
 NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
 
-The core library is centered around `RouteScopeBuilder`, `Router`, and `RequestContext`, so you can plug the routing pipeline into your own transport or hosting model as well.
+The core library includes `HttpMessageRouter` for already materialized `HttpRequestMessage` requests and `HttpListenerRouter` for listener-hosted requests. `RouterBase<TConfig>`, `RouteScopeBuilder`, and `RequestContext` remain available when you want to plug the routing pipeline into your own transport or hosting model.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios. For JSON body and response handling in Native AOT apps, prefer overloads that accept `JsonTypeInfo` from a source-generated `JsonSerializerContext`.
 
@@ -134,7 +134,8 @@ public interface IUserRepository
 
 - Exact route patterns start and end with `/`, for example `/items/`.
 - Prefix route patterns start with `/` and end with `/*`, for example `/items/*`.
-- `UseMatchingPrecedence()` controls whether literal or parameterized route segments win at the same path depth.
+- `HttpMessageRouter.CreateBuilder()` creates a router for already materialized `HttpRequestMessage` requests.
+- `RouterBase<TConfig>` helps custom transport adapters expose configuration and capture a route snapshot.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` parsers.
 - `AddPrefix()` and `CreatePrefix()` define scoped route subtrees.
 - `AddQueryBindings()` and `WithQueryBindings()` parse selected query-string values into `RequestContext.Parameters`, with per-registration handling for undeclared query keys.
@@ -142,6 +143,7 @@ public interface IUserRepository
 - Typed handlers can bind route values, query values, JSON bodies, services, `RequestContext`, and `CancellationToken` into request objects.
 - `AddExceptionHandler(options => ...)` maps exception types for one exception-handling middleware registration.
 - `AddJsonErrorDetails(options => ...)` turns routing and normalized exception failures into JSON `ErrorDetails` responses and configures diagnostics, `ErrorDetails` metadata, and exception normalization for that middleware registration.
+- `HttpMethod.For(...)` returns shared known `HttpMethod` instances and supports custom method names.
 - `HttpResponseMessage.Json(...)` creates JSON responses with the library's serializer defaults.
 - Native AOT JSON apps should pass source-generated `JsonTypeInfo` values to `WithJsonBody(...)` and `HttpResponseMessage.Json(...)`.
 

@@ -94,7 +94,7 @@ namespace NanoRoute.TestLambda
             ArgumentNullException.ThrowIfNull(request);
             ArgumentNullException.ThrowIfNull(context);
 
-            return s_router.Route(request, s_services, context.RemainingTime);
+            return s_router.Route(request, s_services, context);
         }
 
         private sealed class EmptyServiceProvider : IServiceProvider

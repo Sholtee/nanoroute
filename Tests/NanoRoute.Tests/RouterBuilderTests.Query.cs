@@ -20,7 +20,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldParseConfiguredParametersIntoTheRequestContext()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddPrefix("/items/*", items => items
                     .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}&{page?:int(min=1)}")
@@ -30,7 +30,7 @@ namespace NanoRoute.Tests
                     }))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage
                 {
@@ -47,7 +47,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task WithQueryBindings_ShouldParseConfiguredParametersBeforeEndpointHandler()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddEndpoint("GET", "/items/", endpoint => endpoint
                     .WithQueryBindings("{filter:str(min=3)}&{page?:int(min=1)}")
@@ -57,7 +57,7 @@ namespace NanoRoute.Tests
                     }))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey&page=2"),
                 s_services
@@ -70,7 +70,7 @@ namespace NanoRoute.Tests
         [Test]
         public void WithQueryBindings_ShouldUseEndpointConfiguration()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .ConfigureQueryParsing(config => config with
                 {
@@ -81,7 +81,7 @@ namespace NanoRoute.Tests
                     .WithHandler(async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey&unexpected=value"),
                 s_services
@@ -93,7 +93,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldSkipMissingOptionalParameters()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("{filter?:str(min=3)}")
                 .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
@@ -102,7 +102,7 @@ namespace NanoRoute.Tests
                 })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage
                 {
@@ -119,14 +119,14 @@ namespace NanoRoute.Tests
         [Test]
         public void AddQueryBindings_ShouldRejectMissingRequiredParameters()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddPrefix("/items/*", items => items
                     .AddQueryBindings("GET", RouteScopeBuilder.CurrentExact, "{filter:str(min=3)}")
                     .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage
                 {
@@ -163,7 +163,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldMatchDecodedQueryParameterNames()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("{query_filter:str(min=3)}")
                 .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
@@ -172,7 +172,7 @@ namespace NanoRoute.Tests
                 })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage
                 {
@@ -188,14 +188,14 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldHonorConfiguredVerbs()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}")
                 .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .AddHandler("POST", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage
                 {
@@ -207,7 +207,7 @@ namespace NanoRoute.Tests
 
             Assert.That(ex.Message, Is.EqualTo(Resources.ERR_BAD_REQUEST));
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage
                 {
@@ -223,7 +223,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldSupportVerbCollectionOverload()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings(new[] { "GET" }, "{filter:str(min=3)}")
                 .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
@@ -232,7 +232,7 @@ namespace NanoRoute.Tests
                 })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey"),
                 s_services
@@ -244,7 +244,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddQueryBindings_ShouldSupportPatternOverload()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("/items/", "{filter:str(min=3)}")
                 .AddHandler("GET", "/items/", async (context, _) => new HttpResponseMessage
@@ -253,7 +253,7 @@ namespace NanoRoute.Tests
                 })
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey"),
                 s_services
@@ -265,7 +265,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddQueryBindings_ShouldRejectUnexpectedParametersWhenConfigured()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .ConfigureQueryParsing(config => config with
                 {
@@ -275,7 +275,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/items/", async (_, _) => new HttpResponseMessage(HttpStatusCode.OK))
                 .CreateRouter();
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items?filter=spikey&unexpected=value"),
                 s_services
@@ -289,7 +289,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task ConfigureQueryParsing_ShouldUseScopedBuilderMetadata()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .ConfigureQueryParsing(config => config with
                 {
@@ -307,7 +307,7 @@ namespace NanoRoute.Tests
                     .AddHandler("GET", RouteScopeBuilder.CurrentExact, async (_, _) => new HttpResponseMessage(HttpStatusCode.Accepted)))
                 .CreateRouter();
 
-            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Handle
+            HttpRequestException ex = Assert.ThrowsAsync<HttpRequestException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/strict?filter=spikey&unexpected=value"),
                 s_services
@@ -315,7 +315,7 @@ namespace NanoRoute.Tests
 
             Assert.That(ex.Data[NanoRouteExceptionExtensions.ErrorsName], Is.EquivalentTo(new[] { string.Format(Resources.Culture, Resources.ERR_QUERY_UNEXPECTED_PARAMETER, "unexpected") }));
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/loose?filter=spikey&unexpected=value"),
                 s_services
@@ -327,7 +327,7 @@ namespace NanoRoute.Tests
         [Test]
         public void ConfigureQueryParsing_ShouldReturnTheOriginalBuilder()
         {
-            RouterBuilder<TestRouter, RouterConfig> result = _routerBuilder.ConfigureQueryParsing(static config => config);
+            RouterBuilder<HttpMessageRouter, RouterConfig> result = _routerBuilder.ConfigureQueryParsing(static config => config);
 
             Assert.That(result, Is.SameAs(_routerBuilder));
         }
@@ -337,7 +337,7 @@ namespace NanoRoute.Tests
         {
             _routerBuilder.AddDefaultValueParsers();
 
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddQueryBindings(""))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddQueryBindings(""))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings((string) null!))!;
@@ -364,7 +364,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddQueryBindings("GET", "/", null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("bindings"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).ConfigureQueryParsing(static config => config))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).ConfigureQueryParsing(static config => config))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.ConfigureQueryParsing(null!))!;

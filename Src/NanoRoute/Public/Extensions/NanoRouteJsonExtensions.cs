@@ -708,9 +708,7 @@ namespace NanoRoute
                         }
                         catch (HttpRequestException ex)
                         {
-                            context.Request.Properties.TryGetValue(Router.TraceIdName, out object? traceId);
-
-                            ErrorDetails errorDetails = ex.GetErrorDetails(populateErrorInfo, traceId as string);
+                            ErrorDetails errorDetails = ex.GetErrorDetails(config.PopulateErrorInfo, context.Request.TraceId);
 
                             return HttpResponseMessage.Json
                             (

@@ -95,7 +95,7 @@ namespace NanoRoute.Tests
                 .Setup(s => s.GetService(typeof(GreetingService)))
                 .Returns(new GreetingService { Prefix = "hello" });
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("GET", "/items/{id:int}/", "{query_filter:str(min=3)}")
                 .AddHandler
@@ -120,7 +120,7 @@ namespace NanoRoute.Tests
 
             using CancellationTokenSource cancellation = new();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42?query_filter=spikey"),
                 services.Object,
@@ -138,7 +138,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddTypedHandler_WithQueryBindings_ShouldBindTheConfiguredQueryValues()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("GET", "/items/{id:int}/", "{query_filter:str(min=3)}")
                 .AddHandler
@@ -160,7 +160,7 @@ namespace NanoRoute.Tests
                 .Setup(s => s.GetService(typeof(GreetingService)))
                 .Returns(new GreetingService { Prefix = "ignored" });
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/7?query_filter=spikey"),
                 services.Object
@@ -173,7 +173,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddTypedHandler_WithParameterValueSource_ShouldBindTheConfiguredParameterName()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler
                 (
@@ -189,7 +189,7 @@ namespace NanoRoute.Tests
                 )
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services
@@ -202,7 +202,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddTypedHandler_WithCallNext_ShouldBehaveAsMiddleware()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler
                 (
@@ -224,7 +224,7 @@ namespace NanoRoute.Tests
                 ))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services
@@ -238,7 +238,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddTypedHandler_WithQueryBindingsAndCallNext_ShouldBindValuesBeforeContinuing()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddQueryBindings("GET", "/items/{id:int}/", "{query_filter:str(min=3)}")
                 .AddHandler
@@ -265,7 +265,7 @@ namespace NanoRoute.Tests
                 .Setup(s => s.GetService(typeof(GreetingService)))
                 .Returns(new GreetingService { Prefix = "ignored" });
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42?query_filter=spikey"),
                 services.Object
@@ -278,7 +278,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddTypedHandler_WithPatternOnlyOverload_ShouldRegisterAllVerbs()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler
                 (
@@ -293,7 +293,7 @@ namespace NanoRoute.Tests
                 )
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Post, "https://test.test/items/42"),
                 s_services
@@ -306,7 +306,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddTypedHandler_WithSingleVerbMiddlewareOverload_ShouldHonorTheVerb()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler
                 (
@@ -322,7 +322,7 @@ namespace NanoRoute.Tests
                 .AddHandler("GET", "/items/{id:int}/", (context, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)))
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services
@@ -335,7 +335,7 @@ namespace NanoRoute.Tests
         [Test]
         public void AddTypedHandler_ShouldThrowWhenARequiredContextParameterIsMissing()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler
                 (
                     ["GET"],
@@ -344,7 +344,7 @@ namespace NanoRoute.Tests
                 )
                 .CreateRouter();
 
-            InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(() => router.Handle
+            InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 s_services
@@ -363,14 +363,14 @@ namespace NanoRoute.Tests
                 (MissingServiceRequest _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK))
             );
 
-            TestRouter router = _routerBuilder.CreateRouter();
+            HttpMessageRouter router = _routerBuilder.CreateRouter();
 
             Mock<IServiceProvider> services = new(MockBehavior.Strict);
             services
                 .Setup(s => s.GetService(typeof(GreetingService)))
                 .Returns((object) null!);
 
-            InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(() => router.Handle
+            InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(() => router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 services.Object
@@ -389,7 +389,7 @@ namespace NanoRoute.Tests
                 .Setup(s => s.GetRequiredKeyedService(typeof(GreetingService), "friendly"))
                 .Returns(new GreetingService { Prefix = "keyed" });
 
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddHandler
                 (
                     ["GET"],
@@ -404,7 +404,7 @@ namespace NanoRoute.Tests
                 )
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items"),
                 services.Object
@@ -417,7 +417,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddTypedHandler_ShouldLeaveSkippedPropertiesUntouched()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler
                 (
@@ -433,7 +433,7 @@ namespace NanoRoute.Tests
                 )
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services
@@ -457,7 +457,7 @@ namespace NanoRoute.Tests
         [Test]
         public async Task AddTypedHandler_ShouldIgnoreReadOnlyProperties()
         {
-            TestRouter router = _routerBuilder
+            HttpMessageRouter router = _routerBuilder
                 .AddDefaultValueParsers()
                 .AddHandler
                 (
@@ -473,7 +473,7 @@ namespace NanoRoute.Tests
                 )
                 .CreateRouter();
 
-            HttpResponseMessage response = await router.Handle
+            HttpResponseMessage response = await router.Route
             (
                 new HttpRequestMessage(HttpMethod.Get, "https://test.test/items/42"),
                 s_services
@@ -489,7 +489,7 @@ namespace NanoRoute.Tests
             TypedRequestEndpointHandlerDelegate<TypedRouteRequest> handler = _ => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
             TypedRequestHandlerDelegate<TypedRouteRequest> pipelineHandler = (_, next) => next();
 
-            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler("/items/", handler))!;
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddHandler("/items/", handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, handler))!;
@@ -507,7 +507,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "/items/", (TypedRequestEndpointHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", handler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", handler))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, "/items/", handler))!;
@@ -519,7 +519,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(["GET"], "/items/", (TypedRequestEndpointHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler("/items/", pipelineHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddHandler("/items/", pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler(null!, pipelineHandler))!;
@@ -537,7 +537,7 @@ namespace NanoRoute.Tests
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler("GET", "/items/", (TypedRequestHandlerDelegate<TypedRouteRequest>) null!))!;
             Assert.That(ex.ParamName, Is.EqualTo("handler"));
 
-            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<TestRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", pipelineHandler))!;
+            ex = Assert.Throws<ArgumentNullException>(() => ((RouterBuilder<HttpMessageRouter, RouterConfig>) null!).AddHandler(["GET"], "/items/", pipelineHandler))!;
             Assert.That(ex.ParamName, Is.EqualTo("routeScopeBuilder"));
 
             ex = Assert.Throws<ArgumentNullException>(() => _routerBuilder.AddHandler((IEnumerable<string>) null!, "/items/", pipelineHandler))!;
