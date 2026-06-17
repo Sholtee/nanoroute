@@ -23,10 +23,6 @@ NanoRoute.ExceptionHandlingOptions.ExceptionNormalizers.get -> System.Collection
 NanoRoute.ExceptionHandlingOptions.ExceptionNormalizers.set -> void
 NanoRoute.ExceptionHandlingOptions.Map<TException>(NanoRoute.TypedExceptionNormalizer<TException!>! normalizer) -> void
 NanoRoute.ExceptionNormalizer
-NanoRoute.HttpListenerRouter
-NanoRoute.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-NanoRoute.HttpListenerRouterConfig
-NanoRoute.HttpListenerRouterConfig.HttpListenerRouterConfig() -> void
 NanoRoute.HttpMessageRouter
 NanoRoute.HttpMessageRouter.Route(System.Net.Http.HttpRequestMessage! request, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
 NanoRoute.HttpMethodExtensions
@@ -223,7 +219,6 @@ NanoRoute.ValueSourceAttribute.Name.get -> string?
 NanoRoute.ValueSourceAttribute.Name.init -> void
 NanoRoute.ValueSourceAttribute.Source.get -> NanoRoute.ValueSource
 NanoRoute.ValueSourceAttribute.ValueSourceAttribute(NanoRoute.ValueSource source) -> void
-static NanoRoute.HttpListenerRouter.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.HttpListenerRouter!, NanoRoute.HttpListenerRouterConfig!>!
 static NanoRoute.HttpMessageRouter.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.HttpMessageRouter!, NanoRoute.RouterConfig!>!
 static NanoRoute.HttpMethodExtensions.extension(System.Net.Http.HttpMethod!).For(string! method) -> System.Net.Http.HttpMethod!
 static NanoRoute.HttpRequestMessageExtensions.extension(System.Net.Http.HttpRequestMessage!).ContentHeaders.get -> System.Collections.Frozen.FrozenSet<string!>!

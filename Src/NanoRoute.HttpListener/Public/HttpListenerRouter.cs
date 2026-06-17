@@ -14,7 +14,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NanoRoute
+namespace NanoRoute.HttpListener
 {
     using Internals;
 
@@ -73,9 +73,10 @@ namespace NanoRoute
                     if (contentLength >= 0)
                         response.ContentLength64 = contentLength;
                 }
-
-                // https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/IO/Stream.cs#L126
-                await contentStream.CopyToAsync(response.OutputStream, 81920, cancellation).ConfigureAwait(false);
+    
+                await contentStream
+                    .CopyToAsync(response.OutputStream, GetCopyBufferSize(contentStream), cancellation)
+                    .ConfigureAwait(false);
             }
 
             response.Close();
@@ -86,6 +87,22 @@ namespace NanoRoute
                     if (!s_managedResponseHeaders.Contains(header.Key))
                         foreach (string value in header.Value)
                             target.Add(header.Key, value);
+            }
+
+            // https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/IO/Stream.cs#L126
+            static int GetCopyBufferSize(Stream stream)
+            {
+                int bufferSize = 81920;
+
+                if (stream.CanSeek)
+                {
+                    long remaining = stream.Length - stream.Position;
+
+                    if (remaining > 0)
+                        bufferSize = (int) Math.Min(bufferSize, remaining);
+                }
+
+                return bufferSize;
             }
         }
 
@@ -157,14 +174,6 @@ namespace NanoRoute
         /// Thrown when the caller cancels <paramref name="cancellation"/>. The listener response is aborted before the
         /// exception is rethrown.
         /// </exception>
-        /// <remarks>
-        /// Request and content headers are copied into the intermediate <see cref="HttpRequestMessage"/>.
-        /// The original <see cref="HttpListenerRequest"/> is available through the generated request message's
-        /// <c>OriginalRequest</c> extension property.
-        /// Response headers are copied back except for reserved <see cref="HttpListenerResponse"/> headers that
-        /// must be managed by <see cref="HttpListener"/> itself. Cancellation is not translated into an HTTP error
-        /// response by this adapter.
-        /// </remarks>
         /// <example>
         /// <code>
         /// HttpListenerRouter router = HttpListenerRouter

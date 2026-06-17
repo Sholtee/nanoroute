@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace NanoRoute.NativeAot
 {
+    using HttpListener;
+
     internal static partial class Program
     {
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Console smoke test exits with a non-zero code after writing the failure.")]

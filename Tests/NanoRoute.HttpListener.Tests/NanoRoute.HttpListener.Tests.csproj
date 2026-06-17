@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\UnitTests.props" />
+
+  <PropertyGroup>
+    <AssemblyName>NanoRoute.HttpListener.Tests</AssemblyName>
+    <RootNamespace>NanoRoute.HttpListener.Tests</RootNamespace>
+    <NoWarn>CA1001;CA1861;CA2000;CA2007;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.20.*" />
+    <PackageReference Include="PolySharp" Version="1.15.*">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\NanoRoute.HttpListener\NanoRoute.HttpListener.csproj" />
+  </ItemGroup>
+
+</Project>

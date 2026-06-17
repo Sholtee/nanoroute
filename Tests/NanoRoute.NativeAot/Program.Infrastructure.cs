@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace NanoRoute.NativeAot
 {
+    using HttpListener;
+
     internal static partial class Program
     {
         [SuppressMessage("Reliability", "CA2025:Ensure tasks using disposables complete before disposables are disposed", Justification = "The request/response lifetime is fully awaited inside this helper before any disposable leaves scope.")]
@@ -20,7 +22,7 @@ namespace NanoRoute.NativeAot
         {
             Uri baseAddress = new($"http://localhost:{GetFreePort()}/");
 
-            using HttpListener listener = new();
+            using System.Net.HttpListener listener = new();
             listener.Prefixes.Add(baseAddress.AbsoluteUri);
             listener.Start();
 

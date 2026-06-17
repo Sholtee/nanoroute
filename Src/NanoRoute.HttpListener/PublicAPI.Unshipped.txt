@@ -1,0 +1,9 @@
+NanoRoute.HttpListener.HttpListenerRouter
+NanoRoute.HttpListener.HttpListenerRouter.Route(System.Net.HttpListenerContext! context, System.IServiceProvider! services, System.Threading.CancellationToken cancellation = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+NanoRoute.HttpListener.HttpListenerRouterConfig
+NanoRoute.HttpListener.HttpListenerRouterConfig.HttpListenerRouterConfig() -> void
+NanoRoute.HttpListener.SimpleHttpListenerHost
+NanoRoute.HttpListener.SimpleHttpListenerHost.Run(System.Threading.CancellationToken cancellation) -> System.Threading.Tasks.Task!
+NanoRoute.HttpListener.SimpleHttpListenerHost.RunUntilCancelKeyPress() -> void
+NanoRoute.HttpListener.SimpleHttpListenerHost.SimpleHttpListenerHost(string! uriPrefix, int workerCount, int queueCapacity, NanoRoute.HttpListener.HttpListenerRouter! router, System.IServiceProvider! rootScope) -> void
+static NanoRoute.HttpListener.HttpListenerRouter.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.HttpListener.HttpListenerRouter!, NanoRoute.HttpListener.HttpListenerRouterConfig!>!

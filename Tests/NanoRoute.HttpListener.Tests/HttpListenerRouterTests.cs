@@ -18,16 +18,14 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 
-namespace NanoRoute.Tests
+namespace NanoRoute.HttpListener.Tests
 {
-    using Properties;
-
     [TestFixture]
     internal sealed class HttpListenerRouterTests
     {
         private static readonly JsonSerializerOptions s_caseInsensitiveJson = new() { PropertyNameCaseInsensitive = true };
 
-        private HttpListener _listener = null!;
+        private System.Net.HttpListener _listener = null!;
 
         private HttpClient _client = null!;
 
@@ -49,7 +47,7 @@ namespace NanoRoute.Tests
         {
             Uri baseAddress = new($"http://localhost:{GetFreePort()}/");
 
-            _listener = new HttpListener();
+            _listener = new System.Net.HttpListener();
             _listener.Prefixes.Add(baseAddress.AbsoluteUri);
             _listener.Start();
 
@@ -61,6 +59,9 @@ namespace NanoRoute.Tests
 
         private static int GetFreePort()
         {
+#if NET10_0_OR_GREATER
+            using
+#endif
             TcpListener listener = new(IPAddress.Loopback, 0);
             listener.Start();
 
@@ -231,7 +232,7 @@ namespace NanoRoute.Tests
 
             ErrorDetails body = JsonSerializer.Deserialize<ErrorDetails>(await msg.Content.ReadAsStringAsync(), s_caseInsensitiveJson)!;
             Assert.That(body.Status, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(body.Title, Is.EqualTo(Resources.ERR_NOT_FOUND));
+            Assert.That(body.Title, Is.EqualTo("Not found"));
             Assert.That(body.TraceId, Is.Not.Empty);
             Assert.That(body.Errors, Is.Null);
             Assert.That(body.DeveloperMessages, Is.Null);

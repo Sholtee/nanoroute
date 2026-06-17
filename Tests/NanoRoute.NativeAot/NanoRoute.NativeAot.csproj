@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Src\NanoRoute.HttpListener\NanoRoute.HttpListener.csproj" />
     <ProjectReference Include="..\..\Src\NanoRoute\NanoRoute.csproj" />
   </ItemGroup>
 
