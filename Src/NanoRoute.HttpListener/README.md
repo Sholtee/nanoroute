@@ -12,7 +12,7 @@ dotnet add package NanoRoute.HttpListener --prerelease
 
 ## Quick Start
 
-Create a reusable router once, then pass each accepted listener context to `Route()`:
+Create a reusable router once, then run it with `SimpleHttpListenerHost`:
 
 ```csharp
 using System;
@@ -20,10 +20,11 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
 using NanoRoute.HttpListener;
 
-IServiceProvider services = new EmptyServiceProvider();
+IServiceProvider services = new ServiceCollection().BuildServiceProvider();
 
 HttpListenerRouter router = HttpListenerRouter
     .CreateBuilder()
@@ -35,18 +36,19 @@ HttpListenerRouter router = HttpListenerRouter
         })))
     .CreateRouter();
 
-using HttpListener listener = new();
-listener.Prefixes.Add("http://localhost:8080/");
-listener.Start();
+SimpleHttpListenerHost host = new
+(
+    "http://localhost:8080/",
+    workerCount: 4,
+    queueCapacity: 64,
+    router,
+    services
+);
 
-HttpListenerContext context = await listener.GetContextAsync();
-await router.Route(context, services);
-
-sealed class EmptyServiceProvider : IServiceProvider
-{
-    public object? GetService(Type serviceType) => null;
-}
+host.RunUntilCancelKeyPress();
 ```
+
+`SimpleHttpListenerHost` owns the listener loop, creates a service scope per request, and stops gracefully on Ctrl+C. If you need custom accept loops, concurrency, or shutdown behavior, call `HttpListenerRouter.Route()` from your own `HttpListener` loop instead.
 
 ## Typed Binding Example
 
