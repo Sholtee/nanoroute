@@ -60,7 +60,7 @@ namespace NanoRoute
     /// <code>
     /// builder
     ///     .AddDefaultValueParsers()
-    ///     .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+    ///     .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["id"])));
     /// </code>
     /// </example>
     public static class NanoRouteValueParserExtensions
@@ -248,7 +248,7 @@ namespace NanoRoute
             /// <code>
             /// builder
             ///     .AddIntParser()
-            ///     .AddHandler("GET", "/items/{id:int(min=1)}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+            ///     .AddHandler("GET", "/items/{id:int(min=1)}/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["id"])));
             /// </code>
             /// </example>
             public TBuilder AddIntParser()
@@ -321,7 +321,7 @@ namespace NanoRoute
             /// <code>
             /// builder
             ///     .AddGuidParser()
-            ///     .AddHandler("GET", "/users/{id:guid}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+            ///     .AddHandler("GET", "/users/{id:guid}/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["id"])));
             /// </code>
             /// </example>
             public TBuilder AddGuidParser() => routeScopeBuilder.AddValueParser
@@ -352,7 +352,7 @@ namespace NanoRoute
             /// <code>
             /// builder
             ///     .AddBoolParser()
-            ///     .AddHandler("GET", "/features/{enabled:bool}/", (context, _) =&gt; Results.Ok(context.Parameters["enabled"]));
+            ///     .AddHandler("GET", "/features/{enabled:bool}/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["enabled"])));
             /// </code>
             /// </example>
             public TBuilder AddBoolParser() => routeScopeBuilder.AddValueParser
@@ -384,7 +384,7 @@ namespace NanoRoute
             /// <code>
             /// builder
             ///     .AddStringParser()
-            ///     .AddHandler("GET", "/users/{name:str(min=2)}/", (context, _) =&gt; Results.Ok(context.Parameters["name"]));
+            ///     .AddHandler("GET", "/users/{name:str(min=2)}/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["name"])));
             /// </code>
             /// </example>
             public TBuilder AddStringParser()
@@ -453,7 +453,7 @@ namespace NanoRoute
             /// <code>
             /// builder
             ///     .AddRegexParser()
-            ///     .AddHandler("GET", "/tags/{slug:regex(pattern='^[a-z]+$',timeoutMs=50)}/", (context, _) =&gt; Results.Ok(context.Parameters["slug"]));
+            ///     .AddHandler("GET", "/tags/{slug:regex(pattern='^[a-z]+$',timeoutMs=50)}/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["slug"])));
             /// </code>
             /// </example>
             public TBuilder AddRegexParser()
@@ -524,7 +524,7 @@ namespace NanoRoute
             /// <code>
             /// builder
             ///     .AddDefaultValueParsers()
-            ///     .AddHandler("GET", "/users/{id:int}/", (context, next) =&gt; Results.Ok(context.Parameters["id"]));
+            ///     .AddHandler("GET", "/users/{id:int}/", (context, next) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["id"])));
             /// </code>
             /// </example>
             public TBuilder AddDefaultValueParsers()

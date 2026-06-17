@@ -70,7 +70,7 @@ namespace NanoRoute
         /// <exception cref="ArgumentException">Thrown when the endpoint's captured HTTP method is not supported.</exception>
         /// <example>
         /// <code>
-        /// endpoint.WithHandler((context, _) =&gt; Results.Ok(context.Parameters));
+        /// endpoint.WithHandler((context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters)));
         /// </code>
         /// </example>
         public EndpointBuilder WithHandler(RequestHandlerDelegate handler)
@@ -96,7 +96,7 @@ namespace NanoRoute
     /// <example>
     /// <code>
     /// builder.AddEndpoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
-    ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
+    ///     .WithHandler((context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["id"]))));
     /// </code>
     /// </example>
     public static class NanoRouteEndpointExtensions
@@ -237,7 +237,7 @@ namespace NanoRoute
             /// <example>
             /// <code>
             /// builder.AddEndpoint("GET", "/users/{id:int}/", endpoint =&gt; endpoint
-            ///     .WithHandler((context, _) =&gt; Results.Ok(context.Parameters["id"])));
+            ///     .WithHandler((context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["id"]))));
             /// </code>
             /// </example>
             public TBuilder AddEndpoint(string verb, string pattern, Action<EndpointBuilder> configureEndpoint)

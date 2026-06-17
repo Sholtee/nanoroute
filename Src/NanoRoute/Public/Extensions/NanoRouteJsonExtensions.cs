@@ -100,7 +100,7 @@ namespace NanoRoute
     /// builder
     ///     .AddJsonErrorDetails()
     ///     .AddJsonBody(typeof(CreateUserRequest), "body")
-    ///     .AddHandler("POST", "/users/", (context, _) =&gt; Results.Ok(context.Parameters["body"]));
+    ///     .AddHandler("POST", "/users/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["body"])));
     /// </code>
     /// </example>
     public static class NanoRouteJsonExtensions

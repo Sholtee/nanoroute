@@ -1,11 +1,17 @@
 # NanoRoute ![Tests](https://sholtee.github.io/nanoroute/badges/tests-badge.svg) [![Coverage](https://sholtee.github.io/nanoroute/badges/coverage-badge.svg)](https://sholtee.github.io/nanoroute/CoverageReport/) ![GitHub License](https://img.shields.io/github/license/sholtee/nanoroute) [![NuGet Version](https://img.shields.io/nuget/v/nanoroute)](https://www.nuget.org/packages/nanoroute)
 
-NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` pipelines. It includes optional `HttpListener` and AWS Lambda adapters plus focused helpers for JSON payloads, query binding, endpoint-local middleware, and error handling. Custom transports can compose `RequestPipeline` directly.
+NanoRoute is a small, dependency-light routing library for `HttpRequestMessage` pipelines. The core package provides the shared router, endpoint, binding, JSON, and error-handling APIs. Dedicated adapter packages add host integrations for `HttpListener` and AWS Lambda; custom transports can derive from `RouterBase<TConfig>`.
 
 ## Install
 
 ```shell
 dotnet add package NanoRoute --prerelease
+```
+
+For `HttpListener` support, also install the adapter package:
+
+```shell
+dotnet add package NanoRoute.HttpListener --prerelease
 ```
 
 For AWS Lambda HTTP API and Lambda Function URL support, also install the adapter package:
@@ -23,7 +29,7 @@ using System.Threading.Tasks;
 
 using NanoRoute;
 
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddEndpoint("GET", "/health/", endpoint => endpoint
         .WithHandler(static (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
@@ -56,7 +62,6 @@ nanoroute/
 |   |   |-- Properties/                    Resources and generated metadata
 |   |   |-- Public/                        Public API surface
 |   |   |   |-- Extensions/                Public extension methods
-|   |   |   |-- HttpListener/              HttpListener adapter API
 |   |   |-- HISTORY.md                     Version history
 |   |   |-- Icon.png                       NuGet package icon
 |   |   |-- NanoRoute.csproj
@@ -67,7 +72,8 @@ nanoroute/
 |   |   |   |-- docfx.json                 DocFX build configuration
 |   |   |   |-- index.md                   HttpListener package documentation landing page
 |   |   |-- Private/                       Internal implementation details
-|   |   |---Public/                        Public API surface
+|   |   |-- Public/                        Public API surface
+|   |   |-- HISTORY.md                     Version history
 |   |   |-- Icon.png                       NuGet package icon
 |   |   |-- NanoRoute.HttpListener.csproj
 |   |   |-- PublicAPI.*.txt                Public API analyzer baselines
@@ -111,5 +117,6 @@ nanoroute/
 ## Target Frameworks
 
 - Core library: `netstandard2.0` and `netstandard2.1`
+- HttpListener adapter: `netstandard2.0` and `netstandard2.1`
 - AWS Lambda adapter: `net8.0`
 - Native AOT validation: `Tests/NanoRoute.NativeAot`

@@ -56,7 +56,7 @@ namespace NanoRoute
     /// builder
     ///     .AddDefaultValueParsers()
     ///     .AddQueryBindings("{page?:int(min=1)}")
-    ///     .AddHandler("GET", "/items/", (context, _) =&gt; Results.Ok(context.Parameters));
+    ///     .AddHandler("GET", "/items/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters)));
     /// </code>
     /// </example>
     public static class NanoRouteQueryExtensions

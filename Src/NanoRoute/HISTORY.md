@@ -4,6 +4,7 @@
 
 ### Breaking Changes
 
+- Moved `HttpListenerRouter` and `HttpListenerRouterConfig` from the core package to the dedicated `NanoRoute.HttpListener` package.
 - Removed the broad `ConfigureRouting()`, `ConfigureQueryParsing()`, `ConfigureJsonErrorDetails()`, and `ConfigureExceptionHandling()` configuration methods.
 - Removed `ConfigureBuilderDelegate<TConfig>`.
 - Removed `BuilderMetadata` and `RouteScopeBuilder.Metadata`.

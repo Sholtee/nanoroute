@@ -1,12 +1,12 @@
 # NanoRoute
 
-NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with optional transport adapters and focused helpers for JSON payloads and error handling.
+NanoRoute is a small, dependency-light router for `HttpRequestMessage` pipelines, with focused helpers for JSON payloads, query binding, endpoint-local middleware, and error handling.
 
-The core library includes `HttpMessageRouter` for already materialized `HttpRequestMessage` requests and `HttpListenerRouter` for listener-hosted requests. `RouterBase<TConfig>`, `RouteScopeBuilder`, and `RequestContext` remain available when you want to plug the routing pipeline into your own transport or hosting model.
+The core library includes `HttpMessageRouter` for already materialized `HttpRequestMessage` requests. `RouterBase<TConfig>`, `RouteScopeBuilder`, and `RequestContext` remain available when you want to plug the routing pipeline into your own transport or hosting model.
 
 NanoRoute targets `netstandard2.0` and `netstandard2.1`, and is compatible with Native AOT scenarios.
 
-For AWS Lambda integrations, use the separate `NanoRoute.AwsLambda` package.
+For `HttpListener` integrations, use the separate `NanoRoute.HttpListener` package. For AWS Lambda integrations, use the separate `NanoRoute.AwsLambda` package.
 
 ## Quick Start
 
@@ -24,7 +24,7 @@ IServiceProvider services = new ServiceCollection()
     .AddSingleton<IUserRepository, UserRepository>()
     .BuildServiceProvider();
 
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddJsonErrorDetails()
@@ -51,12 +51,8 @@ HttpListenerRouter router = HttpListenerRouter
         }))
     .CreateRouter();
 
-HttpListener listener = new();
-listener.Prefixes.Add("http://localhost:8080/");
-listener.Start();
-
-HttpListenerContext context = await listener.GetContextAsync();
-await router.Route(context, services);
+using HttpRequestMessage request = new(HttpMethod.Get, "https://example.test/api/users/42/");
+using HttpResponseMessage response = await router.Route(request, services);
 
 public sealed class GetUserRequest
 {
@@ -109,7 +105,6 @@ public interface IUserRepository
 - [RouterBuilder`2](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RouterBuilder-2.html)
 - [EndpointBuilder](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.EndpointBuilder.html)
 - [HttpMessageRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpMessageRouter.html)
-- [HttpListenerRouter](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.HttpListenerRouter.html)
 - [RequestContext](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.RequestContext.html)
 - [UnexpectedParameterBehavior](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.UnexpectedParameterBehavior.html)
 - [ErrorDetails](https://sholtee.github.io/nanoroute/docs/NanoRoute/NanoRoute.ErrorDetails.html)
@@ -141,7 +136,7 @@ public interface IUserRepository
 `RouterConfig` controls runtime behavior for one router snapshot. Pass a configuration callback to `CreateRouter(...)` when that snapshot should use non-default matching behavior.
 
 ```csharp
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddEndpoint("GET", "/items/{slug:str}/", endpoint => endpoint
@@ -163,7 +158,7 @@ Created routers are immutable snapshots: later route changes on the builder and 
 When several routes share the same prefix, `AddPrefix()` lets you define that prefix once and register child routes relative to it. If you want to hold onto a child `RouteScopeBuilder` and add routes incrementally, use `CreatePrefix()`.
 
 ```csharp
-RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
+RouterBuilder<HttpMessageRouter, RouterConfig> builder = HttpMessageRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddJsonErrorDetails();
@@ -186,7 +181,7 @@ builder.AddPrefix("/api/users/{user_id:int}/*", users => users
             });
         })));
 
-HttpListenerRouter router = builder.CreateRouter();
+HttpMessageRouter router = builder.CreateRouter();
 ```
 
 This produces the same effective routes as registering `/api/users/{user_id:int}/*` and `/api/users/{user_id:int}/details/` directly, but keeps repeated base patterns out of endpoint registrations.
@@ -203,7 +198,7 @@ public sealed class CreateItemRequest
     public string Name { get; set; } = string.Empty;
 }
 
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddJsonErrorDetails()
     .AddDefaultValueParsers()
@@ -245,7 +240,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NanoRoute;
 
-RouterBuilder<HttpListenerRouter, HttpListenerRouterConfig> builder = HttpListenerRouter
+RouterBuilder<HttpMessageRouter, RouterConfig> builder = HttpMessageRouter
     .CreateBuilder()
     .AddValueParser
     (
@@ -308,7 +303,7 @@ Use `AddValueParser()` to register custom parsers, or `AddDefaultValueParsers()`
 `AddQueryBindings()` lets you validate and parse selected query-string values with the same registered value parsers used by route segments.
 
 ```csharp
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddPrefix("/items/*", items => items
@@ -342,7 +337,7 @@ HttpListenerRouter router = HttpListenerRouter
 Pass `unexpected: UnexpectedParameterBehavior.Reject` when a query-binding registration should reject query keys that were not declared in its binding descriptor:
 
 ```csharp
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddQueryBindings("GET", "/items/", "{filter:str(min=3)}", unexpected: UnexpectedParameterBehavior.Reject)
@@ -385,7 +380,7 @@ public sealed class GetItemRequest
     public CancellationToken Cancellation { get; set; }
 }
 
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddDefaultValueParsers()
     .AddQueryBindings("GET", "/items/{id:int}/", "{query_filter:str(min=3)}")
@@ -437,7 +432,7 @@ Use the `Status`, `Errors`, and `DeveloperMessages` extension properties on `Htt
 Pass an options callback to `AddExceptionHandler()` when one exception-handling middleware should customize how specific exception types are normalized. Normalizers are matched against the thrown exception's runtime type first, then against its base exception types, so a base-type normalizer handles derived exceptions unless a more specific normalizer is registered:
 
 ```csharp
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddExceptionHandler(options => options.Map<NotSupportedException>
     (
@@ -459,7 +454,7 @@ The options callback configures only the exception-handling middleware being reg
 `AddJsonErrorDetails()` turns routing and normalized exception failures into JSON `ErrorDetails` responses. Pass an options callback when the error payload should include developer diagnostics, custom `ErrorDetails` serialization metadata, or custom exception normalization:
 
 ```csharp
-HttpListenerRouter router = HttpListenerRouter
+HttpMessageRouter router = HttpMessageRouter
     .CreateBuilder()
     .AddJsonErrorDetails(options =>
     {
@@ -522,7 +517,7 @@ The returned `HttpResponseMessage` is owned by the caller. Dispose it after read
 
 ## Custom Routers
 
-If neither `HttpMessageRouter` nor `HttpListenerRouter` fits the transport you want, derive from `RouterBase<TConfig>`. Your router entry point prepares an `HttpRequestMessage`, calls the protected `Route()` method, and deals with the returned `HttpResponseMessage`.
+If `HttpMessageRouter` and the published adapter packages do not fit the transport you want, derive from `RouterBase<TConfig>`. Your router entry point prepares an `HttpRequestMessage`, calls the protected `Route()` method, and deals with the returned `HttpResponseMessage`.
 
 `RouterBase<TConfig>` stores the immutable router configuration and snapshots the supplied route scope into a reusable pipeline.
 
@@ -531,12 +526,10 @@ If neither `HttpMessageRouter` nor `HttpListenerRouter` fits the transport you w
 - NanoRoute exposes the caller-provided cancellation token to async value parsers and handlers through `ValueParserContext.Cancellation` and `RequestContext.Cancellation`.
 - `OperationCanceledException` is not converted into an HTTP error by `AddExceptionHandler()` or `AddJsonErrorDetails()`. It propagates to the caller or transport adapter unchanged.
 - `HttpMessageRouter.Route()` rethrows the cancellation exception and leaves response ownership with the caller.
-- `HttpListenerRouter.Route()` aborts the active `HttpListenerResponse` and then rethrows the cancellation exception.
 
 ## Common Building Blocks
 
 - `HttpMessageRouter.CreateBuilder()` starts a strongly typed builder for already materialized `HttpRequestMessage` scenarios.
-- `HttpListenerRouter.CreateBuilder()` starts a strongly typed builder for `HttpListener` scenarios.
 - `RouterBase<TConfig>` stores router configuration and runs a captured request pipeline for custom transports.
 - `AddDefaultValueParsers()` registers the built-in `int`, `guid`, `bool`, `str`, and `regex` value parsers.
 - `AddPrefix("/prefix/*", ...)` configures a scoped route subtree and returns the current builder.

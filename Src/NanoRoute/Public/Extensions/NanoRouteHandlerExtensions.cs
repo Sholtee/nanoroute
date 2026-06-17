@@ -39,7 +39,7 @@ namespace NanoRoute
     /// <example>
     /// <code>
     /// builder.AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/", request =&gt;
-    ///     Results.Ok(request.Id));
+    ///     Task.FromResult(HttpResponseMessage.Json(request.Id)));
     /// </code>
     /// </example>
     public delegate Task<HttpResponseMessage> TypedRequestEndpointHandlerDelegate<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TRequestContext requestContext) where TRequestContext : new();
@@ -189,7 +189,7 @@ namespace NanoRoute
     /// builder
     ///     .AddDefaultValueParsers()
     ///     .AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/", request =&gt;
-    ///         Results.Ok(request.Id));
+    ///         Task.FromResult(HttpResponseMessage.Json(request.Id)));
     /// </code>
     /// </example>
     public static class NanoRouteHandlerExtensions
@@ -360,7 +360,7 @@ namespace NanoRoute
             /// <example>
             /// <code>
             /// builder.AddHandler&lt;UserRequest&gt;("/users/{id:int}/", request =&gt;
-            ///     Results.Ok(request.Id));
+            ///     Task.FromResult(HttpResponseMessage.Json(request.Id)));
             /// </code>
             /// </example>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string pattern, TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
@@ -395,7 +395,7 @@ namespace NanoRoute
             /// <example>
             /// <code>
             /// builder.AddHandler&lt;UserRequest&gt;("GET", "/users/{id:int}/", request =&gt;
-            ///     Results.Ok(request.Id));
+            ///     Task.FromResult(HttpResponseMessage.Json(request.Id)));
             /// </code>
             /// </example>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(string verb, string pattern, TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new() =>
@@ -430,7 +430,7 @@ namespace NanoRoute
             /// <example>
             /// <code>
             /// builder.AddHandler&lt;UserRequest&gt;(["GET", "HEAD"], "/users/{id:int}/", request =&gt;
-            ///     Results.Ok(request.Id));
+            ///     Task.FromResult(HttpResponseMessage.Json(request.Id)));
             /// </code>
             /// </example>
             public TBuilder AddHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(IEnumerable<string> verbs, string pattern, TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new()
@@ -552,7 +552,7 @@ namespace NanoRoute
             /// <returns>The current router instance.</returns>
             /// <example>
             /// <code>
-            /// builder.AddHandler("/health/", (context, next) =&gt; Results.Ok());
+            /// builder.AddHandler("/health/", (context, next) =&gt; Task.FromResult(new HttpResponseMessage()));
             /// </code>
             /// </example>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
@@ -576,7 +576,7 @@ namespace NanoRoute
             /// builder.AddHandler(
             ///     ["GET", "POST"],
             ///     "/api/items/{id:int}/",
-            ///     (context, next) =&gt; Results.Ok(context.Parameters["id"]));
+            ///     (context, next) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["id"])));
             /// </code>
             /// </example>
             /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeScopeBuilder"/>, <paramref name="verbs"/>, <paramref name="pattern"/>, or <paramref name="handler"/> is <see langword="null"/>.</exception>
@@ -642,7 +642,7 @@ namespace NanoRoute
             /// <exception cref="InvalidOperationException">Thrown when request-time typed binding cannot resolve a required parameter or service.</exception>
             /// <example>
             /// <code>
-            /// endpoint.WithHandler&lt;UserRequest&gt;(request =&gt; Results.Ok(request.Id));
+            /// endpoint.WithHandler&lt;UserRequest&gt;(request =&gt; Task.FromResult(HttpResponseMessage.Json(request.Id)));
             /// </code>
             /// </example>
             public EndpointBuilder WithHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRequestContext>(TypedRequestEndpointHandlerDelegate<TRequestContext> handler) where TRequestContext : new()

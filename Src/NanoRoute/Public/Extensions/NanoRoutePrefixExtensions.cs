@@ -21,7 +21,7 @@ namespace NanoRoute
     /// <example>
     /// <code>
     /// builder.AddPrefix("/api/*", api =&gt; api
-    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok()));
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Task.FromResult(new HttpResponseMessage())));
     /// </code>
     /// </example>
     public static class NanoRoutePrefixExtensions
@@ -49,8 +49,8 @@ namespace NanoRoute
             /// <example>
             /// <code>
             /// builder.AddPrefix("/api/*", api =&gt; api
-            ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
-            ///     .AddHandler("GET", "/users/", (context, _) =&gt; Results.Ok()));
+            ///     .AddHandler("GET", "/health/", (context, _) =&gt; Task.FromResult(new HttpResponseMessage()))
+            ///     .AddHandler("GET", "/users/", (context, _) =&gt; Task.FromResult(new HttpResponseMessage())));
             /// </code>
             /// </example>
             public TBuilder AddPrefix(string pattern, Action<RouteScopeBuilder> configureRoutes)  // child route scopes cannot create routers

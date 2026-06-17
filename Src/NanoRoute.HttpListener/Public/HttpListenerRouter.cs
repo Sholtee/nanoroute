@@ -30,7 +30,8 @@ namespace NanoRoute.HttpListener
     /// HttpListenerRouter router = HttpListenerRouter
     ///     .CreateBuilder()
     ///     .AddDefaultValueParsers()
-    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+    ///     .AddEndpoint("GET", "/health/", endpoint =&gt; endpoint
+    ///         .WithHandler(static (_, _) =&gt; Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK))))
     ///     .CreateRouter();
     /// </code>
     /// </example>
@@ -73,7 +74,7 @@ namespace NanoRoute.HttpListener
                     if (contentLength >= 0)
                         response.ContentLength64 = contentLength;
                 }
-    
+
                 await contentStream
                     .CopyToAsync(response.OutputStream, GetCopyBufferSize(contentStream), cancellation)
                     .ConfigureAwait(false);

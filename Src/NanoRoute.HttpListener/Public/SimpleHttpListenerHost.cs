@@ -15,15 +15,30 @@ namespace NanoRoute.HttpListener
     using Internals;
 
     /// <summary>
-    /// 
+    /// Runs a small prefix-based <see cref="System.Net.HttpListener"/> host for a configured <see cref="HttpListenerRouter"/>.
     /// </summary>
+    /// <param name="uriPrefix">The listener URI prefix, for example <c>http://localhost:8080/</c>.</param>
+    /// <param name="workerCount">The maximum number of queued request workers to run concurrently.</param>
+    /// <param name="queueCapacity">The maximum number of accepted requests that may wait for a worker.</param>
+    /// <param name="router">The router used to process accepted listener contexts.</param>
+    /// <param name="rootScope">The root service provider used to create one dependency-injection scope per request.</param>
+    /// <remarks>
+    /// This host is intended for simple local or embedded listener scenarios. Applications that need custom accept
+    /// loops, diagnostics, shutdown policies, or concurrency control can call <see cref="HttpListenerRouter.Route"/>
+    /// from their own <see cref="System.Net.HttpListener"/> loop instead.
+    /// </remarks>
     public sealed class SimpleHttpListenerHost(string uriPrefix, int workerCount, int queueCapacity, HttpListenerRouter router, IServiceProvider rootScope)
     {
         /// <summary>
-        /// 
+        /// Starts the listener and processes accepted requests until cancellation is requested.
         /// </summary>
-        /// <param name="cancellation"></param>
-        /// <returns></returns>
+        /// <param name="cancellation">A token that stops the listener accept loop and is passed to queued workers.</param>
+        /// <returns>A task that completes when the host stops accepting requests.</returns>
+        /// <remarks>
+        /// Each accepted request is processed in a service scope created from the root provider. If the worker queue
+        /// is full, the newly accepted response is aborted.
+        /// </remarks>
+        /// <exception cref="OperationCanceledException">Thrown when <paramref name="cancellation"/> is cancelled.</exception>
         public async Task Run(CancellationToken cancellation)
         {
             TaskCompletionSource<HttpListenerContext> cancellationTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -52,8 +67,11 @@ namespace NanoRoute.HttpListener
         }
 
         /// <summary>
-        /// 
+        /// Runs the host until the user presses Ctrl+C.
         /// </summary>
+        /// <remarks>
+        /// The first Ctrl+C requests graceful cancellation. A second Ctrl+C exits the process immediately.
+        /// </remarks>
         public void RunUntilCancelKeyPress()
         {
             using CancellationTokenSource cts = new();

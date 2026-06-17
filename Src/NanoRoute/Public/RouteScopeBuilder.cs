@@ -25,7 +25,7 @@ namespace NanoRoute
     /// <code>
     /// builder
     ///     .AddDefaultValueParsers()
-    ///     .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Results.Ok(context.Parameters["id"]));
+    ///     .AddHandler("GET", "/users/{id:int}/", (context, _) =&gt; Task.FromResult(HttpResponseMessage.Json(context.Parameters["id"])));
     /// </code>
     /// </example>
     public class RouteScopeBuilder
@@ -35,7 +35,7 @@ namespace NanoRoute
         /// </summary>
         /// <example>
         /// <code>
-        /// builder.AddHandler("GET", RouteScopeBuilder.CurrentExact, (context, _) =&gt; Results.Ok());
+        /// builder.AddHandler("GET", RouteScopeBuilder.CurrentExact, (context, _) =&gt; Task.FromResult(new HttpResponseMessage()));
         /// </code>
         /// </example>
         public const string CurrentExact = "/";
@@ -257,7 +257,7 @@ namespace NanoRoute
         /// <code>
         /// RouteScopeBuilder api = builder.CreatePrefix("/api/*");
         ///
-        /// api.AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok());
+        /// api.AddHandler("GET", "/health/", (context, _) =&gt; Task.FromResult(new HttpResponseMessage()));
         /// </code>
         /// </example>
         public RouteScopeBuilder CreatePrefix(string pattern)

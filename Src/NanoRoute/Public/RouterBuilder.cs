@@ -19,7 +19,7 @@ namespace NanoRoute
     /// MyRouter router = MyRouter
     ///     .CreateBuilder()
     ///     .AddDefaultValueParsers()
-    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Results.Ok())
+    ///     .AddHandler("GET", "/health/", (context, _) =&gt; Task.FromResult(new HttpResponseMessage()))
     ///     .CreateRouter();
     /// </code>
     /// </example>
