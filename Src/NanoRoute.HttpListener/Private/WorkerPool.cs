@@ -69,15 +69,15 @@ namespace NanoRoute.HttpListener.Internals
             }
         }
 
-        public WorkerPool(int workerCount, int maxCapacity)
+        public WorkerPool(int maxConcurrency, int maxCapacity)
         {
-            if (workerCount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(workerCount));
+            if (maxConcurrency <= 0)
+                throw new ArgumentOutOfRangeException(nameof(maxConcurrency));
 
             if (maxCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxCapacity));
 
-            _workers = new Task[workerCount];
+            _workers = new Task[maxConcurrency];
 
             for (int i = 0; i < _workers.Length; i++)
                 _workers[i] = Task.Run(WorkerLoopAsync);

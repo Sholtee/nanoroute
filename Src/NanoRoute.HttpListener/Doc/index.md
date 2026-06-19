@@ -33,7 +33,7 @@ HttpListenerRouter router = HttpListenerRouter
 SimpleHttpListenerHost host = new
 (
     "http://localhost:8080/",
-    workerCount: 4,
+    maxConcurrency: 4,
     queueCapacity: 64,
     router,
     services
@@ -44,7 +44,7 @@ host.RunUntilCancelKeyPress();
 
 `HttpListenerRouter.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, endpoint builders, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router for accepted listener contexts.
 
-`SimpleHttpListenerHost` owns the listener loop, creates a service scope per request, limits the total number of running or waiting requests, and stops gracefully on Ctrl+C. `workerCount` and `queueCapacity` must both be greater than zero. If you need custom accept loops, concurrency, or shutdown behavior, call `HttpListenerRouter.Route()` from your own `HttpListener` loop instead.
+`SimpleHttpListenerHost` owns the listener loop, creates a service scope per request, limits the total number of running or waiting requests, and stops gracefully on Ctrl+C. `maxConcurrency` and `queueCapacity` must both be greater than zero. If you need custom accept loops, concurrency, or shutdown behavior, call `HttpListenerRouter.Route()` from your own `HttpListener` loop instead.
 
 Prefer endpoint builders such as `AddEndpoint()` for application routes. Typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
 
@@ -142,7 +142,7 @@ HttpListenerRouter router = HttpListenerRouter
 SimpleHttpListenerHost host = new
 (
     "http://localhost:8080/",
-    workerCount: 4,
+    maxConcurrency: 4,
     queueCapacity: 64,
     router,
     services

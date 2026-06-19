@@ -5,5 +5,5 @@ NanoRoute.HttpListener.HttpListenerRouterConfig.HttpListenerRouterConfig() -> vo
 NanoRoute.HttpListener.SimpleHttpListenerHost
 NanoRoute.HttpListener.SimpleHttpListenerHost.Run(System.Threading.CancellationToken cancellation) -> System.Threading.Tasks.Task!
 NanoRoute.HttpListener.SimpleHttpListenerHost.RunUntilCancelKeyPress() -> void
-NanoRoute.HttpListener.SimpleHttpListenerHost.SimpleHttpListenerHost(string! uriPrefix, int workerCount, int queueCapacity, NanoRoute.HttpListener.HttpListenerRouter! router, System.IServiceProvider! rootScope) -> void
+NanoRoute.HttpListener.SimpleHttpListenerHost.SimpleHttpListenerHost(string! uriPrefix, int maxConcurrency, int queueCapacity, NanoRoute.HttpListener.HttpListenerRouter! router, System.IServiceProvider! rootScope) -> void
 static NanoRoute.HttpListener.HttpListenerRouter.CreateBuilder() -> NanoRoute.RouterBuilder<NanoRoute.HttpListener.HttpListenerRouter!, NanoRoute.HttpListener.HttpListenerRouterConfig!>!

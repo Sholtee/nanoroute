@@ -5,6 +5,7 @@
 ********************************************************************************/
 using System;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace NanoRoute.HttpListener
     /// Runs a small prefix-based <see cref="System.Net.HttpListener"/> host for a configured <see cref="HttpListenerRouter"/>.
     /// </summary>
     /// <param name="uriPrefix">The listener URI prefix, for example <c>http://localhost:8080/</c>.</param>
-    /// <param name="workerCount">The number of request workers to run concurrently. The value must be greater than zero.</param>
+    /// <param name="maxConcurrency">The maximum number of request workers to run concurrently. The value must be greater than zero.</param>
     /// <param name="queueCapacity">The maximum number of accepted requests that may be running or waiting for a worker. The value must be greater than zero.</param>
     /// <param name="router">The router used to process accepted listener contexts.</param>
     /// <param name="rootScope">The root service provider used to create one dependency-injection scope per request.</param>
@@ -27,8 +28,23 @@ namespace NanoRoute.HttpListener
     /// loops, diagnostics, shutdown policies, or concurrency control can call <see cref="HttpListenerRouter.Route"/>
     /// from their own <see cref="System.Net.HttpListener"/> loop instead.
     /// </remarks>
-    public sealed class SimpleHttpListenerHost(string uriPrefix, int workerCount, int queueCapacity, HttpListenerRouter router, IServiceProvider rootScope)
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="maxConcurrency"/> or <paramref name="queueCapacity"/> is less than or equal to zero.
+    /// </exception>
+    public sealed class SimpleHttpListenerHost(string uriPrefix, int maxConcurrency, int queueCapacity, HttpListenerRouter router, IServiceProvider rootScope)
     {
+        private readonly int _maxConcurrency = ValidateGreaterThanZero(maxConcurrency, nameof(maxConcurrency));
+
+        private readonly int _queueCapacity = ValidateGreaterThanZero(queueCapacity, nameof(queueCapacity));
+
+        private static int ValidateGreaterThanZero(int value, [CallerArgumentExpression(nameof(value))] string? name = null)
+        {
+            if (value <= 0)
+                throw new ArgumentOutOfRangeException(name);
+
+            return value;
+        }
+
         /// <summary>
         /// Starts the listener and processes accepted requests until cancellation is requested.
         /// </summary>
@@ -38,9 +54,6 @@ namespace NanoRoute.HttpListener
         /// Each accepted request is processed in a service scope created from the root provider. If all in-flight request slots
         /// are busy, the newly accepted response is aborted.
         /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when the host was constructed with a non-positive worker count or queue capacity.
-        /// </exception>
         /// <exception cref="OperationCanceledException">Thrown when <paramref name="cancellation"/> is cancelled.</exception>
         public async Task Run(CancellationToken cancellation)
         {
@@ -51,7 +64,7 @@ namespace NanoRoute.HttpListener
             listener.Prefixes.Add(uriPrefix);
             listener.Start();
 
-            using WorkerPool workers = new(workerCount, queueCapacity);
+            using WorkerPool workers = new(_maxConcurrency, _queueCapacity);
 
             while (true)
             {

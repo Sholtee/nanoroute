@@ -22,10 +22,10 @@ namespace NanoRoute.HttpListener.Tests
         private static TaskCompletionSource<bool> CreateCompletionSource() => new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         [Test]
-        public void Constructor_ShouldRejectInvalidWorkerCount([Values(0, -1)] int workerCount)
+        public void Constructor_ShouldRejectInvalidMaxConcurrency([Values(0, -1)] int maxConcurrency)
         {
-            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => new WorkerPool(workerCount, 1))!;
-            Assert.That(ex.ParamName, Is.EqualTo("workerCount"));
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => new WorkerPool(maxConcurrency, 1))!;
+            Assert.That(ex.ParamName, Is.EqualTo("maxConcurrency"));
         }
 
         [Test]
@@ -36,9 +36,9 @@ namespace NanoRoute.HttpListener.Tests
         }
 
         [Test]
-        public void TryQueue_ShouldExecuteQueuedWork([Values(1, 2)] int workerCount)
+        public void TryQueue_ShouldExecuteQueuedWork([Values(1, 2)] int maxConcurrency)
         {
-            using WorkerPool pool = new(workerCount, 1);
+            using WorkerPool pool = new(maxConcurrency, 1);
 
             TaskCompletionSource<bool> work = CreateCompletionSource();
 
@@ -57,9 +57,9 @@ namespace NanoRoute.HttpListener.Tests
         }
 
         [Test]
-        public void TryQueue_ShouldUseAvailableWorkers([Values(2, 3)] int workerCount)
+        public void TryQueue_ShouldUseAvailableWorkers([Values(2, 3)] int maxConcurrency)
         {
-            using WorkerPool pool = new(workerCount, 2);
+            using WorkerPool pool = new(maxConcurrency, 2);
 
             using CountdownEvent countdown = new(2);
 
@@ -137,7 +137,7 @@ namespace NanoRoute.HttpListener.Tests
         }
 
         [Test]
-        public void TryQueue_ShouldRejectWorkWhenPendingQueueIsFull()
+        public void TryQueue_ShouldRejectWorkWhenCapacityIsFull()
         {
             using WorkerPool pool = new(1, 1);
 
