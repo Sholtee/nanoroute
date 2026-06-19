@@ -48,7 +48,7 @@ SimpleHttpListenerHost host = new
 host.RunUntilCancelKeyPress();
 ```
 
-`SimpleHttpListenerHost` owns the listener loop, creates a service scope per request, and stops gracefully on Ctrl+C. If you need custom accept loops, concurrency, or shutdown behavior, call `HttpListenerRouter.Route()` from your own `HttpListener` loop instead.
+`SimpleHttpListenerHost` owns the listener loop, creates a service scope per request, limits the total number of running or waiting requests, and stops gracefully on Ctrl+C. `workerCount` and `queueCapacity` must both be greater than zero. If you need custom accept loops, concurrency, or shutdown behavior, call `HttpListenerRouter.Route()` from your own `HttpListener` loop instead.
 
 ## Typed Binding Example
 

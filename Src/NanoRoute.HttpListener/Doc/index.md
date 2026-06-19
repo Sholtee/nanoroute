@@ -44,7 +44,7 @@ host.RunUntilCancelKeyPress();
 
 `HttpListenerRouter.CreateBuilder()` returns the same strongly typed NanoRoute builder style as the core package. Register value parsers, query bindings, JSON body binders, typed handlers, endpoint builders, prefixes, and handlers in the builder, then call `CreateRouter()` once and reuse the router for accepted listener contexts.
 
-`SimpleHttpListenerHost` owns the listener loop, creates a service scope per request, and stops gracefully on Ctrl+C. If you need custom accept loops, concurrency, or shutdown behavior, call `HttpListenerRouter.Route()` from your own `HttpListener` loop instead.
+`SimpleHttpListenerHost` owns the listener loop, creates a service scope per request, limits the total number of running or waiting requests, and stops gracefully on Ctrl+C. `workerCount` and `queueCapacity` must both be greater than zero. If you need custom accept loops, concurrency, or shutdown behavior, call `HttpListenerRouter.Route()` from your own `HttpListener` loop instead.
 
 Prefer endpoint builders such as `AddEndpoint()` for application routes. Typed handlers and endpoint helpers such as `WithJsonBody()` keep route values, JSON bodies, services, and framework values in request objects. `AddHandler()` is still available for lower-level middleware composition and custom pipelines.
 
@@ -122,7 +122,7 @@ NanoRoute handlers return ordinary `HttpResponseMessage` instances.
 
 Use `HttpListenerRouter.Route()` from your own listener loop when you need full control over accept loops, concurrency, and shutdown.
 
-For simple local hosts, `SimpleHttpListenerHost` wraps a prefix-based `HttpListener`, a bounded worker queue, and per-request dependency-injection scopes:
+For simple local hosts, `SimpleHttpListenerHost` wraps a prefix-based `HttpListener`, bounded request processing, and per-request dependency-injection scopes:
 
 ```csharp
 using System;
@@ -151,7 +151,7 @@ SimpleHttpListenerHost host = new
 host.RunUntilCancelKeyPress();
 ```
 
-`SimpleHttpListenerHost` aborts newly accepted responses when the worker queue is full. It creates a service scope for each accepted request, so pass a root service provider that supports `CreateScope()`.
+`SimpleHttpListenerHost` aborts newly accepted responses when all in-flight request slots are busy. It creates a service scope for each accepted request, so pass a root service provider that supports `CreateScope()`.
 
 ## Cancellation
 

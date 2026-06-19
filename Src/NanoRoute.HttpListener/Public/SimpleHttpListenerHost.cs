@@ -18,8 +18,8 @@ namespace NanoRoute.HttpListener
     /// Runs a small prefix-based <see cref="System.Net.HttpListener"/> host for a configured <see cref="HttpListenerRouter"/>.
     /// </summary>
     /// <param name="uriPrefix">The listener URI prefix, for example <c>http://localhost:8080/</c>.</param>
-    /// <param name="workerCount">The maximum number of queued request workers to run concurrently.</param>
-    /// <param name="queueCapacity">The maximum number of accepted requests that may wait for a worker.</param>
+    /// <param name="workerCount">The number of request workers to run concurrently. The value must be greater than zero.</param>
+    /// <param name="queueCapacity">The maximum number of accepted requests that may be running or waiting for a worker. The value must be greater than zero.</param>
     /// <param name="router">The router used to process accepted listener contexts.</param>
     /// <param name="rootScope">The root service provider used to create one dependency-injection scope per request.</param>
     /// <remarks>
@@ -35,9 +35,12 @@ namespace NanoRoute.HttpListener
         /// <param name="cancellation">A token that stops the listener accept loop and is passed to queued workers.</param>
         /// <returns>A task that completes when the host stops accepting requests.</returns>
         /// <remarks>
-        /// Each accepted request is processed in a service scope created from the root provider. If the worker queue
-        /// is full, the newly accepted response is aborted.
+        /// Each accepted request is processed in a service scope created from the root provider. If all in-flight request slots
+        /// are busy, the newly accepted response is aborted.
         /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the host was constructed with a non-positive worker count or queue capacity.
+        /// </exception>
         /// <exception cref="OperationCanceledException">Thrown when <paramref name="cancellation"/> is cancelled.</exception>
         public async Task Run(CancellationToken cancellation)
         {

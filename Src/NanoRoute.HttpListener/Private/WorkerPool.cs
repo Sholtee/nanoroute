@@ -1,5 +1,5 @@
 /********************************************************************************
-* BoundedWorkerPool.cs                                                          *
+* WorkerPool.cs                                                                 *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -71,6 +71,12 @@ namespace NanoRoute.HttpListener.Internals
 
         public WorkerPool(int workerCount, int maxCapacity)
         {
+            if (workerCount <= 0)
+                throw new ArgumentOutOfRangeException(nameof(workerCount));
+
+            if (maxCapacity <= 0)
+                throw new ArgumentOutOfRangeException(nameof(maxCapacity));
+
             _workers = new Task[workerCount];
 
             for (int i = 0; i < _workers.Length; i++)

@@ -22,9 +22,23 @@ namespace NanoRoute.HttpListener.Tests
         private static TaskCompletionSource<bool> CreateCompletionSource() => new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         [Test]
-        public void TryQueue_ShouldExecuteQueuedWork([Values(1, 2)] int threadCount)
+        public void Constructor_ShouldRejectInvalidWorkerCount([Values(0, -1)] int workerCount)
         {
-            using WorkerPool pool = new(threadCount, 1);
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => new WorkerPool(workerCount, 1))!;
+            Assert.That(ex.ParamName, Is.EqualTo("workerCount"));
+        }
+
+        [Test]
+        public void Constructor_ShouldRejectInvalidCapacity([Values(0, -1)] int maxCapacity)
+        {
+            ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => new WorkerPool(1, maxCapacity))!;
+            Assert.That(ex.ParamName, Is.EqualTo("maxCapacity"));
+        }
+
+        [Test]
+        public void TryQueue_ShouldExecuteQueuedWork([Values(1, 2)] int workerCount)
+        {
+            using WorkerPool pool = new(workerCount, 1);
 
             TaskCompletionSource<bool> work = CreateCompletionSource();
 
@@ -43,9 +57,9 @@ namespace NanoRoute.HttpListener.Tests
         }
 
         [Test]
-        public void TryQueue_ShouldUseAvailableThreads([Values(2, 3)] int threadCount)
+        public void TryQueue_ShouldUseAvailableWorkers([Values(2, 3)] int workerCount)
         {
-            using WorkerPool pool = new(threadCount, 2);
+            using WorkerPool pool = new(workerCount, 2);
 
             using CountdownEvent countdown = new(2);
 
@@ -64,15 +78,15 @@ namespace NanoRoute.HttpListener.Tests
         }
 
         [Test]
-        public void TryQueue_ShouldExecuteQueuedWorksInOrder()
+        public void TryQueue_ShouldExecuteQueuedWorkItemsInOrder()
         {
             using WorkerPool pool = new(1, 3);
 
-            TaskCompletionSource<bool> 
+            TaskCompletionSource<bool>
                 workerStarted = CreateCompletionSource(),
                 work = CreateCompletionSource();
 
-            Mock<WorkItem> 
+            Mock<WorkItem>
                 mockWork_1 = new(MockBehavior.Strict),
                 mockWork_2 = new(MockBehavior.Strict),
                 mockWork_3 = new(MockBehavior.Strict);
@@ -171,13 +185,18 @@ namespace NanoRoute.HttpListener.Tests
         {
             WorkerPool pool = new(1, 1);
 
-            TaskCompletionSource<bool> cancellationObserved = CreateCompletionSource();
+            TaskCompletionSource<bool>
+                cancellationObserved = CreateCompletionSource(),
+                workStarted = CreateCompletionSource();
 
             Assert.That(pool.TryQueue(cancellation =>
             {
                 cancellation.Register(() => cancellationObserved.SetResult(true));
-                return Task.CompletedTask;
+                workStarted.SetResult(true);
+                return cancellationObserved.Task;
             }), Is.True);
+
+            Assert.That(workStarted.Task.Wait(s_timeout), Is.True);
 
             pool.Dispose();
             Assert.That(cancellationObserved.Task.Wait(s_timeout), Is.True);
