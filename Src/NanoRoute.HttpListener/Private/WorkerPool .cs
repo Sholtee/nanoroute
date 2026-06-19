@@ -20,11 +20,9 @@ namespace NanoRoute.HttpListener.Internals
 
         private readonly SemaphoreSlim _workerAvailableSignal = new(0);
 
-        private readonly int _queueCapacity;
-
         private readonly Task[] _workers;
 
-        private int _queueSize;
+        private int _capacity;
 
         private async Task WorkerLoopAsync()
         {
@@ -33,12 +31,15 @@ namespace NanoRoute.HttpListener.Internals
                 {
                     await _workerAvailableSignal.WaitAsync(_stopTokenSource.Token);
 
-                    if (!_queue.TryDequeue(out WorkItem work))
-                        continue;
-
-                    Interlocked.Decrement(ref _queueSize);
-
-                    await work(_stopTokenSource.Token);
+                    if (_queue.TryDequeue(out WorkItem work))
+                        try
+                        {
+                            await work(_stopTokenSource.Token);
+                        }
+                        finally
+                        {
+                            Interlocked.Increment(ref _capacity);
+                        }
                 }
                 catch (OperationCanceledException) when (_stopTokenSource.IsCancellationRequested)
                 {
@@ -52,30 +53,30 @@ namespace NanoRoute.HttpListener.Internals
                 }
         }
 
-        private static bool TryIncrementIfLessThan(ref int value, int maxExclusive)
+        private static bool TryDecrementIfGreaterThan(ref int value, int minExclusive)
         {
             while (true)
             {
                 int current = Volatile.Read(ref value);
 
-                if (current >= maxExclusive)
+                if (current <= minExclusive)
                     return false;
 
-                int next = current + 1;
+                int next = current - 1;
 
                 if (Interlocked.CompareExchange(ref value, next, current) == current)
                     return true;
             }
         }
 
-        public WorkerPool(int workerCount, int queueCapacity)
+        public WorkerPool(int workerCount, int maxCapacity)
         {
             _workers = new Task[workerCount];
 
             for (int i = 0; i < _workers.Length; i++)
                 _workers[i] = Task.Run(WorkerLoopAsync);
 
-            _queueCapacity = queueCapacity;
+            _capacity = maxCapacity;
         }
 
         /// <summary>
@@ -92,18 +93,19 @@ namespace NanoRoute.HttpListener.Internals
 
         public bool TryQueue(WorkItem work)
         {
-            if (_stopTokenSource.IsCancellationRequested)
-                return false;
-
-            if (!TryIncrementIfLessThan(ref _queueSize, _queueCapacity))
+            if (!TryDecrementIfGreaterThan(ref _capacity, 0))
                 return false;
 
             _queue.Enqueue(work);
+
+            // This could throw if the object has already been disposed when this method gets called.
+            // In practice this will never happen as the queue is created before and disposed after
+            // the main loop.
             _workerAvailableSignal.Release();
 
             return true;
         }
 
-        public int QueueSize => _queueSize;
+        public int Capacity => _capacity;
     }
 }

@@ -5,7 +5,7 @@
   <PropertyGroup>
     <AssemblyName>NanoRoute.HttpListener.Tests</AssemblyName>
     <RootNamespace>NanoRoute.HttpListener.Tests</RootNamespace>
-    <NoWarn>CA1001;CA1861;CA2000;CA2007;</NoWarn>
+    <NoWarn>CA1001;CA1812;CA1861;CA2000;CA2007;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
