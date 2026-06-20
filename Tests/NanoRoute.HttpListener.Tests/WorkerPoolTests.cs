@@ -185,21 +185,20 @@ namespace NanoRoute.HttpListener.Tests
         {
             WorkerPool pool = new(1, 1);
 
-            TaskCompletionSource<bool>
-                cancellationObserved = CreateCompletionSource(),
-                workStarted = CreateCompletionSource();
+            TaskCompletionSource<bool> workStarted = CreateCompletionSource();
+            CancellationToken cancellation = default;
 
-            Assert.That(pool.TryQueue(cancellation =>
+            Assert.That(pool.TryQueue(c =>
             {
-                cancellation.Register(() => cancellationObserved.SetResult(true));
+                cancellation = c;
                 workStarted.SetResult(true);
-                return cancellationObserved.Task;
+                return Task.CompletedTask;
             }), Is.True);
 
             Assert.That(workStarted.Task.Wait(s_timeout), Is.True);
-
+            Assert.That(cancellation.IsCancellationRequested, Is.False);
             pool.Dispose();
-            Assert.That(cancellationObserved.Task.Wait(s_timeout), Is.True);
+            Assert.That(cancellation.IsCancellationRequested, Is.True);
         }
     }
 }

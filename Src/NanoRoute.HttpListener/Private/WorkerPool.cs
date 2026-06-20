@@ -80,7 +80,7 @@ namespace NanoRoute.HttpListener.Internals
             _workers = new Task[maxConcurrency];
 
             for (int i = 0; i < _workers.Length; i++)
-                _workers[i] = Task.Run(WorkerLoopAsync);
+                _workers[i] = WorkerLoopAsync();
 
             _capacity = maxCapacity;
         }
