@@ -13,10 +13,9 @@ namespace NanoRoute.Internals
     /// Exposes events from this library.
     /// </summary>
     /// <remarks>This logger is not meant to log user errors.</remarks>
-    [EventSource(Name = EVENT_SOURCE_NAME)]
     internal sealed class RouterEventSource : EventSource
     {
-        private RouterEventSource()
+        private RouterEventSource(): base(EVENT_SOURCE_NAME)
         {
         }
 
