@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
-namespace NanoRoute.Tests
+namespace NanoRoute.HttpListener.Tests
 {
     internal sealed class DebugEventListener<Target>(EventLevel level) : EventListener
     {

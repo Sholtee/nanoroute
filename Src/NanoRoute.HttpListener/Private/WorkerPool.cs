@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NanoRoute.HttpListener.Internals
+namespace NanoRoute.Internals
 {
     internal delegate Task WorkItem(CancellationToken cancellation);
 
@@ -24,8 +24,10 @@ namespace NanoRoute.HttpListener.Internals
 
         private int _capacity;
 
-        private async Task WorkerLoopAsync()
+        private async Task WorkerLoopAsync(int index)
         {
+            Logger<WorkerPool>.Info.Write("StartingWorker", index, static index => new { Index = index });
+
             while (!_stopTokenSource.IsCancellationRequested)
                 try
                 {
@@ -48,9 +50,14 @@ namespace NanoRoute.HttpListener.Internals
                 }
                 catch (Exception ex)
                 {
-                    // write to EventSource
-                    _ = ex;
+                    Logger<WorkerPool>.Error.Write("UnhandledWorkerException", ex, index, static (ex, index) => new
+                    {
+                        Error = ex.ToString(),
+                        Index = index
+                    });
                 }
+
+            Logger<WorkerPool>.Info.Write("TerminatingWorker", index, static index => new { Index = index });
         }
 
         private static bool TryDecrementIfGreaterThan(ref int value, int minExclusive)
@@ -80,13 +87,13 @@ namespace NanoRoute.HttpListener.Internals
             _workers = new Task[maxConcurrency];
 
             for (int i = 0; i < _workers.Length; i++)
-                _workers[i] = WorkerLoopAsync();
+                _workers[i] = WorkerLoopAsync(i);
 
             _capacity = maxCapacity;
         }
 
         /// <summary>
-        /// Ensure that no more work items will be queued after calling this method. 
+        /// Ensure that no more work items will be queued after calling the <see cref="Dispose"/> method. 
         /// </summary>
         public void Dispose()
         {
@@ -104,7 +111,7 @@ namespace NanoRoute.HttpListener.Internals
 
             _queue.Enqueue(work);
 
-            // This could throw if the object has already been disposed when this method gets called.
+            // This could throw if the object has already been disposed when the TryQueue gets called.
             // In practice this will never happen as the queue is created before and disposed after
             // the main loop.
             _workerAvailableSignal.Release();

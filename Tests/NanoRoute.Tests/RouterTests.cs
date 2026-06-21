@@ -3,7 +3,6 @@
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
-using System;
 using System.Diagnostics.Tracing;
 using System.Net.Http;
 
@@ -11,12 +10,14 @@ using NUnit.Framework;
 
 namespace NanoRoute.Tests
 {
+    using Internals;
+
     [TestFixture]
     internal sealed partial class RouterTests
     {
         private static readonly HttpResponseMessage s_response = new();
 
-        private DebugEventListener _debugEventListener = null!;
+        private DebugEventListener<RequestPipeline> _debugEventListener = null!;
 
         private RouterBuilder<HttpMessageRouter, RouterConfig> _routerBuilder = null!;
 
@@ -26,7 +27,7 @@ namespace NanoRoute.Tests
         public void Setup()
         {
             _request = new HttpRequestMessage() { Method = HttpMethod.Get };
-            _debugEventListener = new DebugEventListener(EventLevel.LogAlways);
+            _debugEventListener = new DebugEventListener<RequestPipeline>(EventLevel.LogAlways);
             _routerBuilder = HttpMessageRouter.CreateBuilder();
         }
 

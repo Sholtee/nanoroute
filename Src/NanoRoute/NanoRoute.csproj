@@ -41,6 +41,9 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>NanoRoute.HttpListener</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>NanoRoute.Perf</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute" Condition="'$(Configuration)'=='Debug'">
@@ -62,6 +65,7 @@
       System.Range;
       System.Runtime.CompilerServices.CallerArgumentExpressionAttribute;
       System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute;
+      System.Runtime.CompilerServices.CompilerLoweringPreserveAttribute;
       System.Runtime.CompilerServices.IsExternalInit;
       System.Runtime.CompilerServices.RequiredMemberAttribute;
     </PolySharpIncludeGeneratedTypes>

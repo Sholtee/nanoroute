@@ -4,6 +4,8 @@
 * Author: Denes Solti                                                           *
 ********************************************************************************/
 using System;
+using System.Diagnostics.Tracing;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,6 +23,29 @@ namespace NanoRoute.HttpListener.Tests
 
         private static TaskCompletionSource<bool> CreateCompletionSource() => new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+        private DebugEventListener<WorkerPool> _events = null!;
+
+        private EventWrittenEventArgs WaitForEvent(string eventName)
+        {
+            SpinWait.SpinUntil(() => _events.Events.Any(CompatibleEvent), s_timeout);
+            return _events.Events.Single(CompatibleEvent);
+
+            bool CompatibleEvent(EventWrittenEventArgs e) => e.EventName == eventName;
+        }
+
+        [SetUp]
+        public void Setup()
+        {
+            _events = new DebugEventListener<WorkerPool>(EventLevel.LogAlways);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _events.Dispose();
+            _events = null!;
+        }
+
         [Test]
         public void Constructor_ShouldRejectInvalidMaxConcurrency([Values(0, -1)] int maxConcurrency)
         {
@@ -33,6 +58,35 @@ namespace NanoRoute.HttpListener.Tests
         {
             ArgumentOutOfRangeException ex = Assert.Throws<ArgumentOutOfRangeException>(() => new WorkerPool(1, maxCapacity))!;
             Assert.That(ex.ParamName, Is.EqualTo("maxCapacity"));
+        }
+
+        [Test]
+        public void Lifecycle_ShouldBeLogged()
+        {
+            WorkerPool pool = new(1, 1);
+
+            Assert.That(SpinWait.SpinUntil(() => _events.Events.Count is 1, s_timeout), Is.True);
+
+            EventWrittenEventArgs workerStarted = WaitForEvent("StartingWorker");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(workerStarted.Level, Is.EqualTo(EventLevel.Informational));
+                Assert.That(workerStarted.PayloadNames, Is.EquivalentTo(new[] { "Index" }));
+                Assert.That(workerStarted.Payload, Is.EquivalentTo(new object?[] { 0 }));
+            });
+
+            pool.Dispose();
+            Assert.That(SpinWait.SpinUntil(() => _events.Events.Count is 2, s_timeout), Is.True);
+
+            EventWrittenEventArgs workerTerminated = WaitForEvent("TerminatingWorker");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(workerTerminated.Level, Is.EqualTo(EventLevel.Informational));
+                Assert.That(workerTerminated.PayloadNames, Is.EquivalentTo(new[] { "Index" }));
+                Assert.That(workerTerminated.Payload, Is.EquivalentTo(new object?[] { 0 }));
+            });
         }
 
         [Test]
@@ -157,6 +211,8 @@ namespace NanoRoute.HttpListener.Tests
         [Test]
         public void WorkerLoop_ShouldContinueAfterWorkItemThrows()
         {
+            const string errorMsg = "Worker failure.";
+
             using WorkerPool pool = new(1, 2);
 
             TaskCompletionSource<bool>
@@ -166,7 +222,7 @@ namespace NanoRoute.HttpListener.Tests
             Assert.That(pool.TryQueue(_ =>
             {
                 firstWorkStarted.SetResult(true);
-                throw new InvalidOperationException("Worker failure.");
+                throw new InvalidOperationException(errorMsg);
             }), Is.True);
 
             Assert.That(pool.TryQueue(_ =>
@@ -178,6 +234,16 @@ namespace NanoRoute.HttpListener.Tests
             Assert.That(firstWorkStarted.Task.Wait(s_timeout), Is.True);
             Assert.That(secondWorkStarted.Task.Wait(s_timeout), Is.True);
             Assert.That(SpinWait.SpinUntil(() => pool.Capacity == 2, s_timeout), Is.True);
+
+            EventWrittenEventArgs workerTerminated = WaitForEvent("UnhandledWorkerException");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(workerTerminated.Level, Is.EqualTo(EventLevel.Error));
+                Assert.That(workerTerminated.PayloadNames, Is.EquivalentTo(new[] { "Error", "Index" }));
+                Assert.That(workerTerminated.Payload![1], Is.EqualTo(0));
+                Assert.That(workerTerminated.Payload![0], Does.Contain(errorMsg));
+            });
         }
 
         [Test]

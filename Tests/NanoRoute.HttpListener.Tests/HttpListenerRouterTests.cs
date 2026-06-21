@@ -232,7 +232,7 @@ namespace NanoRoute.HttpListener.Tests
 
             ErrorDetails body = JsonSerializer.Deserialize<ErrorDetails>(await msg.Content.ReadAsStringAsync(), s_caseInsensitiveJson)!;
             Assert.That(body.Status, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(body.Title, Is.EqualTo("Not found"));
+            Assert.That(body.Title, Is.EqualTo("Not found."));
             Assert.That(body.TraceId, Is.Not.Empty);
             Assert.That(body.Errors, Is.Null);
             Assert.That(body.DeveloperMessages, Is.Null);

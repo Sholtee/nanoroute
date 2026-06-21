@@ -54,11 +54,13 @@ namespace NanoRoute.Internals
                     string.Format(Resources.Culture, Resources.ERR_INVALID_VERB, request.Method.Method)
                 );
 
-            RouterEventSource.Info.Write("RequestProcessingStarted", static request => new
+            EventSourceWriter log = Logger<RequestPipeline>.Info;
+
+            log.Write("RequestProcessingStarted", request, static request => new
             {
                 RequestUri = request.RequestUri.OriginalString,
                 Verb = request.Method.Method
-            }, request);
+            });
 
             using RouteMatchCursor cursor = new
             (
@@ -77,22 +79,22 @@ namespace NanoRoute.Internals
             {
                 if (!await cursor.MoveNextAsync().ConfigureAwait(false))
                 {
-                    RouterEventSource.Info.Write("NoMatchingHandler", static request => new
+                    log.Write("NoMatchingHandler", request, static request => new
                     {
                         RequestUri = request.RequestUri.OriginalString,
                         Verb = request.Method.Method
-                    }, request);
+                    });
 
                     HttpRequestException.Throw(HttpStatusCode.NotFound, Resources.ERR_NOT_FOUND);
                 }
 
-                RouterEventSource.Info.Write("MatchingHandler", static (request, cursor) => new
+                log.Write("MatchingHandler", request, cursor, static (request, cursor) => new
                 {
                     RequestUri = request.RequestUri.OriginalString,
                     Verb = request.Method.Method,
                     cursor.HandlerRegistration.Pattern,
                     ParameterCount = cursor.Parameters.Count
-                }, request, cursor);
+                });
 
                 RequestContext requestContext = new()
                 {

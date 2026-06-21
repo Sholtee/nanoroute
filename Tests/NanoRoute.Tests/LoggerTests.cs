@@ -1,5 +1,5 @@
 /********************************************************************************
-* RouterEventSourceTests.cs                                                     *
+* LoggerTests.cs                                                                *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -16,7 +16,7 @@ namespace NanoRoute.Tests
     using Internals;
 
     [TestFixture]
-    internal sealed class RouterEventSourceTests
+    internal sealed class LoggerTests
     {
         private sealed class TestEventSource : EventSource;
 
@@ -24,19 +24,19 @@ namespace NanoRoute.Tests
         {
             get
             {
-                yield return RouterEventSource.Debug;
-                yield return RouterEventSource.Info;
-                yield return RouterEventSource.Warning;
-                yield return RouterEventSource.Error;
+                yield return Logger<object>.Debug;
+                yield return Logger<object>.Info;
+                yield return Logger<object>.Warning;
+                yield return Logger<object>.Error;
             }
         }
 
         [Test]
         public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload([NUnit.Framework.ValueSource(nameof(ESWriters))] EventSourceWriter writer)
         {
-            using DebugEventListener listener = new(EventLevel.LogAlways);
+            using DebugEventListener<object> listener = new(EventLevel.LogAlways);
 
-            writer.Write("Event", static value => new { Value = value }, "data");
+            writer.Write("Event", "data", static value => new { Value = value });
 
             Assert.That(SpinWait.SpinUntil(() => listener.Events.Count == 1, 1000), Is.True);
 
@@ -52,9 +52,9 @@ namespace NanoRoute.Tests
         [Test]
         public void LogHelpers_ShouldEmitEventsWithTheExpectedLevelsAndPayload_DoubleParam([NUnit.Framework.ValueSource(nameof(ESWriters))] EventSourceWriter writer)
         {
-            using DebugEventListener listener = new(EventLevel.LogAlways);
+            using DebugEventListener<object> listener = new(EventLevel.LogAlways);
 
-            writer.Write("Event", static (first, second) => new { First = first, Second = second }, "one", 2);
+            writer.Write("Event", "one", 2, static (first, second) => new { First = first, Second = second });
 
             Assert.That(SpinWait.SpinUntil(() => listener.Events.Count == 1, 1000), Is.True);
 
@@ -76,7 +76,7 @@ namespace NanoRoute.Tests
 
             Mock<Func<int, object>> mockPayloadFactory = new(MockBehavior.Strict);
 
-            writer.Write("DisabledEvent", mockPayloadFactory.Object, 1986);
+            writer.Write("DisabledEvent", 1986, mockPayloadFactory.Object);
 
             mockPayloadFactory.Verify(factory => factory.Invoke(It.IsAny<int>()), Times.Never);
         }
@@ -90,7 +90,7 @@ namespace NanoRoute.Tests
 
             Mock<Func<int, int, object>> mockPayloadFactory = new(MockBehavior.Strict);
 
-            writer.Write("DisabledEvent", mockPayloadFactory.Object, 1986, 1026);
+            writer.Write("DisabledEvent", 1986, 1026, mockPayloadFactory.Object);
 
             mockPayloadFactory.Verify(factory => factory.Invoke(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }

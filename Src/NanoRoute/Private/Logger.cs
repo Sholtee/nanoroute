@@ -1,5 +1,5 @@
 /********************************************************************************
-* RouterEventSource.cs                                                          *
+* Logger.cs                                                                     *
 *                                                                               *
 * Author: Denes Solti                                                           *
 ********************************************************************************/
@@ -13,21 +13,16 @@ namespace NanoRoute.Internals
     /// Exposes events from this library.
     /// </summary>
     /// <remarks>This logger is not meant to log user errors.</remarks>
-    internal sealed class RouterEventSource : EventSource
+    internal sealed class Logger<TSource> : EventSource
     {
-        private RouterEventSource(): base(EVENT_SOURCE_NAME)
+        private Logger(): base(typeof(TSource).FullName)
         {
         }
 
         /// <summary>
-        /// The name associated with the event source declaration.
-        /// </summary>
-        public const string EVENT_SOURCE_NAME = "NanoRoute";
-
-        /// <summary>
         /// The singleton instance.
         /// </summary>
-        public static RouterEventSource Instance { get; } = new();
+        public static Logger<TSource> Instance { get; } = new();
 
         public static EventSourceWriter Debug { get; } = new EventSourceWriter(Instance, EventLevel.Verbose);
 
@@ -49,7 +44,7 @@ namespace NanoRoute.Internals
         /// Logs a message with the given <see cref="Level"/>. The <paramref name="attributesFactory"/> is called only when the log <see cref="Level"/> is enabled.
         /// </summary>
         [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The 'attributesFactory' won't return composite types")]
-        public void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TParam>(string eventName, Func<TParam, T> attributesFactory, TParam p)
+        public void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TParam>(string eventName, TParam p, Func<TParam, T> attributesFactory)
         {
             if (target.IsEnabled(Level, EventKeywords.None))
                 target.Write(eventName, _options, attributesFactory(p));
@@ -59,13 +54,13 @@ namespace NanoRoute.Internals
         /// Logs a message with the given <see cref="Level"/>. The <paramref name="attributesFactory"/> is called only when the log <see cref="Level"/> is enabled.
         /// </summary>
         [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The 'attributesFactory' won't return composite types")]
-        public void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TParam_1, TParam_2>(string eventName, Func<TParam_1, TParam_2, T> attributesFactory, TParam_1 p1, TParam_2 p2)
+        public void Write<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TParam_1, TParam_2>(string eventName, TParam_1 p1, TParam_2 p2, Func<TParam_1, TParam_2, T> attributesFactory)
         {
             if (target.IsEnabled(Level, EventKeywords.None))
                 target.Write(eventName, _options, attributesFactory(p1, p2));
         }
 
-        public EventLevel Level { get; } = level;
+        public EventLevel Level => _options.Level;
 
         public override string ToString() => Level.ToString();
     }
