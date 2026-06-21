@@ -1,4 +1,3 @@
-*.binlog
 *.user
 .dotnet
 .nuget
